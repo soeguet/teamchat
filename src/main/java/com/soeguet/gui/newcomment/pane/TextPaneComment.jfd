@@ -1,0 +1,26 @@
+JFDML JFormDesigner: "8.0.3.0.246" Java: "17.0.3" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		auxiliary() {
+			"JavaCodeGenerator.defaultHandlerModifiers": 1028
+			"JavaCodeGenerator.defaultVariableModifiers": 4
+			"JavaCodeGenerator.memberVariablePrefix": "form_"
+		}
+		add( new FormComponent( "javax.swing.JTextPane" ) {
+			name: "this"
+			"background": sfield com.jformdesigner.model.FormObject NULL_VALUE
+			"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+			"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+			"maximumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+			"margin": new java.awt.Insets( 10, 16, 10, 16 )
+			"editable": false
+			"font": new com.jformdesigner.model.SwingDerivedFont( null, 0, 3, false )
+			"opaque": false
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 265, 175 )
+		} )
+	}
+}
