@@ -65,16 +65,16 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
   public static CustomWebsocketClient client = null;
   public static ObjectMapper mapper;
   private final Settings settings;
-  private final WebsocketInteraction websocketInteraction = new WebsocketInteraction(this);
-  private final JProgressBar progressBar = new JProgressBar(0, 100);
+  private final WebsocketInteraction websocketInteraction;
+  private final JProgressBar form_progressBar = new JProgressBar(0, 100);
   private final List<JButton> emojiButtonListForFocus = new ArrayList<>();
-  private Timer connectionTimer;
+  private final ClassLoader classLoader = getClass().getClassLoader();
   private String[] participantNameArray;
   private JTextPane participantTextArea;
   private EmojiImpl emojiWindow;
   private JFrame participantsFrame;
   private int heightLastPopUp = 30;
-  private int openPopUps = 0;
+  private int visibleDesktopNotificationCount = 0;
   private int currentEmojiFocus = 0;
   // first 100 messages from server should not be sending pop-ups while initial && loading screen
   private boolean startup = true;
@@ -84,7 +84,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
 
   private String lastMessageFrom = "";
   private String lastPostTime = "";
-  private int progressBarValue;
+  private int progressBarLiveValue;
   private int progressbarMaxValue = 1;
   private JLabel loadingMessageLabel;
 
@@ -94,6 +94,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
   public ChatImpl() {
     mapper = new ObjectMapper();
     settings = Settings.getInstance();
+    websocketInteraction = new WebsocketInteraction(this);
 
     initIpAddressesAsLocalClients();
     emojiListInit();
@@ -102,8 +103,9 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
   }
 
   private void connectToServerTimer() {
-    connectionTimer =
-        new Timer(0,
+    Timer connectionTimer =
+        new Timer(
+            5_000,
             e -> {
               if (!client.isOpen()) {
                 initialLoadingPanel.dispose();
@@ -111,7 +113,6 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
               }
             });
     connectionTimer.setRepeats(false);
-    connectionTimer.setDelay(7_000);
 
     if (!client.isOpen()) connectionTimer.start();
   }
@@ -185,11 +186,12 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
   }
 
   private void loadLogoIconForTitleBarAndSystemTray() {
-    ClassLoader classLoader = getClass().getClassLoader();
     if (Objects.requireNonNull(classLoader.getResource("icon.png")).toString().contains("jar")) {
 
       setIconImage(Toolkit.getDefaultToolkit().getImage(classLoader.getResource("icon.png")));
-    } else {
+    }
+    // if built from IDE
+    else {
       setIconImage(Toolkit.getDefaultToolkit().getImage("src/main/resources/icon.png"));
     }
   }
@@ -214,12 +216,12 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
         message = message.replace("ROWS:", "");
         setProgressbarMaxValueInitialMessageLoadUp(Integer.parseInt(message));
         // start at 0, not 1
-        progressBarValue--;
+        progressBarLiveValue--;
         return;
       }
 
-      progressBarValue++;
-      progressBar.setValue((progressBarValue) * 100 / progressbarMaxValue);
+      progressBarLiveValue++;
+      form_progressBar.setValue((progressBarLiveValue) * 100 / progressbarMaxValue);
 
       try {
         Thread.sleep(25);
@@ -233,7 +235,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
 
       loadingMessageLabel.setText(
           "loading - "
-              + progressBarValue
+              + progressBarLiveValue
               + " of "
               + progressbarMaxValue
               + " - estm. "
@@ -266,7 +268,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
         });
   }
 
-  protected void loadingInitialMessagesPanel() {
+  protected void loadingInitialMessagesLoadUpPanel() {
 
     if (initialLoadingPanel != null && initialLoadingPanel.isVisible()) return;
 
@@ -294,41 +296,49 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
           initialLoadingPanel.add(loadingMessageLabel);
 
           JPanel progressBarPanel = new JPanel();
-          progressBarPanel.add(progressBar);
+          progressBarPanel.add(form_progressBar);
 
           initialLoadingPanel.add(progressBarPanel);
 
           initialLoadingPanel.pack();
           initialLoadingPanel.setSize(
               initialLoadingPanel.getWidth() + 150, initialLoadingPanel.getHeight() + 150);
-          initialLoadingPanel.setLocationRelativeTo(null);
+          initialLoadingPanel.setLocationRelativeTo(this);
           initialLoadingPanel.setAlwaysOnTop(true);
           initialLoadingPanel.setVisible(true);
         });
   }
 
-  protected void popUps(@NotNull MessageModel messageModel) {
+  private void addMouseClickAdapterToPanel(Component window) {
+
+    window.addMouseListener(
+        new MouseAdapter() {
+          @Override
+          public void mouseClicked(MouseEvent e) {
+            e.consume();
+            // bring main frame to front by clicking pop up
+            SwingUtilities.invokeLater(
+                () -> {
+                  ChatImpl.super.setExtendedState(JFrame.NORMAL);
+                  ChatImpl.super.setAlwaysOnTop(true);
+                  ChatImpl.super.requestFocus();
+                  ChatImpl.super.setLocationRelativeTo(null);
+                  ChatImpl.super.setAlwaysOnTop(false);
+                });
+          }
+        });
+  }
+
+  protected void incomingMessagePreviewDesktopNotification(@NotNull MessageModel messageModel) {
 
     if (!this.isFocused() && !startup) {
       SwingUtilities.invokeLater(
           () -> {
+            // reusing the same dialog is not an option, it up to the garbage collector I guess
             JDialog popUpDialog = new JDialog();
-            popUpDialog.addMouseListener(
-                new MouseAdapter() {
-                  @Override
-                  public void mouseClicked(@NotNull MouseEvent e) {
-                    e.consume();
-                    // bring main frame to front by clicking pop up
-                    SwingUtilities.invokeLater(
-                        () -> {
-                          ChatImpl.super.setExtendedState(JFrame.NORMAL);
-                          ChatImpl.super.setAlwaysOnTop(true);
-                          ChatImpl.super.requestFocus();
-                          ChatImpl.super.setLocationRelativeTo(null);
-                          ChatImpl.super.setAlwaysOnTop(false);
-                        });
-                  }
-                });
+
+            addMouseClickAdapterToPanel(popUpDialog);
+
             popUpDialog.setLayout(
                 new MigLayout(
                     "fillx",
@@ -337,7 +347,9 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
                     // rows
                     "[fill]"));
 
-            popUpDialog.add(new PanelRightImpl(messageModel));
+            PanelRightImpl comment = new PanelRightImpl(messageModel);
+            addMouseClickAdapterToPanel(comment);
+            popUpDialog.add(comment);
 
             popUpDialog.pack();
             popUpDialog.setLocation(
@@ -345,7 +357,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
                 heightLastPopUp);
             popUpDialog.setAutoRequestFocus(false);
             heightLastPopUp += popUpDialog.getHeight() + 5;
-            openPopUps++;
+            visibleDesktopNotificationCount++;
             popUpDialog.getRootPane().setBorder(new LineBorder(Color.RED, 5));
             popUpDialog.setAlwaysOnTop(true);
             popUpDialog.pack();
@@ -367,16 +379,16 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
                     settings.getMessageDuration() * 1000,
                     e -> {
                       popUpDialog.dispose();
-                      openPopUps--;
+                      visibleDesktopNotificationCount--;
 
-                      if (openPopUps == 0) {
+                      if (visibleDesktopNotificationCount == 0) {
                         heightLastPopUp = 30;
                       }
                     });
             timer.setRepeats(false);
             timer.start();
 
-            if ((heightLastPopUp > 500) || (openPopUps == 0)) {
+            if ((heightLastPopUp > 500) || (visibleDesktopNotificationCount == 0)) {
               heightLastPopUp = 30;
             }
 
@@ -389,9 +401,8 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
   }
 
   private void initEmojiFrame() {
-
-    ClassLoader classLoader = getClass().getClassLoader();
-    Enumeration<URL> resources; // search for all resources in the "emoji" folder
+    // search for all resources in the "emoji" folder
+    Enumeration<URL> resources;
     try {
       resources = classLoader.getResources("emojis/");
     } catch (IOException e) {
@@ -446,7 +457,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
   }
 
   private void populateDialogWithEmojiButton(
-      @Nullable File file, @NotNull BufferedImage bufferedImage, @NotNull String entryName) {
+      @Nullable File file, BufferedImage bufferedImage, String entryName) {
 
     ImageIcon icon;
     String fileName;
@@ -969,7 +980,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
   public void setStartup(boolean startup) {
 
     if (!startup) {
-      progressBarValue = 0;
+      progressBarLiveValue = 0;
     }
     this.startup = startup;
   }

@@ -18,11 +18,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Objects;
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -33,32 +30,6 @@ public class WebsocketInteraction implements Serializable {
 
   public WebsocketInteraction(ChatImpl chatImpl) {
     this.chatImpl = chatImpl;
-  }
-
-  public static ImageIcon byteBufferToImageIcon(ByteBuffer byteBuffer) {
-    byte[] byteArray = new byte[byteBuffer.remaining()];
-    byteBuffer.get(byteArray);
-    return new ImageIcon(byteArray);
-  }
-
-  public static boolean isAnimatedGif(byte[] byteArray) throws IOException {
-    ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
-    ImageInputStream imageInputStream = ImageIO.createImageInputStream(byteArrayInputStream);
-    Iterator<ImageReader> readers = ImageIO.getImageReaders(imageInputStream);
-
-    if (readers.hasNext()) {
-      ImageReader reader = readers.next();
-      try {
-        reader.setInput(imageInputStream);
-        int numImages = reader.getNumImages(true);
-        return numImages > 1;
-      } finally {
-        reader.dispose();
-        imageInputStream.close();
-      }
-    }
-
-    return false;
   }
 
   public void onMessageReceived(String message) {
@@ -98,9 +69,9 @@ public class WebsocketInteraction implements Serializable {
       try {
         image = ImageIO.read(new ByteArrayInputStream(bytes.array()));
 
-        JLabel label = null;
         if (image != null) {
 
+          JLabel label;
           if (image.getWidth() > 351) {
 
             int maxWidth = 350;
@@ -115,25 +86,25 @@ public class WebsocketInteraction implements Serializable {
           } else {
             label = new JLabel(new ImageIcon(image));
           }
+          label.addMouseListener(
+              new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                  try {
+                    File tempFile = File.createTempFile("tempImage", ".png");
+                    ImageIO.write(image, "png", tempFile);
+
+                    Desktop desktop = Desktop.getDesktop();
+                    desktop.open(tempFile);
+                  } catch (IOException ex) {
+                    ex.printStackTrace();
+                  }
+                }
+              });
+          chatImpl.form_mainTextPanel.add(label, "center, wrap");
+          chatImpl.updateFrame();
         }
 
-        label.addMouseListener(
-            new MouseAdapter() {
-              @Override
-              public void mouseClicked(MouseEvent e) {
-                try {
-                  File tempFile = File.createTempFile("tempImage", ".png");
-                  ImageIO.write(image, "png", tempFile);
-
-                  Desktop desktop = Desktop.getDesktop();
-                  desktop.open(tempFile);
-                } catch (IOException ex) {
-                  ex.printStackTrace();
-                }
-              }
-            });
-        chatImpl.form_mainTextPanel.add(label, "center, wrap");
-        chatImpl.updateFrame();
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -257,7 +228,7 @@ public class WebsocketInteraction implements Serializable {
               }
 
               if (chatImpl.isStartup() && chatImpl.isVisible()) {
-                chatImpl.popUps(messageModel);
+                chatImpl.incomingMessagePreviewDesktopNotification(messageModel);
               }
             }
 
@@ -286,7 +257,7 @@ public class WebsocketInteraction implements Serializable {
   }
 
   void connectToWebSocket() {
-    chatImpl.loadingInitialMessagesPanel();
+    chatImpl.loadingInitialMessagesLoadUpPanel();
     ChatImpl.client = CustomWebsocketClient.getInstance();
     ChatImpl.client.connect();
     ChatImpl.client.addListener(chatImpl);

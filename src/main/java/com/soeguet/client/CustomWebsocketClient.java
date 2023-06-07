@@ -57,7 +57,7 @@ public class CustomWebsocketClient extends WebSocketClient {
     public void onWebsocketPong(WebSocket conn, Framedata f) {
         super.onWebsocketPong(conn, f);
 
-        System.out.println("CustomWebsocketClient.onWebsocketPong");
+        log.info("CustomWebsocketClient.onWebsocketPong");
     }
 
     @Override
@@ -115,7 +115,6 @@ public class CustomWebsocketClient extends WebSocketClient {
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
-        System.out.println("CustomWebsocketClient.onClose");
         listener.onCloseReconnect();
     }
 

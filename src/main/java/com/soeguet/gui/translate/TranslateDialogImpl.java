@@ -9,8 +9,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 
+@Slf4j
 public class TranslateDialogImpl extends TranslateDialog {
 
   public TranslateDialogImpl(Window owner, String selectedText) {
@@ -50,15 +52,15 @@ public class TranslateDialogImpl extends TranslateDialog {
         }
       }
 
-      System.out.println("responseCode = " + responseCode);
+      log.info("responseCode = " + responseCode);
 
       JSONObject jsonObject = new JSONObject(response.toString());
       JSONObject responseData = jsonObject.getJSONObject("responseData");
       String translatedText = responseData.getString("translatedText");
       double match = responseData.getDouble("match") * 100;
 
-      System.out.println("Translated text: " + translatedText);
-      System.out.println("Match: " + match);
+      log.info("Translated text: " + translatedText);
+      log.info("Match: " + match);
 
       form_translatedText.setText("");
       form_translatedText.append("match: \n" + match + " %" + "\n\n");
