@@ -103,22 +103,15 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
 
   private void connectToServerTimer() {
     connectionTimer =
-        new Timer(
-            5_000,
-            (event) -> {
-              log.info("attempting to connect");
-
+        new Timer(0,
+            e -> {
               if (!client.isOpen()) {
-
                 initialLoadingPanel.dispose();
                 JOptionPane.showMessageDialog(this, "Connection failed! Server seems down!");
-              } else {
-                log.info("connection already established!");
-                connectionTimer.stop();
               }
             });
     connectionTimer.setRepeats(false);
-    connectionTimer.setDelay(5_000);
+    connectionTimer.setDelay(7_000);
 
     if (!client.isOpen()) connectionTimer.start();
   }
