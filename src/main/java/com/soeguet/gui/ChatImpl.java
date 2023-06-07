@@ -99,12 +99,9 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
     emojiListInit();
     websocketInteraction.connectToWebSocket();
     manualInit();
-
-    connectToServerTimer();
   }
 
   private void connectToServerTimer() {
-
     connectionTimer =
         new Timer(
             5_000,
@@ -113,14 +110,15 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
 
               if (!client.isOpen()) {
 
-                websocketInteraction.connectToWebSocket();
+                initialLoadingPanel.dispose();
+                JOptionPane.showMessageDialog(this, "Connection failed! Server seems down!");
               } else {
                 log.info("connection already established!");
                 connectionTimer.stop();
               }
             });
-    connectionTimer.setRepeats(true);
-    connectionTimer.setDelay(30_000);
+    connectionTimer.setRepeats(false);
+    connectionTimer.setDelay(5_000);
 
     if (!client.isOpen()) connectionTimer.start();
   }
@@ -222,7 +220,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
       if (message.contains("ROWS:")) {
         message = message.replace("ROWS:", "");
         setProgressbarMaxValueInitialMessageLoadUp(Integer.parseInt(message));
-        //start at 0, not 1
+        // start at 0, not 1
         progressBarValue--;
         return;
       }
@@ -239,8 +237,15 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
       if (loadingMessageLabel == null) {
         loadingMessageLabel = new JLabel();
       }
+
       loadingMessageLabel.setText(
-          "loading - " + progressBarValue + " of " + progressbarMaxValue + " - estm. "+ (progressbarMaxValue * 25 / 600) +" secs");
+          "loading - "
+              + progressBarValue
+              + " of "
+              + progressbarMaxValue
+              + " - estm. "
+              + (progressbarMaxValue * 25 / 600)
+              + " secs");
     }
 
     websocketInteraction.onMessageReceived(message);
@@ -248,7 +253,6 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
 
   @Override
   public void onByteBufferMessageReceived(@NotNull ByteBuffer bytes) {
-
     websocketInteraction.onByteBufferMessageReceived(bytes);
   }
 
