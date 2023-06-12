@@ -30,8 +30,15 @@ Please note that TeamChat is currently only intended for use within a local netw
 
 ## Usage
 
-1. Clone the repository: `git clone https://github.com/soeguet/teamchat`.
-2. Navigate to the folder and type ```./gradlew run``` in the terminal.
+1. Clone the repository: 
+```bash
+git clone https://github.com/soeguet/teamchat
+```
+2. Navigate to the folder and type 
+```bash
+./gradlew run
+``` 
+in the terminal.
 
 ## License
 
