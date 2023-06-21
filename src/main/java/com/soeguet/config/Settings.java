@@ -1,9 +1,9 @@
 package com.soeguet.config;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.prefs.Preferences;
-import javax.swing.*;
-import org.jetbrains.annotations.NotNull;
+
+import javax.swing.JFrame;
 
 public class Settings {
 
@@ -18,7 +18,6 @@ public class Settings {
     preferences = Preferences.userNodeForPackage(Settings.class);
   }
 
-  @NotNull
   public static Settings getInstance() {
 
     if (instance == null) {
@@ -32,7 +31,7 @@ public class Settings {
     return preferences.getInt("notificationSetting", 0);
   }
 
-  public void setNotificationSetting(@NotNull NotificationSettings notificationSetting) {
+  public void setNotificationSetting(NotificationSettings notificationSetting) {
 
     preferences.putInt("notificationSetting", notificationSetting.ordinal());
   }
@@ -42,7 +41,7 @@ public class Settings {
     return preferences.get("themeSetting", "INTELLIJ");
   }
 
-  public void setThemeSetting(@NotNull ThemeSettings themeSetting) {
+  public void setThemeSetting(ThemeSettings themeSetting) {
 
     preferences.put("themeSetting", themeSetting.toString());
   }
@@ -78,35 +77,32 @@ public class Settings {
     preferences.putInt("mainFrameHeight", mainFrameHeight);
   }
 
-  @NotNull
   public Color getTextColor() {
 
     return new Color(preferences.getInt("textColor", 0));
   }
 
-  public void setTextColor(@NotNull Color color) {
+  public void setTextColor(Color color) {
 
     preferences.putInt("textColor", color.getRGB());
   }
 
-  @NotNull
   public Color getChatColor() {
 
     return new Color(preferences.getInt("chatColor", -2710887));
   }
 
-  public void setChatColor(@NotNull Color color) {
+  public void setChatColor(Color color) {
 
     preferences.putInt("chatColor", color.getRGB());
   }
 
-  @NotNull
   public Color getBorderColor() {
 
     return new Color(preferences.getInt("borderColor", -2710887));
   }
 
-  public void setBorderColor(@NotNull Color color) {
+  public void setBorderColor(Color color) {
 
     preferences.putInt("borderColor", color.getRGB());
   }
@@ -143,10 +139,10 @@ public class Settings {
 
   public String getIp() {
 
-    return preferences.get("ip", "127.0.0.1");
+    return preferences.get("ip", "192.168.178.69");
   }
 
-  public void setIp(@NotNull String ip) {
+  public void setIp(String ip) {
 
     preferences.put("ip", ip);
   }

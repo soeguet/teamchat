@@ -257,7 +257,7 @@ public class WebsocketInteraction implements Serializable {
   }
 
   void connectToWebSocket() {
-    chatImpl.loadingInitialMessagesLoadUpPanel();
+    chatImpl.loadingInitialMessagesLoadUpDialog();
     ChatImpl.client = CustomWebsocketClient.getInstance();
     ChatImpl.client.connect();
     ChatImpl.client.addListener(chatImpl);
