@@ -125,7 +125,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
 
   private EmojiImpl emojiWindow;
 
-  // used avoid overlapping of desktop notifications
+  // used to avoid overlapping of desktop notifications
   private int heightLastPopUp = 30;
   private int visibleDesktopNotificationCount = 0;
 
@@ -584,35 +584,42 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
   }
 
   private boolean keyboardTraversFocusViaArrowKeys(KeyEvent e) {
-    if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-      int nextButtonIndex = Math.min(EMOJI_BUTTON_LIST_FOR_FOCUS.size() - 1, currentEmojiFocus + 10);
-      EMOJI_BUTTON_LIST_FOR_FOCUS.get(nextButtonIndex).requestFocus();
-      currentEmojiFocus = nextButtonIndex;
-      e.consume();
-      return true;
+
+    int nextButtonIndex;
+
+    switch (e.getKeyCode()) {
+
+      case KeyEvent.VK_DOWN:
+        nextButtonIndex = Math.min(EMOJI_BUTTON_LIST_FOR_FOCUS.size() - 1, currentEmojiFocus + 10);
+        EMOJI_BUTTON_LIST_FOR_FOCUS.get(nextButtonIndex).requestFocus();
+        currentEmojiFocus = nextButtonIndex;
+        e.consume();
+        return true;
+
+      case KeyEvent.VK_UP:
+        nextButtonIndex = Math.max(0, currentEmojiFocus - 10);
+        EMOJI_BUTTON_LIST_FOR_FOCUS.get(nextButtonIndex).requestFocus();
+        currentEmojiFocus = nextButtonIndex;
+        e.consume();
+        return true;
+
+      case KeyEvent.VK_RIGHT:
+        nextButtonIndex = Math.min(EMOJI_BUTTON_LIST_FOR_FOCUS.size() - 1, currentEmojiFocus + 1);
+        EMOJI_BUTTON_LIST_FOR_FOCUS.get(nextButtonIndex).requestFocus();
+        currentEmojiFocus = nextButtonIndex;
+        e.consume();
+        return true;
+
+      case KeyEvent.VK_LEFT:
+        nextButtonIndex = Math.max(0, currentEmojiFocus - 1);
+        EMOJI_BUTTON_LIST_FOR_FOCUS.get(nextButtonIndex).requestFocus();
+        currentEmojiFocus = nextButtonIndex;
+        e.consume();
+        return true;
+
+      default:
+        return false;
     }
-    if (e.getKeyCode() == KeyEvent.VK_UP) {
-      int nextButtonIndex = Math.max(0, currentEmojiFocus - 10);
-      EMOJI_BUTTON_LIST_FOR_FOCUS.get(nextButtonIndex).requestFocus();
-      currentEmojiFocus = nextButtonIndex;
-      e.consume();
-      return true;
-    }
-    if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-      int nextButtonIndex = Math.min(EMOJI_BUTTON_LIST_FOR_FOCUS.size() - 1, currentEmojiFocus + 1);
-      EMOJI_BUTTON_LIST_FOR_FOCUS.get(nextButtonIndex).requestFocus();
-      currentEmojiFocus = nextButtonIndex;
-      e.consume();
-      return true;
-    }
-    if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-      int nextButtonIndex = Math.max(0, currentEmojiFocus - 1);
-      EMOJI_BUTTON_LIST_FOR_FOCUS.get(nextButtonIndex).requestFocus();
-      currentEmojiFocus = nextButtonIndex;
-      e.consume();
-      return true;
-    }
-    return false;
   }
 
   @Override
@@ -676,6 +683,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
   @Override
   protected synchronized void sendButton(ActionEvent e) {
 
+    // emergency command -> shuts down all clients
     if (form_textEditorPane.getText().trim().equals("/terminateAll")) {
       client.send("/terminateAll".getBytes());
       form_textEditorPane.setText("");
@@ -695,6 +703,13 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
 
       try {
         client.send(MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(messageModel));
+
+        // close emoji pop up while sending
+        if(emojiSelectionPopUp.isVisible()){
+          emojiWindow.dispose();
+          emojiSelectionPopUp.dispose();
+        }
+
       } catch (WebsocketNotConnectedException ex) {
         WEBSOCKET_INTERACTION.createNewMessageOnPane("can't send message, no connection to server");
       }
@@ -719,35 +734,39 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
   @Override
   protected void textEditorPaneKeyPressed(KeyEvent e) {
 
-    if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
-      return;
-    }
+    switch (e.getKeyCode()) {
 
-    // refresh panel on f5
-    if (e.getKeyCode() == KeyEvent.VK_F5) {
-      e.consume();
-      updateFrame();
-      return;
-    }
+      case KeyEvent.VK_BACK_SPACE:
+        return;        
 
-    if (!e.isShiftDown() && e.getKeyCode() == KeyEvent.VK_ENTER) {
-      sendButton(null);
-      e.consume();
-      return;
-    } else if (e.isShiftDown() && e.getKeyCode() == KeyEvent.VK_ENTER) {
-      form_textEditorPane.setText(form_textEditorPane.getText() + "\n");
-      e.consume();
-      return;
-    }
+      // refresh on F5
+      case KeyEvent.VK_F5:
+        e.consume();
+        updateFrame();
+        return;  
+    
+      case KeyEvent.VK_ENTER:
+        if (!e.isShiftDown()) {
+          sendButton(null);
+        }else{
+          form_textEditorPane.setText(form_textEditorPane.getText() + "\n");
+        }
+        e.consume();
+        return;
 
-    // hashtag button
-    if (e.getKeyCode() == 520) {
-      SwingUtilities.invokeLater(
+      //TODO test this: Hashtag on ISO DE Keyboard 
+      case 520:
+        SwingUtilities.invokeLater(
           () -> form_textEditorPane.setText(StringUtils.chop(form_textEditorPane.getText())));
-      e.consume();
-      emojiButton(null);
+        e.consume();
+        emojiButton(null);
+        break;
+
+      default:
+        break;
     }
 
+    // is typing.. indicator
     try {
       assert client != null;
       client.send("write".getBytes());
@@ -760,7 +779,8 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
   @Override
   protected void emojiButton(ActionEvent e) {
 
-    if (e != null && e.getModifiers() == 26) {
+    // emergency exit -> shift and emoji button click
+    if (e != null && (e.getModifiers() == 26 || e.getModifiers() == 17)) {
       System.exit(0);
     }
 
@@ -796,7 +816,6 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
     }
   }
 
-  @SneakyThrows
   @Override
   protected void pictureButtonMouseClicked(MouseEvent e) {
     System.setProperty("sun.awt.datatransfer.Logging", "false");
@@ -810,10 +829,12 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
       image = (BufferedImage) clipboard.getData(DataFlavor.imageFlavor);
       imageIcon = new ImageIcon(image);
       textField.setText("clipboard");
-    } catch (UnsupportedFlavorException | NullPointerException ex) {
+    } catch (UnsupportedFlavorException | NullPointerException | IOException ex) {
       textField.setText("");
     }
+
     displayFakePictureLabel = new JLabel();
+    
     if (imageIcon != null) {
 
       if (imageIcon.getIconWidth() > 401) {
