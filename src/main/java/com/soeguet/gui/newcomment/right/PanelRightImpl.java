@@ -248,7 +248,7 @@ public class PanelRightImpl extends PanelRight implements Comment {
                                             likeModel.setTime(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
 
                                             try {
-                                                client.send(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(likeModel));
+                                                client.send(MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(likeModel));
                                             } catch (JsonProcessingException ex) {
                                                 throw new RuntimeException(ex);
                                             }
@@ -302,7 +302,7 @@ public class PanelRightImpl extends PanelRight implements Comment {
                                             messageModel.getQuotedMessageText());
 
                                     try {
-                                        client.send(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(likeModel));
+                                        client.send(MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(likeModel));
                                     } catch (JsonProcessingException ex) {
                                         throw new RuntimeException(ex);
                                     }
@@ -514,7 +514,7 @@ public class PanelRightImpl extends PanelRight implements Comment {
                 modelDelete.setTime(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
 
                 try {
-                    client.send(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(modelDelete));
+                    client.send(MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(modelDelete));
                 } catch (JsonProcessingException ex) {
                     throw new RuntimeException(ex);
                 }

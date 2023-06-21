@@ -55,66 +55,85 @@ import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/*
+ * sets up the GUI
+ * interacts with the websocket (client side) via WebSocketListener
+ */
 @Slf4j
 public class ChatImpl extends ChatPanel implements WebSocketListener {
 
+  public static final ObjectMapper MAPPER = new ObjectMapper();
+
+  private final Settings SETTTINGS;
+  private final WebsocketInteraction WEBSOCKET_INTERACTION;
+  private final JProgressBar FORM_PROGRESSBAR = new JProgressBar(0, 100);
+  private final List<JButton> EMOJI_BUTTON_LIST_FOR_FOCUS = new ArrayList<>();
+  private final ClassLoader CLASS_LOADER = getClass().getClassLoader();
+
+  // extracts preset local ips from ips.txt in resources/conf/
   public static HashMap<String, String> mapOfIps;
 
   // needed for converting text to emojis
-  public static List<String> emojiListFull = new ArrayList<>();
-  public static CustomWebsocketClient client = null;
-  public static ObjectMapper mapper;
-  private final Settings settings;
-  private final WebsocketInteraction websocketInteraction;
-  private final JProgressBar form_progressBar = new JProgressBar(0, 100);
-  private final List<JButton> emojiButtonListForFocus = new ArrayList<>();
-  private final ClassLoader classLoader = getClass().getClassLoader();
+  public static CustomWebsocketClient client;
+  
+  //TODO needs to be extracted -> used for connected Clients
   private String[] participantNameArray;
   private JTextPane participantTextArea;
-  private EmojiImpl emojiWindow;
   private JFrame participantsFrame;
+  
+  private EmojiImpl emojiWindow;
+
+  // used avoid overlapping of desktop notifications
   private int heightLastPopUp = 30;
   private int visibleDesktopNotificationCount = 0;
+
   private int currentEmojiFocus = 0;
-  // first 100 messages from server should not be sending pop-ups while initial && loading screen
+
+  // first 100 messages from server should not be sending pop-ups while initial &&
+  // loading screen
   private boolean startup = true;
 
-  private PropertiesImpl propertiesFrame;
-  private JDialog initialLoadingPanel;
+  private PropertiesImpl settingsWindow;
+  private JDialog initialLoadingStartUpDialog;
 
+  // utility variables for the main chat panel (avoid duplicate printing of name or timestamp)
   private String lastMessageFrom = "";
   private String lastPostTime = "";
+
+  //TODO extraction -> progressbar
+  private JLabel loadingMessageLabelOnStartUp;
   private int progressBarLiveValue;
   private int progressbarMaxValue = 1;
-  private JLabel loadingMessageLabel;
 
-  private JDialog emojiDialog;
-  private JLabel displayFakeLabel;
+  private JDialog emojiSelectionPopUp;
+
+  //for the time being we need this label to display the selected and ready to send picture in picture panel
+  private JLabel displayFakePictureLabel;
 
   public ChatImpl() {
-    mapper = new ObjectMapper();
-    settings = Settings.getInstance();
-    websocketInteraction = new WebsocketInteraction(this);
+    
+    SETTTINGS = Settings.getInstance();
+    WEBSOCKET_INTERACTION = new WebsocketInteraction(this);
 
     initIpAddressesAsLocalClients();
     emojiListInit();
-    websocketInteraction.connectToWebSocket();
+    WEBSOCKET_INTERACTION.connectToWebSocket();
     manualInit();
   }
 
   private void connectToServerTimer() {
-    Timer connectionTimer =
-        new Timer(
-            5_000,
-            e -> {
-              if (!client.isOpen()) {
-                initialLoadingPanel.dispose();
-                JOptionPane.showMessageDialog(this, "Connection failed! Server seems down!");
-              }
-            });
+    Timer connectionTimer = new Timer(
+        5_000,
+        e -> {
+          if (!client.isOpen()) {
+            initialLoadingStartUpDialog.dispose();
+            JOptionPane.showMessageDialog(this, "Connection failed! Server seems down!");
+          }
+        });
     connectionTimer.setRepeats(false);
 
-    if (!client.isOpen()) connectionTimer.start();
+    if (!client.isOpen())
+      connectionTimer.start();
   }
 
   private void initIpAddressesAsLocalClients() {
@@ -143,13 +162,12 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
         }
 
       } else {
-        s =
-            new String(
-                Files.readAllBytes(Paths.get("src/main/resources/conf/ips.txt")),
-                StandardCharsets.UTF_8);
+        s = new String(
+            Files.readAllBytes(Paths.get("src/main/resources/conf/ips.txt")),
+            StandardCharsets.UTF_8);
       }
 
-      ClientsList clientsList = mapper.readValue(s, ClientsList.class);
+      ClientsList clientsList = MAPPER.readValue(s, ClientsList.class);
       mapOfIps = new HashMap<>();
       clientsList
           .getClientsList()
@@ -163,12 +181,12 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
 
     loadLogoIconForTitleBarAndSystemTray();
 
-    settings.setMainJFrame(this);
+    SETTTINGS.setMainJFrame(this);
 
     // JFrame options
     setSize(
-        (settings.getMainFrameWidth() < 500 ? 650 : settings.getMainFrameWidth()),
-        (settings.getMainFrameHeight() < 500 ? 650 : settings.getMainFrameHeight()));
+        (SETTTINGS.getMainFrameWidth() < 500 ? 650 : SETTTINGS.getMainFrameWidth()),
+        (SETTTINGS.getMainFrameHeight() < 500 ? 650 : SETTTINGS.getMainFrameHeight()));
     setLocationRelativeTo(null);
     setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     setTitle("Team-Chat");
@@ -186,9 +204,9 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
   }
 
   private void loadLogoIconForTitleBarAndSystemTray() {
-    if (Objects.requireNonNull(classLoader.getResource("icon.png")).toString().contains("jar")) {
+    if (Objects.requireNonNull(CLASS_LOADER.getResource("icon.png")).toString().contains("jar")) {
 
-      setIconImage(Toolkit.getDefaultToolkit().getImage(classLoader.getResource("icon.png")));
+      setIconImage(Toolkit.getDefaultToolkit().getImage(CLASS_LOADER.getResource("icon.png")));
     }
     // if built from IDE
     else {
@@ -199,7 +217,8 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
   public void setProgressbarMaxValueInitialMessageLoadUp(int progressbarMaxValue) {
 
     if (progressbarMaxValue == 0) {
-      // max is 100, if anything goes wrong @backend. if 0, the loading screen will disappear
+      // max is 100, if anything goes wrong @backend. if 0, the loading screen will
+      // disappear
       // immediately anyway
       this.progressbarMaxValue = 100;
       return;
@@ -221,7 +240,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
       }
 
       progressBarLiveValue++;
-      form_progressBar.setValue((progressBarLiveValue) * 100 / progressbarMaxValue);
+      FORM_PROGRESSBAR.setValue((progressBarLiveValue) * 100 / progressbarMaxValue);
 
       try {
         Thread.sleep(25);
@@ -229,11 +248,11 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
         throw new RuntimeException(e);
       }
 
-      if (loadingMessageLabel == null) {
-        loadingMessageLabel = new JLabel();
+      if (loadingMessageLabelOnStartUp == null) {
+        loadingMessageLabelOnStartUp = new JLabel();
       }
 
-      loadingMessageLabel.setText(
+      loadingMessageLabelOnStartUp.setText(
           "loading - "
               + progressBarLiveValue
               + " of "
@@ -243,12 +262,12 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
               + " secs");
     }
 
-    websocketInteraction.onMessageReceived(message);
+    WEBSOCKET_INTERACTION.onMessageReceived(message);
   }
 
   @Override
   public void onByteBufferMessageReceived(@NotNull ByteBuffer bytes) {
-    websocketInteraction.onByteBufferMessageReceived(bytes);
+    WEBSOCKET_INTERACTION.onByteBufferMessageReceived(bytes);
   }
 
   @Override
@@ -270,42 +289,43 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
 
   protected void loadingInitialMessagesLoadUpPanel() {
 
-    if (initialLoadingPanel != null && initialLoadingPanel.isVisible()) return;
+    if (initialLoadingStartUpDialog != null && initialLoadingStartUpDialog.isVisible())
+      return;
 
     SwingUtilities.invokeLater(
         () -> {
-          initialLoadingPanel = new JDialog();
-          initialLoadingPanel.setModal(true);
-          initialLoadingPanel.setDefaultCloseOperation(HIDE_ON_CLOSE);
-          initialLoadingPanel.setLayout(
+          initialLoadingStartUpDialog = new JDialog();
+          initialLoadingStartUpDialog.setModal(true);
+          initialLoadingStartUpDialog.setDefaultCloseOperation(HIDE_ON_CLOSE);
+          initialLoadingStartUpDialog.setLayout(
               new MigLayout("alignx center, wrap 1", "[center]", "[grow,fill, center]"));
-          initialLoadingPanel.add(
+          initialLoadingStartUpDialog.add(
               new JLabel(
                   "trying to connect to server -- ip: "
-                      + settings.getIp()
+                      + SETTTINGS.getIp()
                       + " -- "
                       + "port: "
-                      + settings.getPort(),
+                      + SETTTINGS.getPort(),
                   SwingConstants.CENTER));
-          initialLoadingPanel.add(
+          initialLoadingStartUpDialog.add(
               new JLabel("¯\\_(ツ)_/¯   loading messages.. please wait..", SwingConstants.CENTER));
-          loadingMessageLabel = new JLabel();
-          loadingMessageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-          loadingMessageLabel.setText("loading..");
+          loadingMessageLabelOnStartUp = new JLabel();
+          loadingMessageLabelOnStartUp.setHorizontalAlignment(SwingConstants.CENTER);
+          loadingMessageLabelOnStartUp.setText("loading..");
 
-          initialLoadingPanel.add(loadingMessageLabel);
+          initialLoadingStartUpDialog.add(loadingMessageLabelOnStartUp);
 
           JPanel progressBarPanel = new JPanel();
-          progressBarPanel.add(form_progressBar);
+          progressBarPanel.add(FORM_PROGRESSBAR);
 
-          initialLoadingPanel.add(progressBarPanel);
+          initialLoadingStartUpDialog.add(progressBarPanel);
 
-          initialLoadingPanel.pack();
-          initialLoadingPanel.setSize(
-              initialLoadingPanel.getWidth() + 150, initialLoadingPanel.getHeight() + 150);
-          initialLoadingPanel.setLocationRelativeTo(this);
-          initialLoadingPanel.setAlwaysOnTop(true);
-          initialLoadingPanel.setVisible(true);
+          initialLoadingStartUpDialog.pack();
+          initialLoadingStartUpDialog.setSize(
+              initialLoadingStartUpDialog.getWidth() + 150, initialLoadingStartUpDialog.getHeight() + 150);
+          initialLoadingStartUpDialog.setLocationRelativeTo(this);
+          initialLoadingStartUpDialog.setAlwaysOnTop(true);
+          initialLoadingStartUpDialog.setVisible(true);
         });
   }
 
@@ -334,7 +354,8 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
     if (!this.isFocused() && !startup) {
       SwingUtilities.invokeLater(
           () -> {
-            // reusing the same dialog is not an option, it up to the garbage collector I guess
+            // reusing the same dialog is not an option, it up to the garbage collector I
+            // guess
             JDialog popUpDialog = new JDialog();
 
             addMouseClickAdapterToPanel(popUpDialog);
@@ -363,28 +384,26 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
             popUpDialog.pack();
             popUpDialog.setVisible(true);
 
-            Timer timerBorder =
-                new Timer(
-                    1000,
-                    e -> {
-                      popUpDialog.getRootPane().setBorder(new LineBorder(Color.BLUE, 2));
+            Timer timerBorder = new Timer(
+                1000,
+                e -> {
+                  popUpDialog.getRootPane().setBorder(new LineBorder(Color.BLUE, 2));
 
-                      popUpDialog.pack();
-                    });
+                  popUpDialog.pack();
+                });
             timerBorder.setRepeats(false);
             timerBorder.start();
 
-            Timer timer =
-                new Timer(
-                    settings.getMessageDuration() * 1000,
-                    e -> {
-                      popUpDialog.dispose();
-                      visibleDesktopNotificationCount--;
+            Timer timer = new Timer(
+                SETTTINGS.getMessageDuration() * 1000,
+                e -> {
+                  popUpDialog.dispose();
+                  visibleDesktopNotificationCount--;
 
-                      if (visibleDesktopNotificationCount == 0) {
-                        heightLastPopUp = 30;
-                      }
-                    });
+                  if (visibleDesktopNotificationCount == 0) {
+                    heightLastPopUp = 30;
+                  }
+                });
             timer.setRepeats(false);
             timer.start();
 
@@ -404,7 +423,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
     // search for all resources in the "emoji" folder
     Enumeration<URL> resources;
     try {
-      resources = classLoader.getResources("emojis/");
+      resources = CLASS_LOADER.getResources("emojis/");
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -427,7 +446,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
 
               if (entryName.startsWith("emojis/") && entryName.endsWith(".png")) {
 
-                try (InputStream inputStream = classLoader.getResourceAsStream(entryName)) {
+                try (InputStream inputStream = CLASS_LOADER.getResourceAsStream(entryName)) {
 
                   assert inputStream != null;
                   BufferedImage bufferedImage = ImageIO.read(inputStream);
@@ -450,7 +469,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
               populateDialogWithEmojiButton(file, null, null);
             }
           }
-          emojiDialog.pack();
+          emojiSelectionPopUp.pack();
         }
       }
     }
@@ -509,41 +528,42 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
         new KeyAdapter() {
           @Override
           public void keyPressed(@NotNull KeyEvent e) {
-            if (keyboardTraversFocusViaArrowKeys(e)) return;
+            if (keyboardTraversFocusViaArrowKeys(e))
+              return;
 
             emojiFrameKeyPressed(e, icon);
           }
         });
 
-    emojiDialog.add(jButton);
-    emojiButtonListForFocus.add(jButton);
+    emojiSelectionPopUp.add(jButton);
+    EMOJI_BUTTON_LIST_FOR_FOCUS.add(jButton);
   }
 
   private boolean keyboardTraversFocusViaArrowKeys(@NotNull KeyEvent e) {
     if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-      int nextButtonIndex = Math.min(emojiButtonListForFocus.size() - 1, currentEmojiFocus + 10);
-      emojiButtonListForFocus.get(nextButtonIndex).requestFocus();
+      int nextButtonIndex = Math.min(EMOJI_BUTTON_LIST_FOR_FOCUS.size() - 1, currentEmojiFocus + 10);
+      EMOJI_BUTTON_LIST_FOR_FOCUS.get(nextButtonIndex).requestFocus();
       currentEmojiFocus = nextButtonIndex;
       e.consume();
       return true;
     }
     if (e.getKeyCode() == KeyEvent.VK_UP) {
       int nextButtonIndex = Math.max(0, currentEmojiFocus - 10);
-      emojiButtonListForFocus.get(nextButtonIndex).requestFocus();
+      EMOJI_BUTTON_LIST_FOR_FOCUS.get(nextButtonIndex).requestFocus();
       currentEmojiFocus = nextButtonIndex;
       e.consume();
       return true;
     }
     if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-      int nextButtonIndex = Math.min(emojiButtonListForFocus.size() - 1, currentEmojiFocus + 1);
-      emojiButtonListForFocus.get(nextButtonIndex).requestFocus();
+      int nextButtonIndex = Math.min(EMOJI_BUTTON_LIST_FOR_FOCUS.size() - 1, currentEmojiFocus + 1);
+      EMOJI_BUTTON_LIST_FOR_FOCUS.get(nextButtonIndex).requestFocus();
       currentEmojiFocus = nextButtonIndex;
       e.consume();
       return true;
     }
     if (e.getKeyCode() == KeyEvent.VK_LEFT) {
       int nextButtonIndex = Math.max(0, currentEmojiFocus - 1);
-      emojiButtonListForFocus.get(nextButtonIndex).requestFocus();
+      EMOJI_BUTTON_LIST_FOR_FOCUS.get(nextButtonIndex).requestFocus();
       currentEmojiFocus = nextButtonIndex;
       e.consume();
       return true;
@@ -558,8 +578,8 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
 
   @Override
   protected void thisComponentResized(ComponentEvent e) {
-    settings.setMainFrameWidth(getWidth());
-    settings.setMainFrameHeight(getHeight());
+    SETTTINGS.setMainFrameWidth(getWidth());
+    SETTTINGS.setMainFrameHeight(getHeight());
     updateFrame();
   }
 
@@ -580,18 +600,19 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
   }
 
   @Override
-  protected void textEditorPaneKeyReleased(KeyEvent e) {}
+  protected void textEditorPaneKeyReleased(KeyEvent e) {
+  }
 
   @Override
   protected void propertiesMenuItemMousePressed(@NotNull MouseEvent e) {
 
     e.consume();
-    if (propertiesFrame == null || !propertiesFrame.isVisible()) {
-      propertiesFrame = new PropertiesImpl();
-      propertiesFrame.setDefaultCloseOperation(HIDE_ON_CLOSE);
-      propertiesFrame.pack();
-      propertiesFrame.setLocationRelativeTo(null);
-      propertiesFrame.setVisible(true);
+    if (settingsWindow == null || !settingsWindow.isVisible()) {
+      settingsWindow = new PropertiesImpl();
+      settingsWindow.setDefaultCloseOperation(HIDE_ON_CLOSE);
+      settingsWindow.pack();
+      settingsWindow.setLocationRelativeTo(null);
+      settingsWindow.setVisible(true);
     }
   }
 
@@ -605,7 +626,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
     startup = true;
     lastMessageFrom = "";
     lastPostTime = "";
-    websocketInteraction.onCloseReconnect();
+    WEBSOCKET_INTERACTION.onCloseReconnect();
   }
 
   @Override
@@ -619,10 +640,9 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
 
     try {
 
-      MessageModel messageModel =
-          new MessageModel(
-              mapOfIps.get(client.getLocalSocketAddress().getHostString()),
-              EmojiConverter.checkTextForEmojis(form_textEditorPane));
+      MessageModel messageModel = new MessageModel(
+          mapOfIps.get(client.getLocalSocketAddress().getHostString()),
+          EmojiConverter.checkTextForEmojis(form_textEditorPane));
 
       if (messageModel.getMessage().trim().isEmpty()) {
         form_textEditorPane.setText("");
@@ -630,9 +650,9 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
       }
 
       try {
-        client.send(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(messageModel));
+        client.send(MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(messageModel));
       } catch (WebsocketNotConnectedException ex) {
-        websocketInteraction.createNewMessageOnPane("can't send message, no connection to server");
+        WEBSOCKET_INTERACTION.createNewMessageOnPane("can't send message, no connection to server");
       }
 
       form_textEditorPane.setText("");
@@ -688,7 +708,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
       assert client != null;
       client.send("write".getBytes());
     } catch (WebsocketNotConnectedException ex) {
-      websocketInteraction.createNewMessageOnPane(
+      WEBSOCKET_INTERACTION.createNewMessageOnPane(
           "no connection to server, try to reconnect -> file > reset reconnect");
     }
   }
@@ -700,18 +720,18 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
       System.exit(0);
     }
 
-    if (emojiDialog != null && emojiDialog.isVisible()) {
-      SwingUtilities.invokeLater(() -> emojiDialog.dispose());
+    if (emojiSelectionPopUp != null && emojiSelectionPopUp.isVisible()) {
+      SwingUtilities.invokeLater(() -> emojiSelectionPopUp.dispose());
     } else {
-      if (emojiDialog == null) {
-        emojiDialog = new JDialog();
-        emojiDialog.setLayout(new GridLayout(0, 10));
+      if (emojiSelectionPopUp == null) {
+        emojiSelectionPopUp = new JDialog();
+        emojiSelectionPopUp.setLayout(new GridLayout(0, 10));
         initEmojiFrame();
       }
 
-      emojiDialog.pack();
-      emojiDialog.setLocationRelativeTo(this);
-      emojiDialog.setVisible(true);
+      emojiSelectionPopUp.pack();
+      emojiSelectionPopUp.setLocationRelativeTo(this);
+      emojiSelectionPopUp.setVisible(true);
     }
   }
 
@@ -727,7 +747,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
     }
 
     if (e.getExtendedKeyCode() == KeyEvent.VK_ESCAPE) {
-      emojiDialog.dispose();
+      emojiSelectionPopUp.dispose();
       form_textEditorPane.requestFocusInWindow();
     }
   }
@@ -749,7 +769,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
     } catch (UnsupportedFlavorException | NullPointerException ex) {
       textField.setText("");
     }
-    displayFakeLabel = new JLabel();
+    displayFakePictureLabel = new JLabel();
     if (imageIcon != null) {
 
       if (imageIcon.getIconWidth() > 401) {
@@ -760,9 +780,9 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
         int newHeight = (int) (image.getHeight() * scaleFactor);
         Image scaledImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
         ImageIcon fakeIcon = new ImageIcon(scaledImage);
-        displayFakeLabel = new JLabel(fakeIcon);
+        displayFakePictureLabel = new JLabel(fakeIcon);
       } else {
-        displayFakeLabel = new JLabel(imageIcon);
+        displayFakePictureLabel = new JLabel(imageIcon);
       }
     }
 
@@ -774,7 +794,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
     pictureDialog.setSize(600, 600);
     pictureDialog.setLayout(new MigLayout("", "[grow,fill][fill]", "[grow,fill][fill]"));
 
-    pictureDialog.add(displayFakeLabel, "span 2 0, wrap, center");
+    pictureDialog.add(displayFakePictureLabel, "span 2 0, wrap, center");
 
     pictureDialog.add(textField);
     JButton addPictureButton = new JButton("add picture");
@@ -786,19 +806,17 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
           public void mouseClicked(MouseEvent e) {
 
             JFileChooser fileChooser = new JFileChooser();
-            FileNameExtensionFilter fileNameExtensionFilter =
-                new FileNameExtensionFilter("pictures", "png", "jpg");
+            FileNameExtensionFilter fileNameExtensionFilter = new FileNameExtensionFilter("pictures", "png", "jpg");
             fileChooser.setFileFilter(fileNameExtensionFilter);
             int returnVal = fileChooser.showOpenDialog(null);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
 
               textField.setText(fileChooser.getSelectedFile().getAbsolutePath());
-              displayFakeLabel.removeAll();
+              displayFakePictureLabel.removeAll();
 
               BufferedImage bufferedImage;
               try {
-                bufferedImage =
-                    ImageIO.read(new File(fileChooser.getSelectedFile().getAbsolutePath()));
+                bufferedImage = ImageIO.read(new File(fileChooser.getSelectedFile().getAbsolutePath()));
               } catch (IOException ex) {
                 throw new RuntimeException(ex);
               }
@@ -812,8 +830,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
                   double scaleFactor = (double) maxWidth / bufferedImage.getWidth();
                   int newWidth = (int) (bufferedImage.getWidth() * scaleFactor);
                   int newHeight = (int) (bufferedImage.getHeight() * scaleFactor);
-                  Image scaledImage =
-                      bufferedImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+                  Image scaledImage = bufferedImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
 
                   imageIcon = new ImageIcon(scaledImage);
                 } else {
@@ -821,7 +838,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
                 }
               }
 
-              displayFakeLabel.setIcon(imageIcon);
+              displayFakePictureLabel.setIcon(imageIcon);
               label.setIcon(new ImageIcon(fileChooser.getSelectedFile().getAbsolutePath()));
 
               pictureDialog.pack();
@@ -838,11 +855,10 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
           public void mouseClicked(MouseEvent e) {
 
             Icon labelIcon = label.getIcon();
-            BufferedImage image =
-                new BufferedImage(
-                    labelIcon.getIconWidth(),
-                    labelIcon.getIconHeight(),
-                    BufferedImage.TYPE_INT_ARGB);
+            BufferedImage image = new BufferedImage(
+                labelIcon.getIconWidth(),
+                labelIcon.getIconHeight(),
+                BufferedImage.TYPE_INT_ARGB);
             Graphics g = image.createGraphics();
             labelIcon.paintIcon(null, g, 0, 0);
             g.dispose();
@@ -967,7 +983,8 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
   }
 
   @Override
-  protected void thisMouseClicked(MouseEvent e) {}
+  protected void thisMouseClicked(MouseEvent e) {
+  }
 
   public JPanel getForm_mainTextPanel() {
     return form_mainTextPanel;
@@ -1009,7 +1026,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
     this.participantNameArray = participantNameArray;
   }
 
-  public JDialog getInitialLoadingPanel() {
-    return initialLoadingPanel;
+  public JDialog getInitialLoadingStartUpDialog() {
+    return initialLoadingStartUpDialog;
   }
 }

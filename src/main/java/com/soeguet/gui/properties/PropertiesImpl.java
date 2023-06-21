@@ -1,7 +1,7 @@
 package com.soeguet.gui.properties;
 
 import static com.soeguet.gui.ChatImpl.mapOfIps;
-import static com.soeguet.gui.ChatImpl.mapper;
+import static com.soeguet.gui.ChatImpl.MAPPER;
 
 import com.soeguet.Main;
 import com.soeguet.config.Settings;
@@ -61,7 +61,7 @@ public class PropertiesImpl extends PropertiesFrame {
     }
 
     try {
-      String s = mapper.writerFor(ClientsList.class).writeValueAsString(clientsList);
+      String s = MAPPER.writerFor(ClientsList.class).writeValueAsString(clientsList);
 
       File file;
 

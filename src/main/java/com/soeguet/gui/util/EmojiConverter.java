@@ -1,14 +1,14 @@
 package com.soeguet.gui.util;
 
-import static com.soeguet.gui.ChatImpl.emojiListFull;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -21,7 +21,9 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import org.jetbrains.annotations.NotNull;
 
-public class EmojiConverter {
+public class EmojiConverter{
+
+  static List<String> emojiListFull = new ArrayList<>();
 
   public static void replaceWithEmoji(@NotNull JTextPane textPaneComment, String message) {
 
@@ -54,7 +56,7 @@ public class EmojiConverter {
             textPaneComment
                 .getText()
                 .indexOf(
-                    emoji, offset); // search for the code with the corresponding emoji character
+                    emoji, offset);
 
         if (offset != -1) {
 

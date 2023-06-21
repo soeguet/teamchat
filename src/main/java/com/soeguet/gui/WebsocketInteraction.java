@@ -133,7 +133,7 @@ public class WebsocketInteraction implements Serializable {
     SwingUtilities.invokeLater(
         () -> {
           try {
-            MessageModel messageModel = ChatImpl.mapper.readValue(message, MessageModel.class);
+            MessageModel messageModel = ChatImpl.MAPPER.readValue(message, MessageModel.class);
 
             if (chatImpl.isStartup() && messageModel.getMessageType() == MessageTypes.DELETED) {
 
@@ -245,7 +245,7 @@ public class WebsocketInteraction implements Serializable {
 
             // initial 100 messages should not be sending pop-ups, after that -> ok
             chatImpl.setStartup(false);
-            chatImpl.getInitialLoadingPanel().dispose();
+            chatImpl.getInitialLoadingStartUpDialog().dispose();
 
           } catch (NullPointerException e) {
 
