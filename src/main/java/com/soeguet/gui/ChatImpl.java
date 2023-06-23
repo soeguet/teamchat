@@ -705,7 +705,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
         client.send(MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(messageModel));
 
         // close emoji pop up while sending
-        if(emojiSelectionPopUp.isVisible()){
+        if(emojiSelectionPopUp != null && emojiSelectionPopUp.isVisible()){
           emojiWindow.dispose();
           emojiSelectionPopUp.dispose();
         }
@@ -737,14 +737,14 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
     switch (e.getKeyCode()) {
 
       case KeyEvent.VK_BACK_SPACE:
-        return;        
+        return;
 
       // refresh on F5
       case KeyEvent.VK_F5:
         e.consume();
         updateFrame();
-        return;  
-    
+        return;
+
       case KeyEvent.VK_ENTER:
         if (!e.isShiftDown()) {
           sendButton(null);
@@ -754,7 +754,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
         e.consume();
         return;
 
-      //TODO test this: Hashtag on ISO DE Keyboard 
+      //TODO test this: Hashtag on ISO DE Keyboard
       case 520:
         SwingUtilities.invokeLater(
           () -> form_textEditorPane.setText(StringUtils.chop(form_textEditorPane.getText())));
@@ -834,7 +834,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
     }
 
     displayFakePictureLabel = new JLabel();
-    
+
     if (imageIcon != null) {
 
       if (imageIcon.getIconWidth() > 401) {
