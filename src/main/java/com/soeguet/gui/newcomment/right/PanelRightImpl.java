@@ -455,81 +455,92 @@ public class PanelRightImpl extends PanelRight implements Comment {
 
     @Override
     protected void replyButtonClicked(@NotNull MouseEvent e) {
-        e.consume();
+//        e.consume();
 
-        jDialog = new JDialog();
-        jDialog.setModal(true);
-        jDialog.setTitle("options");
-        jDialog.setLayout(new MigLayout(
-                "fillx",
-                // columns
-                "[grow,fill]",
-                // rows
-                "[grow,fill]"));
+//        jDialog = new JDialog();
+//        jDialog.setModal(true);
+//        jDialog.setTitle("options");
+//        jDialog.setLayout(new MigLayout(
+//                "fillx",
+//                // columns
+//                "[grow,fill]",
+//                // rows
+//                "[grow,fill]"));
+//
+//
+//        jDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+//
+//
+//        JButton replyButton = new JButton("reply");
+//        replyButton.addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseClicked(MouseEvent e) {
+//                jDialog.dispose();
+//                ReplyImpl replyDialog = new ReplyImpl(messageModel);
+//                replyDialog.setVisible(true);
+//            }
+//        });
+//
+//        jDialog.add(replyButton, "wrap");
+//
+//
+//        JButton editButton = new JButton("edit");
+//        editButton.addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseClicked(MouseEvent e) {
+//
+//                SwingUtilities.invokeLater(() -> {
+//
+//                    jDialog.dispose();
+//
+//                    EditImpl reply = new EditImpl(messageModel);
+//                    reply.setVisible(true);
+//                });
+//            }
+//        });
+//        jDialog.add(editButton, "wrap");
+//
+//
+//        JButton deleteButton = new JButton("delete");
+//        deleteButton.addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseClicked(MouseEvent e) {
+//                jDialog.dispose();
+//
+//                MessageModel modelDelete = new MessageModel();
+//                modelDelete.setSender(messageModel.getSender());
+//                modelDelete.setId(messageModel.getId());
+//                modelDelete.setMessageType(MessageTypes.DELETED);
+//                modelDelete.setMessage("deleted by user");
+//                modelDelete.setTime(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
+//
+//                try {
+//                    client.send(MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(modelDelete));
+//                } catch (JsonProcessingException ex) {
+//                    throw new RuntimeException(ex);
+//                }
+//
+//                removeAll();
+//                add(new JLabel("deleted comment"));
+//                SwingUtilities.invokeLater(() -> revalidate());
+//            }
+//        });
+//
+//        jDialog.add(deleteButton, "wrap");
+//
+//        jDialog.pack();
+//        jDialog.setLocation(e.getLocationOnScreen().x + 20, e.getLocationOnScreen().y);
+//        jDialog.setVisible(true);
 
-
-        jDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-
-        JButton replyButton = new JButton("reply");
-        replyButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                jDialog.dispose();
-                ReplyImpl replyDialog = new ReplyImpl(messageModel);
-                replyDialog.setVisible(true);
-            }
-        });
-
-        jDialog.add(replyButton, "wrap");
-
-
-        JButton editButton = new JButton("edit");
-        editButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-
-                SwingUtilities.invokeLater(() -> {
-
-                    jDialog.dispose();
-
-                    EditImpl reply = new EditImpl(messageModel);
-                    reply.setVisible(true);
-                });
-            }
-        });
-        jDialog.add(editButton, "wrap");
-
-
-        JButton deleteButton = new JButton("delete");
-        deleteButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                jDialog.dispose();
-
-                MessageModel modelDelete = new MessageModel();
-                modelDelete.setSender(messageModel.getSender());
-                modelDelete.setId(messageModel.getId());
-                modelDelete.setMessageType(MessageTypes.DELETED);
-                modelDelete.setMessage("deleted by user");
-                modelDelete.setTime(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
-
-                try {
-                    client.send(MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(modelDelete));
-                } catch (JsonProcessingException ex) {
-                    throw new RuntimeException(ex);
-                }
-
-                removeAll();
-                add(new JLabel("deleted comment"));
-                SwingUtilities.invokeLater(() -> revalidate());
-            }
-        });
-
-        jDialog.add(deleteButton, "wrap");
-
-        jDialog.pack();
-        jDialog.setLocation(e.getLocationOnScreen().x + 20, e.getLocationOnScreen().y);
-        jDialog.setVisible(true);
+        JPopupMenu popupMenu = new JPopupMenu();
+        JMenuItem reply = new JMenuItem("reply");
+//        reply.addMenuKeyListener();
+        JMenuItem edit = new JMenuItem("edit");
+        JMenuItem delete = new JMenuItem("delete");
+        popupMenu.add(reply);
+        popupMenu.add(edit);
+        popupMenu.add(delete);
+        popupMenu.show(e.getComponent(), e.getX(), e.getY());
     }
 
 
