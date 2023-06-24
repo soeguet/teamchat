@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class EmojiConverter{
 
-  static List<String> emojiListFull = new ArrayList<>();
+  public static List<String> emojiListFull = new ArrayList<>();
 
   public static void replaceWithEmoji(@NotNull JTextPane textPaneComment, String message) {
 

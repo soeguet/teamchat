@@ -1,7 +1,7 @@
 package com.soeguet.gui.newcomment.right;
 
 import static com.soeguet.gui.ChatImpl.*;
-import static com.soeguet.gui.util.EmojiConverter.replaceWithEmoji;
+import static com.soeguet.gui.util.EmojiConverter.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.soeguet.config.Settings;
@@ -34,12 +34,13 @@ import java.util.jar.JarFile;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class PanelRightImpl extends PanelRight implements Comment {
 
+  Logger logger = org.slf4j.LoggerFactory.getLogger(PanelRightImpl.class);
   private final MessageModel messageModel;
   private final Long id;
   private JDialog jDialog;
@@ -427,57 +428,73 @@ public class PanelRightImpl extends PanelRight implements Comment {
     form_actionLabel.setForeground(new Color(93, 93, 93, 255));
   }
 
+  private JPopupMenu likePopup;
+
   @Override
   protected void actionLabelMouseClicked(@NotNull MouseEvent e) {
 
-    e.consume();
-    jDialog = new JDialog();
-    jDialog.setModal(true);
-    jDialog.setTitle("options");
-    jDialog.setLayout(
-        new MigLayout(
-            "fillx",
-            // columns
-            "[grow,fill]",
-            // rows
-            "[grow,fill]"));
+    if (likePopup == null) {
 
-    jDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+      likePopup = new JPopupMenu();
+      likePopup.setLayout(new GridLayout(10, 10));
 
-    JButton likeButton = new JButton("like");
-
-    jDialog.add(likeButton, "wrap");
-
-    likeButton.addMouseListener(
-        new MouseAdapter() {
-          @Override
-          public void mouseClicked(@NotNull MouseEvent e) {
-            jDialog.dispose();
-
-            if (emojiWindow != null && emojiWindow.isVisible()) {
-              SwingUtilities.invokeLater(() -> emojiWindow.dispose());
+      emojiListFull.forEach(
+          emoji -> {
+            ImageIcon icon;
+            if (executedFromJar) {
+              icon =
+                  new ImageIcon(
+                      Objects.requireNonNull(
+                          EmojiConverter.class.getResource("/emojis/" + emoji + ".png")));
             } else {
-
-              SwingUtilities.invokeLater(
-                  () -> {
-                    if (emojiWindow == null) {
-                      emojiWindow = new EmojiImpl();
-                      initEmojiFrame();
-                    }
-                    emojiWindow.pack();
-                    emojiWindow.repaint();
-                    emojiWindow.revalidate();
-                    emojiWindow.setLocation(e.getLocationOnScreen().x, e.getLocationOnScreen().y);
-                    emojiWindow.setVisible(true);
-                  });
+              icon = new ImageIcon("src/main/resources/emojis/" + emoji + ".png");
             }
-          }
-        });
 
-    jDialog.pack();
-    jDialog.setLocation(
-        e.getLocationOnScreen().x - 20 - jDialog.getWidth(), e.getLocationOnScreen().y);
-    jDialog.setVisible(true);
+            icon.setDescription(emoji);
+
+            JButton jButton = new JButton(icon);
+            jButton.setName(emoji);
+            jButton.setPreferredSize(new Dimension(25, 25));
+            jButton.setBorderPainted(false);
+            jButton.setContentAreaFilled(false);
+            jButton.setFocusPainted(false);
+            jButton.setOpaque(false);
+
+            jButton.addMouseListener(
+                new MouseAdapter() {
+                  @Override
+                  public void mouseClicked(@NotNull MouseEvent e) {
+
+                    e.consume();
+                    MessageModel likeModel =
+                        new MessageModel(
+                            messageModel.getId(),
+                            MessageTypes.INTERACTED,
+                            messageModel.addUserInteractions(
+                                mapOfIps.get(client.getLocalSocketAddress().getHostString()),
+                                jButton.getName()),
+                            messageModel.getSender(),
+                            messageModel.getTime(),
+                            messageModel.getMessage(),
+                            messageModel.getQuotedMessageSender(),
+                            messageModel.getQuotedMessageTime(),
+                            messageModel.getQuotedMessageText());
+
+                    try {
+                      client.send(
+                          MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(likeModel));
+                    } catch (JsonProcessingException ex) {
+                      throw new RuntimeException(ex);
+                    }
+
+                    likePopup.setVisible(false);
+                  }
+                });
+
+            likePopup.add(jButton);
+          });
+    }
+    likePopup.show(e.getComponent(), e.getX(), e.getY());
   }
 
   @Override
