@@ -216,38 +216,18 @@ public class PanelLeftImpl extends PanelLeft implements Comment {
     }
 
 
+
     @Override
     protected void replyButtonClicked(@NotNull MouseEvent e) {
-
-        e.consume();
-        jDialog = new JDialog();
-        jDialog.setModal(true);
-        jDialog.setTitle("options");
-        jDialog.setLayout(new MigLayout(
-                "fillx",
-                // columns
-                "[grow,fill]",
-                // rows
-                "[grow,fill]"));
-
-
-        jDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-
-        JButton replyButton = new JButton("reply");
-        replyButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                jDialog.dispose();
-                ReplyImpl replyDialog = new ReplyImpl(messageModel);
-                replyDialog.setVisible(true);
-            }
+        JPopupMenu popupMenu = new JPopupMenu();
+        JMenuItem replyItem = new JMenuItem("reply");
+        replyItem.addActionListener(e1 -> {
+            ReplyImpl replyDialog = new ReplyImpl(messageModel);
+            replyDialog.setVisible(true);
         });
-
-        jDialog.add(replyButton, "wrap");
-
-        jDialog.pack();
-        jDialog.setLocation(e.getLocationOnScreen().x + 20, e.getLocationOnScreen().y);
-        jDialog.setVisible(true);
+        popupMenu.add(replyItem);
+        popupMenu.show(e.getComponent(), e.getX(), e.getY());
+        e.consume();
     }
 
     @Override
