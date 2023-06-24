@@ -5,7 +5,6 @@ import static com.soeguet.gui.util.EmojiConverter.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.soeguet.config.Settings;
-import com.soeguet.gui.emoji.EmojiImpl;
 import com.soeguet.gui.newcomment.Colorpicker;
 import com.soeguet.gui.newcomment.Comment;
 import com.soeguet.gui.newcomment.pane.TextPaneImpl;
@@ -18,45 +17,31 @@ import com.soeguet.model.MessageModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.JarURLConnection;
-import java.net.URL;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Enumeration;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 
 public class PanelRightImpl extends PanelRight implements Comment {
 
-  Logger logger = org.slf4j.LoggerFactory.getLogger(PanelRightImpl.class);
   private final MessageModel messageModel;
   private final Long id;
-  private JDialog jDialog;
   private TextPaneImpl textPaneComment;
-  private EmojiImpl emojiWindow;
   private boolean executedFromJar = false;
 
   // for replies
-  public PanelRightImpl(@NotNull MessageModel messageModel) {
+  public PanelRightImpl( MessageModel messageModel) {
     this(messageModel, null, null);
     form_button1.setVisible(false);
   }
 
   // for normal chat messages on panel
   public PanelRightImpl(
-      @NotNull MessageModel messageModel, String lastMessageFrom, @NotNull String lastPostTime) {
+       MessageModel messageModel, String lastMessageFrom,  String lastPostTime) {
 
     this.messageModel = messageModel;
     this.id = messageModel.getId();
@@ -65,9 +50,9 @@ public class PanelRightImpl extends PanelRight implements Comment {
   }
 
   private void customInitialMethods(
-      @NotNull MessageModel messageModel,
+       MessageModel messageModel,
       @Nullable String lastMessageFrom,
-      @NotNull String lastPostTime) {
+       String lastPostTime) {
     if (messageIsDeleted(messageModel)) return;
 
     setBorderColor(Colorpicker.colorPicker(messageModel.getSender()).getBorderColor());
@@ -134,7 +119,7 @@ public class PanelRightImpl extends PanelRight implements Comment {
   }
 
   private void addQuoteLayerToCommentIfPresent(
-      @NotNull MessageModel messageModel, @NotNull Settings settings) {
+       MessageModel messageModel,  Settings settings) {
     if (messageModel.getQuotedMessageText() != null) {
 
       TextPaneImpl replyTextPane =
@@ -175,7 +160,7 @@ public class PanelRightImpl extends PanelRight implements Comment {
     }
   }
 
-  private void addingImportantFlagToComment(@NotNull MessageModel messageModel) {
+  private void addingImportantFlagToComment( MessageModel messageModel) {
     if (messageModel.getMessageType() == 5) {
       add(new JLabel("!!!"), "cell 0 1");
     }
@@ -191,161 +176,7 @@ public class PanelRightImpl extends PanelRight implements Comment {
     form_timeLabel.setVisible(true);
   }
 
-  private void initEmojiFrame() {
-
-    ClassLoader classLoader = getClass().getClassLoader();
-    Enumeration<URL> resources; // search for all resources in the "emoji" folder
-    try {
-      resources = classLoader.getResources("emojis/");
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-
-    while (resources.hasMoreElements()) {
-
-      URL resourceUrl = resources.nextElement();
-
-      // if resources are WITHIN .jar
-      if (resourceUrl.getProtocol().equals("jar")) {
-
-        try {
-
-          JarURLConnection jarURLConnection = (JarURLConnection) resourceUrl.openConnection();
-          try (JarFile jarFile = jarURLConnection.getJarFile()) {
-            Enumeration<JarEntry> entries = jarFile.entries();
-
-            while (entries.hasMoreElements()) {
-
-              JarEntry entry = entries.nextElement();
-              String entryName = entry.getName();
-
-              if (entryName.startsWith("emojis/") && entryName.endsWith(".png")) {
-
-                try (InputStream inputStream = classLoader.getResourceAsStream(entryName)) {
-
-                  assert inputStream != null;
-                  BufferedImage bufferedImage = ImageIO.read(inputStream);
-
-                  ImageIcon icon = new ImageIcon(bufferedImage);
-
-                  String fileName = entryName.replace(".png", "");
-                  fileName = fileName.replace("emojis/", "");
-
-                  JButton jButton = new JButton();
-                  jButton.setName(fileName);
-                  icon.setDescription(fileName);
-                  jButton.setIcon(icon);
-
-                  String finalFileName = fileName;
-
-                  jButton.addMouseListener(
-                      new MouseAdapter() {
-                        @Override
-                        public void mouseClicked(@NotNull MouseEvent e) {
-
-                          e.consume();
-                          MessageModel likeModel =
-                              new MessageModel(
-                                  messageModel.getId(),
-                                  MessageTypes.INTERACTED,
-                                  messageModel.addUserInteractions(
-                                      mapOfIps.get(client.getLocalSocketAddress().getHostString()),
-                                      finalFileName),
-                                  messageModel.getSender(),
-                                  messageModel.getTime(),
-                                  messageModel.getMessage(),
-                                  messageModel.getQuotedMessageSender(),
-                                  messageModel.getQuotedMessageTime(),
-                                  messageModel.getQuotedMessageText());
-                          likeModel.setSender(messageModel.getSender());
-                          likeModel.setId(messageModel.getId());
-                          likeModel.setMessageType(MessageTypes.INTERACTED);
-                          likeModel.setMessage(messageModel.getMessage());
-                          likeModel.setTime(
-                              LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
-
-                          try {
-                            client.send(
-                                MAPPER
-                                    .writerWithDefaultPrettyPrinter()
-                                    .writeValueAsString(likeModel));
-                          } catch (JsonProcessingException ex) {
-                            throw new RuntimeException(ex);
-                          }
-
-                          emojiWindow.dispose();
-                        }
-                      });
-                  emojiWindow.add(jButton);
-                }
-              }
-            }
-          }
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-      // if resources are OUTSIDE .jar
-      else {
-        File folder2 = new File("./src/main/resources/emojis");
-        File[] files = folder2.listFiles();
-        if (files != null) {
-
-          for (File file : files) {
-
-            if (file.getName().endsWith(".png")) {
-
-              ImageIcon icon = new ImageIcon(file.getPath());
-
-              String fileName = file.getName().replace(".png", "");
-              fileName = fileName.replace("emojis/", "");
-
-              JButton jButton = new JButton();
-              jButton.setName(fileName);
-              icon.setDescription(fileName);
-              jButton.setIcon(icon);
-
-              String finalFileName = fileName;
-              jButton.addMouseListener(
-                  new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(@NotNull MouseEvent e) {
-
-                      e.consume();
-                      MessageModel likeModel =
-                          new MessageModel(
-                              messageModel.getId(),
-                              MessageTypes.INTERACTED,
-                              messageModel.addUserInteractions(
-                                  mapOfIps.get(client.getLocalSocketAddress().getHostString()),
-                                  finalFileName),
-                              messageModel.getSender(),
-                              messageModel.getTime(),
-                              messageModel.getMessage(),
-                              messageModel.getQuotedMessageSender(),
-                              messageModel.getQuotedMessageTime(),
-                              messageModel.getQuotedMessageText());
-
-                      try {
-                        client.send(
-                            MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(likeModel));
-                      } catch (JsonProcessingException ex) {
-                        throw new RuntimeException(ex);
-                      }
-
-                      emojiWindow.dispose();
-                    }
-                  });
-
-              emojiWindow.add(jButton);
-            }
-          }
-        }
-      }
-    }
-  }
-
-  private void addEmojiToInteractionPane(@NotNull MessageModel messageModel) {
+  private void addEmojiToInteractionPane( MessageModel messageModel) {
     executedFromJar =
         String.valueOf(PanelRightImpl.class.getResource("PanelRightImpl.class")).startsWith("jar:");
 
@@ -417,13 +248,13 @@ public class PanelRightImpl extends PanelRight implements Comment {
                     }));
   }
 
-  public void addEmojiInteraction(@NotNull MessageModel messageModel) {
+  public void addEmojiInteraction( MessageModel messageModel) {
 
     addEmojiToInteractionPane(messageModel);
   }
 
   @Override
-  protected void actionLabelMouseEntered(@NotNull MouseEvent e) {
+  protected void actionLabelMouseEntered( MouseEvent e) {
     e.consume();
     form_actionLabel.setForeground(new Color(93, 93, 93, 255));
   }
@@ -431,7 +262,7 @@ public class PanelRightImpl extends PanelRight implements Comment {
   private JPopupMenu likePopup;
 
   @Override
-  protected void actionLabelMouseClicked(@NotNull MouseEvent e) {
+  protected void actionLabelMouseClicked( MouseEvent e) {
 
     if (likePopup == null) {
 
@@ -463,7 +294,7 @@ public class PanelRightImpl extends PanelRight implements Comment {
             jButton.addMouseListener(
                 new MouseAdapter() {
                   @Override
-                  public void mouseClicked(@NotNull MouseEvent e) {
+                  public void mouseClicked( MouseEvent e) {
 
                     e.consume();
                     MessageModel likeModel =
@@ -498,12 +329,12 @@ public class PanelRightImpl extends PanelRight implements Comment {
   }
 
   @Override
-  protected void actionLabelMouseExited(@NotNull MouseEvent e) {
+  protected void actionLabelMouseExited( MouseEvent e) {
     e.consume();
     form_actionLabel.setForeground(new Color(0, 0, 0, 0));
   }
 
-  private boolean messageIsDeleted(@NotNull MessageModel messageModel) {
+  private boolean messageIsDeleted( MessageModel messageModel) {
     // deleted message
     if (messageModel.getMessageType() == 127) {
 
@@ -515,7 +346,7 @@ public class PanelRightImpl extends PanelRight implements Comment {
   }
 
   @Override
-  protected void replyButtonClicked(@NotNull MouseEvent e) {
+  protected void replyButtonClicked( MouseEvent e) {
 
     JPopupMenu popupMenu = new JPopupMenu();
     JMenuItem reply = new JMenuItem("reply");
@@ -583,7 +414,7 @@ public class PanelRightImpl extends PanelRight implements Comment {
     return id;
   }
 
-  @NotNull
+
   @Override
   public String toString() {
     return "PanelRightImpl{" + "id=" + id + '}';
