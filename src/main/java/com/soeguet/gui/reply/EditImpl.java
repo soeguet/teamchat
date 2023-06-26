@@ -13,7 +13,8 @@ import com.soeguet.gui.newcomment.right.PanelRightImpl;
 import com.soeguet.gui.util.EmojiConverter;
 import com.soeguet.gui.util.MessageTypes;
 import com.soeguet.model.MessageModel;
-import java.awt.Font;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
@@ -50,6 +51,7 @@ public class EditImpl extends FeedbackDialog {
     Settings settings = Settings.getInstance();
     this.messageModel = messageModel;
     this.setFont(new Font(getFont().getFontName(), getFont().getStyle(), settings.getFontSize()));
+    this.setMaximumSize(new Dimension(750,750));
 
     if (Objects.equals(messageModel.getSender(), client.getLocalSocketAddress().getHostName())) {
 

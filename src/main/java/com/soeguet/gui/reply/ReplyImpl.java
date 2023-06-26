@@ -41,6 +41,7 @@ public class ReplyImpl extends FeedbackDialog {
     Settings settings = Settings.getInstance();
     this.messageModel = messageModel;
     this.setFont(new Font(getFont().getFontName(), getFont().getStyle(), settings.getFontSize()));
+    setMaximumSize(new Dimension(750,750));
 
     if (Objects.equals(messageModel.getSender(), client.getLocalSocketAddress().getHostName())) {
 
@@ -51,9 +52,17 @@ public class ReplyImpl extends FeedbackDialog {
       PanelLeftImpl replyContent = new PanelLeftImpl(messageModel);
       form_contentPanel.add(replyContent, "cell 0 0, wrap");
     }
-
     pack();
+    if (getWidth() > 750) {
+      setMinimumSize(new Dimension(750, 750));
+      setMaximumSize(new Dimension(750, 750));
+      setSize(new Dimension(750, 750));
+    }
+
     setTitle("reply to message");
+    System.out.println("getHeight() = " + getHeight());
+    System.out.println("getWidth() = " + getWidth());
+
     setLocationRelativeTo(null);
 
     form_replyTextPane.requestFocusInWindow();

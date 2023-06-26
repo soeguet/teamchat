@@ -55,8 +55,6 @@ public class CustomWebsocketClient extends WebSocketClient {
   @Override
   public void onWebsocketPong(WebSocket conn, Framedata f) {
     super.onWebsocketPong(conn, f);
-
-    log.info("CustomWebsocketClient.onWebsocketPong");
   }
 
   @Override
