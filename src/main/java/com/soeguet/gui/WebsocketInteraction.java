@@ -22,7 +22,6 @@ import java.util.Objects;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 
 @Slf4j
 public class WebsocketInteraction implements Serializable {
@@ -43,7 +42,7 @@ public class WebsocketInteraction implements Serializable {
     connectToWebSocket();
   }
 
-  public void onByteBufferMessageReceived(@NotNull ByteBuffer bytes) {
+  public void onByteBufferMessageReceived(ByteBuffer bytes) {
     if (new String(bytes.array()).startsWith("PARTICIPANTS:")) {
 
       String participantString = new String(bytes.array());

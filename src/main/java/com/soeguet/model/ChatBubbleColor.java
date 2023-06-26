@@ -2,7 +2,6 @@ package com.soeguet.model;
 
 import java.awt.*;
 import java.util.Objects;
-import org.jetbrains.annotations.NotNull;
 
 public class ChatBubbleColor {
 
@@ -32,13 +31,11 @@ public class ChatBubbleColor {
     this.quoteColor = quoteColor;
   }
 
-  @NotNull
   public ChatBubbleColor borderColor(Color borderColor) {
     setBorderColor(borderColor);
     return this;
   }
 
-  @NotNull
   public ChatBubbleColor quoteColor(Color quoteColor) {
     setQuoteColor(quoteColor);
     return this;
@@ -60,7 +57,6 @@ public class ChatBubbleColor {
     return Objects.hash(borderColor, quoteColor);
   }
 
-  @NotNull
   @Override
   public String toString() {
     return "{"

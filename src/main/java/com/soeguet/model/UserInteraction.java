@@ -1,7 +1,5 @@
 package com.soeguet.model;
 
-import org.jetbrains.annotations.NotNull;
-
 public class UserInteraction {
 
   private String username;
@@ -30,7 +28,6 @@ public class UserInteraction {
     this.emoji = emoji;
   }
 
-  @NotNull
   @Override
   public String toString() {
     return "UserInteraction{" + "username='" + username + '\'' + ", emoji='" + emoji + '\'' + '}';

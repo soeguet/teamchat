@@ -3,13 +3,12 @@ package com.soeguet.gui.newcomment;
 import com.soeguet.model.ChatBubbleColor;
 import java.awt.Color;
 import java.io.Serializable;
-import org.jetbrains.annotations.NotNull;
 
 public class Colorpicker implements Serializable {
-  @NotNull
-  public static ChatBubbleColor colorPicker(@NotNull String sender) {
 
-    //users will be assigned a color based on their name
+  public static ChatBubbleColor colorPicker(String sender) {
+
+    // users will be assigned a color based on their name
     switch (sender) {
       case "name":
         return new ChatBubbleColor(Color.decode("#fa7500"), Color.decode("#ffd9b8"));

@@ -6,7 +6,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
-import org.jetbrains.annotations.NotNull;
 
 public class EmojiImpl extends EmojiWindow {
 
@@ -37,7 +36,7 @@ public class EmojiImpl extends EmojiWindow {
   }
 
   @Override
-  protected void thisMouseDragged(@NotNull MouseEvent e) {
+  protected void thisMouseDragged( MouseEvent e) {
 
     SwingUtilities.invokeLater(
         () -> {
@@ -55,7 +54,7 @@ public class EmojiImpl extends EmojiWindow {
   }
 
   @Override
-  protected void btnFocusGained(@NotNull FocusEvent e) {
+  protected void btnFocusGained( FocusEvent e) {
 
     JButton button = (JButton) e.getComponent();
     button.setBorder(new LineBorder(Color.RED));
@@ -63,7 +62,7 @@ public class EmojiImpl extends EmojiWindow {
   }
 
   @Override
-  protected void btnFocusLost(@NotNull FocusEvent e) {
+  protected void btnFocusLost( FocusEvent e) {
 
     JButton button = (JButton) e.getComponent();
     button.setBorderPainted(false);

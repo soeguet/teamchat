@@ -3,7 +3,6 @@ package com.soeguet.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ClientsList {
@@ -24,7 +23,6 @@ public class ClientsList {
     this.clientsList = clientsList;
   }
 
-  @NotNull
   @Override
   public String toString() {
     return "ClientList{" + "clientsList=" + clientsList + '}';

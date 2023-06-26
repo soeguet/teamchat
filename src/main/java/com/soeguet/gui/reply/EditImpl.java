@@ -13,8 +13,13 @@ import com.soeguet.gui.newcomment.right.PanelRightImpl;
 import com.soeguet.gui.util.EmojiConverter;
 import com.soeguet.gui.util.MessageTypes;
 import com.soeguet.model.MessageModel;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -26,9 +31,11 @@ import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import javax.imageio.ImageIO;
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 
 public class EditImpl extends FeedbackDialog {
 
@@ -36,7 +43,7 @@ public class EditImpl extends FeedbackDialog {
   private EmojiImpl emojiWindow;
   private boolean controlButtonPressed;
 
-  public EditImpl(@NotNull MessageModel messageModel) {
+  public EditImpl(MessageModel messageModel) {
 
     super();
 
@@ -55,7 +62,7 @@ public class EditImpl extends FeedbackDialog {
     }
 
     pack();
-    setTitle("edit your own message");
+    setTitle("edit");
     setLocationRelativeTo(null);
 
     form_replyTextPane.requestFocusInWindow();
@@ -171,7 +178,7 @@ public class EditImpl extends FeedbackDialog {
                         public void keyTyped(KeyEvent e) {}
 
                         @Override
-                        public void keyPressed(@NotNull KeyEvent e) {
+                        public void keyPressed(KeyEvent e) {
 
                           if (e.getExtendedKeyCode() == KeyEvent.VK_ENTER
                               || e.getExtendedKeyCode() == KeyEvent.VK_SPACE) {
@@ -255,7 +262,7 @@ public class EditImpl extends FeedbackDialog {
                     public void keyTyped(KeyEvent e) {}
 
                     @Override
-                    public void keyPressed(@NotNull KeyEvent e) {
+                    public void keyPressed(KeyEvent e) {
 
                       if (e.getExtendedKeyCode() == KeyEvent.VK_ENTER
                           || e.getExtendedKeyCode() == KeyEvent.VK_SPACE) {
@@ -288,7 +295,7 @@ public class EditImpl extends FeedbackDialog {
   }
 
   @Override
-  protected void dialogPaneKeyPressed(@NotNull KeyEvent e) {
+  protected void dialogPaneKeyPressed(KeyEvent e) {
 
     if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
       SwingUtilities.invokeLater(this::dispose);
@@ -309,7 +316,7 @@ public class EditImpl extends FeedbackDialog {
   }
 
   @Override
-  protected void replyTextPaneKeyReleased(@NotNull KeyEvent e) {
+  protected void replyTextPaneKeyReleased(KeyEvent e) {
 
     if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
       controlButtonPressed = false;
@@ -317,7 +324,7 @@ public class EditImpl extends FeedbackDialog {
   }
 
   @Override
-  protected void replyTextPaneKeyPressed(@NotNull KeyEvent e) {
+  protected void replyTextPaneKeyPressed(KeyEvent e) {
 
     if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
 

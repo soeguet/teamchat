@@ -1,7 +1,10 @@
 package com.soeguet.gui.newcomment.right;
 
-import static com.soeguet.gui.ChatImpl.*;
-import static com.soeguet.gui.util.EmojiConverter.*;
+import static com.soeguet.gui.ChatImpl.MAPPER;
+import static com.soeguet.gui.ChatImpl.client;
+import static com.soeguet.gui.ChatImpl.mapOfIps;
+import static com.soeguet.gui.util.EmojiConverter.emojiListFull;
+import static com.soeguet.gui.util.EmojiConverter.replaceWithEmoji;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.soeguet.config.Settings;
@@ -23,7 +26,6 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class PanelRightImpl extends PanelRight implements Comment {
@@ -34,14 +36,13 @@ public class PanelRightImpl extends PanelRight implements Comment {
   private boolean executedFromJar = false;
 
   // for replies
-  public PanelRightImpl( MessageModel messageModel) {
+  public PanelRightImpl(MessageModel messageModel) {
     this(messageModel, null, null);
     form_button1.setVisible(false);
   }
 
   // for normal chat messages on panel
-  public PanelRightImpl(
-       MessageModel messageModel, String lastMessageFrom,  String lastPostTime) {
+  public PanelRightImpl(MessageModel messageModel, String lastMessageFrom, String lastPostTime) {
 
     this.messageModel = messageModel;
     this.id = messageModel.getId();
@@ -50,9 +51,7 @@ public class PanelRightImpl extends PanelRight implements Comment {
   }
 
   private void customInitialMethods(
-       MessageModel messageModel,
-      @Nullable String lastMessageFrom,
-       String lastPostTime) {
+      MessageModel messageModel, @Nullable String lastMessageFrom, String lastPostTime) {
     if (messageIsDeleted(messageModel)) return;
 
     setBorderColor(Colorpicker.colorPicker(messageModel.getSender()).getBorderColor());
@@ -118,8 +117,7 @@ public class PanelRightImpl extends PanelRight implements Comment {
         });
   }
 
-  private void addQuoteLayerToCommentIfPresent(
-       MessageModel messageModel,  Settings settings) {
+  private void addQuoteLayerToCommentIfPresent(MessageModel messageModel, Settings settings) {
     if (messageModel.getQuotedMessageText() != null) {
 
       TextPaneImpl replyTextPane =
@@ -160,7 +158,7 @@ public class PanelRightImpl extends PanelRight implements Comment {
     }
   }
 
-  private void addingImportantFlagToComment( MessageModel messageModel) {
+  private void addingImportantFlagToComment(MessageModel messageModel) {
     if (messageModel.getMessageType() == 5) {
       add(new JLabel("!!!"), "cell 0 1");
     }
@@ -176,7 +174,7 @@ public class PanelRightImpl extends PanelRight implements Comment {
     form_timeLabel.setVisible(true);
   }
 
-  private void addEmojiToInteractionPane( MessageModel messageModel) {
+  private void addEmojiToInteractionPane(MessageModel messageModel) {
     executedFromJar =
         String.valueOf(PanelRightImpl.class.getResource("PanelRightImpl.class")).startsWith("jar:");
 
@@ -248,13 +246,13 @@ public class PanelRightImpl extends PanelRight implements Comment {
                     }));
   }
 
-  public void addEmojiInteraction( MessageModel messageModel) {
+  public void addEmojiInteraction(MessageModel messageModel) {
 
     addEmojiToInteractionPane(messageModel);
   }
 
   @Override
-  protected void actionLabelMouseEntered( MouseEvent e) {
+  protected void actionLabelMouseEntered(MouseEvent e) {
     e.consume();
     form_actionLabel.setForeground(new Color(93, 93, 93, 255));
   }
@@ -262,7 +260,7 @@ public class PanelRightImpl extends PanelRight implements Comment {
   private JPopupMenu likePopup;
 
   @Override
-  protected void actionLabelMouseClicked( MouseEvent e) {
+  protected void actionLabelMouseClicked(MouseEvent e) {
 
     if (likePopup == null) {
 
@@ -294,7 +292,7 @@ public class PanelRightImpl extends PanelRight implements Comment {
             jButton.addMouseListener(
                 new MouseAdapter() {
                   @Override
-                  public void mouseClicked( MouseEvent e) {
+                  public void mouseClicked(MouseEvent e) {
 
                     e.consume();
                     MessageModel likeModel =
@@ -329,12 +327,12 @@ public class PanelRightImpl extends PanelRight implements Comment {
   }
 
   @Override
-  protected void actionLabelMouseExited( MouseEvent e) {
+  protected void actionLabelMouseExited(MouseEvent e) {
     e.consume();
     form_actionLabel.setForeground(new Color(0, 0, 0, 0));
   }
 
-  private boolean messageIsDeleted( MessageModel messageModel) {
+  private boolean messageIsDeleted(MessageModel messageModel) {
     // deleted message
     if (messageModel.getMessageType() == 127) {
 
@@ -346,7 +344,7 @@ public class PanelRightImpl extends PanelRight implements Comment {
   }
 
   @Override
-  protected void replyButtonClicked( MouseEvent e) {
+  protected void replyButtonClicked(MouseEvent e) {
 
     JPopupMenu popupMenu = new JPopupMenu();
     JMenuItem reply = new JMenuItem("reply");
@@ -413,7 +411,6 @@ public class PanelRightImpl extends PanelRight implements Comment {
   public Long getId() {
     return id;
   }
-
 
   @Override
   public String toString() {

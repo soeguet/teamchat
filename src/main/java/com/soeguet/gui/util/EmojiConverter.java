@@ -19,13 +19,12 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
-import org.jetbrains.annotations.NotNull;
 
-public class EmojiConverter{
+public class EmojiConverter {
 
   public static List<String> emojiListFull = new ArrayList<>();
 
-  public static void replaceWithEmoji(@NotNull JTextPane textPaneComment, String message) {
+  public static void replaceWithEmoji(JTextPane textPaneComment, String message) {
 
     textPaneComment.setText(message);
 
@@ -52,11 +51,7 @@ public class EmojiConverter{
 
       while (offset != -1) {
 
-        offset =
-            textPaneComment
-                .getText()
-                .indexOf(
-                    emoji, offset);
+        offset = textPaneComment.getText().indexOf(emoji, offset);
 
         if (offset != -1) {
 
@@ -135,8 +130,7 @@ public class EmojiConverter{
     }
   }
 
-  @NotNull
-  public static String checkTextForEmojis(@NotNull JTextPane textEditorPane) {
+  public static String checkTextForEmojis(JTextPane textEditorPane) {
 
     StyledDocument doc = textEditorPane.getStyledDocument();
 

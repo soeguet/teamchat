@@ -1,7 +1,6 @@
 package com.soeguet.model;
 
 import java.util.Objects;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class Clients {
@@ -32,7 +31,6 @@ public class Clients {
     this.clientName = clientName;
   }
 
-  @NotNull
   @Override
   public String toString() {
     return "Clients{"

@@ -1,7 +1,7 @@
 package com.soeguet.gui.properties;
 
-import static com.soeguet.gui.ChatImpl.mapOfIps;
 import static com.soeguet.gui.ChatImpl.MAPPER;
+import static com.soeguet.gui.ChatImpl.mapOfIps;
 
 import com.soeguet.Main;
 import com.soeguet.config.Settings;
@@ -23,7 +23,6 @@ import java.util.Objects;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
-import org.jetbrains.annotations.NotNull;
 
 public class PropertiesImpl extends PropertiesFrame {
 
@@ -211,7 +210,7 @@ public class PropertiesImpl extends PropertiesFrame {
   }
 
   @Override
-  protected void okButtonMouseClicked(@NotNull MouseEvent e) {
+  protected void okButtonMouseClicked(MouseEvent e) {
 
     saveIpTableInTextFile();
 

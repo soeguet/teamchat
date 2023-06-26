@@ -27,7 +27,6 @@ import java.util.jar.JarFile;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 
 public class ReplyImpl extends FeedbackDialog {
 
@@ -35,7 +34,7 @@ public class ReplyImpl extends FeedbackDialog {
   private EmojiImpl emojiWindow;
   private boolean controlButtonPressed;
 
-  public ReplyImpl(@NotNull MessageModel messageModel) {
+  public ReplyImpl(MessageModel messageModel) {
 
     super();
 
@@ -166,7 +165,7 @@ public class ReplyImpl extends FeedbackDialog {
                         public void keyTyped(KeyEvent e) {}
 
                         @Override
-                        public void keyPressed(@NotNull KeyEvent e) {
+                        public void keyPressed(KeyEvent e) {
 
                           if (e.getExtendedKeyCode() == KeyEvent.VK_ENTER
                               || e.getExtendedKeyCode() == KeyEvent.VK_SPACE) {
@@ -250,7 +249,7 @@ public class ReplyImpl extends FeedbackDialog {
                     public void keyTyped(KeyEvent e) {}
 
                     @Override
-                    public void keyPressed(@NotNull KeyEvent e) {
+                    public void keyPressed(KeyEvent e) {
 
                       if (e.getExtendedKeyCode() == KeyEvent.VK_ENTER
                           || e.getExtendedKeyCode() == KeyEvent.VK_SPACE) {
@@ -283,7 +282,7 @@ public class ReplyImpl extends FeedbackDialog {
   }
 
   @Override
-  protected void dialogPaneKeyPressed(@NotNull KeyEvent e) {
+  protected void dialogPaneKeyPressed(KeyEvent e) {
 
     if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
       SwingUtilities.invokeLater(this::dispose);
@@ -304,7 +303,7 @@ public class ReplyImpl extends FeedbackDialog {
   }
 
   @Override
-  protected void replyTextPaneKeyReleased(@NotNull KeyEvent e) {
+  protected void replyTextPaneKeyReleased(KeyEvent e) {
 
     if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
       controlButtonPressed = false;
@@ -312,7 +311,7 @@ public class ReplyImpl extends FeedbackDialog {
   }
 
   @Override
-  protected void replyTextPaneKeyPressed(@NotNull KeyEvent e) {
+  protected void replyTextPaneKeyPressed(KeyEvent e) {
 
     if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
 

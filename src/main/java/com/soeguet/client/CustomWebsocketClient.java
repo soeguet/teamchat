@@ -15,113 +15,112 @@ import org.java_websocket.exceptions.InvalidFrameException;
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.framing.FramedataImpl1;
 import org.java_websocket.handshake.ServerHandshake;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Slf4j
 public class CustomWebsocketClient extends WebSocketClient {
 
-    @Nullable
-    private static CustomWebsocketClient instance;
-    private WebSocketListener listener;
+  @Nullable private static CustomWebsocketClient instance;
+  private WebSocketListener listener;
 
-    private CustomWebsocketClient(@NotNull URI serverUri) {
+  private CustomWebsocketClient(URI serverUri) {
 
-        super(serverUri);
+    super(serverUri);
+  }
+
+  public static CustomWebsocketClient getInstance() {
+
+    if (instance == null) {
+
+      Settings settings = Settings.getInstance();
+      settings.setIp("localhost");
+
+      try {
+
+        instance =
+            new CustomWebsocketClient(
+                new URI("ws://" + settings.getIp() + ":" + settings.getPort()));
+      } catch (URISyntaxException e) {
+        throw new RuntimeException(e);
+      }
     }
+    return instance;
+  }
 
-    @NotNull
-    public static CustomWebsocketClient getInstance() {
+  public static void resetClient() {
 
-        if (instance == null) {
+    instance = null;
+  }
 
-            Settings settings = Settings.getInstance();
-            settings.setIp("localhost");
+  @Override
+  public void onWebsocketPong(WebSocket conn, Framedata f) {
+    super.onWebsocketPong(conn, f);
 
-            try {
+    log.info("CustomWebsocketClient.onWebsocketPong");
+  }
 
-                instance = new CustomWebsocketClient(new URI("ws://" + settings.getIp() + ":" + settings.getPort()));
-            } catch (URISyntaxException e) {
-                throw new RuntimeException(e);
+  @Override
+  public void onWebsocketPing(WebSocket conn, Framedata f) {
+
+    f.append(
+        new FramedataImpl1(f.getOpcode()) {
+          @Override
+          public void isValid() throws InvalidDataException {
+            if (!isFin()) {
+              throw new InvalidFrameException("Control frame can't have fin==false set");
             }
-        }
-        return instance;
-    }
-
-    public static void resetClient() {
-
-        instance = null;
-    }
-
-    @Override
-    public void onWebsocketPong(WebSocket conn, Framedata f) {
-        super.onWebsocketPong(conn, f);
-
-        log.info("CustomWebsocketClient.onWebsocketPong");
-    }
-
-    @Override
-    public void onWebsocketPing(WebSocket conn, @NotNull Framedata f) {
-
-        f.append(new FramedataImpl1(f.getOpcode()) {
-            @Override
-            public void isValid() throws InvalidDataException {
-                if (!isFin()) {
-                    throw new InvalidFrameException("Control frame can't have fin==false set");
-                }
-                if (isRSV1()) {
-                    throw new InvalidFrameException("Control frame can't have rsv1==true set");
-                }
-                if (isRSV2()) {
-                    throw new InvalidFrameException("Control frame can't have rsv2==true set");
-                }
-                if (isRSV3()) {
-                    throw new InvalidFrameException("Control frame can't have rsv3==true set");
-                }
+            if (isRSV1()) {
+              throw new InvalidFrameException("Control frame can't have rsv1==true set");
             }
-
-            @NotNull
-            @Override
-            public ByteBuffer getPayloadData() {
-                assert client != null;
-                return ByteBuffer.wrap(mapOfIps.get(client.getLocalSocketAddress().getAddress().getHostAddress()).getBytes());
+            if (isRSV2()) {
+              throw new InvalidFrameException("Control frame can't have rsv2==true set");
             }
+            if (isRSV3()) {
+              throw new InvalidFrameException("Control frame can't have rsv3==true set");
+            }
+          }
+
+          @Override
+          public ByteBuffer getPayloadData() {
+            assert client != null;
+            return ByteBuffer.wrap(
+                mapOfIps
+                    .get(client.getLocalSocketAddress().getAddress().getHostAddress())
+                    .getBytes());
+          }
         });
-        super.onWebsocketPing(conn, f);
+    super.onWebsocketPing(conn, f);
+  }
+
+  public void addListener(WebSocketListener listener) {
+
+    this.listener = listener;
+  }
+
+  @Override
+  public void onOpen(ServerHandshake handshakedata) {}
+
+  @Override
+  public void onMessage(String message) {
+    // proceed with normal message
+    if (listener != null) {
+      listener.onMessageReceived(message);
     }
+  }
 
-    public void addListener(WebSocketListener listener) {
+  @Override
+  public void onMessage(ByteBuffer bytes) {
+    listener.onByteBufferMessageReceived(bytes);
+  }
 
-        this.listener = listener;
-    }
+  @Override
+  public void onClose(int code, String reason, boolean remote) {
+    listener.onCloseReconnect();
+  }
 
-    @Override
-    public void onOpen(ServerHandshake handshakedata) {
-
-    }
-
-    @Override
-    public void onMessage(String message) {
-        //proceed with normal message
-        if (listener != null) {
-            listener.onMessageReceived(message);
-        }
-    }
-
-    @Override
-    public void onMessage(ByteBuffer bytes) {
-        listener.onByteBufferMessageReceived(bytes);
-    }
-
-    @Override
-    public void onClose(int code, String reason, boolean remote) {
-        listener.onCloseReconnect();
-    }
-
-
-    @Override
-    public void onError(@NotNull Exception ex) {
-        log.info("an error occured");
-        log.info(ex.getMessage());
-    }
+  @Override
+  public void onError(Exception ex) {
+    log.info("an error occured");
+    log.info(ex.getMessage());
+  }
 }
