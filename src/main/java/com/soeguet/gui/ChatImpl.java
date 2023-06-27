@@ -89,6 +89,7 @@ import javax.swing.text.StyleContext;
 import lombok.extern.slf4j.Slf4j;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang3.StringUtils;
+import org.java_websocket.enums.ReadyState;
 import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.jetbrains.annotations.Nullable;
 
@@ -166,8 +167,8 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
         new Timer(
             5_000,
             e -> {
-              if (!client.isOpen()) {
-                initialLoadingStartUpDialog.dispose();
+              initialLoadingStartUpDialog.dispose();
+              if (!client.getSocket().isConnected()) {
                 JOptionPane.showMessageDialog(this, "Connection failed! Server seems down!");
               }
             });
@@ -779,7 +780,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
     System.out.println("e.getModifiers() = " + e.getModifiers());
 
     // emergency exit -> shift or ctrl and emoji button click
-    if (e != null && (e.getModifiers() == 17 || e.getModifiers() == 18)) {
+    if (e.getModifiers() == 17 || e.getModifiers() == 18) {
       System.exit(0);
     }
 

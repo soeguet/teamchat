@@ -219,24 +219,8 @@ public class PropertiesImpl extends PropertiesFrame {
     String newIP = form_ipTextField.getText();
     settings.setIp(newIP);
 
-    //        address matching suspended
-    //        boolean b = Pattern.matches("(^\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3})", newIP);
-    //        if (b) {
-    //            settings.setIp(newIP);
-    //        }else {
-    //            JOptionPane.showMessageDialog(this,"ip address wrong format!");
-    //        }
-
     String newPort = form_portTextField.getText();
     settings.setPort(Integer.parseInt(newPort));
-
-    //        port matching suspended
-    //        boolean c = Pattern.matches("[0-9]+", newPort);
-    //        if (c) {
-    //            settings.setPort(Integer.parseInt(newPort));
-    //        }else {
-    //            JOptionPane.showMessageDialog(this,"port wrong format!");
-    //        }
 
     settings.setMainFrameWidth((Integer) form_widthSpinner.getModel().getValue());
     settings.setMainFrameHeight((Integer) form_heightSpinner.getModel().getValue());
