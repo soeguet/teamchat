@@ -17,8 +17,9 @@ public class Main {
     /*
      * load preferences and set theme while startup
      */
-    Preferences preferences = Preferences.userNodeForPackage(Settings.class);
-    switch (preferences.get("themeSetting", "LIGHT")) {
+    Settings settings = Settings.getInstance();
+
+    switch (settings.getThemeSetting()) {
       case "LIGHT":
         FlatLightLaf.setup();
         break;

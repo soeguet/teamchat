@@ -1,2 +1,1 @@
-{"clientsList":[{"localIpAddress":"127.0.0.1","clientName":"name2"},
-{"localIpAddress":"localhost","clientName":"name3"}]}
+{"clientsList":[{"localIpAddress":"localhost","clientName":"name3"},{"localIpAddress":"127.0.0.1","clientName":"name2"}]}
