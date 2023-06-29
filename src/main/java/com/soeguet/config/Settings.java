@@ -17,23 +17,23 @@ public class Settings {
   private final File settingsFile;
   private final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   private final Preferences PREFERENCES = Preferences.userNodeForPackage(Settings.class);
-  private final Logger LOG = getLogger(Settings.class);
   private JFrame mainJFrame;
 
   private Settings() {
     File settingsFolder = new File(System.getProperty("user.home") + "/.teamchat");
     if (!settingsFolder.exists()) {
       if (settingsFolder.mkdir()) {
+        Logger LOG = getLogger(Settings.class);
         LOG.atInfo().log("Created settings folder");
       }
     }
     settingsFile = new File(System.getProperty("user.home") + "/.teamchat/settings.json");
     if (!settingsFile.exists()) {
-      createSettingsFile();
+      createDefaultSettingsFile();
     }
   }
 
-  private void createSettingsFile() {
+  private void createDefaultSettingsFile() {
     ObjectMapper objectMapper = new ObjectMapper();
     ObjectNode root = objectMapper.createObjectNode();
 
@@ -60,16 +60,6 @@ public class Settings {
       instance = new Settings();
     }
     return instance;
-  }
-
-  public int getNotificationSetting() {
-
-    return PREFERENCES.getInt("notificationSetting", 0);
-  }
-
-  public void setNotificationSetting(NotificationSettings notificationSetting) {
-
-    PREFERENCES.putInt("notificationSetting", notificationSetting.ordinal());
   }
 
   public String getThemeSetting() {
@@ -132,31 +122,6 @@ public class Settings {
       showErrorMessage("Error while reading settings - textColor");
     }
     return new Color(0);
-  }
-
-  public void setTextColor(Color color) {
-
-    updateUserPreferences("textColor", color.getRGB());
-  }
-
-  public Color getChatColor() {
-
-    return new Color(PREFERENCES.getInt("chatColor", -2710887));
-  }
-
-  public void setChatColor(Color color) {
-
-    PREFERENCES.putInt("chatColor", color.getRGB());
-  }
-
-  public Color getBorderColor() {
-
-    return new Color(PREFERENCES.getInt("borderColor", -2710887));
-  }
-
-  public void setBorderColor(Color color) {
-
-    PREFERENCES.putInt("borderColor", color.getRGB());
   }
 
   public int getFontSize() {
