@@ -1,7 +1,5 @@
 package com.soeguet;
 
-import java.util.prefs.Preferences;
-
 import javax.swing.SwingUtilities;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
@@ -31,6 +29,8 @@ public class Main {
         break;
       case "DARCULA":
         FlatDarculaLaf.setup();
+        break;
+      default:
         break;
     }
 

@@ -33,7 +33,6 @@ public class CustomWebsocketClient extends WebSocketClient {
     if (instance == null) {
 
       Settings settings = Settings.getInstance();
-      settings.setIp("localhost");
 
       try {
 
