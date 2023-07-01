@@ -10,12 +10,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.prefs.Preferences;
 import javax.swing.*;
+
+import com.soeguet.gui.ChatImpl;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 public class Settings {
   private static Settings instance;
   private final File settingsFile;
-  private final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+//  private final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   private final Preferences PREFERENCES = Preferences.userNodeForPackage(Settings.class);
   private JFrame mainJFrame;
 
@@ -37,21 +40,39 @@ public class Settings {
     ObjectMapper objectMapper = new ObjectMapper();
     ObjectNode root = objectMapper.createObjectNode();
 
+    ObjectNode userPreferencesNode = userPreferencesNode(objectMapper);
+    root.set("userPreferences", userPreferencesNode);
+
+    ObjectNode chatParticipantsNode = objectMapper.createObjectNode();
+    ObjectNode participantsNode = objectMapper.createObjectNode();
+    participantsNode.put("name", "me");
+    participantsNode.put("fontColor", 0);
+    participantsNode.put("borderColor", 0);
+    participantsNode.put("quoteColor", 0);
+    chatParticipantsNode.set("127.0.0.1", participantsNode);
+
+
+    root.set("chatParticipants", chatParticipantsNode);
+
+    try {
+      objectMapper.writerWithDefaultPrettyPrinter().writeValue(settingsFile, root);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @NotNull
+  private ObjectNode userPreferencesNode(ObjectMapper objectMapper) {
     ObjectNode userPreferencesNode = objectMapper.createObjectNode();
     userPreferencesNode.put("ip", "127.0.0.1");
     userPreferencesNode.put("port", "8100");
     userPreferencesNode.put("width", "550");
     userPreferencesNode.put("height", "750");
     userPreferencesNode.put("themeSetting", "INTELLIJ");
-    userPreferencesNode.put("fontSize", 8);
+    userPreferencesNode.put("fontSize", 15);
     userPreferencesNode.put("textColor", 0);
     userPreferencesNode.put("notificationDuration", 5);
-    root.set("userPreferences", userPreferencesNode);
-    try {
-      objectMapper.writerWithDefaultPrettyPrinter().writeValue(settingsFile, root);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    return userPreferencesNode;
   }
 
   public static Settings getInstance() {
@@ -65,7 +86,7 @@ public class Settings {
   public String getThemeSetting() {
 
     try {
-      JsonNode root = OBJECT_MAPPER.readTree(settingsFile);
+      JsonNode root = ChatImpl.MAPPER.readTree(settingsFile);
       return root.get("userPreferences").get("themeSetting").asText();
     } catch (IOException e) {
       showErrorMessage("Error while reading settings - themeSetting");
@@ -116,7 +137,7 @@ public class Settings {
   public Color getTextColor() {
 
     try {
-      JsonNode root = OBJECT_MAPPER.readTree(settingsFile);
+      JsonNode root = ChatImpl.MAPPER.readTree(settingsFile);
       return new Color(root.get("userPreferences").get("textColor").asInt());
     } catch (IOException e) {
       showErrorMessage("Error while reading settings - textColor");
@@ -126,7 +147,7 @@ public class Settings {
 
   public int getFontSize() {
     try {
-      JsonNode root = OBJECT_MAPPER.readTree(settingsFile);
+      JsonNode root = ChatImpl.MAPPER.readTree(settingsFile);
       return root.get("userPreferences").get("fontSize").asInt();
     } catch (IOException e) {
       showErrorMessage("Error while reading settings - fontSize");
@@ -141,7 +162,7 @@ public class Settings {
 
   public int getMessageDuration() {
     try {
-      JsonNode root = OBJECT_MAPPER.readTree(settingsFile);
+      JsonNode root = ChatImpl.MAPPER.readTree(settingsFile);
       return root.get("userPreferences").get("notificationDuration").asInt();
     } catch (IOException e) {
       showErrorMessage("Error while reading settings - notificationDuration");
@@ -156,7 +177,7 @@ public class Settings {
 
   public int getPort() {
     try {
-      JsonNode root = OBJECT_MAPPER.readTree(settingsFile);
+      JsonNode root = ChatImpl.MAPPER.readTree(settingsFile);
       return root.get("userPreferences").get("port").asInt();
     } catch (IOException e) {
       showErrorMessage("Error while reading settings - port");
@@ -171,7 +192,7 @@ public class Settings {
 
   public String getIp() {
     try {
-      JsonNode root = OBJECT_MAPPER.readTree(settingsFile);
+      JsonNode root = ChatImpl.MAPPER.readTree(settingsFile);
       return root.get("userPreferences").get("ip").asText();
     } catch (IOException e) {
       showErrorMessage("Error while reading settings - ip");
@@ -187,7 +208,7 @@ public class Settings {
   private synchronized <T> void updateUserPreferences(String key, T value) {
 
     try {
-      ObjectNode root = (ObjectNode) OBJECT_MAPPER.readTree(settingsFile);
+      ObjectNode root = (ObjectNode) ChatImpl.MAPPER.readTree(settingsFile);
       ObjectNode userPreferencesNode = root.get("userPreferences").deepCopy();
 
       if (value instanceof String) {
@@ -199,7 +220,7 @@ public class Settings {
         throw new IllegalArgumentException("Unsupported value type");
       }
       root.set("userPreferences", userPreferencesNode);
-      OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValue(settingsFile, root);
+      ChatImpl.MAPPER.writerWithDefaultPrettyPrinter().writeValue(settingsFile, root);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
