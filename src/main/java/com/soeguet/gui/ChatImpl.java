@@ -549,7 +549,9 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
   @Override
   protected void emojiButton(ActionEvent e) {
 
-    System.out.println("e.getModifiers() = " + e.getModifiers());
+    if (e == null){
+      return;
+    }
 
     // emergency exit -> shift or ctrl and emoji button click
     if (e.getModifiers() == 17 || e.getModifiers() == 18) {
