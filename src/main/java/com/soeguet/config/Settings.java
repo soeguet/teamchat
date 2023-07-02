@@ -5,20 +5,18 @@ import static org.slf4j.LoggerFactory.getLogger;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.soeguet.gui.ChatImpl;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.util.prefs.Preferences;
 import javax.swing.*;
-
-import com.soeguet.gui.ChatImpl;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 public class Settings {
   private static Settings instance;
   private final File settingsFile;
-//  private final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   private final Preferences PREFERENCES = Preferences.userNodeForPackage(Settings.class);
   private JFrame mainJFrame;
 
@@ -45,7 +43,6 @@ public class Settings {
 
     ObjectNode chatParticipantsNode = objectMapper.createObjectNode();
     ObjectNode participantsNode = objectMapper.createObjectNode();
-    participantsNode.put("name", "me");
     participantsNode.put("fontColor", 0);
     participantsNode.put("borderColor", 0);
     participantsNode.put("quoteColor", 0);
@@ -59,6 +56,7 @@ public class Settings {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+
   }
 
   @NotNull
@@ -68,6 +66,7 @@ public class Settings {
     userPreferencesNode.put("port", "8100");
     userPreferencesNode.put("width", "550");
     userPreferencesNode.put("height", "750");
+    userPreferencesNode.put("uiColor", "456456");
     userPreferencesNode.put("themeSetting", "INTELLIJ");
     userPreferencesNode.put("fontSize", 15);
     userPreferencesNode.put("textColor", 0);

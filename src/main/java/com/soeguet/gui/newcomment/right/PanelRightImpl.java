@@ -7,7 +7,9 @@ import static com.soeguet.gui.util.EmojiConverter.emojiListFull;
 import static com.soeguet.gui.util.EmojiConverter.replaceWithEmoji;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.soeguet.config.Settings;
+import com.soeguet.gui.ChatImpl;
 import com.soeguet.gui.newcomment.Colorpicker;
 import com.soeguet.gui.newcomment.Comment;
 import com.soeguet.gui.newcomment.pane.TextPaneImpl;
@@ -20,6 +22,8 @@ import com.soeguet.model.MessageModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -34,6 +38,7 @@ public class PanelRightImpl extends PanelRight implements Comment {
   private final Long id;
   private TextPaneImpl textPaneComment;
   private boolean executedFromJar = false;
+  private JsonNode root;
 
   // for replies
   public PanelRightImpl(MessageModel messageModel) {
@@ -47,6 +52,14 @@ public class PanelRightImpl extends PanelRight implements Comment {
     this.messageModel = messageModel;
     this.id = messageModel.getId();
 
+    try {
+      root =
+          ChatImpl.MAPPER.readTree(
+              new File(System.getProperty("user.home") + "/.teamchat/settings.json"));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+
     customInitialMethods(messageModel, lastMessageFrom, lastPostTime);
   }
 
@@ -55,6 +68,9 @@ public class PanelRightImpl extends PanelRight implements Comment {
     if (messageIsDeleted(messageModel)) return;
 
     setBorderColor(Colorpicker.colorPicker(messageModel.getSender()).getBorderColor());
+    // TODO add ip to messageModel and use it here
+    //    setBorderColor(new
+    // Color(root.get("chatParticipants").get(messageModel.get).get("uiColor").asInt()));
     Settings settings = Settings.getInstance();
     textPaneComment = new TextPaneImpl();
 
@@ -254,7 +270,8 @@ public class PanelRightImpl extends PanelRight implements Comment {
   @Override
   protected void actionLabelMouseEntered(MouseEvent e) {
     e.consume();
-    form_actionLabel.setForeground(new Color(93, 93, 93, 255));
+
+    form_actionLabel.setForeground(new Color(root.get("userPreferences").get("uiColor").asInt()));
   }
 
   private JPopupMenu likePopup;
@@ -302,6 +319,7 @@ public class PanelRightImpl extends PanelRight implements Comment {
                             messageModel.addUserInteractions(
                                 mapOfIps.get(client.getLocalSocketAddress().getHostString()),
                                 jButton.getName()),
+                            messageModel.getLocalIp(),
                             messageModel.getSender(),
                             messageModel.getTime(),
                             messageModel.getMessage(),
@@ -329,6 +347,7 @@ public class PanelRightImpl extends PanelRight implements Comment {
   @Override
   protected void actionLabelMouseExited(MouseEvent e) {
     e.consume();
+    // revert ui element back to transparent
     form_actionLabel.setForeground(new Color(0, 0, 0, 0));
   }
 

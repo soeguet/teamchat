@@ -11,6 +11,7 @@ public class MessageModel {
   private Long id;
   private byte messageType;
   private List<UserInteraction> userInteractions;
+  private String localIp;
   private String sender;
   private String time;
   private String message;
@@ -23,7 +24,7 @@ public class MessageModel {
   }
 
   public MessageModel(Long id) {
-    this(id, MessageTypes.DELETED, null, null, null, "delete by user", null, null, null);
+    this(id, MessageTypes.DELETED,null, null, null, null, "delete by user", null, null, null);
   }
 
   public MessageModel(byte messageType, String sender, String message) {
@@ -56,6 +57,7 @@ public class MessageModel {
         null,
         messageType,
         null,
+        null,
         sender,
         LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")),
         message,
@@ -69,6 +71,7 @@ public class MessageModel {
       Long id,
       byte messageType,
       List<UserInteraction> userInteraction,
+      String localIp,
       String sender,
       String time,
       String message,
@@ -79,6 +82,7 @@ public class MessageModel {
     this.messageType = messageType;
 
     this.userInteractions = userInteraction;
+    this.localIp = localIp;
     this.sender = sender;
     this.time = time;
     this.message = message;
@@ -170,33 +174,27 @@ public class MessageModel {
     return this.userInteractions;
   }
 
+  public String getLocalIp() {
+    return localIp;
+  }
+
+  public void setLocalIp(String localIp) {
+    this.localIp = localIp;
+  }
+
   @Override
   public String toString() {
-    return "MessageModel{"
-        + "id="
-        + id
-        + ", messageType="
-        + messageType
-        + ", userInteractions="
-        + userInteractions
-        + ", sender='"
-        + sender
-        + '\''
-        + ", time='"
-        + time
-        + '\''
-        + ", message='"
-        + message
-        + '\''
-        + ", quotedMessageSender='"
-        + quotedMessageSender
-        + '\''
-        + ", quotedMessageTime='"
-        + quotedMessageTime
-        + '\''
-        + ", quotedMessageText='"
-        + quotedMessageText
-        + '\''
-        + '}';
+    return "MessageModel{" +
+            "id=" + id +
+            ", messageType=" + messageType +
+            ", userInteractions=" + userInteractions +
+            ", localIp='" + localIp + '\'' +
+            ", sender='" + sender + '\'' +
+            ", time='" + time + '\'' +
+            ", message='" + message + '\'' +
+            ", quotedMessageSender='" + quotedMessageSender + '\'' +
+            ", quotedMessageTime='" + quotedMessageTime + '\'' +
+            ", quotedMessageText='" + quotedMessageText + '\'' +
+            '}';
   }
 }

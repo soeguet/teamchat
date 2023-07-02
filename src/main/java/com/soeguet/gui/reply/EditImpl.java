@@ -82,6 +82,7 @@ public class EditImpl extends FeedbackDialog {
               this.messageModel.getId(),
               MessageTypes.EDITED,
               this.messageModel.getUserInteractions(),
+              client.getLocalSocketAddress().getHostString(),
               mapOfIps.get(client.getLocalSocketAddress().getHostString()),
               this.messageModel.getTime() + "*",
               EmojiConverter.checkTextForEmojis(form_replyTextPane),

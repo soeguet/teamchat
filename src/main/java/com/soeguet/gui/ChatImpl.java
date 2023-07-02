@@ -471,6 +471,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
       }
 
       try {
+        messageModel.setLocalIp(client.getLocalSocketAddress().getHostString());
         client.send(MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(messageModel));
 
         // close emoji pop up while sending

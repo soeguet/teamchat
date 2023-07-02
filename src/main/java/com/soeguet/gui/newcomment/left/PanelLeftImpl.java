@@ -209,6 +209,7 @@ public class PanelLeftImpl extends PanelLeft implements Comment {
                             messageModel.addUserInteractions(
                                 mapOfIps.get(client.getLocalSocketAddress().getHostString()),
                                 jButton.getName()),
+                            messageModel.getLocalIp(),
                             messageModel.getSender(),
                             messageModel.getTime(),
                             messageModel.getMessage(),
