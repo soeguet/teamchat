@@ -53,9 +53,8 @@ public class PanelRightImpl extends PanelRight implements Comment {
     this.id = messageModel.getId();
 
     try {
-      root =
-          ChatImpl.MAPPER.readTree(
-              new File(System.getProperty("user.home") + "/.teamchat/settings.json"));
+      root = ChatImpl.MAPPER.readTree(
+          new File(System.getProperty("user.home") + "/.teamchat/settings.json"));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -65,11 +64,12 @@ public class PanelRightImpl extends PanelRight implements Comment {
 
   private void customInitialMethods(
       MessageModel messageModel, @Nullable String lastMessageFrom, String lastPostTime) {
-    if (messageIsDeleted(messageModel)) return;
+    if (messageIsDeleted(messageModel))
+      return;
 
     setBorderColor(Colorpicker.colorPicker(messageModel.getSender()).getBorderColor());
     // TODO add ip to messageModel and use it here
-    //    setBorderColor(new
+    // setBorderColor(new
     // Color(root.get("chatParticipants").get(messageModel.get).get("uiColor").asInt()));
     Settings settings = Settings.getInstance();
     textPaneComment = new TextPaneImpl();
@@ -112,8 +112,7 @@ public class PanelRightImpl extends PanelRight implements Comment {
     copyItem.addActionListener(e -> textPaneComment.copy());
     translateItem.addActionListener(
         e -> {
-          JDialog translateDialog =
-              new TranslateDialogImpl(null, textPaneComment.getSelectedText());
+          JDialog translateDialog = new TranslateDialogImpl(null, textPaneComment.getSelectedText());
           translateDialog.setVisible(true);
         });
 
@@ -136,27 +135,26 @@ public class PanelRightImpl extends PanelRight implements Comment {
   private void addQuoteLayerToCommentIfPresent(MessageModel messageModel, Settings settings) {
     if (messageModel.getQuotedMessageText() != null) {
 
-      TextPaneImpl replyTextPane =
-          new TextPaneImpl() {
+      TextPaneImpl replyTextPane = new TextPaneImpl() {
 
-            @Override
-            protected void paintComponent(Graphics grphcs) {
+        @Override
+        protected void paintComponent(Graphics grphcs) {
 
-              Graphics2D g2d = (Graphics2D) grphcs;
-              g2d.setRenderingHints(
-                  new RenderingHints(
-                      RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
+          Graphics2D g2d = (Graphics2D) grphcs;
+          g2d.setRenderingHints(
+              new RenderingHints(
+                  RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
 
-              g2d.setColor(Colorpicker.colorPicker(messageModel.getSender()).getBorderColor());
-              g2d.drawLine(0, 0, 0, getHeight());
-              g2d.drawLine(getWidth() - 1, 0, getWidth() - 1, getHeight());
+          g2d.setColor(Colorpicker.colorPicker(messageModel.getSender()).getBorderColor());
+          g2d.drawLine(0, 0, 0, getHeight());
+          g2d.drawLine(getWidth() - 1, 0, getWidth() - 1, getHeight());
 
-              g2d.setColor(Colorpicker.colorPicker(messageModel.getSender()).getQuoteColor());
-              g2d.fillRect(1, 0, getWidth() - 2, getHeight());
+          g2d.setColor(Colorpicker.colorPicker(messageModel.getSender()).getQuoteColor());
+          g2d.fillRect(1, 0, getWidth() - 2, getHeight());
 
-              super.paintComponent(grphcs);
-            }
-          };
+          super.paintComponent(grphcs);
+        }
+      };
 
       replaceWithEmoji(replyTextPane, messageModel.getQuotedMessageText());
       replyTextPane.setDisabledTextColor(settings.getTextColor());
@@ -191,8 +189,7 @@ public class PanelRightImpl extends PanelRight implements Comment {
   }
 
   private void addEmojiToInteractionPane(MessageModel messageModel) {
-    executedFromJar =
-        String.valueOf(PanelRightImpl.class.getResource("PanelRightImpl.class")).startsWith("jar:");
+    executedFromJar = String.valueOf(PanelRightImpl.class.getResource("PanelRightImpl.class")).startsWith("jar:");
 
     JPanel userInteractionPanel = new JPanel();
     add(userInteractionPanel, "cell 1 2");
@@ -200,66 +197,62 @@ public class PanelRightImpl extends PanelRight implements Comment {
     AtomicInteger interactionCount = new AtomicInteger(0);
 
     SwingUtilities.invokeLater(
-        () ->
-            messageModel.getUserInteractions().stream()
-                .limit(form_layeredPane1.getWidth() / 25)
-                .forEach(
-                    (interaction) -> {
-                      ImageIcon icon;
+        () -> messageModel.getUserInteractions().stream()
+            .limit(form_layeredPane1.getWidth() / 25)
+            .forEach(
+                (interaction) -> {
+                  ImageIcon icon;
 
-                      if (executedFromJar) {
+                  if (executedFromJar) {
 
-                        icon =
-                            new ImageIcon(
-                                Objects.requireNonNull(
-                                    EmojiConverter.class.getResource(
-                                        "/emojis/" + interaction.getEmoji() + ".png")));
+                    icon = new ImageIcon(
+                        Objects.requireNonNull(
+                            EmojiConverter.class.getResource(
+                                "/emojis/" + interaction.getEmoji() + ".png")));
 
-                      } else {
+                  } else {
 
-                        icon =
-                            new ImageIcon(
-                                "src/main/resources/emojis/" + interaction.getEmoji() + ".png");
-                      }
+                    icon = new ImageIcon(
+                        "src/main/resources/emojis/" + interaction.getEmoji() + ".png");
+                  }
 
-                      icon.setDescription(interaction.getUsername());
+                  icon.setDescription(interaction.getUsername());
 
-                      int diameter = 25;
+                  int diameter = 25;
 
-                      JLabel jLabel =
-                          new JLabel(icon) {
-                            @Override
-                            protected void paintComponent(Graphics g) {
+                  JLabel jLabel = new JLabel(icon) {
+                    @Override
+                    protected void paintComponent(Graphics g) {
 
-                              Graphics2D g2d = (Graphics2D) g;
-                              g2d.setRenderingHints(
-                                  new RenderingHints(
-                                      RenderingHints.KEY_ANTIALIASING,
-                                      RenderingHints.VALUE_ANTIALIAS_ON));
-                              g2d.setColor(Color.WHITE);
-                              g2d.fillRoundRect(1, 1, diameter - 2, diameter - 2, 50, 50);
+                      Graphics2D g2d = (Graphics2D) g;
+                      g2d.setRenderingHints(
+                          new RenderingHints(
+                              RenderingHints.KEY_ANTIALIASING,
+                              RenderingHints.VALUE_ANTIALIAS_ON));
+                      g2d.setColor(Color.WHITE);
+                      g2d.fillRoundRect(1, 1, diameter - 2, diameter - 2, 50, 50);
 
-                              g2d.setColor(Color.DARK_GRAY);
-                              g2d.drawRoundRect(0, 0, diameter - 1, diameter - 1, 50, 50);
-                              super.paintComponent(g);
-                            }
-                          };
+                      g2d.setColor(Color.DARK_GRAY);
+                      g2d.drawRoundRect(0, 0, diameter - 1, diameter - 1, 50, 50);
+                      super.paintComponent(g);
+                    }
+                  };
 
-                      jLabel.setToolTipText(interaction.getUsername());
-                      jLabel.setBounds(
-                          (interactionCount.get() * diameter),
-                          form_layeredPane1.getHeight() - diameter,
-                          diameter,
-                          diameter);
+                  jLabel.setToolTipText(interaction.getUsername());
+                  jLabel.setBounds(
+                      (interactionCount.get() * diameter),
+                      form_layeredPane1.getHeight() - diameter,
+                      diameter,
+                      diameter);
 
-                      jLabel.setVisible(true);
-                      form_layeredPane1.add(jLabel);
-                      form_layeredPane1.moveToFront(jLabel);
+                  jLabel.setVisible(true);
+                  form_layeredPane1.add(jLabel);
+                  form_layeredPane1.moveToFront(jLabel);
 
-                      interactionCount.getAndIncrement();
+                  interactionCount.getAndIncrement();
 
-                      repaint();
-                    }));
+                  repaint();
+                }));
   }
 
   public void addEmojiInteraction(MessageModel messageModel) {
@@ -288,10 +281,9 @@ public class PanelRightImpl extends PanelRight implements Comment {
           emoji -> {
             ImageIcon icon;
             if (executedFromJar) {
-              icon =
-                  new ImageIcon(
-                      Objects.requireNonNull(
-                          EmojiConverter.class.getResource("/emojis/" + emoji + ".png")));
+              icon = new ImageIcon(
+                  Objects.requireNonNull(
+                      EmojiConverter.class.getResource("/emojis/" + emoji + ".png")));
             } else {
               icon = new ImageIcon("src/main/resources/emojis/" + emoji + ".png");
             }
@@ -312,20 +304,19 @@ public class PanelRightImpl extends PanelRight implements Comment {
                   public void mouseClicked(MouseEvent e) {
 
                     e.consume();
-                    MessageModel likeModel =
-                        new MessageModel(
-                            messageModel.getId(),
-                            MessageTypes.INTERACTED,
-                            messageModel.addUserInteractions(
-                                mapOfIps.get(client.getLocalSocketAddress().getHostString()),
-                                jButton.getName()),
-                            messageModel.getLocalIp(),
-                            messageModel.getSender(),
-                            messageModel.getTime(),
-                            messageModel.getMessage(),
-                            messageModel.getQuotedMessageSender(),
-                            messageModel.getQuotedMessageTime(),
-                            messageModel.getQuotedMessageText());
+                    MessageModel likeModel = new MessageModel(
+                        messageModel.getId(),
+                        MessageTypes.INTERACTED,
+                        messageModel.addUserInteractions(
+                            mapOfIps.get(client.getLocalSocketAddress().getHostString()),
+                            jButton.getName()),
+                        messageModel.getLocalIp(),
+                        messageModel.getSender(),
+                        messageModel.getTime(),
+                        messageModel.getMessage(),
+                        messageModel.getQuotedMessageSender(),
+                        messageModel.getQuotedMessageTime(),
+                        messageModel.getQuotedMessageText());
 
                     try {
                       client.send(
@@ -423,6 +414,28 @@ public class PanelRightImpl extends PanelRight implements Comment {
     popupMenu.add(reply);
     popupMenu.add(edit);
     popupMenu.add(delete);
+
+    popupMenu.addSeparator();
+
+    JMenuItem config = new JMenuItem("config");
+
+    config.addMouseListener(
+        new MouseAdapter() {
+          @Override
+          public void mouseReleased(MouseEvent e) {
+            SwingUtilities.invokeLater(
+                () -> {
+                  int x = (int) e.getPoint().getX();
+                  int y = (int) e.getPoint().getY();
+                  JPopupMenu configPopup = new JPopupMenu("config");
+                  configPopup.add(new JMenuItem("config"));
+                  configPopup.show(null,x,y);
+                });
+          }
+        });
+
+    popupMenu.add(config);
+
     popupMenu.show(e.getComponent(), e.getX(), e.getY());
   }
 
