@@ -877,6 +877,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
 
     loadLogoIconForTitleBarAndSystemTray();
 
+    // for further Frame manipulation
     settings.setMainJFrame(this);
 
     emojiWindow = new EmojiImpl(form_textEditorPane);

@@ -60,8 +60,6 @@ public class ReplyImpl extends FeedbackDialog {
     }
 
     setTitle("reply to message");
-    System.out.println("getHeight() = " + getHeight());
-    System.out.println("getWidth() = " + getWidth());
 
     setLocationRelativeTo(null);
 
