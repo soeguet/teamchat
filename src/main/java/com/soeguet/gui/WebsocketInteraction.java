@@ -26,6 +26,9 @@ import java.util.logging.Logger;
 
 public class WebsocketInteraction implements Serializable {
 
+    private static final int MAX_WIDTH = 350;
+    private static final String PARTICIPANTS_PREFIX = "PARTICIPANTS:";
+    private static final String TERMINATION_COMMAND = "/terminateAll";
     private final ChatImpl chatImpl;
     Logger log = Logger.getLogger(WebsocketInteraction.class.getName());
 
@@ -49,127 +52,23 @@ public class WebsocketInteraction implements Serializable {
         connectToWebSocket();
     }
 
-    /**
-     * Called when a message is received as a ByteBuffer.
-     * @param bytes The ByteBuffer representing the received message.
-     */
-//    public void onByteBufferMessageReceived(ByteBuffer bytes) {
-//
-//        String message = new String(bytes.array());
-//
-//        if (message.startsWith("PARTICIPANTS:")) {
-//
-//            String participantString =  message.replace("PARTICIPANTS:", "");
-//            chatImpl.setParticipantNameArray(participantString.split(","));
-//
-//            return;
-//        }
-//
-//        if (message.equals("X")) {
-//            chatImpl.getForm_typingLabel()
-//                    .setText(" ");
-//
-//        }
-//
-//        if (message.equals("/terminateAll")) {
-//
-//            System.exit(0);
-//        }
-//
-//        // add picture to the chat panel
-//        if (bytes.array().length > 50) {
-//
-//            try {
-//
-//                if (ImageIO.read(new ByteArrayInputStream(bytes.array())) != null) {
-//
-//                    JLabel label;
-//                    if (ImageIO.read(new ByteArrayInputStream(bytes.array()))
-//                               .getWidth() > 351) {
-//
-//                        int maxWidth = 350;
-//                        double scaleFactor = (double) maxWidth / ImageIO.read(new ByteArrayInputStream(bytes.array()))
-//                                                                        .getWidth();
-//                        int newWidth = (int) (ImageIO.read(new ByteArrayInputStream(bytes.array()))
-//                                                     .getWidth() * scaleFactor);
-//                        int newHeight = (int) (ImageIO.read(new ByteArrayInputStream(bytes.array()))
-//                                                      .getHeight() * scaleFactor);
-//                        Image scaledImage = ImageIO.read(new ByteArrayInputStream(bytes.array()))
-//                                                   .getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-//
-//                        ImageIcon imageIcon = new ImageIcon(scaledImage);
-//
-//                        label = new JLabel(imageIcon);
-//                    } else {
-//                        label = new JLabel(new ImageIcon(ImageIO.read(new ByteArrayInputStream(bytes.array()))));
-//                    }
-//                    label.addMouseListener(new MouseAdapter() {
-//
-//                        /**
-//                         * Handles the event when the mouse is clicked.
-//                         *
-//                         * @param e The MouseEvent that triggered the method
-//                         */
-//                        @Override
-//                        public void mouseClicked(MouseEvent e) {
-//
-//                            try {
-//                                File tempFile = File.createTempFile("tempImage", ".png");
-//                                ImageIO.write(ImageIO.read(new ByteArrayInputStream(bytes.array())), "png", tempFile);
-//
-//                                Desktop desktop = Desktop.getDesktop();
-//                                desktop.open(tempFile);
-//                            } catch (IOException ex) {
-//                                ex.printStackTrace();
-//                            }
-//                        }
-//                    });
-//                    chatImpl.form_mainTextPanel.add(label, "center, wrap");
-//                    chatImpl.updateFrame();
-//                }
-//
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//        } else {
-//
-//            if (!chatImpl.getForm_typingLabel()
-//                         .getText()
-//                         .trim()
-//                         .equals("")) {
-//
-//                if (!chatImpl.getForm_typingLabel()
-//                             .getText()
-//                             .contains(message)) {
-//
-//                    chatImpl.getForm_typingLabel()
-//                            .setText(chatImpl.getForm_typingLabel()
-//                                             .getText()
-//                                             .replace(" typing..", "") + (", " + message + " typing.."));
-//                }
-//            } else {
-//
-//                chatImpl.getForm_typingLabel()
-//                        .setText(message + " typing..");
-//            }
-//        }
-//    }
     public void onByteBufferMessageReceived(ByteBuffer bytes) {
+
         String message = new String(bytes.array());
 
-        if (message.startsWith("PARTICIPANTS:")) {
-            String participantString = message.replace("PARTICIPANTS:", "");
+        if (message.startsWith(PARTICIPANTS_PREFIX)) {
+            String participantString = message.replace(PARTICIPANTS_PREFIX, "");
             chatImpl.setParticipantNameArray(participantString.split(","));
             return;
         }
 
         if (message.equals("X")) {
-            chatImpl.getForm_typingLabel().setText(" ");
+            chatImpl.getForm_typingLabel()
+                    .setText(" ");
             return;
         }
 
-        if (message.equals("/terminateAll")) {
+        if (message.equals(TERMINATION_COMMAND)) {
             System.exit(0);
             return;
         }
@@ -181,7 +80,7 @@ public class WebsocketInteraction implements Serializable {
                     processImage(image);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                log.info(e.getMessage());
             }
             return;
         }
@@ -191,51 +90,61 @@ public class WebsocketInteraction implements Serializable {
 
     /**
      * Process the received image and add it to the chat panel.
+     *
      * @param image The BufferedImage to be processed.
      */
     private void processImage(BufferedImage image) {
-        JLabel label;
-        if (image.getWidth() > 351) {
 
-            int maxWidth = 350;
-            double scaleFactor = (double) maxWidth / image.getWidth();
-            int newWidth = (int) (image.getWidth() * scaleFactor);
-            int newHeight = (int) (image.getHeight() * scaleFactor);
-            Image scaledImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-
-            label = new JLabel(new ImageIcon(scaledImage));
-        } else {
-            label = new JLabel(new ImageIcon(image));
-        }
+        ImageIcon icon = new ImageIcon((image.getWidth() > MAX_WIDTH) ? resizeImage(image) : image);
+        JLabel label = new JLabel(icon);
         addImageClickListener(label, image);
         chatImpl.form_mainTextPanel.add(label, "center, wrap");
         chatImpl.updateFrame();
     }
 
+    /**
+     * Resize the given image maintaining the aspect ratio according to the maximum width.
+     *
+     * @param image The original BufferedImage.
+     * @return The resized Image.
+     */
+    private Image resizeImage(BufferedImage image) {
+
+        double scaleFactor = (double) MAX_WIDTH / image.getWidth();
+        int newWidth = (int) (image.getWidth() * scaleFactor);
+        int newHeight = (int) (image.getHeight() * scaleFactor);
+        return image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+    }
+
     private void addImageClickListener(JLabel label, BufferedImage image) {
-        label.addMouseListener(new MouseAdapter() {
 
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                try {
-                    File tempFile = File.createTempFile("tempImage", ".png");
-                    ImageIO.write(image, "png", tempFile);
+        label.addMouseListener(new ImageClickListener(image));
+    }
 
-                    Desktop desktop = Desktop.getDesktop();
-                    desktop.open(tempFile);
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            }
-        });
+    private File createAndWriteTempImageFile(BufferedImage image) throws IOException {
+
+        File tempFile = File.createTempFile("tempImage", ".png");
+        ImageIO.write(image, "png", tempFile);
+        return tempFile;
+    }
+
+    private void openTempImageFile(File tempFile) throws IOException {
+
+        Desktop.getDesktop()
+               .open(tempFile);
     }
 
     private void updateTypingLabel(String message) {
-        String labelTxt = chatImpl.getForm_typingLabel().getText().trim();
+
+        String labelTxt = chatImpl.getForm_typingLabel()
+                                  .getText()
+                                  .trim();
         if (labelTxt.isEmpty()) {
-            chatImpl.getForm_typingLabel().setText(message + " typing..");
+            chatImpl.getForm_typingLabel()
+                    .setText(message + " typing..");
         } else if (!labelTxt.contains(message)) {
-            chatImpl.getForm_typingLabel().setText(labelTxt.replaceAll(" typing..$", "") + (", " + message + " typing.."));
+            chatImpl.getForm_typingLabel()
+                    .setText(labelTxt.replaceAll(" typing..$", "") + (", " + message + " typing.."));
         }
     }
 
@@ -349,9 +258,6 @@ public class WebsocketInteraction implements Serializable {
                 chatImpl.getInitialLoadingStartUpDialog()
                         .dispose();
 
-            } catch (NullPointerException e) {
-
-                log.info(Arrays.toString(e.getStackTrace()));
             }
 
             chatImpl.updateFrame();
@@ -364,5 +270,26 @@ public class WebsocketInteraction implements Serializable {
         ChatImpl.client = CustomWebsocketClient.getInstance();
         ChatImpl.client.connect();
         ChatImpl.client.addListener(chatImpl);
+    }
+
+    class ImageClickListener extends MouseAdapter {
+
+        private final BufferedImage image;
+
+        ImageClickListener(BufferedImage image) {
+
+            this.image = image;
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+
+            try {
+                File tempFile = createAndWriteTempImageFile(image);
+                openTempImageFile(tempFile);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 }
