@@ -48,6 +48,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
@@ -116,7 +117,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
 
         ipAddressesAsLocalClientsInit();
         emojiListInit();
-        manualGuiInit();
+        initializeGui();
 
         websocketInteraction = new WebsocketInteraction(this);
         websocketInteraction.connectToWebSocket();
@@ -125,41 +126,47 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
     @Override
     public void onMessageReceived(String message) {
 
-        // additional processing if startup
         if (startup) {
+            boolean isInitialRowCountInfoProcessed = processInitialRowCountInfo(message);
 
-            // initial row count info from server //need a better way to do this
-            if (message.contains("ROWS:")) {
-
-                this.progressbarMaxValue = 100;
-                // start at 0, not 1
-                progressBarLiveValue--;
-
-                return;
+            if (!isInitialRowCountInfoProcessed) {
+                updateProgressBarAndShowStatus();
             }
-
-            progressBarLiveValue++;
-            formProgressbar.setValue((progressBarLiveValue) * 100 / progressbarMaxValue);
-
-            // a little delay to make the loading a tad more dramatic
-            try {
-
-                Thread.sleep(25);
-
-            } catch (InterruptedException e) {
-
-                throw new RuntimeException(e);
-            }
-
-            if (loadingMessageLabelOnStartUp == null) {
-
-                loadingMessageLabelOnStartUp = new JLabel();
-            }
-
-            loadingMessageLabelOnStartUp.setText("loading - " + progressBarLiveValue + " of " + progressbarMaxValue + " - estm. " + (progressbarMaxValue * 25 / 600) + " secs");
+            addDelay(1050);
         }
 
         websocketInteraction.onMessageReceived(message);
+    }
+
+    private boolean processInitialRowCountInfo(String message) {
+        if (message.contains("ROWS:")) {
+            progressbarMaxValue = 100;
+            // start at 0, not 1
+            progressBarLiveValue--;
+            return true;
+        }
+        return false;
+    }
+
+    private void updateProgressBarAndShowStatus() {
+        progressBarLiveValue++;
+        formProgressbar.setValue((progressBarLiveValue) * 100 / progressbarMaxValue);
+
+        if (loadingMessageLabelOnStartUp == null) {
+            loadingMessageLabelOnStartUp = new JLabel();
+        }
+
+        String statusMessage = String.format("loading - %d of %d - estm. %d secs",
+                progressBarLiveValue, progressbarMaxValue, progressbarMaxValue * 25 / 600);
+        loadingMessageLabelOnStartUp.setText(statusMessage);
+    }
+
+    private void addDelay(int milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -224,96 +231,142 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
     }
 
     protected void loadingInitialMessagesLoadUpDialog() {
-
-        if (initialLoadingStartUpDialog != null && initialLoadingStartUpDialog.isVisible()) {
+        if (isDialogVisible()) {
             return;
         }
 
-        SwingUtilities.invokeLater(() -> {
-            initialLoadingStartUpDialog = new JDialog();
-            initialLoadingStartUpDialog.setModal(true);
-            initialLoadingStartUpDialog.setDefaultCloseOperation(HIDE_ON_CLOSE);
-            initialLoadingStartUpDialog.setLayout(new MigLayout("alignx center, wrap 1", "[center]", "[grow,fill, center]"));
-            initialLoadingStartUpDialog.add(new JLabel("trying to connect to server -- ip: " + settings.getIp() + " -- " + "port: " + settings.getPort(), SwingConstants.CENTER));
-            initialLoadingStartUpDialog.add(new JLabel("¯\\_(ツ)_/¯   loading messages.. please wait..", SwingConstants.CENTER));
-            loadingMessageLabelOnStartUp = new JLabel();
-            loadingMessageLabelOnStartUp.setHorizontalAlignment(SwingConstants.CENTER);
-            loadingMessageLabelOnStartUp.setText("loading..");
-
-            initialLoadingStartUpDialog.add(loadingMessageLabelOnStartUp);
-
-            JPanel progressBarPanel = new JPanel();
-            progressBarPanel.add(formProgressbar);
-
-            initialLoadingStartUpDialog.add(progressBarPanel);
-
-            initialLoadingStartUpDialog.pack();
-            initialLoadingStartUpDialog.setSize(initialLoadingStartUpDialog.getWidth() + 150, initialLoadingStartUpDialog.getHeight() + 150);
-            initialLoadingStartUpDialog.setLocationRelativeTo(this);
-            initialLoadingStartUpDialog.setAlwaysOnTop(true);
-            initialLoadingStartUpDialog.setVisible(true);
-        });
+        SwingUtilities.invokeLater(this::initializeDialog);
     }
+
+    private boolean isDialogVisible() {
+        return initialLoadingStartUpDialog != null && initialLoadingStartUpDialog.isVisible();
+    }
+
+    private void initializeDialog() {
+        initialLoadingStartUpDialog = createDialog();
+        initialLoadingStartUpDialog.setVisible(true);
+    }
+
+    private JDialog createDialog() {
+        JDialog dialog = new JDialog();
+        dialog.setModal(true);
+        dialog.setDefaultCloseOperation(HIDE_ON_CLOSE);
+        dialog.setLayout(new MigLayout("alignx center, wrap 1", "[center]", "[grow,fill, center]"));
+
+        dialog.add(createConnectionStatusLabel());
+        dialog.add(createLoadingStatusLabel());
+        dialog.add(createProgressBarPanel());
+
+        dialog.pack();
+        dialog.setSize(dialog.getWidth() + 150, dialog.getHeight() + 150);
+        dialog.setLocationRelativeTo(this);
+        dialog.setAlwaysOnTop(true);
+
+        return dialog;
+    }
+
+    private JLabel createConnectionStatusLabel() {
+        return new JLabel("trying to connect to server -- ip: " + settings.getIp() + " -- " + "port: " + settings.getPort(), SwingConstants.CENTER);
+    }
+
+    private JLabel createLoadingStatusLabel() {
+        JLabel label = new JLabel("¯\\_(ツ)_/¯   loading messages.. please wait..", SwingConstants.CENTER);
+        loadingMessageLabelOnStartUp = new JLabel();
+        loadingMessageLabelOnStartUp.setHorizontalAlignment(SwingConstants.CENTER);
+        loadingMessageLabelOnStartUp.setText("loading..");
+
+        return label;
+    }
+
+    private JPanel createProgressBarPanel() {
+        JPanel progressBarPanel = new JPanel();
+        progressBarPanel.add(formProgressbar);
+
+        return progressBarPanel;
+    }
+
 
     protected void incomingMessagePreviewDesktopNotification(MessageModel messageModel) {
 
         if (!this.isFocused() && !startup) {
+
             SwingUtilities.invokeLater(() -> {
-                // reusing the same dialog is not an option, it's up to the garbage collector I
-                // guess
-                JDialog popUpDialog = new JDialog();
 
-                addMouseClickAdapterToPanel(popUpDialog);
+                // create popup dialog, attach mouse click event and arrange layout
+                JDialog popUpDialog = createPopUpDialog();
 
-                popUpDialog.setLayout(new MigLayout("fillx",
-                        // columns
-                        "[fill]",
-                        // rows
-                        "[fill]"));
+                // adding a new Panel with given message model to popUpDialog
+                addMessageToPopUpDialog(messageModel, popUpDialog);
 
-                PanelRightImpl comment = new PanelRightImpl(messageModel);
-                addMouseClickAdapterToPanel(comment);
-                popUpDialog.add(comment);
+                // tweak dialog's location and properties like focus, border etc.
+                setPopUpDialogProperties(popUpDialog);
 
-                popUpDialog.pack();
-                popUpDialog.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width - popUpDialog.getWidth() - 20, heightLastPopUp);
-                popUpDialog.setAutoRequestFocus(false);
-                heightLastPopUp += popUpDialog.getHeight() + 5;
-                visibleDesktopNotificationCount++;
-                popUpDialog.getRootPane().setBorder(new LineBorder(Color.RED, 5));
-                popUpDialog.setAlwaysOnTop(true);
-                popUpDialog.pack();
-                popUpDialog.setVisible(true);
+                // initiate timers for changing dialog border and auto disposing
+                initiateDialogTimers(popUpDialog);
 
-                Timer timerBorder = new Timer(1000, e -> {
-                    popUpDialog.getRootPane().setBorder(new LineBorder(Color.BLUE, 2));
-
-                    popUpDialog.pack();
-                });
-                timerBorder.setRepeats(false);
-                timerBorder.start();
-
-                Timer timer = new Timer(settings.getMessageDuration() * 1000, e -> {
-                    popUpDialog.dispose();
-                    visibleDesktopNotificationCount--;
-
-                    if (visibleDesktopNotificationCount == 0) {
-                        heightLastPopUp = 30;
-                    }
-                });
-                timer.setRepeats(false);
-                timer.start();
-
-                if ((heightLastPopUp > 500) || (visibleDesktopNotificationCount == 0)) {
-                    heightLastPopUp = 30;
-                }
-
-                super.toFront();
-                setFocusableWindowState(false);
-                setFocusableWindowState(true);
+                // beep sound to alert user about the incoming message
                 Toolkit.getDefaultToolkit().beep();
             });
         }
+    }
+
+    private JDialog createPopUpDialog() {
+        JDialog popUpDialog = new JDialog();
+        addMouseClickAdapterToPanel(popUpDialog);
+        popUpDialog.setLayout(new MigLayout("fillx", "[fill]", "[fill]"));
+        return popUpDialog;
+    }
+
+    private void addMessageToPopUpDialog(MessageModel messageModel, JDialog popUpDialog) {
+        // Add comment panel to dialog
+        PanelRightImpl comment = new PanelRightImpl(messageModel);
+        addMouseClickAdapterToPanel(comment);
+        popUpDialog.add(comment);
+    }
+
+    private void setPopUpDialogProperties(JDialog popUpDialog) {
+        popUpDialog.pack();
+        popUpDialog.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width - popUpDialog.getWidth() - 20, heightLastPopUp);
+        popUpDialog.setAutoRequestFocus(false);
+        heightLastPopUp += popUpDialog.getHeight() + 5;
+        visibleDesktopNotificationCount++;
+        popUpDialog.getRootPane().setBorder(new LineBorder(Color.RED, 5));
+        popUpDialog.setAlwaysOnTop(true);
+        popUpDialog.pack();
+        popUpDialog.setVisible(true);
+    }
+
+    private void initiateDialogTimers(JDialog popUpDialog) {
+        // Timer for changing dialog border
+        Timer timerBorder = new Timer(1000, e -> {
+            popUpDialog.getRootPane().setBorder(new LineBorder(Color.BLUE, 2));
+            popUpDialog.pack();
+        });
+        timerBorder.setRepeats(false);
+        timerBorder.start();
+
+        // Timer for closing dialog
+        Timer timer = createClosingTimer(popUpDialog);
+        timer.start();
+
+        if ((heightLastPopUp > 500) || (visibleDesktopNotificationCount == 0)) {
+            heightLastPopUp = 30;
+        }
+
+        super.toFront();
+        setFocusableWindowState(false);
+        setFocusableWindowState(true);
+    }
+
+    private Timer createClosingTimer(JDialog popUpDialog) {
+        return new Timer(settings.getMessageDuration() * 1000, e -> {
+            popUpDialog.dispose();
+            visibleDesktopNotificationCount--;
+
+            if (visibleDesktopNotificationCount == 0) {
+                heightLastPopUp = 30;
+            }
+        });
     }
 
     @Override
@@ -379,53 +432,79 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
         websocketInteraction.onCloseReconnect();
     }
 
+    /**
+     * Function to send button operations
+     *
+     * @param e ActionEvent e
+     */
     @Override
     protected synchronized void sendButton(ActionEvent e) {
+        String text = form_textEditorPane.getText().trim();
 
         // emergency command -> shuts down all clients
-        if (form_textEditorPane.getText().trim().equals("/terminateAll")) {
-            client.send("/terminateAll".getBytes());
-            form_textEditorPane.setText("");
+        if (isTerminateAllCommand(text)) {
+            sendTerminateAllCommand();
             return;
         }
 
         try {
+            createAndSendMessageModel(text);
 
-            MessageModel messageModel = new MessageModel(mapOfIps.get(client.getLocalSocketAddress().getHostString()), EmojiConverter.checkTextForEmojis(form_textEditorPane));
+            // close emoji pop up while sending
+            closeEmojiPopUp();
 
-            if (messageModel.getMessage().trim().isEmpty()) {
-                form_textEditorPane.setText("");
-                return;
-            }
-
-            try {
-                messageModel.setLocalIp(client.getLocalSocketAddress().getHostString());
-                client.send(MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(messageModel));
-
-                // close emoji pop up while sending
-                if (emojiSelectionPopUp != null && emojiSelectionPopUp.isVisible()) {
-                    emojiWindow.dispose();
-                    emojiSelectionPopUp.dispose();
-                }
-
-            } catch (WebsocketNotConnectedException ex) {
-                websocketInteraction.createNewMessageOnPane("can't send message, no connection to server");
-            }
-
-            form_textEditorPane.setText("");
+        } catch (WebsocketNotConnectedException ex) {
+            websocketInteraction.createNewMessageOnPane("can't send message, no connection to server");
 
         } catch (JsonProcessingException ex) {
             throw new RuntimeException(ex);
-        } catch (NullPointerException ex) {
 
+        } catch (NullPointerException ex) {
             // todo error handling not working
-            SwingUtilities.invokeLater(() -> {
-                JLabel label = new JLabel(ex.getMessage());
-                label.setForeground(Color.RED);
-                label.setFont(new Font(null, Font.BOLD, 20));
-                form_mainTextPanel.add(new JLabel().add(label), "wrap, align center");
-            });
+            handleError(ex);
         }
+
+        form_textEditorPane.setText("");
+    }
+
+    private boolean isTerminateAllCommand(String text) {
+        return text.equals("/terminateAll");
+    }
+
+    private void sendTerminateAllCommand() {
+        client.send("/terminateAll".getBytes());
+        form_textEditorPane.setText("");
+    }
+
+    private void createAndSendMessageModel(String text) throws JsonProcessingException {
+        MessageModel messageModel = new MessageModel(mapOfIps.get(client.getLocalSocketAddress().getHostString()), EmojiConverter.checkTextForEmojis(form_textEditorPane));
+
+        if (isMessageEmpty(messageModel)) {
+            return;
+        }
+
+        messageModel.setLocalIp(client.getLocalSocketAddress().getHostString());
+        client.send(MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(messageModel));
+    }
+
+    private boolean isMessageEmpty(MessageModel messageModel) {
+        return messageModel.getMessage().trim().isEmpty();
+    }
+
+    private void closeEmojiPopUp() {
+        if (emojiSelectionPopUp != null && emojiSelectionPopUp.isVisible()) {
+            emojiWindow.dispose();
+            emojiSelectionPopUp.dispose();
+        }
+    }
+
+    private void handleError(NullPointerException ex) {
+        SwingUtilities.invokeLater(() -> {
+            JLabel label = new JLabel(ex.getMessage());
+            label.setForeground(Color.RED);
+            label.setFont(new Font(null, Font.BOLD, 20));
+            form_mainTextPanel.add(new JLabel().add(label), "wrap, align center");
+        });
     }
 
     @Override
@@ -658,68 +737,95 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
 
     @Override
     protected void participantsMenuItemMousePressed(@Nullable MouseEvent e) {
-
-        // if clicked on update -> new updated frame
         if (e != null) {
             e.consume();
-        } else {
+            disposeParticipantFrame();
+            SwingUtilities.invokeLater(this::initializeParticipantsFrame);
+        }
+    }
+
+    private void disposeParticipantFrame() {
+        if (participantsFrame != null) {
             participantsFrame.dispose();
             participantsFrame = null;
         }
+    }
 
-        SwingUtilities.invokeLater(() -> {
-            if (participantTextArea != null) {
-                participantTextArea.selectAll();
-                participantTextArea.replaceSelection("");
-            }
+    private void initializeParticipantsFrame() {
+        clearParticipantTextArea();
+        createParticipantFrameIfNeeded();
+        updateParticipantFrame();
+    }
 
-            if (participantsFrame == null) {
+    private void clearParticipantTextArea() {
+        if (participantTextArea != null) {
+            participantTextArea.selectAll();
+            participantTextArea.replaceSelection("");
+        }
+    }
 
-                assert client != null;
+    private void createParticipantFrameIfNeeded() {
+        assert client != null;
+        if (participantsFrame == null) {
+            initializeNewParticipantFrame();
+        }
+    }
+
+    private void initializeNewParticipantFrame() {
+        client.send("PARTICIPANTLIST".getBytes());
+        participantsFrame = new JFrame("participants");
+        setupParticipantFrameProperties();
+        participantTextArea = new JTextPane();
+        participantsFrame.add(participantTextArea, "growx");
+        addButtonToFrame();
+    }
+
+    private void setupParticipantFrameProperties() {
+        participantsFrame.setAlwaysOnTop(true);
+        participantsFrame.setDefaultCloseOperation(HIDE_ON_CLOSE);
+        participantsFrame.setLayout(new MigLayout("fill,wrap", "[grow, align center]", "[grow, align center]"));
+    }
+
+    private void addButtonToFrame() {
+        JButton updateButton = new JButton("update");
+        updateButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
                 client.send("PARTICIPANTLIST".getBytes());
-                participantsFrame = new JFrame("participants");
-                participantsFrame.setAlwaysOnTop(true);
-                participantsFrame.setDefaultCloseOperation(HIDE_ON_CLOSE);
-                participantsFrame.setLayout(new MigLayout("fill,wrap", "[grow, align center]", "[grow, align center]"));
-
-                participantTextArea = new JTextPane();
-                participantsFrame.add(participantTextArea, "growx");
-                JButton updateButton = new JButton("update");
-
-                updateButton.addMouseListener(new MouseAdapter() {
-
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-
-                        client.send("PARTICIPANTLIST".getBytes());
-                        participantsMenuItemMousePressed(null);
-                    }
-                });
-                participantsFrame.add(updateButton, "growx");
+                participantsMenuItemMousePressed(null);
             }
-
-            if (participantNameArray != null) {
-                mapOfIps.forEach((a, b) -> {
-                    if (Arrays.stream(participantNameArray).anyMatch(z -> z.contains(a))) {
-                        appendToPane(participantTextArea, "•", Color.GREEN);
-                    } else {
-                        appendToPane(participantTextArea, "•", Color.RED);
-                    }
-
-                    appendToPane(participantTextArea, " " + b + " (" + a + ")", Color.BLACK);
-                    appendToPane(participantTextArea, "\n", Color.BLACK);
-                    participantsFrame.pack();
-                });
-            }
-
-            assert participantTextArea != null;
-            participantsFrame.revalidate();
-            participantsFrame.pack();
-            participantsFrame.setResizable(false);
-            participantsFrame.setLocation(this.getBounds().x + this.getBounds().width, this.getBounds().y);
-            participantTextArea.setEditable(false);
-            participantsFrame.setVisible(true);
         });
+        participantsFrame.add(updateButton, "growx");
+    }
+
+    private void updateParticipantFrame() {
+        populateParticipantTextArea();
+        revalidateAndRepaintParticipantFrame();
+    }
+
+    private void populateParticipantTextArea() {
+        if (participantNameArray != null) {
+            for (Entry<String, String> entry : mapOfIps.entrySet()) {
+                Color color = Arrays.stream(participantNameArray).anyMatch(z -> z.contains(entry.getKey())) ? Color.GREEN : Color.RED;
+                appendToPane(participantTextArea, "•", color);
+                appendToPane(participantTextArea, " " + entry.getValue() + " (" + entry.getKey() + ")", Color.BLACK);
+                appendToPane(participantTextArea, "\n", Color.BLACK);
+            }
+        }
+    }
+
+    private void revalidateAndRepaintParticipantFrame() {
+        assert participantTextArea != null;
+        participantsFrame.revalidate();
+        participantsFrame.pack();
+        participantsFrame.setResizable(false);
+        participantTextArea.setEditable(false);
+        setParticipantFrameLocation();
+        participantsFrame.setVisible(true);
+    }
+
+    private void setParticipantFrameLocation() {
+        participantsFrame.setLocation(this.getBounds().x + this.getBounds().width, this.getBounds().y);
     }
 
     @Override
@@ -734,84 +840,168 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
 
     }
 
-    // prevent client to be stuck on connection pop up
+    // Time limit in milliseconds to establish server connection
+    private static final int SERVER_CONNECTION_TIME_LIMIT = 5000;
+
+    /**
+     * Initiates a countdown to establish a connection to the server before the client gets stuck on the connection pop up.
+     */
     private void connectToServerTimer() {
+        Timer connectionTimer = createConnectionTimer();
+        startConnectingIfClientNotOpen(connectionTimer);
+    }
 
-        Timer connectionTimer = new Timer(5_000, e -> {
-            initialLoadingStartUpDialog.dispose();
-            if (!client.getSocket().isConnected()) {
-                JOptionPane.showMessageDialog(this, "Connection failed! Server seems down!");
-            }
-        });
-        connectionTimer.setRepeats(false);
+    /**
+     * Creates a timer that disposes the initial loading dialog and checks for connection.
+     *
+     * @return A defined Timer instance.
+     */
+    private Timer createConnectionTimer() {
+        return new Timer(SERVER_CONNECTION_TIME_LIMIT, e -> connectionTimerAction());
+    }
 
+    /**
+     * Performs the actions to be carried out when the connection timer fires.
+     */
+    private void connectionTimerAction() {
+        // avoid client being stuck on connection pop up
+        disposeInitialLoadingDialog();
+
+        if (!isClientConnected()) {
+            notifyConnectionFailure();
+        }
+    }
+
+    /**
+     * Disposes the initial loading start up dialog.
+     */
+    private void disposeInitialLoadingDialog() {
+        initialLoadingStartUpDialog.dispose();
+    }
+
+    /**
+     * Checks if the client socket is connected.
+     *
+     * @return <code>true</code> if client is connected, otherwise <code>false</code>.
+     */
+    private boolean isClientConnected() {
+        return client.getSocket().isConnected();
+    }
+
+    /**
+     * Notifies the client when a connection to the server was not successful.
+     */
+    private void notifyConnectionFailure() {
+        JOptionPane.showMessageDialog(this, "Connection failed! Server seems down!");
+    }
+
+    /**
+     * Starts the connection timer if the client is not yet open.
+     *
+     * @param connectionTimer The timer to start.
+     */
+    private void startConnectingIfClientNotOpen(Timer connectionTimer) {
         if (!client.isOpen()) {
             connectionTimer.start();
         }
     }
 
+
     private void ipAddressesAsLocalClientsInit() {
-
         try {
-
-            String s;
-
-            if (String.valueOf(ChatImpl.class.getResource("ChatImpl.class")).startsWith("jar:")) {
-
-                URI location = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI();
-
-                Path path = Paths.get(Paths.get(location).getParent().getParent() + "/bin/conf/ips.txt");
-
-                if (new File(path.toUri()).isFile()) {
-
-                    s = new String(Files.readAllBytes(Paths.get(path.toUri())), StandardCharsets.UTF_8);
-
-                } else {
-
-                    ClassLoader.getSystemClassLoader();
-                    InputStream inputStream = ClassLoader.getSystemResourceAsStream("conf/ips.txt");
-                    InputStreamReader streamReader;
-                    assert inputStream != null;
-                    streamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-                    BufferedReader in = new BufferedReader(streamReader);
-                    s = in.lines().collect(Collectors.joining());
-                }
-
-            } else {
-                s = new String(Files.readAllBytes(Paths.get("src/main/resources/conf/ips.txt")), StandardCharsets.UTF_8);
-            }
-
-            ClientsList clientsList = MAPPER.readValue(s, ClientsList.class);
-            mapOfIps = new HashMap<>();
-            clientsList.getClientsList().forEach(a -> mapOfIps.put(a.getLocalIpAddress(), a.getClientName()));
-
+            String ipAddressConfig = loadIPAddressConfig();
+            processIPAddressConfig(ipAddressConfig);
         } catch (IOException | URISyntaxException ex) {
-
-            throw new RuntimeException(ex);
+            handleException(ex);
         }
     }
 
-    private void manualGuiInit() {
+    private String loadIPAddressConfig() throws IOException, URISyntaxException {
+        if (isRunningFromJar()) {
+            Path path = locateConfigInJar();
+            if (Files.exists(path)) {
+                return new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+            } else {
+                return loadConfigAsResource();
+            }
+        } else {
+            return loadConfigFromFileSystem();
+        }
+    }
 
+    private boolean isRunningFromJar() {
+        return String.valueOf(ChatImpl.class.getResource("ChatImpl.class")).startsWith("jar:");
+    }
+
+    private Path locateConfigInJar() throws URISyntaxException {
+        URI location = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+        return Paths.get(location).getParent().getParent().resolve("bin/conf/ips.txt");
+    }
+
+    private String loadConfigAsResource() {
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream("conf/ips.txt");
+        assert inputStream != null;
+        return new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines().collect(Collectors.joining());
+    }
+
+    private String loadConfigFromFileSystem() throws IOException {
+        return new String(Files.readAllBytes(Paths.get("src/main/resources/conf/ips.txt")), StandardCharsets.UTF_8);
+    }
+
+    private void processIPAddressConfig(String ipAddressConfig) throws IOException {
+        ClientsList clientsList = MAPPER.readValue(ipAddressConfig, ClientsList.class);
+        mapOfIps = new HashMap<>();
+        clientsList.getClientsList().forEach(client -> mapOfIps.put(client.getLocalIpAddress(), client.getClientName()));
+    }
+
+    private void handleException(Exception ex) {
+        throw new RuntimeException(ex);
+    }
+
+    private void initializeGui() {
+
+        loadTitleBarAndSystemTrayLogo();
+
+        assignMainFrame();
+
+        instantiateEmojiWindow();
+
+        configureScrollBar();
+
+        configureJFrameOptions();
+
+        handleWindowClosingEvent();
+
+    }
+
+    private void loadTitleBarAndSystemTrayLogo() {
         loadLogoIconForTitleBarAndSystemTray();
+    }
 
-        // for further Frame manipulation
+    private void assignMainFrame() {
         settings.setMainJFrame(this);
+    }
 
+    private void instantiateEmojiWindow() {
         emojiWindow = new EmojiImpl(form_textEditorPane);
+    }
 
-        // scroll speed for main text area
+    private void configureScrollBar() {
         form_mainTextBackgroundScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+    }
 
-        // JFrame options
-        this.setSize((settings.getMainFrameWidth() < 500 ? 650 : settings.getMainFrameWidth()), (settings.getMainFrameHeight() < 500 ? 650 : settings.getMainFrameHeight()));
+    private void configureJFrameOptions() {
+        int frameWidth = (settings.getMainFrameWidth() < 500 ? 650 : settings.getMainFrameWidth());
+        int frameHeight = (settings.getMainFrameHeight() < 500 ? 650 : settings.getMainFrameHeight());
+        this.setSize(frameWidth, frameHeight);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.setTitle("Dev-Chat");
+    }
+
+    private void handleWindowClosingEvent() {
         this.addWindowListener(new WindowAdapter() {
-
             public void windowClosing(WindowEvent e) {
-
                 setExtendedState(JFrame.ICONIFIED);
             }
         });
@@ -836,7 +1026,7 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
             public void mouseClicked(MouseEvent e) {
 
                 e.consume();
-                // bring main frame to front by clicking pop up
+                // bring the main frame to front by clicking pop up
                 SwingUtilities.invokeLater(() -> {
                     ChatImpl.super.setExtendedState(JFrame.NORMAL);
                     ChatImpl.super.setAlwaysOnTop(true);
@@ -848,184 +1038,256 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
         });
     }
 
+    private static final String EMOJI_DIRECTORY_PATH = "emojis/";
+    private static final String PNG_FILE_EXTENSION = ".png";
+    private static final String JAR_PROTOCOL = "jar";
+
     private void initEmojiFrame() {
-        // search for all resources in the "emoji" folder
-        Enumeration<URL> resources;
-        try {
-            resources = classLoader.getResources("emojis/");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Enumeration<URL> resources = getResources();
 
         while (resources.hasMoreElements()) {
-
             URL resourceUrl = resources.nextElement();
 
-            // if resources are WITHIN .jar
-            if (resourceUrl.getProtocol().equals("jar")) {
-                try {
-                    JarURLConnection jarUrlConnection = (JarURLConnection) resourceUrl.openConnection();
-                    try (JarFile jarFile = jarUrlConnection.getJarFile()) {
-                        Enumeration<JarEntry> entries = jarFile.entries();
-
-                        while (entries.hasMoreElements()) {
-
-                            JarEntry entry = entries.nextElement();
-                            String entryName = entry.getName();
-
-                            if (entryName.startsWith("emojis/") && entryName.endsWith(".png")) {
-
-                                try (InputStream inputStream = classLoader.getResourceAsStream(entryName)) {
-
-                                    assert inputStream != null;
-                                    BufferedImage bufferedImage = ImageIO.read(inputStream);
-                                    populateDialogWithEmojiButton(null, bufferedImage, entryName);
-                                }
-                            }
-                        }
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            if (resourceUrl.getProtocol().equals(JAR_PROTOCOL)) {
+                handleJarResources(resourceUrl);
             } else {
-                // if resources are OUTSIDE .jar
-                File folder2 = new File("./src/main/resources/emojis");
-                File[] files = folder2.listFiles();
-                if (files != null) {
-                    for (File file : files) {
-                        if (file.getName().endsWith(".png")) {
-                            populateDialogWithEmojiButton(file, null, null);
-                        }
-                    }
-                    emojiSelectionPopUp.pack();
-                }
+                handleFileResources();
             }
         }
     }
 
-    private void populateDialogWithEmojiButton(File file, BufferedImage bufferedImage, String entryName) {
+    private Enumeration<URL> getResources() {
+        try {
+            return classLoader.getResources(EMOJI_DIRECTORY_PATH);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
+    private void handleJarResources(URL resourceUrl) {
+        try {
+            JarURLConnection jarUrlConnection = (JarURLConnection) resourceUrl.openConnection();
+            try (JarFile jarFile = jarUrlConnection.getJarFile()) {
+                Enumeration<JarEntry> entries = jarFile.entries();
+
+                while (entries.hasMoreElements()) {
+                    JarEntry entry = entries.nextElement();
+                    String entryName = entry.getName();
+
+                    if (entryName.startsWith(EMOJI_DIRECTORY_PATH) && entryName.endsWith(PNG_FILE_EXTENSION)) {
+                        try (InputStream inputStream = classLoader.getResourceAsStream(entryName)) {
+
+                            assert inputStream != null;
+                            BufferedImage bufferedImage = ImageIO.read(inputStream);
+                            populateDialogWithEmojiButton(null, bufferedImage, entryName);
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            logger.info(e.getMessage());
+        }
+    }
+
+    private void handleFileResources() {
+        File folder = new File("./src/main/resources/" + EMOJI_DIRECTORY_PATH);
+        File[] files = folder.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.getName().endsWith(PNG_FILE_EXTENSION)) {
+                    populateDialogWithEmojiButton(file, null, null);
+                }
+            }
+            emojiSelectionPopUp.pack();
+        }
+    }
+
+    private void populateDialogWithEmojiButton(File file, BufferedImage bufferedImage, String entryName) {
         ImageIcon icon;
         String fileName;
 
         if (file != null) {
-
-            icon = new ImageIcon(file.getPath());
-            fileName = file.getName().replace(".png", "");
+            icon = createImageIconFromFile(file);
+            fileName = getFileNameWithoutExtension(file.getName());
         } else {
-
-            icon = new ImageIcon(bufferedImage);
-            fileName = entryName.replace(".png", "");
+            icon = createImageIconFromBufferedImage(bufferedImage);
+            fileName = getFileNameWithoutExtension(entryName);
         }
 
-        fileName = fileName.replace("emojis/", "");
+        fileName = removeEmojisDirectoryPrefix(fileName);
+        createJButtonWithIconAndName(fileName, icon);
+    }
 
+    /**
+     * Creates an image icon from a file.
+     *
+     * @param file The file from which the image icon will be created.
+     * @return The image icon created from the file.
+     */
+    private ImageIcon createImageIconFromFile(File file) {
+        return new ImageIcon(file.getPath());
+    }
+
+    /**
+     * Creates an image icon from a buffered image.
+     *
+     * @param bufferedImage The buffered image from which the image icon will be created.
+     * @return The image icon created from the buffered image.
+     */
+    private ImageIcon createImageIconFromBufferedImage(BufferedImage bufferedImage) {
+        return new ImageIcon(bufferedImage);
+    }
+
+    /**
+     * Returns the file name without the extension.
+     *
+     * @param fileName The file name which contains the extension.
+     * @return The file name without the extension.
+     */
+    private String getFileNameWithoutExtension(String fileName) {
+        return fileName.replace(".png", "");
+    }
+
+    /**
+     * Removes the directory prefix from the given file name.
+     *
+     * @param fileName The file name with the directory prefix.
+     * @return The file name without the directory prefix.
+     */
+    private String removeEmojisDirectoryPrefix(String fileName) {
+        return fileName.replace("emojis/", "");
+    }
+
+
+    private void addJButtonToViews(JButton jbutton) {
+        emojiSelectionPopUp.add(jbutton);
+        emojiButtonListForFocus.add(jbutton);
+    }
+
+    private void createJButtonWithIconAndName(String name, ImageIcon icon) {
         JButton jbutton = new JButton();
         jbutton.setBorder(new FlatListCellBorder.Default());
 
-        jbutton.addFocusListener(new FocusAdapter() {
+        addFocusListenerToJButton(jbutton);
+        icon.setDescription(name);
+        jbutton.setName(name);
+        jbutton.setIcon(icon);
 
+        addEventListenersToJButton(jbutton, icon);
+        addJButtonToViews(jbutton);
+    }
+
+    private void addEventListenersToJButton(JButton jbutton, ImageIcon icon) {
+        addMouseListenerToJButton(jbutton, icon);
+        addKeyListenerToJButton(jbutton, icon);
+    }
+
+
+    private void addFocusListenerToJButton(JButton jButton) {
+        jButton.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
-
-                jbutton.setBorder(new FlatTableCellBorder.Selected());
+                jButton.setBorder(new FlatTableCellBorder.Selected());
             }
 
             @Override
             public void focusLost(FocusEvent e) {
-
-                jbutton.setBorder(new FlatTableCellBorder.Default());
+                jButton.setBorder(new FlatTableCellBorder.Default());
             }
         });
+    }
 
-        jbutton.setName(fileName);
-        icon.setDescription(fileName);
-        jbutton.setIcon(icon);
-
-        jbutton.addMouseListener(new MouseAdapter() {
-
+    private void addMouseListenerToJButton(JButton jButton, ImageIcon icon) {
+        jButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-
                 e.consume();
                 form_textEditorPane.insertIcon(icon);
                 form_textEditorPane.insertComponent(new JLabel(""));
                 form_textEditorPane.repaint();
             }
         });
+    }
 
-        jbutton.addKeyListener(new KeyAdapter() {
+    private void addKeyListenerToJButton(JButton jButton, ImageIcon icon) {
+
+        jButton.addKeyListener(new KeyAdapter() {
 
             @Override
             public void keyPressed(KeyEvent e) {
 
                 if (keyboardTraversFocusViaArrowKeys(e)) {
+
                     return;
                 }
 
                 emojiFrameKeyPressed(e, icon);
             }
-        });
 
-        emojiSelectionPopUp.add(jbutton);
-        emojiButtonListForFocus.add(jbutton);
+        });
+    }
+
+    private int getNextButtonIndex(int keyCode, int step, int min, int max) {
+        switch (keyCode) {
+            case KeyEvent.VK_DOWN:
+            case KeyEvent.VK_RIGHT:
+                return Math.min(max, currentEmojiFocus + step);
+            case KeyEvent.VK_UP:
+            case KeyEvent.VK_LEFT:
+                return Math.max(min, currentEmojiFocus - step);
+            default:
+                return currentEmojiFocus;
+        }
+    }
+
+    /**
+     * Switches the focus to the specified emoji button and consumes the KeyEvent.
+     *
+     * @param nextButtonIndex The index of the emoji button to switch the focus to.
+     * @param e               The KeyEvent to consume.
+     */
+    private void switchFocusAndConsumeEvent(int nextButtonIndex, KeyEvent e) {
+        emojiButtonListForFocus.get(nextButtonIndex).requestFocus();
+        currentEmojiFocus = nextButtonIndex;
+        e.consume();
     }
 
     private boolean keyboardTraversFocusViaArrowKeys(KeyEvent e) {
-
         int nextButtonIndex;
+        int step = (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_UP) ? 10 : 1;
+        int min = 0;
+        int max = emojiButtonListForFocus.size() - 1;
 
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_DOWN:
-                nextButtonIndex = Math.min(emojiButtonListForFocus.size() - 1, currentEmojiFocus + 10);
-                emojiButtonListForFocus.get(nextButtonIndex).requestFocus();
-                currentEmojiFocus = nextButtonIndex;
-                e.consume();
-                return true;
+        nextButtonIndex = getNextButtonIndex(e.getKeyCode(), step, min, max);
 
-            case KeyEvent.VK_UP:
-                nextButtonIndex = Math.max(0, currentEmojiFocus - 10);
-                emojiButtonListForFocus.get(nextButtonIndex).requestFocus();
-                currentEmojiFocus = nextButtonIndex;
-                e.consume();
-                return true;
-
-            case KeyEvent.VK_RIGHT:
-                nextButtonIndex = Math.min(emojiButtonListForFocus.size() - 1, currentEmojiFocus + 1);
-                emojiButtonListForFocus.get(nextButtonIndex).requestFocus();
-                currentEmojiFocus = nextButtonIndex;
-                e.consume();
-                return true;
-
-            case KeyEvent.VK_LEFT:
-                nextButtonIndex = Math.max(0, currentEmojiFocus - 1);
-                emojiButtonListForFocus.get(nextButtonIndex).requestFocus();
-                currentEmojiFocus = nextButtonIndex;
-                e.consume();
-                return true;
-
-            default:
-                return false;
+        if (nextButtonIndex != currentEmojiFocus) {
+            switchFocusAndConsumeEvent(nextButtonIndex, e);
+            return true;
         }
+
+        return false;
+    }
+
+    private AttributeSet createAttributeSet(StyleContext sc, Color c, String msg) {
+        AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, c);
+        aset = sc.addAttribute(aset, StyleConstants.FontFamily, "Lucida Console");
+        aset = sc.addAttribute(aset, StyleConstants.Alignment, StyleConstants.ALIGN_JUSTIFIED);
+        aset = sc.addAttribute(aset, StyleConstants.FontSize, msg.equals("•") ? 20 : 12);
+
+        return aset;
+    }
+
+    private void appendMessageToPane(JTextPane tp, String msg, AttributeSet attributeSet) {
+        int len = tp.getDocument().getLength();
+        tp.setCaretPosition(len);
+        tp.setCharacterAttributes(attributeSet, false);
+        tp.replaceSelection(msg);
     }
 
     private void appendToPane(JTextPane tp, String msg, Color c) {
-
         StyleContext sc = StyleContext.getDefaultStyleContext();
-        AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, c);
-
-        aset = sc.addAttribute(aset, StyleConstants.FontFamily, "Lucida Console");
-        aset = sc.addAttribute(aset, StyleConstants.Alignment, StyleConstants.ALIGN_JUSTIFIED);
-
-        int len = tp.getDocument().getLength();
-
-        if (msg.equals("•")) {
-            aset = sc.addAttribute(aset, StyleConstants.FontSize, 20);
-        } else {
-            aset = sc.addAttribute(aset, StyleConstants.FontSize, 12);
-        }
-        tp.setCaretPosition(len);
-        tp.setCharacterAttributes(aset, false);
-        tp.replaceSelection(msg);
+        AttributeSet attributeSet = createAttributeSet(sc, c, msg);
+        appendMessageToPane(tp, msg, attributeSet);
     }
+
 }

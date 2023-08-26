@@ -12,13 +12,15 @@ import javax.swing.*;
 public class Main {
 
     public static void main(String[] args) {
-
-        /*
-         * load preferences and set theme while startup
-         */
         Settings settings = Settings.getInstance();
 
-        switch (settings.getThemeSetting()) {
+        setTheme(settings.getThemeSetting());
+
+        SwingUtilities.invokeLater(ChatImpl::new);
+    }
+
+    private static void setTheme(String themeSetting) {
+        switch (themeSetting) {
             case "LIGHT":
                 FlatLightLaf.setup();
                 break;
@@ -34,7 +36,5 @@ public class Main {
             default:
                 break;
         }
-
-        SwingUtilities.invokeLater(ChatImpl::new);
     }
 }
