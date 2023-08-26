@@ -29,6 +29,7 @@ public class WebsocketInteraction implements Serializable {
     private static final int MAX_WIDTH = 350;
     private static final String PARTICIPANTS_PREFIX = "PARTICIPANTS:";
     private static final String TERMINATION_COMMAND = "/terminateAll";
+    private static final String TYPING_MESSAGE = " typing..";
     private final ChatImpl chatImpl;
     Logger log = Logger.getLogger(WebsocketInteraction.class.getName());
 
@@ -134,18 +135,34 @@ public class WebsocketInteraction implements Serializable {
                .open(tempFile);
     }
 
+    private String getLabel() {
+
+        return chatImpl.getForm_typingLabel()
+                       .getText()
+                       .trim();
+    }
+
+    private void setLabel(String text) {
+
+        chatImpl.getForm_typingLabel()
+                .setText(text);
+    }
+
     private void updateTypingLabel(String message) {
 
-        String labelTxt = chatImpl.getForm_typingLabel()
-                                  .getText()
-                                  .trim();
-        if (labelTxt.isEmpty()) {
-            chatImpl.getForm_typingLabel()
-                    .setText(message + " typing..");
-        } else if (!labelTxt.contains(message)) {
-            chatImpl.getForm_typingLabel()
-                    .setText(labelTxt.replaceAll(" typing..$", "") + (", " + message + " typing.."));
+        String labelTxt = getLabel();
+        StringBuilder newLabelTxt = new StringBuilder();
+
+        if (!labelTxt.isEmpty() && !labelTxt.contains(message)) {
+
+            newLabelTxt.append(labelTxt.replaceAll(TYPING_MESSAGE + "$", ""))
+                       .append(", ");
         }
+
+        newLabelTxt.append(message)
+                   .append(TYPING_MESSAGE);
+
+        setLabel(newLabelTxt.toString());
     }
 
     void createNewMessageOnPane(String message) {
@@ -264,32 +281,119 @@ public class WebsocketInteraction implements Serializable {
         });
     }
 
+    /**
+     * Connects to a WebSocket server.
+     *
+     * This method performs the following steps:
+     * 1. Displays a loading dialog.
+     * 2. Initializes the WebSocket client.
+     * 3. Connects the WebSocket client to the server.
+     * 4. Adds the chat implementation as a listener to the WebSocket client.
+     */
     void connectToWebSocket() {
+        displayLoadingDialog();
+        initializeWebSocketClient();
+        connectWebSocketClient();
+        addChatImplAsWebSocketListener();
+    }
 
+    /**
+     * Displays a loading dialog.
+     *
+     * This method is called to display a loading dialog during the process of connecting to a WebSocket server.
+     * The loading dialog is used to inform the user that the connection is being established and that they should wait.
+     */
+    private void displayLoadingDialog() {
         chatImpl.loadingInitialMessagesLoadUpDialog();
-        ChatImpl.client = CustomWebsocketClient.getInstance();
+    }
+
+    /**
+     * Initializes the WebSocket client.
+     *
+     * This method is called to initialize the WebSocket client. It creates an instance of the WebSocket client
+     * and assigns it to the 'client' variable in the ChatImpl class.
+     */
+    private void initializeWebSocketClient() {
+        ChatImpl.client = getWebSocketInstance();
+    }
+
+    /**
+     * Returns an instance of the WebSocket client.
+     *
+     * This method is used to obtain the instance of the WebSocket client. It checks if an instance of the WebSocket client
+     * already exists and returns it. If no instance exists, a new instance of the WebSocket client is created using the
+     * CustomWebsocketClient.getInstance() method.
+     *
+     * @return an instance of the WebSocket client
+     */
+    private CustomWebsocketClient getWebSocketInstance() {
+        return CustomWebsocketClient.getInstance();
+    }
+
+    /**
+     * Connects the WebSocket client to the server.
+     *
+     * This method is used to establish a connection between the WebSocket client and the server. It calls the
+     * connect() method on the client object to initiate the connection.
+     *
+     * The WebSocket client object must be initialized before calling this method.
+     */
+    private void connectWebSocketClient() {
         ChatImpl.client.connect();
+    }
+
+    /**
+     * Adds the ChatImpl instance as a WebSocket listener to the WebSocket client.
+     *
+     * This method is used to register the ChatImpl instance as a listener for WebSocket events on the WebSocket client.
+     * It calls the addListener() method on the client object and passes the ChatImpl instance as the listener.
+     *
+     * The ChatImpl instance and the WebSocket client object must be initialized before calling this method.
+     */
+    private void addChatImplAsWebSocketListener() {
         ChatImpl.client.addListener(chatImpl);
     }
 
+
+    /**
+     * This class is an implementation of a MouseAdapter that handles the click
+     * event on an image.
+     *
+     * It provides a method to handle the image click event by creating a temporary file
+     * with the image and opening it.
+     *
+     * Please note that this class extends MouseAdapter and overrides the mouseClicked
+     * method to handle the image click event.
+     */
     class ImageClickListener extends MouseAdapter {
 
         private final BufferedImage image;
 
         ImageClickListener(BufferedImage image) {
-
             this.image = image;
         }
 
         @Override
         public void mouseClicked(MouseEvent e) {
+            handleImageClick();
+        }
 
+        private void handleImageClick() {
             try {
-                File tempFile = createAndWriteTempImageFile(image);
-                openTempImageFile(tempFile);
+                processImageClick();
             } catch (IOException ex) {
-                ex.printStackTrace();
+                printTrace(ex);
             }
         }
+
+        private void processImageClick() throws IOException {
+            File tempFile = createAndWriteTempImageFile(image);
+            openTempImageFile(tempFile);
+        }
+
+        private void printTrace(IOException ex) {
+            log.info(ex.getMessage());
+        }
     }
+
 }
