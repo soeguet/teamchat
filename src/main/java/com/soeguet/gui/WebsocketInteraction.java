@@ -31,7 +31,7 @@ public class WebsocketInteraction implements Serializable {
     private static final String TERMINATION_COMMAND = "/terminateAll";
     private static final String TYPING_MESSAGE = " typing..";
     private final ChatImpl chatImpl;
-    Logger log = Logger.getLogger(WebsocketInteraction.class.getName());
+    private final Logger log = Logger.getLogger(WebsocketInteraction.class.getName());
 
     public WebsocketInteraction(ChatImpl chatImpl) {
 
@@ -41,122 +41,6 @@ public class WebsocketInteraction implements Serializable {
     public void onMessageReceived(String message) {
 
         createNewMessageOnPane(message);
-    }
-
-    /**
-     This method is invoked when a WebSocket connection is closed,
-     and it reconnects to the WebSocket.
-     */
-    public void onCloseReconnect() {
-
-        CustomWebsocketClient.resetClient();
-        connectToWebSocket();
-    }
-
-    public void onByteBufferMessageReceived(ByteBuffer bytes) {
-
-        String message = new String(bytes.array());
-
-        if (message.startsWith(PARTICIPANTS_PREFIX)) {
-            String participantString = message.replace(PARTICIPANTS_PREFIX, "");
-            chatImpl.setParticipantNameArray(participantString.split(","));
-            return;
-        }
-
-        if (message.equals("X")) {
-            chatImpl.getForm_typingLabel().setText(" ");
-            return;
-        }
-
-        if (message.equals(TERMINATION_COMMAND)) {
-            System.exit(0);
-            return;
-        }
-
-        if (bytes.array().length > 50) {
-            try {
-                BufferedImage image = ImageIO.read(new ByteArrayInputStream(bytes.array()));
-                if (image != null) {
-                    processImage(image);
-                }
-            } catch (IOException e) {
-                log.info(e.getMessage());
-            }
-            return;
-        }
-
-        updateTypingLabel(message);
-    }
-
-    /**
-     Process the received image and add it to the chat panel.
-
-     @param image The BufferedImage to be processed.
-     */
-    private void processImage(BufferedImage image) {
-
-        ImageIcon icon = new ImageIcon((image.getWidth() > MAX_WIDTH) ? resizeImage(image) : image);
-        JLabel label = new JLabel(icon);
-        addImageClickListener(label, image);
-        chatImpl.form_mainTextPanel.add(label, "center, wrap");
-        chatImpl.updateFrame();
-    }
-
-    /**
-     Resize the given image maintaining the aspect ratio according to the maximum width.
-
-     @param image The original BufferedImage.
-
-     @return The resized Image.
-     */
-    private Image resizeImage(BufferedImage image) {
-
-        double scaleFactor = (double) MAX_WIDTH / image.getWidth();
-        int newWidth = (int) (image.getWidth() * scaleFactor);
-        int newHeight = (int) (image.getHeight() * scaleFactor);
-        return image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-    }
-
-    private void addImageClickListener(JLabel label, BufferedImage image) {
-
-        label.addMouseListener(new ImageClickListener(image));
-    }
-
-    private File createAndWriteTempImageFile(BufferedImage image) throws IOException {
-
-        File tempFile = File.createTempFile("tempImage", ".png");
-        ImageIO.write(image, "png", tempFile);
-        return tempFile;
-    }
-
-    private void openTempImageFile(File tempFile) throws IOException {
-
-        Desktop.getDesktop().open(tempFile);
-    }
-
-    private String getLabel() {
-
-        return chatImpl.getForm_typingLabel().getText().trim();
-    }
-
-    private void setLabel(String text) {
-
-        chatImpl.getForm_typingLabel().setText(text);
-    }
-
-    private void updateTypingLabel(String message) {
-
-        String labelTxt = getLabel();
-        StringBuilder newLabelTxt = new StringBuilder();
-
-        if (!labelTxt.isEmpty() && !labelTxt.contains(message)) {
-
-            newLabelTxt.append(labelTxt.replaceAll(TYPING_MESSAGE + "$", "")).append(", ");
-        }
-
-        newLabelTxt.append(message).append(TYPING_MESSAGE);
-
-        setLabel(newLabelTxt.toString());
     }
 
     void createNewMessageOnPane(String message) {
@@ -251,6 +135,16 @@ public class WebsocketInteraction implements Serializable {
     }
 
     /**
+     This method is invoked when a WebSocket connection is closed,
+     and it reconnects to the WebSocket.
+     */
+    public void onCloseReconnect() {
+
+        CustomWebsocketClient.resetClient();
+        connectToWebSocket();
+    }
+
+    /**
      Connects to a WebSocket server.
 
      This method performs the following steps:
@@ -290,20 +184,6 @@ public class WebsocketInteraction implements Serializable {
     }
 
     /**
-     Returns an instance of the WebSocket client.
-
-     This method is used to obtain the instance of the WebSocket client. It checks if an instance of the WebSocket client
-     already exists and returns it. If no instance exists, a new instance of the WebSocket client is created using the
-     CustomWebsocketClient.getInstance() method.
-
-     @return an instance of the WebSocket client
-     */
-    private CustomWebsocketClient getWebSocketInstance() {
-
-        return CustomWebsocketClient.getInstance();
-    }
-
-    /**
      Connects the WebSocket client to the server.
 
      This method is used to establish a connection between the WebSocket client and the server. It calls the
@@ -327,6 +207,126 @@ public class WebsocketInteraction implements Serializable {
     private void addChatImplAsWebSocketListener() {
 
         ChatImpl.client.addListener(chatImpl);
+    }
+
+    /**
+     Returns an instance of the WebSocket client.
+
+     This method is used to obtain the instance of the WebSocket client. It checks if an instance of the WebSocket client
+     already exists and returns it. If no instance exists, a new instance of the WebSocket client is created using the
+     CustomWebsocketClient.getInstance() method.
+
+     @return an instance of the WebSocket client
+     */
+    private CustomWebsocketClient getWebSocketInstance() {
+
+        return CustomWebsocketClient.getInstance();
+    }
+
+    public void onByteBufferMessageReceived(ByteBuffer bytes) {
+
+        String message = new String(bytes.array());
+
+        if (message.startsWith(PARTICIPANTS_PREFIX)) {
+            String participantString = message.replace(PARTICIPANTS_PREFIX, "");
+            chatImpl.setParticipantNameArray(participantString.split(","));
+            return;
+        }
+
+        if (message.equals("X")) {
+            chatImpl.getForm_typingLabel().setText(" ");
+            return;
+        }
+
+        if (message.equals(TERMINATION_COMMAND)) {
+            System.exit(0);
+            return;
+        }
+
+        if (bytes.array().length > 50) {
+            try {
+                BufferedImage image = ImageIO.read(new ByteArrayInputStream(bytes.array()));
+                if (image != null) {
+                    processImage(image);
+                }
+            } catch (IOException e) {
+                log.info(e.getMessage());
+            }
+            return;
+        }
+
+        updateTypingLabel(message);
+    }
+
+    /**
+     Process the received image and add it to the chat panel.
+
+     @param image The BufferedImage to be processed.
+     */
+    private void processImage(BufferedImage image) {
+
+        ImageIcon icon = new ImageIcon((image.getWidth() > MAX_WIDTH) ? resizeImage(image) : image);
+        JLabel label = new JLabel(icon);
+        addImageClickListener(label, image);
+        chatImpl.form_mainTextPanel.add(label, "center, wrap");
+        chatImpl.updateFrame();
+    }
+
+    private void updateTypingLabel(String message) {
+
+        String labelTxt = getLabel();
+        StringBuilder newLabelTxt = new StringBuilder();
+
+        if (!labelTxt.isEmpty() && !labelTxt.contains(message)) {
+
+            newLabelTxt.append(labelTxt.replaceAll(TYPING_MESSAGE + "$", "")).append(", ");
+        }
+
+        newLabelTxt.append(message).append(TYPING_MESSAGE);
+
+        setLabel(newLabelTxt.toString());
+    }
+
+    /**
+     Resize the given image maintaining the aspect ratio according to the maximum width.
+
+     @param image The original BufferedImage.
+
+     @return The resized Image.
+     */
+    private Image resizeImage(BufferedImage image) {
+
+        double scaleFactor = (double) MAX_WIDTH / image.getWidth();
+        int newWidth = (int) (image.getWidth() * scaleFactor);
+        int newHeight = (int) (image.getHeight() * scaleFactor);
+        return image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+    }
+
+    private void addImageClickListener(JLabel label, BufferedImage image) {
+
+        label.addMouseListener(new ImageClickListener(image));
+    }
+
+    private String getLabel() {
+
+        return chatImpl.getForm_typingLabel().getText().trim();
+    }
+
+    private void setLabel(String text) {
+
+        chatImpl.getForm_typingLabel().setText(text);
+    }
+
+    private File createAndWriteTempImageFile(BufferedImage image) throws IOException {
+
+        File tempFile = File.createTempFile("tempImage", ".png");
+        ImageIO.write(image, "png", tempFile);
+        return tempFile;
+    }
+
+    private void openTempImageFile(File tempFile) throws IOException {
+
+        Desktop.getDesktop().open(tempFile);
     }
 
     /**
