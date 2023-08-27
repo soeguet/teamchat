@@ -19,9 +19,10 @@ import static com.soeguet.gui.ChatImpl.client;
 import static com.soeguet.gui.ChatImpl.mapOfIps;
 
 public class CustomWebsocketClient extends WebSocketClient {
+
     @Nullable
     private static CustomWebsocketClient instance;
-    Logger log = Logger.getLogger("CustomWebsocketClient");
+    private Logger log = Logger.getLogger("CustomWebsocketClient");
     private WebSocketListener listener;
 
     private CustomWebsocketClient(URI serverUri) {
@@ -50,8 +51,19 @@ public class CustomWebsocketClient extends WebSocketClient {
         instance = null;
     }
 
+    public Logger getLog() {
+
+        return log;
+    }
+
+    public WebSocketListener getListener() {
+
+        return listener;
+    }
+
     @Override
     public void onWebsocketPong(WebSocket conn, Framedata f) {
+
         super.onWebsocketPong(conn, f);
     }
 
@@ -59,8 +71,10 @@ public class CustomWebsocketClient extends WebSocketClient {
     public void onWebsocketPing(WebSocket conn, Framedata f) {
 
         f.append(new FramedataImpl1(f.getOpcode()) {
+
             @Override
             public void isValid() throws InvalidDataException {
+
                 if (!isFin()) {
                     throw new InvalidFrameException("Control frame can't have fin==false set");
                 }
@@ -77,6 +91,7 @@ public class CustomWebsocketClient extends WebSocketClient {
 
             @Override
             public ByteBuffer getPayloadData() {
+
                 assert client != null;
                 return ByteBuffer.wrap(mapOfIps.get(client.getLocalSocketAddress().getAddress().getHostAddress()).getBytes());
             }
@@ -91,6 +106,7 @@ public class CustomWebsocketClient extends WebSocketClient {
 
     @Override
     public void onOpen(ServerHandshake handshakedata) {
+
     }
 
     @Override
@@ -103,16 +119,19 @@ public class CustomWebsocketClient extends WebSocketClient {
 
     @Override
     public void onMessage(ByteBuffer bytes) {
+
         listener.onByteBufferMessageReceived(bytes);
     }
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
+
         listener.onCloseReconnect();
     }
 
     @Override
     public void onError(Exception ex) {
+
         log.info("an error occured");
         log.info(ex.getMessage());
     }

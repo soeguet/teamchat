@@ -44,8 +44,8 @@ public class WebsocketInteraction implements Serializable {
     }
 
     /**
-     * This method is invoked when a WebSocket connection is closed,
-     * and it reconnects to the WebSocket.
+     This method is invoked when a WebSocket connection is closed,
+     and it reconnects to the WebSocket.
      */
     public void onCloseReconnect() {
 
@@ -64,8 +64,7 @@ public class WebsocketInteraction implements Serializable {
         }
 
         if (message.equals("X")) {
-            chatImpl.getForm_typingLabel()
-                    .setText(" ");
+            chatImpl.getForm_typingLabel().setText(" ");
             return;
         }
 
@@ -90,9 +89,9 @@ public class WebsocketInteraction implements Serializable {
     }
 
     /**
-     * Process the received image and add it to the chat panel.
-     *
-     * @param image The BufferedImage to be processed.
+     Process the received image and add it to the chat panel.
+
+     @param image The BufferedImage to be processed.
      */
     private void processImage(BufferedImage image) {
 
@@ -104,10 +103,11 @@ public class WebsocketInteraction implements Serializable {
     }
 
     /**
-     * Resize the given image maintaining the aspect ratio according to the maximum width.
-     *
-     * @param image The original BufferedImage.
-     * @return The resized Image.
+     Resize the given image maintaining the aspect ratio according to the maximum width.
+
+     @param image The original BufferedImage.
+
+     @return The resized Image.
      */
     private Image resizeImage(BufferedImage image) {
 
@@ -131,21 +131,17 @@ public class WebsocketInteraction implements Serializable {
 
     private void openTempImageFile(File tempFile) throws IOException {
 
-        Desktop.getDesktop()
-               .open(tempFile);
+        Desktop.getDesktop().open(tempFile);
     }
 
     private String getLabel() {
 
-        return chatImpl.getForm_typingLabel()
-                       .getText()
-                       .trim();
+        return chatImpl.getForm_typingLabel().getText().trim();
     }
 
     private void setLabel(String text) {
 
-        chatImpl.getForm_typingLabel()
-                .setText(text);
+        chatImpl.getForm_typingLabel().setText(text);
     }
 
     private void updateTypingLabel(String message) {
@@ -155,12 +151,10 @@ public class WebsocketInteraction implements Serializable {
 
         if (!labelTxt.isEmpty() && !labelTxt.contains(message)) {
 
-            newLabelTxt.append(labelTxt.replaceAll(TYPING_MESSAGE + "$", ""))
-                       .append(", ");
+            newLabelTxt.append(labelTxt.replaceAll(TYPING_MESSAGE + "$", "")).append(", ");
         }
 
-        newLabelTxt.append(message)
-                   .append(TYPING_MESSAGE);
+        newLabelTxt.append(message).append(TYPING_MESSAGE);
 
         setLabel(newLabelTxt.toString());
     }
@@ -175,81 +169,60 @@ public class WebsocketInteraction implements Serializable {
 
                 if (chatImpl.isStartup() && messageModel.getMessageType() == MessageTypes.DELETED) {
 
-                    Arrays.stream(chatImpl.getForm_mainTextPanel()
-                                          .getComponents())
-                          .filter(a -> a instanceof Comment)
-                          .filter(b -> Objects.equals(((Comment) b).getId(), messageModel.getId()))
-                          .forEach(c -> {
-                              if (c.getClass()
-                                   .equals(PanelRightImpl.class)) {
+                    Arrays.stream(chatImpl.getForm_mainTextPanel().getComponents()).filter(a -> a instanceof Comment).filter(b -> Objects.equals(((Comment) b).getId(), messageModel.getId())).forEach(c -> {
+                        if (c.getClass().equals(PanelRightImpl.class)) {
 
-                                  ((PanelRightImpl) c).removeAll();
-                                  ((PanelRightImpl) c).add(new JLabel(messageModel.getTime() + " - " + messageModel.getMessage()), "cell 0 1");
-                              } else {
+                            ((PanelRightImpl) c).removeAll();
+                            ((PanelRightImpl) c).add(new JLabel(messageModel.getTime() + " - " + messageModel.getMessage()), "cell 0 1");
+                        } else {
 
-                                  ((PanelLeftImpl) c).removeAll();
-                                  ((PanelLeftImpl) c).add(new JLabel(messageModel.getTime() + " - " + messageModel.getMessage()), "cell 0 1");
-                              }
-                          });
+                            ((PanelLeftImpl) c).removeAll();
+                            ((PanelLeftImpl) c).add(new JLabel(messageModel.getTime() + " - " + messageModel.getMessage()), "cell 0 1");
+                        }
+                    });
 
                 } else if (chatImpl.isStartup() && messageModel.getMessageType() == MessageTypes.INTERACTED) {
 
-                    Arrays.stream(chatImpl.getForm_mainTextPanel()
-                                          .getComponents())
-                          .filter(a -> a instanceof Comment)
-                          .filter(b -> Objects.equals(((Comment) b).getId(), messageModel.getId()))
-                          .forEach(c -> {
-                              if (c.getClass()
-                                   .equals(PanelRightImpl.class)) {
+                    Arrays.stream(chatImpl.getForm_mainTextPanel().getComponents()).filter(a -> a instanceof Comment).filter(b -> Objects.equals(((Comment) b).getId(), messageModel.getId())).forEach(c -> {
+                        if (c.getClass().equals(PanelRightImpl.class)) {
 
-                                  ((PanelRightImpl) c).addEmojiInteraction(messageModel);
+                            ((PanelRightImpl) c).addEmojiInteraction(messageModel);
 
-                              } else {
+                        } else {
 
-                                  ((PanelLeftImpl) c).addEmojiInteraction(messageModel);
-                              }
-                          });
+                            ((PanelLeftImpl) c).addEmojiInteraction(messageModel);
+                        }
+                    });
 
                     SwingUtilities.invokeLater(chatImpl::repaint);
 
                 } else if (chatImpl.isStartup() && messageModel.getMessageType() == MessageTypes.EDITED) {
 
-                    Arrays.stream(chatImpl.getForm_mainTextPanel()
-                                          .getComponents())
-                          .filter(a -> a instanceof Comment)
-                          .filter(b -> Objects.equals(((Comment) b).getId(), messageModel.getId()))
-                          .forEach(c -> {
-                              if (c.getClass()
-                                   .equals(PanelRightImpl.class)) {
+                    Arrays.stream(chatImpl.getForm_mainTextPanel().getComponents()).filter(a -> a instanceof Comment).filter(b -> Objects.equals(((Comment) b).getId(), messageModel.getId())).forEach(c -> {
+                        if (c.getClass().equals(PanelRightImpl.class)) {
 
-                                  SwingUtilities.invokeLater(() -> {
-                                      ((PanelRightImpl) c).getTextPaneComment()
-                                                          .setText("");
-                                      ((PanelRightImpl) c).setTime(messageModel.getTime());
-                                      EmojiConverter.replaceWithEmoji(((PanelRightImpl) c).getTextPaneComment(), messageModel.getMessage());
-                                  });
+                            SwingUtilities.invokeLater(() -> {
+                                ((PanelRightImpl) c).getTextPaneComment().setText("");
+                                ((PanelRightImpl) c).setTime(messageModel.getTime());
+                                EmojiConverter.replaceWithEmoji(((PanelRightImpl) c).getTextPaneComment(), messageModel.getMessage());
+                            });
 
-                              } else {
+                        } else {
 
-                                  ((PanelLeftImpl) c).getTextPaneComment()
-                                                     .setText("");
-                                  EmojiConverter.replaceWithEmoji(((PanelLeftImpl) c).getTextPaneComment(), messageModel.getMessage());
-                              }
-                          });
+                            ((PanelLeftImpl) c).getTextPaneComment().setText("");
+                            EmojiConverter.replaceWithEmoji(((PanelLeftImpl) c).getTextPaneComment(), messageModel.getMessage());
+                        }
+                    });
 
                 } else {
 
                     // check if message is from this client
-                    if (messageModel.getSender()
-                                    .equals(ChatImpl.mapOfIps.get(ChatImpl.client.getLocalSocketAddress()
-                                                                                 .getHostString()))) {
+                    if (messageModel.getSender().equals(ChatImpl.mapOfIps.get(ChatImpl.client.getLocalSocketAddress().getHostString()))) {
                         PanelRightImpl panelRight = new PanelRightImpl(messageModel, chatImpl.getLastMessageFrom(), chatImpl.getLastPostTime());
-                        chatImpl.getForm_mainTextPanel()
-                                .add(panelRight, "w 80%, trailing, wrap");
+                        chatImpl.getForm_mainTextPanel().add(panelRight, "w 80%, trailing, wrap");
                     } else {
                         PanelLeftImpl panelLeft = new PanelLeftImpl(messageModel, chatImpl.getLastMessageFrom(), chatImpl.getLastPostTime());
-                        chatImpl.getForm_mainTextPanel()
-                                .add(panelLeft, " w 80%, wrap");
+                        chatImpl.getForm_mainTextPanel().add(panelLeft, " w 80%, wrap");
                     }
 
                     if (chatImpl.isStartup() && chatImpl.isVisible()) {
@@ -258,22 +231,18 @@ public class WebsocketInteraction implements Serializable {
                 }
 
                 chatImpl.setLastMessageFrom(messageModel.getSender());
-                chatImpl.setLastPostTime((messageModel.getTime()
-                                                      .contains("*") ? "" : messageModel.getTime()));
+                chatImpl.setLastPostTime((messageModel.getTime().contains("*") ? "" : messageModel.getTime()));
 
             } catch (JsonProcessingException e) {
 
                 JLabel label = new JLabel(message);
                 label.setForeground(Color.RED);
-                label.setFont(new Font(label.getFont()
-                                            .getName(), Font.BOLD, 15));
-                chatImpl.getForm_mainTextPanel()
-                        .add(label, "wrap, align center");
+                label.setFont(new Font(label.getFont().getName(), Font.BOLD, 15));
+                chatImpl.getForm_mainTextPanel().add(label, "wrap, align center");
 
                 // initial 100 messages should not be sending pop-ups, after that -> ok
                 chatImpl.setStartup(false);
-                chatImpl.getInitialLoadingStartUpDialog()
-                        .dispose();
+                chatImpl.getInitialLoadingStartUpDialog().dispose();
 
             }
 
@@ -282,15 +251,16 @@ public class WebsocketInteraction implements Serializable {
     }
 
     /**
-     * Connects to a WebSocket server.
-     *
-     * This method performs the following steps:
-     * 1. Displays a loading dialog.
-     * 2. Initializes the WebSocket client.
-     * 3. Connects the WebSocket client to the server.
-     * 4. Adds the chat implementation as a listener to the WebSocket client.
+     Connects to a WebSocket server.
+
+     This method performs the following steps:
+     1. Displays a loading dialog.
+     2. Initializes the WebSocket client.
+     3. Connects the WebSocket client to the server.
+     4. Adds the chat implementation as a listener to the WebSocket client.
      */
     void connectToWebSocket() {
+
         displayLoadingDialog();
         initializeWebSocketClient();
         connectWebSocketClient();
@@ -298,87 +268,94 @@ public class WebsocketInteraction implements Serializable {
     }
 
     /**
-     * Displays a loading dialog.
-     *
-     * This method is called to display a loading dialog during the process of connecting to a WebSocket server.
-     * The loading dialog is used to inform the user that the connection is being established and that they should wait.
+     Displays a loading dialog.
+
+     This method is called to display a loading dialog during the process of connecting to a WebSocket server.
+     The loading dialog is used to inform the user that the connection is being established and that they should wait.
      */
     private void displayLoadingDialog() {
+
         chatImpl.loadingInitialMessagesLoadUpDialog();
     }
 
     /**
-     * Initializes the WebSocket client.
-     *
-     * This method is called to initialize the WebSocket client. It creates an instance of the WebSocket client
-     * and assigns it to the 'client' variable in the ChatImpl class.
+     Initializes the WebSocket client.
+
+     This method is called to initialize the WebSocket client. It creates an instance of the WebSocket client
+     and assigns it to the 'client' variable in the ChatImpl class.
      */
     private void initializeWebSocketClient() {
+
         ChatImpl.client = getWebSocketInstance();
     }
 
     /**
-     * Returns an instance of the WebSocket client.
-     *
-     * This method is used to obtain the instance of the WebSocket client. It checks if an instance of the WebSocket client
-     * already exists and returns it. If no instance exists, a new instance of the WebSocket client is created using the
-     * CustomWebsocketClient.getInstance() method.
-     *
-     * @return an instance of the WebSocket client
+     Returns an instance of the WebSocket client.
+
+     This method is used to obtain the instance of the WebSocket client. It checks if an instance of the WebSocket client
+     already exists and returns it. If no instance exists, a new instance of the WebSocket client is created using the
+     CustomWebsocketClient.getInstance() method.
+
+     @return an instance of the WebSocket client
      */
     private CustomWebsocketClient getWebSocketInstance() {
+
         return CustomWebsocketClient.getInstance();
     }
 
     /**
-     * Connects the WebSocket client to the server.
-     *
-     * This method is used to establish a connection between the WebSocket client and the server. It calls the
-     * connect() method on the client object to initiate the connection.
-     *
-     * The WebSocket client object must be initialized before calling this method.
+     Connects the WebSocket client to the server.
+
+     This method is used to establish a connection between the WebSocket client and the server. It calls the
+     connect() method on the client object to initiate the connection.
+
+     The WebSocket client object must be initialized before calling this method.
      */
     private void connectWebSocketClient() {
+
         ChatImpl.client.connect();
     }
 
     /**
-     * Adds the ChatImpl instance as a WebSocket listener to the WebSocket client.
-     *
-     * This method is used to register the ChatImpl instance as a listener for WebSocket events on the WebSocket client.
-     * It calls the addListener() method on the client object and passes the ChatImpl instance as the listener.
-     *
-     * The ChatImpl instance and the WebSocket client object must be initialized before calling this method.
+     Adds the ChatImpl instance as a WebSocket listener to the WebSocket client.
+
+     This method is used to register the ChatImpl instance as a listener for WebSocket events on the WebSocket client.
+     It calls the addListener() method on the client object and passes the ChatImpl instance as the listener.
+
+     The ChatImpl instance and the WebSocket client object must be initialized before calling this method.
      */
     private void addChatImplAsWebSocketListener() {
+
         ChatImpl.client.addListener(chatImpl);
     }
 
-
     /**
-     * This class is an implementation of a MouseAdapter that handles the click
-     * event on an image.
-     *
-     * It provides a method to handle the image click event by creating a temporary file
-     * with the image and opening it.
-     *
-     * Please note that this class extends MouseAdapter and overrides the mouseClicked
-     * method to handle the image click event.
+     This class is an implementation of a MouseAdapter that handles the click
+     event on an image.
+
+     It provides a method to handle the image click event by creating a temporary file
+     with the image and opening it.
+
+     Please note that this class extends MouseAdapter and overrides the mouseClicked
+     method to handle the image click event.
      */
     class ImageClickListener extends MouseAdapter {
 
         private final BufferedImage image;
 
         ImageClickListener(BufferedImage image) {
+
             this.image = image;
         }
 
         @Override
         public void mouseClicked(MouseEvent e) {
+
             handleImageClick();
         }
 
         private void handleImageClick() {
+
             try {
                 processImageClick();
             } catch (IOException ex) {
@@ -387,11 +364,13 @@ public class WebsocketInteraction implements Serializable {
         }
 
         private void processImageClick() throws IOException {
+
             File tempFile = createAndWriteTempImageFile(image);
             openTempImageFile(tempFile);
         }
 
         private void printTrace(IOException ex) {
+
             log.info(ex.getMessage());
         }
     }

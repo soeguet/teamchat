@@ -12,6 +12,7 @@ import javax.swing.*;
 public class Main {
 
     public static void main(String[] args) {
+
         Settings settings = Settings.getInstance();
 
         setTheme(settings.getThemeSetting());
@@ -20,20 +21,23 @@ public class Main {
     }
 
     private static void setTheme(String themeSetting) {
-        switch (themeSetting) {
+
+        if (themeSetting == null) {
+            throw new IllegalArgumentException("Theme setting must not be null");
+        }
+
+        switch (themeSetting.toUpperCase()) {
             case "LIGHT":
                 FlatLightLaf.setup();
                 break;
             case "DARK":
                 FlatDarkLaf.setup();
                 break;
-            case "INTELLIJ":
-                FlatIntelliJLaf.setup();
-                break;
             case "DARCULA":
                 FlatDarculaLaf.setup();
                 break;
             default:
+                FlatIntelliJLaf.setup();
                 break;
         }
     }
