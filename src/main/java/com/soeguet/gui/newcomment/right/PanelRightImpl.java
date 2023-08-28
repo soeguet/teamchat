@@ -7,6 +7,7 @@ import com.soeguet.gui.ChatImpl;
 import com.soeguet.gui.newcomment.Colorpicker;
 import com.soeguet.gui.newcomment.Comment;
 import com.soeguet.gui.newcomment.pane.TextPaneImpl;
+import com.soeguet.gui.reply.CustomReplyDialog;
 import com.soeguet.gui.reply.EditImpl;
 import com.soeguet.gui.reply.ReplyImpl;
 import com.soeguet.gui.translate.TranslateDialogImpl;
@@ -350,8 +351,11 @@ public class PanelRightImpl extends PanelRight implements Comment {
 
                 SwingUtilities.invokeLater(() -> {
 
-                    ReplyImpl replyDialog = new ReplyImpl(messageModel);
-                    replyDialog.setVisible(true);
+//                    ReplyImpl replyDialog = new ReplyImpl(messageModel);
+//                    replyDialog.setVisible(true);
+
+                    CustomReplyDialog customReplyDialog = new CustomReplyDialog(messageModel);
+                    customReplyDialog.setVisible(true);
 
                 });
             }

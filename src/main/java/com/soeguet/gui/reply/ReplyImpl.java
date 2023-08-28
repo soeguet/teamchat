@@ -53,7 +53,9 @@ public class ReplyImpl extends FeedbackDialog {
             PanelLeftImpl replyContent = new PanelLeftImpl(messageModel);
             form_contentPanel.add(replyContent, "cell 0 0, wrap");
         }
+
         pack();
+
         if (getWidth() > 750) {
             setMinimumSize(new Dimension(750, 750));
             setMaximumSize(new Dimension(750, 750));
@@ -312,6 +314,8 @@ public class ReplyImpl extends FeedbackDialog {
     @Override
     protected void sendButton(ActionEvent e) {
 
+        System.out.println("form_replyTextPane.getText() = " + form_replyTextPane.getText());
+
         if (form_replyTextPane.getText().trim().isEmpty()) {
             this.dispose();
             return;
@@ -323,7 +327,9 @@ public class ReplyImpl extends FeedbackDialog {
     protected void thisComponentHidden(ComponentEvent e) {
 
         if (emojiWindow != null && emojiWindow.isVisible()) {
+
             SwingUtilities.invokeLater(emojiWindow::dispose);
+
         }
     }
 
