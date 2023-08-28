@@ -342,17 +342,21 @@ public class PanelRightImpl extends PanelRight implements Comment {
 
         JPopupMenu popupMenu = new JPopupMenu();
         JMenuItem reply = new JMenuItem("reply");
+
         reply.addMouseListener(new MouseAdapter() {
 
             @Override
             public void mouseReleased(MouseEvent e) {
 
                 SwingUtilities.invokeLater(() -> {
+
                     ReplyImpl replyDialog = new ReplyImpl(messageModel);
                     replyDialog.setVisible(true);
+
                 });
             }
         });
+
         JMenuItem edit = new JMenuItem("edit");
         edit.addMouseListener(new MouseAdapter() {
 

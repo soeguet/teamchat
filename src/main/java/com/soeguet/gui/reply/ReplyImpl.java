@@ -65,6 +65,7 @@ public class ReplyImpl extends FeedbackDialog {
         setLocationRelativeTo(null);
 
         form_replyTextPane.requestFocusInWindow();
+        form_replyTextPane.setEditable(true);
     }
 
     @Override
@@ -311,6 +312,10 @@ public class ReplyImpl extends FeedbackDialog {
     @Override
     protected void sendButton(ActionEvent e) {
 
+        if (form_replyTextPane.getText().trim().isEmpty()) {
+            this.dispose();
+            return;
+        }
         sendMessageReply();
     }
 
@@ -332,6 +337,8 @@ public class ReplyImpl extends FeedbackDialog {
 
     @Override
     protected void replyTextPaneKeyPressed(KeyEvent e) {
+
+        System.out.println("e.getKeyCode() = " + e.getKeyCode());
 
         if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
 
