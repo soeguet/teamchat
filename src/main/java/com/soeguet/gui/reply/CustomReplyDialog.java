@@ -6,15 +6,17 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
 
-public class CustomReplyDialog extends JDialog {
+public class CustomReplyDialog extends CustomReply{
 
     private final MessageModel messageModel;
     private JTextPane jTextPane;
 
     public CustomReplyDialog(MessageModel messageModel) {
 
+        super(null);
+
         this.messageModel = messageModel;
-        initUi();
+//        initUi();
     }
 
     private void initUi() {
