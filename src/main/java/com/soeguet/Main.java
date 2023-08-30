@@ -10,30 +10,35 @@ import com.soeguet.gui.ChatImpl;
 import javax.swing.*;
 
 public class Main {
+
     public static void main(String[] args) {
 
-        /*
-         * load preferences and set theme while startup
-         */
         Settings settings = Settings.getInstance();
 
-        switch (settings.getThemeSetting()) {
+        setTheme(settings.getThemeSetting());
+
+        SwingUtilities.invokeLater(ChatImpl::new);
+    }
+
+    private static void setTheme(String themeSetting) {
+
+        if (themeSetting == null) {
+            throw new IllegalArgumentException("Theme setting must not be null");
+        }
+
+        switch (themeSetting.toUpperCase()) {
             case "LIGHT":
                 FlatLightLaf.setup();
                 break;
             case "DARK":
                 FlatDarkLaf.setup();
                 break;
-            case "INTELLIJ":
-                FlatIntelliJLaf.setup();
-                break;
             case "DARCULA":
                 FlatDarculaLaf.setup();
                 break;
             default:
+                FlatIntelliJLaf.setup();
                 break;
         }
-
-        SwingUtilities.invokeLater(ChatImpl::new);
     }
 }

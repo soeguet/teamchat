@@ -8,7 +8,6 @@ import org.java_websocket.exceptions.InvalidFrameException;
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.framing.FramedataImpl1;
 import org.java_websocket.handshake.ServerHandshake;
-import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -19,9 +18,9 @@ import static com.soeguet.gui.ChatImpl.client;
 import static com.soeguet.gui.ChatImpl.mapOfIps;
 
 public class CustomWebsocketClient extends WebSocketClient {
-    @Nullable
-    private static CustomWebsocketClient instance;
-    Logger log = Logger.getLogger("CustomWebsocketClient");
+
+    private final static Logger LOG = Logger.getLogger(CustomWebsocketClient.class.getName());
+    private static volatile CustomWebsocketClient instance;
     private WebSocketListener listener;
 
     private CustomWebsocketClient(URI serverUri) {
@@ -32,17 +31,20 @@ public class CustomWebsocketClient extends WebSocketClient {
     public static CustomWebsocketClient getInstance() {
 
         if (instance == null) {
-
-            Settings settings = Settings.getInstance();
-
-            try {
-
-                instance = new CustomWebsocketClient(new URI("ws://" + settings.getIp() + ":" + settings.getPort()));
-            } catch (URISyntaxException e) {
-                throw new RuntimeException(e);
-            }
+            instance = createNewInstance();
         }
         return instance;
+    }
+
+    private static CustomWebsocketClient createNewInstance() {
+
+        Settings settings = Settings.getInstance();
+        try {
+            return new CustomWebsocketClient(new URI("ws://" + settings.getIp() + ":" + settings.getPort()));
+        } catch (URISyntaxException e) {
+            LOG.warning("Error creating URI: " + e.getMessage());
+            throw new IllegalArgumentException("Invalid URI syntax", e);
+        }
     }
 
     public static void resetClient() {
@@ -52,6 +54,7 @@ public class CustomWebsocketClient extends WebSocketClient {
 
     @Override
     public void onWebsocketPong(WebSocket conn, Framedata f) {
+
         super.onWebsocketPong(conn, f);
     }
 
@@ -59,8 +62,10 @@ public class CustomWebsocketClient extends WebSocketClient {
     public void onWebsocketPing(WebSocket conn, Framedata f) {
 
         f.append(new FramedataImpl1(f.getOpcode()) {
+
             @Override
             public void isValid() throws InvalidDataException {
+
                 if (!isFin()) {
                     throw new InvalidFrameException("Control frame can't have fin==false set");
                 }
@@ -77,6 +82,7 @@ public class CustomWebsocketClient extends WebSocketClient {
 
             @Override
             public ByteBuffer getPayloadData() {
+
                 assert client != null;
                 return ByteBuffer.wrap(mapOfIps.get(client.getLocalSocketAddress().getAddress().getHostAddress()).getBytes());
             }
@@ -90,12 +96,15 @@ public class CustomWebsocketClient extends WebSocketClient {
     }
 
     @Override
-    public void onOpen(ServerHandshake handshakedata) {
+    public void onOpen(ServerHandshake handshakeData) {
+
+        LOG.info(String.valueOf(handshakeData.getHttpStatus()));
+        LOG.info(handshakeData.getHttpStatusMessage());
     }
 
     @Override
     public void onMessage(String message) {
-        // proceed with normal message
+        // proceed with a normal message
         if (listener != null) {
             listener.onMessageReceived(message);
         }
@@ -103,17 +112,20 @@ public class CustomWebsocketClient extends WebSocketClient {
 
     @Override
     public void onMessage(ByteBuffer bytes) {
+
         listener.onByteBufferMessageReceived(bytes);
     }
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
+
         listener.onCloseReconnect();
     }
 
     @Override
     public void onError(Exception ex) {
-        log.info("an error occured");
-        log.info(ex.getMessage());
+
+        LOG.info("an error occurred");
+        LOG.info(ex.getMessage());
     }
 }

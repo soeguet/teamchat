@@ -1,29 +1,31 @@
 package com.soeguet.gui.newcomment.pane;
 
 import com.soeguet.config.Settings;
-import java.awt.*;
+
 import javax.swing.*;
+import java.awt.*;
 
 public class TextPaneImpl extends TextPaneComment {
 
-  public TextPaneImpl() {
-    super();
+    public TextPaneImpl() {
 
-    Settings settings = Settings.getInstance();
+        super();
 
-    this.setFont(new Font(getFont().getFontName(), getFont().getStyle(), settings.getFontSize()));
-    this.repaint();
-  }
+        Settings settings = Settings.getInstance();
 
-  @Override
-  public void setText(String t) {
+        this.setFont(new Font(getFont().getFontName(), getFont().getStyle(), settings.getFontSize()));
+        this.repaint();
+    }
 
-    super.setText(t);
-  }
+    @Override
+    public void setText(String t) {
 
-  @Override
-  public void insertIcon(Icon g) {
+        super.setText(t);
+    }
 
-    super.insertIcon(g);
-  }
+    @Override
+    public void insertIcon(Icon g) {
+
+        super.insertIcon(g);
+    }
 }

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.soeguet.gui.ChatImpl;
-import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -15,14 +14,15 @@ import java.util.logging.Level;
 import java.util.prefs.Preferences;
 
 public class Settings {
+
     private static Settings instance;
     private final File settingsFile;
     private final Preferences PREFERENCES = Preferences.userNodeForPackage(Settings.class);
     java.util.logging.Logger logger = java.util.logging.Logger.getLogger("Settings");
-    @Getter
     private JFrame mainJFrame;
 
     private Settings() {
+
         File settingsFolder = new File(System.getProperty("user.home") + "/.teamchat");
         if (!settingsFolder.exists()) {
             if (settingsFolder.mkdir()) {
@@ -44,7 +44,18 @@ public class Settings {
         return instance;
     }
 
+    public JFrame getMainJFrame() {
+
+        return mainJFrame;
+    }
+
+    public void setMainJFrame(JFrame mainJFrame) {
+
+        this.mainJFrame = mainJFrame;
+    }
+
     private void createDefaultSettingsFile() {
+
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode root = objectMapper.createObjectNode();
 
@@ -58,7 +69,6 @@ public class Settings {
         participantsNode.put("quoteColor", 0);
         chatParticipantsNode.set("127.0.0.1", participantsNode);
 
-
         root.set("chatParticipants", chatParticipantsNode);
 
         try {
@@ -71,6 +81,7 @@ public class Settings {
 
     @NotNull
     private ObjectNode userPreferencesNode(ObjectMapper objectMapper) {
+
         ObjectNode userPreferencesNode = objectMapper.createObjectNode();
         userPreferencesNode.put("ip", "127.0.0.1");
         userPreferencesNode.put("port", "8100");
@@ -101,12 +112,8 @@ public class Settings {
     }
 
     private void showErrorMessage(String errorMessage) {
+
         JOptionPane.showInternalMessageDialog(null, errorMessage, "Error", JOptionPane.ERROR_MESSAGE);
-    }
-
-  public void setMainJFrame(JFrame mainJFrame) {
-
-        this.mainJFrame = mainJFrame;
     }
 
     public int getMainFrameWidth() {
@@ -121,8 +128,7 @@ public class Settings {
 
     public int getMainFrameHeight() {
 
-        return PREFERENCES.getInt(
-                "mainFrameHeight", (mainJFrame != null ? mainJFrame.getHeight() : 600));
+        return PREFERENCES.getInt("mainFrameHeight", (mainJFrame != null ? mainJFrame.getHeight() : 600));
     }
 
     public void setMainFrameHeight(int mainFrameHeight) {
@@ -142,6 +148,7 @@ public class Settings {
     }
 
     public int getFontSize() {
+
         try {
             JsonNode root = ChatImpl.MAPPER.readTree(settingsFile);
             return root.get("userPreferences").get("fontSize").asInt();
@@ -157,6 +164,7 @@ public class Settings {
     }
 
     public int getMessageDuration() {
+
         try {
             JsonNode root = ChatImpl.MAPPER.readTree(settingsFile);
             return root.get("userPreferences").get("notificationDuration").asInt();
@@ -172,6 +180,7 @@ public class Settings {
     }
 
     public int getPort() {
+
         try {
             JsonNode root = ChatImpl.MAPPER.readTree(settingsFile);
             return root.get("userPreferences").get("port").asInt();
@@ -187,6 +196,7 @@ public class Settings {
     }
 
     public String getIp() {
+
         try {
             JsonNode root = ChatImpl.MAPPER.readTree(settingsFile);
             return root.get("userPreferences").get("ip").asText();

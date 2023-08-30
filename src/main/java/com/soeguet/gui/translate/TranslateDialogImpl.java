@@ -14,9 +14,11 @@ import java.util.Objects;
 import java.util.logging.Logger;
 
 public class TranslateDialogImpl extends TranslateDialog {
-    Logger log = Logger.getLogger("TranslateDialogImpl");
+
+    private Logger log = Logger.getLogger("TranslateDialogImpl");
 
     public TranslateDialogImpl(Window owner, String selectedText) {
+
         super(owner);
         form_selectedText.setText(selectedText);
     }

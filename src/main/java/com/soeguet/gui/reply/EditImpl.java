@@ -1,8 +1,5 @@
 package com.soeguet.gui.reply;
 
-import static com.soeguet.gui.ChatImpl.client;
-import static com.soeguet.gui.ChatImpl.mapOfIps;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.client.CustomWebsocketClient;
@@ -13,14 +10,12 @@ import com.soeguet.gui.newcomment.right.PanelRightImpl;
 import com.soeguet.gui.util.EmojiConverter;
 import com.soeguet.gui.util.MessageTypes;
 import com.soeguet.model.MessageModel;
+import org.apache.commons.lang3.StringUtils;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -31,361 +26,360 @@ import java.util.Enumeration;
 import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
-import org.apache.commons.lang3.StringUtils;
+
+import static com.soeguet.gui.ChatImpl.client;
+import static com.soeguet.gui.ChatImpl.mapOfIps;
 
 public class EditImpl extends FeedbackDialog {
 
-  private final MessageModel messageModel;
-  private EmojiImpl emojiWindow;
-  private boolean controlButtonPressed;
+    private final MessageModel messageModel;
+    private EmojiImpl emojiWindow;
+    private boolean controlButtonPressed;
 
-  public EditImpl(MessageModel messageModel) {
+    public EditImpl(MessageModel messageModel) {
 
-    super();
+        super();
 
-    Settings settings = Settings.getInstance();
-    this.messageModel = messageModel;
-    this.setFont(new Font(getFont().getFontName(), getFont().getStyle(), settings.getFontSize()));
-    this.setMaximumSize(new Dimension(750,750));
+        Settings settings = Settings.getInstance();
+        this.messageModel = messageModel;
+        this.setFont(new Font(getFont().getFontName(), getFont().getStyle(), settings.getFontSize()));
+        this.setMaximumSize(new Dimension(750, 750));
 
-    if (Objects.equals(messageModel.getSender(), client.getLocalSocketAddress().getHostName())) {
+        if (Objects.equals(messageModel.getSender(), client.getLocalSocketAddress().getHostName())) {
 
-      PanelRightImpl replyContent = new PanelRightImpl(messageModel);
-      form_contentPanel.add(replyContent, "cell 0 0, wrap");
-    } else {
+            PanelRightImpl replyContent = new PanelRightImpl(messageModel);
+            form_contentPanel.add(replyContent, "cell 0 0, wrap");
+        } else {
 
-      PanelLeftImpl replyContent = new PanelLeftImpl(messageModel);
-      form_contentPanel.add(replyContent, "cell 0 0, wrap");
+            PanelLeftImpl replyContent = new PanelLeftImpl(messageModel);
+            form_contentPanel.add(replyContent, "cell 0 0, wrap");
+        }
+
+        pack();
+        setTitle("edit");
+        setLocationRelativeTo(null);
+
+        form_replyTextPane.requestFocusInWindow();
     }
 
-    pack();
-    setTitle("edit");
-    setLocationRelativeTo(null);
-
-    form_replyTextPane.requestFocusInWindow();
-  }
-
-  @Override
-  protected void sendMessageReply() {
-
-    try {
-      ObjectMapper mapper = new ObjectMapper();
-      CustomWebsocketClient client = CustomWebsocketClient.getInstance();
-
-      MessageModel model =
-          new MessageModel(
-              this.messageModel.getId(),
-              MessageTypes.EDITED,
-              this.messageModel.getUserInteractions(),
-              client.getLocalSocketAddress().getHostString(),
-              mapOfIps.get(client.getLocalSocketAddress().getHostString()),
-              this.messageModel.getTime() + "*",
-              EmojiConverter.checkTextForEmojis(form_replyTextPane),
-              this.messageModel.getQuotedMessageSender(),
-              this.messageModel.getQuotedMessageTime(),
-              this.messageModel.getQuotedMessageText());
-
-      client.send(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(model));
-    } catch (JsonProcessingException ex) {
-      throw new RuntimeException(ex);
-    }
-
-    SwingUtilities.invokeLater(
-        () -> {
-          if (emojiWindow != null && emojiWindow.isVisible()) {
-
-            emojiWindow.dispose();
-          }
-          this.dispose();
-        });
-  }
-
-  private void initEmojiFrame() {
-
-    ClassLoader classLoader = getClass().getClassLoader();
-    Enumeration<URL> resources; // search for all resources in the "emoji" folder
-    try {
-      resources = classLoader.getResources("emojis/");
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-
-    while (resources.hasMoreElements()) {
-
-      URL resourceUrl = resources.nextElement();
-
-      // if resources are WITHIN .jar
-      if (resourceUrl.getProtocol().equals("jar")) {
+    @Override
+    protected void sendMessageReply() {
 
         try {
+            ObjectMapper mapper = new ObjectMapper();
+            CustomWebsocketClient client = CustomWebsocketClient.getInstance();
 
-          JarURLConnection jarURLConnection = (JarURLConnection) resourceUrl.openConnection();
-          try (JarFile jarFile = jarURLConnection.getJarFile()) {
-            Enumeration<JarEntry> entries = jarFile.entries();
+            MessageModel model = new MessageModel(this.messageModel.getId(), MessageTypes.EDITED, this.messageModel.getUserInteractions(), client.getLocalSocketAddress().getHostString(), mapOfIps.get(client.getLocalSocketAddress().getHostString()), this.messageModel.getTime() + "*", EmojiConverter.checkTextForEmojis(form_replyTextPane), this.messageModel.getQuotedMessageSender(), this.messageModel.getQuotedMessageTime(), this.messageModel.getQuotedMessageText());
 
-            while (entries.hasMoreElements()) {
+            client.send(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(model));
+        } catch (JsonProcessingException ex) {
+            throw new RuntimeException(ex);
+        }
 
-              JarEntry entry = entries.nextElement();
-              String entryName = entry.getName();
+        SwingUtilities.invokeLater(() -> {
+            if (emojiWindow != null && emojiWindow.isVisible()) {
 
-              if (entryName.startsWith("emojis/") && entryName.endsWith(".png")) {
-
-                try (InputStream inputStream = classLoader.getResourceAsStream(entryName)) {
-
-                  assert inputStream != null;
-                  BufferedImage bufferedImage = ImageIO.read(inputStream);
-
-                  ImageIcon icon = new ImageIcon(bufferedImage);
-
-                  String fileName = entryName.replace(".png", "");
-                  fileName = fileName.replace("emojis/", "");
-
-                  JButton jButton = new JButton();
-                  jButton.setName(fileName);
-                  icon.setDescription(fileName);
-                  jButton.setIcon(icon);
-
-                  jButton.addMouseListener(
-                      new MouseListener() {
-
-                        @Override
-                        public void mouseClicked(MouseEvent e) {
-
-                          form_replyTextPane.insertIcon(icon);
-                          form_replyTextPane.insertComponent(new JLabel(""));
-                          form_replyTextPane.repaint();
-                        }
-
-                        @Override
-                        public void mousePressed(MouseEvent e) {}
-
-                        @Override
-                        public void mouseReleased(MouseEvent e) {}
-
-                        @Override
-                        public void mouseEntered(MouseEvent e) {}
-
-                        @Override
-                        public void mouseExited(MouseEvent e) {}
-                      });
-
-                  jButton.addKeyListener(
-                      new KeyListener() {
-
-                        @Override
-                        public void keyTyped(KeyEvent e) {}
-
-                        @Override
-                        public void keyPressed(KeyEvent e) {
-
-                          if (e.getExtendedKeyCode() == KeyEvent.VK_ENTER
-                              || e.getExtendedKeyCode() == KeyEvent.VK_SPACE) {
-
-                            form_replyTextPane.insertIcon(icon);
-                            form_replyTextPane.insertComponent(new JLabel(""));
-                            form_replyTextPane.repaint();
-                          }
-
-                          if (e.getExtendedKeyCode() == KeyEvent.VK_ESCAPE) {
-
-                            if (emojiWindow != null && emojiWindow.isVisible()) {
-
-                              emojiWindow.dispose();
-                              form_replyTextPane.requestFocusInWindow();
-                            }
-                          }
-                        }
-
-                        @Override
-                        public void keyReleased(KeyEvent e) {}
-                      });
-
-                  emojiWindow.add(jButton);
-                }
-              }
+                emojiWindow.dispose();
             }
-          }
+            this.dispose();
+        });
+    }
+
+    private void initEmojiFrame() {
+
+        ClassLoader classLoader = getClass().getClassLoader();
+        Enumeration<URL> resources; // search for all resources in the "emoji" folder
+        try {
+            resources = classLoader.getResources("emojis/");
         } catch (IOException e) {
-          e.printStackTrace();
+            throw new RuntimeException(e);
         }
-      }
-      // if resources are OUTSIDE .jar
-      else {
-        File folder2 = new File("./src/main/resources/emojis");
-        File[] files = folder2.listFiles();
-        if (files != null) {
 
-          for (File file : files) {
+        while (resources.hasMoreElements()) {
 
-            if (file.getName().endsWith(".png")) {
+            URL resourceUrl = resources.nextElement();
 
-              ImageIcon icon = new ImageIcon(file.getPath());
+            // if resources are WITHIN .jar
+            if (resourceUrl.getProtocol().equals("jar")) {
 
-              String fileName = file.getName().replace(".png", "");
-              fileName = fileName.replace("emojis/", "");
+                try {
 
-              JButton jButton = new JButton();
-              jButton.setName(fileName);
-              icon.setDescription(fileName);
-              jButton.setIcon(icon);
+                    JarURLConnection jarURLConnection = (JarURLConnection) resourceUrl.openConnection();
+                    try (JarFile jarFile = jarURLConnection.getJarFile()) {
+                        Enumeration<JarEntry> entries = jarFile.entries();
 
-              jButton.addMouseListener(
-                  new MouseListener() {
+                        while (entries.hasMoreElements()) {
 
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
+                            JarEntry entry = entries.nextElement();
+                            String entryName = entry.getName();
 
-                      form_replyTextPane.insertIcon(icon);
-                      form_replyTextPane.insertComponent(new JLabel(""));
-                      form_replyTextPane.repaint();
-                    }
+                            if (entryName.startsWith("emojis/") && entryName.endsWith(".png")) {
 
-                    @Override
-                    public void mousePressed(MouseEvent e) {}
+                                try (InputStream inputStream = classLoader.getResourceAsStream(entryName)) {
 
-                    @Override
-                    public void mouseReleased(MouseEvent e) {}
+                                    assert inputStream != null;
+                                    BufferedImage bufferedImage = ImageIO.read(inputStream);
 
-                    @Override
-                    public void mouseEntered(MouseEvent e) {}
+                                    ImageIcon icon = new ImageIcon(bufferedImage);
 
-                    @Override
-                    public void mouseExited(MouseEvent e) {}
-                  });
+                                    String fileName = entryName.replace(".png", "");
+                                    fileName = fileName.replace("emojis/", "");
 
-              jButton.addKeyListener(
-                  new KeyListener() {
+                                    JButton jButton = new JButton();
+                                    jButton.setName(fileName);
+                                    icon.setDescription(fileName);
+                                    jButton.setIcon(icon);
 
-                    @Override
-                    public void keyTyped(KeyEvent e) {}
+                                    jButton.addMouseListener(new MouseListener() {
 
-                    @Override
-                    public void keyPressed(KeyEvent e) {
+                                        @Override
+                                        public void mouseClicked(MouseEvent e) {
 
-                      if (e.getExtendedKeyCode() == KeyEvent.VK_ENTER
-                          || e.getExtendedKeyCode() == KeyEvent.VK_SPACE) {
+                                            form_replyTextPane.insertIcon(icon);
+                                            form_replyTextPane.insertComponent(new JLabel(""));
+                                            form_replyTextPane.repaint();
+                                        }
 
-                        form_replyTextPane.insertIcon(icon);
-                        form_replyTextPane.insertComponent(new JLabel(""));
-                        form_replyTextPane.repaint();
-                      }
+                                        @Override
+                                        public void mousePressed(MouseEvent e) {
 
-                      if (e.getExtendedKeyCode() == KeyEvent.VK_ESCAPE) {
+                                        }
 
-                        if (emojiWindow != null && emojiWindow.isVisible()) {
+                                        @Override
+                                        public void mouseReleased(MouseEvent e) {
 
-                          emojiWindow.dispose();
-                          form_replyTextPane.requestFocusInWindow();
+                                        }
+
+                                        @Override
+                                        public void mouseEntered(MouseEvent e) {
+
+                                        }
+
+                                        @Override
+                                        public void mouseExited(MouseEvent e) {
+
+                                        }
+                                    });
+
+                                    jButton.addKeyListener(new KeyListener() {
+
+                                        @Override
+                                        public void keyTyped(KeyEvent e) {
+
+                                        }
+
+                                        @Override
+                                        public void keyPressed(KeyEvent e) {
+
+                                            if (e.getExtendedKeyCode() == KeyEvent.VK_ENTER || e.getExtendedKeyCode() == KeyEvent.VK_SPACE) {
+
+                                                form_replyTextPane.insertIcon(icon);
+                                                form_replyTextPane.insertComponent(new JLabel(""));
+                                                form_replyTextPane.repaint();
+                                            }
+
+                                            if (e.getExtendedKeyCode() == KeyEvent.VK_ESCAPE) {
+
+                                                if (emojiWindow != null && emojiWindow.isVisible()) {
+
+                                                    emojiWindow.dispose();
+                                                    form_replyTextPane.requestFocusInWindow();
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void keyReleased(KeyEvent e) {
+
+                                        }
+                                    });
+
+                                    emojiWindow.add(jButton);
+                                }
+                            }
                         }
-                      }
                     }
-
-                    @Override
-                    public void keyReleased(KeyEvent e) {}
-                  });
-
-              emojiWindow.add(jButton);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-          }
+            // if resources are OUTSIDE .jar
+            else {
+                File folder2 = new File("./src/main/resources/emojis");
+                File[] files = folder2.listFiles();
+                if (files != null) {
+
+                    for (File file : files) {
+
+                        if (file.getName().endsWith(".png")) {
+
+                            ImageIcon icon = new ImageIcon(file.getPath());
+
+                            String fileName = file.getName().replace(".png", "");
+                            fileName = fileName.replace("emojis/", "");
+
+                            JButton jButton = new JButton();
+                            jButton.setName(fileName);
+                            icon.setDescription(fileName);
+                            jButton.setIcon(icon);
+
+                            jButton.addMouseListener(new MouseListener() {
+
+                                @Override
+                                public void mouseClicked(MouseEvent e) {
+
+                                    form_replyTextPane.insertIcon(icon);
+                                    form_replyTextPane.insertComponent(new JLabel(""));
+                                    form_replyTextPane.repaint();
+                                }
+
+                                @Override
+                                public void mousePressed(MouseEvent e) {
+
+                                }
+
+                                @Override
+                                public void mouseReleased(MouseEvent e) {
+
+                                }
+
+                                @Override
+                                public void mouseEntered(MouseEvent e) {
+
+                                }
+
+                                @Override
+                                public void mouseExited(MouseEvent e) {
+
+                                }
+                            });
+
+                            jButton.addKeyListener(new KeyListener() {
+
+                                @Override
+                                public void keyTyped(KeyEvent e) {
+
+                                }
+
+                                @Override
+                                public void keyPressed(KeyEvent e) {
+
+                                    if (e.getExtendedKeyCode() == KeyEvent.VK_ENTER || e.getExtendedKeyCode() == KeyEvent.VK_SPACE) {
+
+                                        form_replyTextPane.insertIcon(icon);
+                                        form_replyTextPane.insertComponent(new JLabel(""));
+                                        form_replyTextPane.repaint();
+                                    }
+
+                                    if (e.getExtendedKeyCode() == KeyEvent.VK_ESCAPE) {
+
+                                        if (emojiWindow != null && emojiWindow.isVisible()) {
+
+                                            emojiWindow.dispose();
+                                            form_replyTextPane.requestFocusInWindow();
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void keyReleased(KeyEvent e) {
+
+                                }
+                            });
+
+                            emojiWindow.add(jButton);
+                        }
+                    }
+                }
+            }
         }
-      }
-    }
-  }
-
-  @Override
-  protected void dialogPaneKeyPressed(KeyEvent e) {
-
-    if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-      SwingUtilities.invokeLater(this::dispose);
-    }
-  }
-
-  @Override
-  protected void sendButton(ActionEvent e) {
-    sendMessageReply();
-  }
-
-  @Override
-  protected void thisComponentHidden(ComponentEvent e) {
-
-    if (emojiWindow != null && emojiWindow.isVisible()) {
-      SwingUtilities.invokeLater(emojiWindow::dispose);
-    }
-  }
-
-  @Override
-  protected void replyTextPaneKeyReleased(KeyEvent e) {
-
-    if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
-      controlButtonPressed = false;
-    }
-  }
-
-  @Override
-  protected void replyTextPaneKeyPressed(KeyEvent e) {
-
-    if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
-
-      return;
     }
 
-    if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-      SwingUtilities.invokeLater(this::dispose);
-      e.consume();
+    @Override
+    protected void dialogPaneKeyPressed(KeyEvent e) {
+
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            SwingUtilities.invokeLater(this::dispose);
+        }
     }
 
-    // hashtag button
-    if ((e.getKeyCode() == KeyEvent.VK_NUMBER_SIGN)
-        || (e.getExtendedKeyCode() == KeyEvent.VK_NUMBER_SIGN)) {
-      SwingUtilities.invokeLater(
-          () -> {
-            emojiButtonMouseClicked(null);
-            form_replyTextPane.setText(StringUtils.chop(form_replyTextPane.getText()));
-          });
+    @Override
+    protected void sendButton(ActionEvent e) {
 
-      e.consume();
-      return;
+        sendMessageReply();
     }
 
-    if ((e.getKeyCode() == KeyEvent.VK_CONTROL)
-        || (e.getExtendedKeyCode() == KeyEvent.VK_CONTROL)) {
-      controlButtonPressed = true;
-      e.consume();
-      return;
+    @Override
+    protected void thisComponentHidden(ComponentEvent e) {
+
+        if (emojiWindow != null && emojiWindow.isVisible()) {
+            SwingUtilities.invokeLater(emojiWindow::dispose);
+        }
     }
 
-    if (!controlButtonPressed && e.getKeyCode() == KeyEvent.VK_ENTER) {
-      sendButton(null);
+    @Override
+    protected void replyTextPaneKeyReleased(KeyEvent e) {
 
-      e.consume();
-    } else if (controlButtonPressed && e.getKeyCode() == KeyEvent.VK_ENTER) {
-      form_replyTextPane.setText(form_replyTextPane.getText() + "\n");
-
-      e.consume();
+        if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
+            controlButtonPressed = false;
+        }
     }
-  }
 
-  @Override
-  protected void emojiButtonMouseClicked(MouseEvent e) {
+    @Override
+    protected void replyTextPaneKeyPressed(KeyEvent e) {
 
-    if (emojiWindow != null && emojiWindow.isVisible()) {
-      SwingUtilities.invokeLater(() -> emojiWindow.dispose());
-    } else {
+        if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
 
-      emojiWindow = new EmojiImpl(form_replyTextPane);
-      initEmojiFrame();
-      emojiWindow.pack();
-      emojiWindow.repaint();
-      emojiWindow.revalidate();
-      emojiWindow.setLocation(
-          this.getBounds().x + this.getBounds().width,
-          this.getBounds().y + this.getBounds().height - emojiWindow.getHeight());
-      emojiWindow.setVisible(true);
+            return;
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            SwingUtilities.invokeLater(this::dispose);
+            e.consume();
+        }
+
+        // hashtag button
+        if ((e.getKeyCode() == KeyEvent.VK_NUMBER_SIGN) || (e.getExtendedKeyCode() == KeyEvent.VK_NUMBER_SIGN)) {
+            SwingUtilities.invokeLater(() -> {
+                emojiButtonMouseClicked(null);
+                form_replyTextPane.setText(StringUtils.chop(form_replyTextPane.getText()));
+            });
+
+            e.consume();
+            return;
+        }
+
+        if ((e.getKeyCode() == KeyEvent.VK_CONTROL) || (e.getExtendedKeyCode() == KeyEvent.VK_CONTROL)) {
+            controlButtonPressed = true;
+            e.consume();
+            return;
+        }
+
+        if (!controlButtonPressed && e.getKeyCode() == KeyEvent.VK_ENTER) {
+            sendButton(null);
+
+            e.consume();
+        } else if (controlButtonPressed && e.getKeyCode() == KeyEvent.VK_ENTER) {
+            form_replyTextPane.setText(form_replyTextPane.getText() + "\n");
+
+            e.consume();
+        }
     }
-  }
+
+    @Override
+    protected void emojiButtonMouseClicked(MouseEvent e) {
+
+        if (emojiWindow != null && emojiWindow.isVisible()) {
+            SwingUtilities.invokeLater(() -> emojiWindow.dispose());
+        } else {
+
+            emojiWindow = new EmojiImpl(form_replyTextPane);
+            initEmojiFrame();
+            emojiWindow.pack();
+            emojiWindow.repaint();
+            emojiWindow.revalidate();
+            emojiWindow.setLocation(this.getBounds().x + this.getBounds().width, this.getBounds().y + this.getBounds().height - emojiWindow.getHeight());
+            emojiWindow.setVisible(true);
+        }
+    }
 }

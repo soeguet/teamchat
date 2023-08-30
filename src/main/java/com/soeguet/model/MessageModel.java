@@ -1,14 +1,12 @@
 package com.soeguet.model;
 
 import com.soeguet.gui.util.MessageTypes;
-import lombok.Getter;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
 public class MessageModel {
 
     private Long id;
@@ -23,14 +21,17 @@ public class MessageModel {
     private String quotedMessageText;
 
     public MessageModel(String sender, String message) {
+
         this(MessageTypes.NORMAL, sender, message, null, null, null);
     }
 
     public MessageModel(Long id) {
+
         this(id, MessageTypes.DELETED, null, null, null, null, "delete by user", null, null, null);
     }
 
     public MessageModel(byte messageType, String sender, String message) {
+
         this(messageType, sender, message, null, null, null);
     }
 
@@ -40,6 +41,7 @@ public class MessageModel {
             String quotedMessageSender,
             String quotedMessageTime,
             String quotedMessageText) {
+
         this(
                 MessageTypes.NORMAL,
                 sender,
@@ -56,6 +58,7 @@ public class MessageModel {
             String quotedMessageSender,
             String quotedMessageTime,
             String quotedMessageText) {
+
         this(
                 null,
                 messageType,
@@ -81,6 +84,7 @@ public class MessageModel {
             String quotedMessageSender,
             String quotedMessageTime,
             String quotedMessageText) {
+
         this.id = id;
         this.messageType = messageType;
 
@@ -95,42 +99,107 @@ public class MessageModel {
     }
 
     public MessageModel() {
+
+    }
+
+    public Long getId() {
+
+        return id;
     }
 
     public void setId(Long id) {
+
         this.id = id;
     }
 
-    public void setSender(String sender) {
-        this.sender = sender;
-    }
+    public byte getMessageType() {
 
-    public void setTime(String time) {
-        this.time = time;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public void setQuotedMessageSender(String quotedMessageSender) {
-        this.quotedMessageSender = quotedMessageSender;
-    }
-
-    public void setQuotedMessageTime(String quotedMessageTime) {
-        this.quotedMessageTime = quotedMessageTime;
-    }
-
-    public void setQuotedMessageText(String quotedMessageText) {
-        this.quotedMessageText = quotedMessageText;
+        return messageType;
     }
 
     public void setMessageType(byte messageType) {
+
         this.messageType = messageType;
     }
 
+    public List<UserInteraction> getUserInteractions() {
+
+        return userInteractions;
+    }
+
     public void setUserInteractions(List<UserInteraction> userInteractions) {
+
         this.userInteractions = userInteractions;
+    }
+
+    public String getLocalIp() {
+
+        return localIp;
+    }
+
+    public void setLocalIp(String localIp) {
+
+        this.localIp = localIp;
+    }
+
+    public String getSender() {
+
+        return sender;
+    }
+
+    public void setSender(String sender) {
+
+        this.sender = sender;
+    }
+
+    public String getTime() {
+
+        return time;
+    }
+
+    public void setTime(String time) {
+
+        this.time = time;
+    }
+
+    public String getQuotedMessageSender() {
+
+        return quotedMessageSender;
+    }
+
+    public void setQuotedMessageSender(String quotedMessageSender) {
+
+        this.quotedMessageSender = quotedMessageSender;
+    }
+
+    public String getQuotedMessageTime() {
+
+        return quotedMessageTime;
+    }
+
+    public void setQuotedMessageTime(String quotedMessageTime) {
+
+        this.quotedMessageTime = quotedMessageTime;
+    }
+
+    public String getQuotedMessageText() {
+
+        return quotedMessageText;
+    }
+
+    public void setQuotedMessageText(String quotedMessageText) {
+
+        this.quotedMessageText = quotedMessageText;
+    }
+
+    public String getMessage() {
+
+        return message;
+    }
+
+    public void setMessage(String message) {
+
+        this.message = message;
     }
 
     public List<UserInteraction> addUserInteractions(String name, String emoji) {
@@ -142,12 +211,9 @@ public class MessageModel {
         return this.userInteractions;
     }
 
-    public void setLocalIp(String localIp) {
-        this.localIp = localIp;
-    }
-
     @Override
     public String toString() {
+
         return "MessageModel{" +
                 "id=" + id +
                 ", messageType=" + messageType +

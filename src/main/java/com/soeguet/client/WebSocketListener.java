@@ -4,9 +4,9 @@ import java.nio.ByteBuffer;
 
 public interface WebSocketListener {
 
-  void onMessageReceived(String message);
+    void onMessageReceived(String message);
 
-  void onByteBufferMessageReceived(ByteBuffer bytes);
+    void onByteBufferMessageReceived(ByteBuffer bytes);
 
-  void onCloseReconnect();
+    void onCloseReconnect();
 }

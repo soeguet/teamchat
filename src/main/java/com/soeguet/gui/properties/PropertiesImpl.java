@@ -1,13 +1,14 @@
 package com.soeguet.gui.properties;
 
-import static com.soeguet.gui.ChatImpl.MAPPER;
-import static com.soeguet.gui.ChatImpl.mapOfIps;
-
 import com.soeguet.Main;
 import com.soeguet.config.Settings;
 import com.soeguet.config.ThemeSettings;
 import com.soeguet.model.Clients;
 import com.soeguet.model.ClientsList;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
@@ -20,228 +21,212 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.table.DefaultTableModel;
+
+import static com.soeguet.gui.ChatImpl.MAPPER;
+import static com.soeguet.gui.ChatImpl.mapOfIps;
 
 public class PropertiesImpl extends PropertiesFrame {
 
-  private final Settings settings;
+    private final Settings settings;
 
-  public PropertiesImpl() {
-    super();
-    settings = Settings.getInstance();
-    updateSettingValues();
-    populateIpTable();
-  }
+    public PropertiesImpl() {
 
-  private void populateIpTable() {
-    DefaultTableModel model = (DefaultTableModel) form_participantsTable.getModel();
-    mapOfIps.forEach((a, b) -> model.addRow(new Object[] {a, b}));
-  }
-
-  private void saveIpTableInTextFile() {
-
-    mapOfIps.clear();
-
-    int rowCount = form_participantsTable.getRowCount();
-    ClientsList clientsList = new ClientsList();
-    for (int i = 0; i < rowCount; i++) {
-
-      mapOfIps.put(
-          String.valueOf(form_participantsTable.getModel().getValueAt(i, 0)),
-          String.valueOf(form_participantsTable.getModel().getValueAt(i, 1)));
-      clientsList
-          .getClientsList()
-          .add(
-              new Clients(
-                  String.valueOf(form_participantsTable.getModel().getValueAt(i, 0)),
-                  String.valueOf(form_participantsTable.getModel().getValueAt(i, 1))));
+        super();
+        settings = Settings.getInstance();
+        updateSettingValues();
+        populateIpTable();
     }
 
-    try {
-      String s = MAPPER.writerFor(ClientsList.class).writeValueAsString(clientsList);
+    private void populateIpTable() {
 
-      File file;
-
-      if (String.valueOf(PropertiesImpl.class.getResource("PropertiesImpl.class"))
-          .startsWith("jar:")) {
-
-        URI location = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI();
-
-        Path path = Paths.get(Paths.get(location).getParent().getParent() + "\\bin\\conf\\ips.txt");
-
-        file = new File(path.toUri());
-      } else {
-        file = new File("src/main/resources/conf/ips.txt");
-      }
-      try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-
-        fileOutputStream.write(s.getBytes());
-      }
-
-    } catch (IOException | URISyntaxException ex) {
-      throw new RuntimeException(ex);
+        DefaultTableModel model = (DefaultTableModel) form_participantsTable.getModel();
+        mapOfIps.forEach((a, b) -> model.addRow(new Object[]{a, b}));
     }
-  }
 
-  // for initial displaying live values when opening window
-  private void updateSettingValues() {
-    form_ipTextField.setText(settings.getIp());
-    form_portTextField.setText(String.valueOf(settings.getPort()));
-    form_widthSpinner.setValue(settings.getMainFrameWidth());
-    form_heightSpinner.setValue(settings.getMainFrameHeight());
-    themeComboSetSelectedIndex();
+    private void saveIpTableInTextFile() {
 
-    form_fontSizeSlider.setValue(settings.getFontSize());
-    form_exampleTextLabel.setFont(
-        new Font(
-            form_exampleTextLabel.getFont().getFontName(),
-            form_exampleTextLabel.getFont().getStyle(),
-            form_fontSizeSlider.getValue()));
-    form_exampleTextLabel.setText("example text " + form_fontSizeSlider.getValue());
+        mapOfIps.clear();
 
-    form_widthSpinner.setValue(settings.getMainJFrame().getWidth());
-    form_heightSpinner.setValue(settings.getMainJFrame().getHeight());
+        int rowCount = form_participantsTable.getRowCount();
+        ClientsList clientsList = new ClientsList();
+        for (int i = 0; i < rowCount; i++) {
 
-    form_durationSpinner.setValue(settings.getMessageDuration());
-  }
+            mapOfIps.put(String.valueOf(form_participantsTable.getModel().getValueAt(i, 0)), String.valueOf(form_participantsTable.getModel().getValueAt(i, 1)));
+            clientsList.getClientsList().add(new Clients(String.valueOf(form_participantsTable.getModel().getValueAt(i, 0)), String.valueOf(form_participantsTable.getModel().getValueAt(i, 1))));
+        }
 
-  private void themeComboSetSelectedIndex() {
+        try {
+            String s = MAPPER.writerFor(ClientsList.class).writeValueAsString(clientsList);
 
-    switch (settings.getThemeSetting()) {
-      case "WHITE":
-        form_themeOptionComboBox.setSelectedIndex(0);
-        break;
-      case "DARK":
-        form_themeOptionComboBox.setSelectedIndex(1);
-        break;
-      case "INTELLIJ":
-        form_themeOptionComboBox.setSelectedIndex(2);
-        break;
-      case "DARCULA":
-        form_themeOptionComboBox.setSelectedIndex(3);
-        break;
+            File file;
+
+            if (String.valueOf(PropertiesImpl.class.getResource("PropertiesImpl.class")).startsWith("jar:")) {
+
+                URI location = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+
+                Path path = Paths.get(Paths.get(location).getParent().getParent() + "\\bin\\conf\\ips.txt");
+
+                file = new File(path.toUri());
+            } else {
+                file = new File("src/main/resources/conf/ips.txt");
+            }
+            try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+
+                fileOutputStream.write(s.getBytes());
+            }
+
+        } catch (IOException | URISyntaxException ex) {
+            throw new RuntimeException(ex);
+        }
     }
-  }
 
-  private void resizeMainFrame() {
+    // for initial displaying live values when opening window
+    private void updateSettingValues() {
 
-    SwingUtilities.invokeLater(
-        () -> {
-          settings
-              .getMainJFrame()
-              .setSize(
-                  (Integer) form_widthSpinner.getModel().getValue(),
-                  (Integer) form_heightSpinner.getModel().getValue());
-          settings.getMainJFrame().setLocationRelativeTo(null);
-          settings.getMainJFrame().revalidate();
-          settings.getMainJFrame().repaint();
+        form_ipTextField.setText(settings.getIp());
+        form_portTextField.setText(String.valueOf(settings.getPort()));
+        form_widthSpinner.setValue(settings.getMainFrameWidth());
+        form_heightSpinner.setValue(settings.getMainFrameHeight());
+        themeComboSetSelectedIndex();
+
+        form_fontSizeSlider.setValue(settings.getFontSize());
+        form_exampleTextLabel.setFont(new Font(form_exampleTextLabel.getFont().getFontName(), form_exampleTextLabel.getFont().getStyle(), form_fontSizeSlider.getValue()));
+        form_exampleTextLabel.setText("example text " + form_fontSizeSlider.getValue());
+
+        form_widthSpinner.setValue(settings.getMainJFrame().getWidth());
+        form_heightSpinner.setValue(settings.getMainJFrame().getHeight());
+
+        form_durationSpinner.setValue(settings.getMessageDuration());
+    }
+
+    private void themeComboSetSelectedIndex() {
+
+        switch (settings.getThemeSetting()) {
+            case "WHITE":
+                form_themeOptionComboBox.setSelectedIndex(0);
+                break;
+            case "DARK":
+                form_themeOptionComboBox.setSelectedIndex(1);
+                break;
+            case "INTELLIJ":
+                form_themeOptionComboBox.setSelectedIndex(2);
+                break;
+            case "DARCULA":
+                form_themeOptionComboBox.setSelectedIndex(3);
+                break;
+        }
+    }
+
+    private void resizeMainFrame() {
+
+        SwingUtilities.invokeLater(() -> {
+            settings.getMainJFrame().setSize((Integer) form_widthSpinner.getModel().getValue(), (Integer) form_heightSpinner.getModel().getValue());
+            settings.getMainJFrame().setLocationRelativeTo(null);
+            settings.getMainJFrame().revalidate();
+            settings.getMainJFrame().repaint();
         });
-  }
-
-  private void getSelectionTheme() {
-
-    switch (Objects.requireNonNull(form_themeOptionComboBox.getSelectedItem())
-        .toString()
-        .toUpperCase()) {
-      case "WHITE":
-        settings.setThemeSetting(ThemeSettings.LIGHT);
-        break;
-      case "DARK":
-        settings.setThemeSetting(ThemeSettings.DARK);
-        break;
-      case "INTELLIJ":
-        settings.setThemeSetting(ThemeSettings.INTELLIJ);
-        break;
-      case "DARCULA":
-        settings.setThemeSetting(ThemeSettings.DARCULA);
-        break;
     }
-  }
 
-  @Override
-  protected void addRowButtonMouseClicked(MouseEvent e) {
+    private void getSelectionTheme() {
 
-    DefaultTableModel model = (DefaultTableModel) form_participantsTable.getModel();
-    model.addRow(new Object[] {"ip", "name"});
-  }
-
-  @Override
-  protected void deleteRowButtonMouseClicked(MouseEvent e) {
-
-    int selectedRow = form_participantsTable.getSelectedRow();
-    DefaultTableModel model = (DefaultTableModel) form_participantsTable.getModel();
-    try {
-      model.removeRow(selectedRow);
-    } catch (ArrayIndexOutOfBoundsException ignored) {
+        switch (Objects.requireNonNull(form_themeOptionComboBox.getSelectedItem()).toString().toUpperCase()) {
+            case "WHITE":
+                settings.setThemeSetting(ThemeSettings.LIGHT);
+                break;
+            case "DARK":
+                settings.setThemeSetting(ThemeSettings.DARK);
+                break;
+            case "INTELLIJ":
+                settings.setThemeSetting(ThemeSettings.INTELLIJ);
+                break;
+            case "DARCULA":
+                settings.setThemeSetting(ThemeSettings.DARCULA);
+                break;
+        }
     }
-  }
 
-  @Override
-  protected void cancelButtonMouseClicked(MouseEvent e) {
-    SwingUtilities.invokeLater(this::dispose);
-  }
+    @Override
+    protected void addRowButtonMouseClicked(MouseEvent e) {
 
-  @Override
-  protected void thisWindowActivated(WindowEvent e) {
-    if (!this.isVisible()) {
-      updateSettingValues();
+        DefaultTableModel model = (DefaultTableModel) form_participantsTable.getModel();
+        model.addRow(new Object[]{"ip", "name"});
     }
-  }
 
-  @Override
-  protected void fontSizeSliderStateChanged(ChangeEvent e) {
+    @Override
+    protected void deleteRowButtonMouseClicked(MouseEvent e) {
 
-    form_exampleTextLabel.setFont(
-        new Font(
-            form_exampleTextLabel.getFont().getFontName(),
-            form_exampleTextLabel.getFont().getStyle(),
-            form_fontSizeSlider.getValue()));
-    form_exampleTextLabel.setText("example text " + form_fontSizeSlider.getValue());
-
-    if (form_fontSizeSlider.getValue() > 28) {
-
-      pack();
-      revalidate();
-      repaint();
-      setLocationRelativeTo(null);
+        int selectedRow = form_participantsTable.getSelectedRow();
+        DefaultTableModel model = (DefaultTableModel) form_participantsTable.getModel();
+        try {
+            model.removeRow(selectedRow);
+        } catch (ArrayIndexOutOfBoundsException ignored) {
+        }
     }
-  }
 
-  @Override
-  protected void okButtonMouseClicked(MouseEvent e) {
+    @Override
+    protected void cancelButtonMouseClicked(MouseEvent e) {
 
-    saveIpTableInTextFile();
+        SwingUtilities.invokeLater(this::dispose);
+    }
 
-    getSelectionTheme();
+    @Override
+    protected void thisWindowActivated(WindowEvent e) {
 
-    String newIP = form_ipTextField.getText();
-    settings.setIp(newIP);
+        if (!this.isVisible()) {
+            updateSettingValues();
+        }
+    }
 
-    String newPort = form_portTextField.getText();
-    settings.setPort(Integer.parseInt(newPort));
+    @Override
+    protected void fontSizeSliderStateChanged(ChangeEvent e) {
 
-    settings.setMainFrameWidth((Integer) form_widthSpinner.getModel().getValue());
-    settings.setMainFrameHeight((Integer) form_heightSpinner.getModel().getValue());
-    resizeMainFrame();
+        form_exampleTextLabel.setFont(new Font(form_exampleTextLabel.getFont().getFontName(), form_exampleTextLabel.getFont().getStyle(), form_fontSizeSlider.getValue()));
+        form_exampleTextLabel.setText("example text " + form_fontSizeSlider.getValue());
 
-    settings.setFontSize(form_fontSizeSlider.getValue());
-    settings.setMessageDuration((int) form_durationSpinner.getValue());
+        if (form_fontSizeSlider.getValue() > 28) {
 
-    SwingUtilities.invokeLater(this::dispose);
-    e.consume();
-  }
+            pack();
+            revalidate();
+            repaint();
+            setLocationRelativeTo(null);
+        }
+    }
 
-  @Override
-  protected void portTextFieldFocusGained(FocusEvent e) {
-    form_portTextField.setSelectionStart(0);
-    form_portTextField.setSelectionEnd(999);
-  }
+    @Override
+    protected void okButtonMouseClicked(MouseEvent e) {
 
-  @Override
-  protected void ipTextFieldFocusGained(FocusEvent e) {
-    form_ipTextField.setSelectionStart(0);
-    form_ipTextField.setSelectionEnd(999);
-  }
+        saveIpTableInTextFile();
+
+        getSelectionTheme();
+
+        String newIP = form_ipTextField.getText();
+        settings.setIp(newIP);
+
+        String newPort = form_portTextField.getText();
+        settings.setPort(Integer.parseInt(newPort));
+
+        settings.setMainFrameWidth((Integer) form_widthSpinner.getModel().getValue());
+        settings.setMainFrameHeight((Integer) form_heightSpinner.getModel().getValue());
+        resizeMainFrame();
+
+        settings.setFontSize(form_fontSizeSlider.getValue());
+        settings.setMessageDuration((int) form_durationSpinner.getValue());
+
+        SwingUtilities.invokeLater(this::dispose);
+        e.consume();
+    }
+
+    @Override
+    protected void portTextFieldFocusGained(FocusEvent e) {
+
+        form_portTextField.setSelectionStart(0);
+        form_portTextField.setSelectionEnd(999);
+    }
+
+    @Override
+    protected void ipTextFieldFocusGained(FocusEvent e) {
+
+        form_ipTextField.setSelectionStart(0);
+        form_ipTextField.setSelectionEnd(999);
+    }
 }

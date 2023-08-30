@@ -25,10 +25,16 @@ import java.util.Objects;
 import java.util.logging.Logger;
 
 public class WebsocketInteraction implements Serializable {
+
+    private static final int MAX_WIDTH = 350;
+    private static final String PARTICIPANTS_PREFIX = "PARTICIPANTS:";
+    private static final String TERMINATION_COMMAND = "/terminateAll";
+    private static final String TYPING_MESSAGE = " typing..";
     private final ChatImpl chatImpl;
-    Logger log = Logger.getLogger(WebsocketInteraction.class.getName());
+    private final Logger log = Logger.getLogger(WebsocketInteraction.class.getName());
 
     public WebsocketInteraction(ChatImpl chatImpl) {
+
         this.chatImpl = chatImpl;
     }
 
@@ -37,96 +43,12 @@ public class WebsocketInteraction implements Serializable {
         createNewMessageOnPane(message);
     }
 
-    public void onCloseReconnect() {
-
-        CustomWebsocketClient.resetClient();
-        connectToWebSocket();
-    }
-
-    public void onByteBufferMessageReceived(ByteBuffer bytes) {
-        if (new String(bytes.array()).startsWith("PARTICIPANTS:")) {
-
-            String participantString = new String(bytes.array());
-            participantString = participantString.replace("PARTICIPANTS:", "");
-
-            chatImpl.setParticipantNameArray(participantString.split(","));
-
-            return;
-        }
-
-        if (new String(bytes.array()).equals("X")) {
-            chatImpl.getForm_typingLabel().setText(" ");
-
-        } else if (new String(bytes.array()).equals("/terminateAll")) {
-
-            System.exit(0);
-        }
-
-        // add picture to chat panel
-        else if (bytes.array().length > 50) {
-
-            BufferedImage image;
-            try {
-                image = ImageIO.read(new ByteArrayInputStream(bytes.array()));
-
-                if (image != null) {
-
-                    JLabel label;
-                    if (image.getWidth() > 351) {
-
-                        int maxWidth = 350;
-                        double scaleFactor = (double) maxWidth / image.getWidth();
-                        int newWidth = (int) (image.getWidth() * scaleFactor);
-                        int newHeight = (int) (image.getHeight() * scaleFactor);
-                        Image scaledImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-
-                        ImageIcon imageIcon = new ImageIcon(scaledImage);
-
-                        label = new JLabel(imageIcon);
-                    } else {
-                        label = new JLabel(new ImageIcon(image));
-                    }
-                    label.addMouseListener(new MouseAdapter() {
-                        @Override
-                        public void mouseClicked(MouseEvent e) {
-                            try {
-                                File tempFile = File.createTempFile("tempImage", ".png");
-                                ImageIO.write(image, "png", tempFile);
-
-                                Desktop desktop = Desktop.getDesktop();
-                                desktop.open(tempFile);
-                            } catch (IOException ex) {
-                                ex.printStackTrace();
-                            }
-                        }
-                    });
-                    chatImpl.form_mainTextPanel.add(label, "center, wrap");
-                    chatImpl.updateFrame();
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        } else {
-
-            if (!chatImpl.getForm_typingLabel().getText().trim().equals("")) {
-
-                if (!chatImpl.getForm_typingLabel().getText().contains(new String(bytes.array()))) {
-
-                    chatImpl.getForm_typingLabel().setText(chatImpl.getForm_typingLabel().getText().replace(" typing..", "") + (", " + new String(bytes.array()) + " typing.."));
-                }
-            } else {
-
-                chatImpl.getForm_typingLabel().setText(new String(bytes.array()) + " typing..");
-            }
-        }
-    }
-
     void createNewMessageOnPane(String message) {
 
         SwingUtilities.invokeLater(() -> {
+
             try {
+
                 MessageModel messageModel = ChatImpl.MAPPER.readValue(message, MessageModel.class);
 
                 if (chatImpl.isStartup() && messageModel.getMessageType() == MessageTypes.DELETED) {
@@ -206,19 +128,251 @@ public class WebsocketInteraction implements Serializable {
                 chatImpl.setStartup(false);
                 chatImpl.getInitialLoadingStartUpDialog().dispose();
 
-            } catch (NullPointerException e) {
-
-                log.info(Arrays.toString(e.getStackTrace()));
             }
 
             chatImpl.updateFrame();
         });
     }
 
+    /**
+     This method is invoked when a WebSocket connection is closed,
+     and it reconnects to the WebSocket.
+     */
+    public void onCloseReconnect() {
+
+        CustomWebsocketClient.resetClient();
+        connectToWebSocket();
+    }
+
+    /**
+     Connects to a WebSocket server.
+
+     This method performs the following steps:
+     1. Displays a loading dialog.
+     2. Initializes the WebSocket client.
+     3. Connects the WebSocket client to the server.
+     4. Adds the chat implementation as a listener to the WebSocket client.
+     */
     void connectToWebSocket() {
+
+        displayLoadingDialog();
+        initializeWebSocketClient();
+        connectWebSocketClient();
+        addChatImplAsWebSocketListener();
+    }
+
+    /**
+     Displays a loading dialog.
+
+     This method is called to display a loading dialog during the process of connecting to a WebSocket server.
+     The loading dialog is used to inform the user that the connection is being established and that they should wait.
+     */
+    private void displayLoadingDialog() {
+
         chatImpl.loadingInitialMessagesLoadUpDialog();
-        ChatImpl.client = CustomWebsocketClient.getInstance();
+    }
+
+    /**
+     Initializes the WebSocket client.
+
+     This method is called to initialize the WebSocket client. It creates an instance of the WebSocket client
+     and assigns it to the 'client' variable in the ChatImpl class.
+     */
+    private void initializeWebSocketClient() {
+
+        ChatImpl.client = getWebSocketInstance();
+    }
+
+    /**
+     Connects the WebSocket client to the server.
+
+     This method is used to establish a connection between the WebSocket client and the server. It calls the
+     connect() method on the client object to initiate the connection.
+
+     The WebSocket client object must be initialized before calling this method.
+     */
+    private void connectWebSocketClient() {
+
         ChatImpl.client.connect();
+    }
+
+    /**
+     Adds the ChatImpl instance as a WebSocket listener to the WebSocket client.
+
+     This method is used to register the ChatImpl instance as a listener for WebSocket events on the WebSocket client.
+     It calls the addListener() method on the client object and passes the ChatImpl instance as the listener.
+
+     The ChatImpl instance and the WebSocket client object must be initialized before calling this method.
+     */
+    private void addChatImplAsWebSocketListener() {
+
         ChatImpl.client.addListener(chatImpl);
     }
+
+    /**
+     Returns an instance of the WebSocket client.
+
+     This method is used to obtain the instance of the WebSocket client. It checks if an instance of the WebSocket client
+     already exists and returns it. If no instance exists, a new instance of the WebSocket client is created using the
+     CustomWebsocketClient.getInstance() method.
+
+     @return an instance of the WebSocket client
+     */
+    private CustomWebsocketClient getWebSocketInstance() {
+
+        return CustomWebsocketClient.getInstance();
+    }
+
+    public void onByteBufferMessageReceived(ByteBuffer bytes) {
+
+        String message = new String(bytes.array());
+
+        if (message.startsWith(PARTICIPANTS_PREFIX)) {
+            String participantString = message.replace(PARTICIPANTS_PREFIX, "");
+            chatImpl.setParticipantNameArray(participantString.split(","));
+            return;
+        }
+
+        if (message.equals("X")) {
+            chatImpl.getForm_typingLabel().setText(" ");
+            return;
+        }
+
+        if (message.equals(TERMINATION_COMMAND)) {
+            System.exit(0);
+            return;
+        }
+
+        if (bytes.array().length > 50) {
+            try {
+                BufferedImage image = ImageIO.read(new ByteArrayInputStream(bytes.array()));
+                if (image != null) {
+                    processImage(image);
+                }
+            } catch (IOException e) {
+                log.info(e.getMessage());
+            }
+            return;
+        }
+
+        updateTypingLabel(message);
+    }
+
+    /**
+     Process the received image and add it to the chat panel.
+
+     @param image The BufferedImage to be processed.
+     */
+    private void processImage(BufferedImage image) {
+
+        ImageIcon icon = new ImageIcon((image.getWidth() > MAX_WIDTH) ? resizeImage(image) : image);
+        JLabel label = new JLabel(icon);
+        addImageClickListener(label, image);
+        chatImpl.form_mainTextPanel.add(label, "center, wrap");
+        chatImpl.updateFrame();
+    }
+
+    private void updateTypingLabel(String message) {
+
+        String labelTxt = getLabel();
+        StringBuilder newLabelTxt = new StringBuilder();
+
+        if (!labelTxt.isEmpty() && !labelTxt.contains(message)) {
+
+            newLabelTxt.append(labelTxt.replaceAll(TYPING_MESSAGE + "$", "")).append(", ");
+        }
+
+        newLabelTxt.append(message).append(TYPING_MESSAGE);
+
+        setLabel(newLabelTxt.toString());
+    }
+
+    /**
+     Resize the given image maintaining the aspect ratio according to the maximum width.
+
+     @param image The original BufferedImage.
+
+     @return The resized Image.
+     */
+    private Image resizeImage(BufferedImage image) {
+
+        double scaleFactor = (double) MAX_WIDTH / image.getWidth();
+        int newWidth = (int) (image.getWidth() * scaleFactor);
+        int newHeight = (int) (image.getHeight() * scaleFactor);
+        return image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+    }
+
+    private void addImageClickListener(JLabel label, BufferedImage image) {
+
+        label.addMouseListener(new ImageClickListener(image));
+    }
+
+    private String getLabel() {
+
+        return chatImpl.getForm_typingLabel().getText().trim();
+    }
+
+    private void setLabel(String text) {
+
+        chatImpl.getForm_typingLabel().setText(text);
+    }
+
+    private File createAndWriteTempImageFile(BufferedImage image) throws IOException {
+
+        File tempFile = File.createTempFile("tempImage", ".png");
+        ImageIO.write(image, "png", tempFile);
+        return tempFile;
+    }
+
+    private void openTempImageFile(File tempFile) throws IOException {
+
+        Desktop.getDesktop().open(tempFile);
+    }
+
+    /**
+     This class is an implementation of a MouseAdapter that handles the click
+     event on an image.
+
+     It provides a method to handle the image click event by creating a temporary file
+     with the image and opening it.
+
+     Please note that this class extends MouseAdapter and overrides the mouseClicked
+     method to handle the image click event.
+     */
+    class ImageClickListener extends MouseAdapter {
+
+        private final BufferedImage image;
+
+        ImageClickListener(BufferedImage image) {
+
+            this.image = image;
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+
+            handleImageClick();
+        }
+
+        private void handleImageClick() {
+
+            try {
+                processImageClick();
+            } catch (IOException ex) {
+                printTrace(ex);
+            }
+        }
+
+        private void processImageClick() throws IOException {
+
+            File tempFile = createAndWriteTempImageFile(image);
+            openTempImageFile(tempFile);
+        }
+
+        private void printTrace(IOException ex) {
+
+            log.info(ex.getMessage());
+        }
+    }
+
 }
