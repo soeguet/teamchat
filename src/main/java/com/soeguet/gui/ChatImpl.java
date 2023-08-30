@@ -52,8 +52,6 @@ import java.util.jar.JarFile;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static com.soeguet.gui.util.EmojiConverter.emojiListInit;
-
 /**
  Sets up the GUI. Interacts with the websocket (client side) via WebSocketListener.
  */
@@ -71,8 +69,8 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
     // needed for converting text to emojis
     public static CustomWebsocketClient client;
 
-    private final Settings settings;
-    private final WebsocketInteraction websocketInteraction;
+    private Settings settings;
+    private WebsocketInteraction websocketInteraction;
     private final JProgressBar formProgressbar = new JProgressBar(0, 100);
     private final List<JButton> emojiButtonListForFocus = new ArrayList<>();
     private final ClassLoader classLoader = getClass().getClassLoader();
@@ -107,14 +105,14 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
 
     public ChatImpl() {
 
-        settings = Settings.getInstance();
+//        settings = Settings.getInstance();
 
-        ipAddressesAsLocalClientsInit();
-        emojiListInit();
-        initializeGui();
+//        ipAddressesAsLocalClientsInit();
+//        emojiListInit();
+//        initializeGui();
 
-        websocketInteraction = new WebsocketInteraction(this);
-        websocketInteraction.connectToWebSocket();
+//        websocketInteraction = new WebsocketInteraction(this);
+//        websocketInteraction.connectToWebSocket();
     }
 
     private void ipAddressesAsLocalClientsInit() {
