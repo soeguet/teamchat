@@ -1,4 +1,4 @@
-package com.soeguet.model;
+package com.pre.model;
 
 import com.pre.gui.util.MessageTypes;
 
