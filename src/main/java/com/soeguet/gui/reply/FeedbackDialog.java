@@ -4,29 +4,30 @@
 
 package com.soeguet.gui.reply;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
 import net.miginfocom.swing.MigLayout;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
 /**
- * @author osmansogut
+ * @author soeguet
  */
 public abstract class FeedbackDialog extends JDialog {
 
-  public FeedbackDialog() {
-    super();
-    setModal(true);
-    initComponents();
-  }
-
-  // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
+    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
   protected JPanel form_dialogPane;
   protected JPanel form_contentPanel;
   protected JScrollPane form_panel1;
   protected JTextPane form_replyTextPane;
   protected JButton form_emojiButton;
   protected JButton form_sendButton;
+    public FeedbackDialog() {
+
+        super();
+        setModal(true);
+        initComponents();
+    }
 
   protected abstract void sendMessageReply();
 
@@ -150,16 +151,16 @@ public abstract class FeedbackDialog extends JDialog {
     // JFormDesigner - End of component initialization  //GEN-END:initComponents  @formatter:on
   }
 
-  protected abstract void dialogPaneKeyPressed(KeyEvent e);
+    protected abstract void dialogPaneKeyPressed(KeyEvent e);
 
-  protected abstract void sendButton(ActionEvent e);
+    protected abstract void sendButton(ActionEvent e);
 
-  protected abstract void thisComponentHidden(ComponentEvent e);
+    protected abstract void thisComponentHidden(ComponentEvent e);
 
-  protected abstract void replyTextPaneKeyReleased(KeyEvent e);
+    protected abstract void replyTextPaneKeyReleased(KeyEvent e);
 
-  protected abstract void replyTextPaneKeyPressed(KeyEvent e);
+    protected abstract void replyTextPaneKeyPressed(KeyEvent e);
 
-  protected abstract void emojiButtonMouseClicked(MouseEvent e);
-  // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
+    protected abstract void emojiButtonMouseClicked(MouseEvent e);
+    // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }

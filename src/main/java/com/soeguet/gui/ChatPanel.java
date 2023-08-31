@@ -1,54 +1,75 @@
 package com.soeguet.gui;
 
+import net.miginfocom.swing.MigLayout;
+
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.*;
-import javax.swing.*;
-import net.miginfocom.swing.*;
+import java.beans.PropertyChangeEvent;
 /*
  * Created by JFormDesigner on Wed Aug 30 12:14:07 CEST 2023
  */
-
-
 
 /**
  * @author soeguet
  */
 public abstract class ChatPanel extends JFrame {
-	public ChatPanel() {
-		initComponents();
-	}
 
-	protected abstract void thisPropertyChange(PropertyChangeEvent e);
+    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
+	// Generated using JFormDesigner non-commercial license
+	protected JPanel form_panel;
+	protected JMenuBar form_menuBar1;
+	protected JMenu form_fileMenu;
+	protected JMenuItem form_propertiesMenuItem;
+	protected JMenuItem form_resetConnectionMenuItem;
+	protected JMenuItem form_exitMenuItem;
+	protected JMenu form_extraMenu;
+	protected JMenuItem form_participantsMenuItem;
+	protected JScrollPane form_mainTextBackgroundScrollPane;
+	protected JPanel form_mainTextPanel;
+	protected JPanel form_panel2;
+	protected JLabel form_typingLabel;
+	protected JPanel form_panel1;
+	protected JScrollPane form_scrollPane1;
+	protected JTextPane form_textEditorPane;
+	protected JButton form_pictureButton;
+	protected JButton form_emojiButton;
+	protected JButton form_sendButton;
+    public ChatPanel() {
 
-	protected abstract void thisComponentResized(ComponentEvent e);
+        initComponents();
+    }
 
-	protected abstract void thisMouseClicked(MouseEvent e);
+    protected abstract void thisPropertyChange(PropertyChangeEvent e);
 
-	protected abstract void propertiesMenuItemMousePressed(MouseEvent e);
+    protected abstract void thisComponentResized(ComponentEvent e);
 
-	protected abstract void resetConnectionMenuItemMousePressed(MouseEvent e);
+    protected abstract void thisMouseClicked(MouseEvent e);
 
-	protected abstract void exitMenuItemMousePressed(MouseEvent e);
+    protected abstract void propertiesMenuItemMousePressed(MouseEvent e);
 
-	protected abstract void participantsMenuItemMousePressed(MouseEvent e);
+    protected abstract void resetConnectionMenuItemMousePressed(MouseEvent e);
 
-	protected abstract void mainTextPanelMouseClicked(MouseEvent e);
+    protected abstract void exitMenuItemMousePressed(MouseEvent e);
 
-	protected abstract void textEditorPaneMouseClicked(MouseEvent e);
+    protected abstract void participantsMenuItemMousePressed(MouseEvent e);
 
-	protected abstract void textEditorPaneKeyPressed(KeyEvent e);
+    protected abstract void mainTextPanelMouseClicked(MouseEvent e);
 
-	protected abstract void textEditorPaneKeyReleased(KeyEvent e);
+    protected abstract void textEditorPaneMouseClicked(MouseEvent e);
 
-	protected abstract void pictureButtonMouseClicked(MouseEvent e);
+    protected abstract void textEditorPaneKeyPressed(KeyEvent e);
 
-	protected abstract void emojiButton(ActionEvent e);
+    protected abstract void textEditorPaneKeyReleased(KeyEvent e);
 
-	protected abstract void sendButton(ActionEvent e);
+    protected abstract void pictureButtonMouseClicked(MouseEvent e);
 
-	private void initComponents() {
-		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
+    protected abstract void emojiButton(ActionEvent e);
+
+    protected abstract void sendButton(ActionEvent e);
+
+    private void initComponents() {
+        // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
 		// Generated using JFormDesigner non-commercial license
 		form_panel = new JPanel();
 		form_menuBar1 = new JMenuBar();
@@ -247,6 +268,7 @@ public abstract class ChatPanel extends JFrame {
 						form_textEditorPane.setPreferredSize(new Dimension(53, 50));
 						form_textEditorPane.setOpaque(false);
 						form_textEditorPane.setDoubleBuffered(true);
+						form_textEditorPane.setFont(new Font("JetBrainsMono NF", Font.PLAIN, 13));
 						form_textEditorPane.addMouseListener(new MouseAdapter() {
 							@Override
 							public void mouseClicked(MouseEvent e) {
@@ -283,7 +305,7 @@ public abstract class ChatPanel extends JFrame {
 					form_panel1.add(form_pictureButton, "cell 1 0");
 
 					//---- form_emojiButton ----
-					form_emojiButton.setText("\u263a#");
+					form_emojiButton.setText("#");
 					form_emojiButton.setDoubleBuffered(true);
 					form_emojiButton.setMinimumSize(new Dimension(50, 50));
 					form_emojiButton.setPreferredSize(new Dimension(50, 50));
@@ -311,27 +333,6 @@ public abstract class ChatPanel extends JFrame {
 		pack();
 		setLocationRelativeTo(getOwner());
 		// JFormDesigner - End of component initialization  //GEN-END:initComponents  @formatter:on
-	}
-
-	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
-	// Generated using JFormDesigner non-commercial license
-	protected JPanel form_panel;
-	protected JMenuBar form_menuBar1;
-	protected JMenu form_fileMenu;
-	protected JMenuItem form_propertiesMenuItem;
-	protected JMenuItem form_resetConnectionMenuItem;
-	protected JMenuItem form_exitMenuItem;
-	protected JMenu form_extraMenu;
-	protected JMenuItem form_participantsMenuItem;
-	protected JScrollPane form_mainTextBackgroundScrollPane;
-	protected JPanel form_mainTextPanel;
-	protected JPanel form_panel2;
-	protected JLabel form_typingLabel;
-	protected JPanel form_panel1;
-	protected JScrollPane form_scrollPane1;
-	protected JTextPane form_textEditorPane;
-	protected JButton form_pictureButton;
-	protected JButton form_emojiButton;
-	protected JButton form_sendButton;
+    }
 	// JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }

@@ -134,6 +134,7 @@ new FormModel {
 								"preferredSize": new java.awt.Dimension( 53, 50 )
 								"opaque": false
 								"doubleBuffered": true
+								"font": new java.awt.Font( "JetBrainsMono NF", 0, 13 )
 								addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "textEditorPaneMouseClicked", true ) )
 								addEvent( new FormEvent( "java.awt.event.KeyListener", "keyPressed", "textEditorPaneKeyPressed", true ) )
 								addEvent( new FormEvent( "java.awt.event.KeyListener", "keyReleased", "textEditorPaneKeyReleased", true ) )
@@ -155,7 +156,7 @@ new FormModel {
 						} )
 						add( new FormComponent( "javax.swing.JButton" ) {
 							name: "emojiButton"
-							"text": "☺#"
+							"text": "#"
 							"doubleBuffered": true
 							"minimumSize": #Dimension0
 							"preferredSize": #Dimension1
