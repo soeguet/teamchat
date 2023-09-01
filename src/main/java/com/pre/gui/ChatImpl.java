@@ -1384,4 +1384,8 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
         appendMessageToPane(tp, msg, attributeSet);
     }
 
+    @Override
+    public com.soeguet.socket_client.CustomWebsocketClient getWebsocketClient() {
+        return null;
+    }
 }
