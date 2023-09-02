@@ -12,5 +12,5 @@ public interface MainGuiInterface {
 
     JPanel getMainTextPanel();
 
-    JScrollPane getScrollPane1();
+    JScrollPane getMainTextBackgroundScrollPane();
 }

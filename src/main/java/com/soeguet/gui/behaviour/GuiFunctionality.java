@@ -19,12 +19,11 @@ public class GuiFunctionality {
 
         if (mainFrame instanceof MainGuiInterface) {
 
+            ((MainGuiInterface) mainFrame).getMainTextPanel().setAutoscrolls(true);
+
             JTextPane textPane = ((MainGuiInterface) mainFrame).getTextEditorPane();
             String textPaneContent = textPane.getText();
             textPane.setText("");
-
-            CustomWebsocketClient websocketClient = ((MainGuiInterface) mainFrame).getWebsocketClient();
-            System.out.println("websocketClient.getReadyState() = " + websocketClient.getReadyState());
 
             JPanel mainTextPanel = ((MainGuiInterface) mainFrame).getMainTextPanel();
             JLabel myLabel = new JLabel(textPaneContent);
@@ -33,16 +32,13 @@ public class GuiFunctionality {
             mainTextPanel.repaint();
             mainTextPanel.revalidate();
 
-            Rectangle rectangle = myLabel.getBounds();
-            rectangle.y = myLabel.getY();
-            rectangle.height = myLabel.getHeight();
-
-
-            //scroll mainTextPanel to last message
-            JScrollPane scrollPane = ((MainGuiInterface) mainFrame).getScrollPane1();
-
-            scrollPane.scrollRectToVisible(rectangle);
-
+            JScrollPane scrollPane = ((MainGuiInterface) mainFrame).getMainTextBackgroundScrollPane();
+            scrollMainPanelDownToLastMessage(scrollPane);
         }
+    }
+
+    private void scrollMainPanelDownToLastMessage(JScrollPane scrollPane) {
+
+        SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(scrollPane.getMaximumSize().height));
     }
 }
