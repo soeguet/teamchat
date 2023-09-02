@@ -2,7 +2,7 @@ package com.soeguet.gui.main_frame;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.soeguet.gui.behaviour.GuiFunctionality;
+import com.soeguet.behaviour.GuiFunctionality;
 import com.soeguet.gui.main_frame.generated.ChatPanel;
 import com.soeguet.socket_client.CustomWebsocketClient;
 

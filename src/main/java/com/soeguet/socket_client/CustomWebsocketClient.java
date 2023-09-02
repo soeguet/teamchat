@@ -1,6 +1,6 @@
 package com.soeguet.socket_client;
 
-import com.soeguet.gui.behaviour.SocketToGuiInterface;
+import com.soeguet.behaviour.SocketToGuiInterface;
 import com.soeguet.gui.main_frame.MainGuiElementsInterface;
 import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
