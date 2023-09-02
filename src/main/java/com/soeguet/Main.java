@@ -5,7 +5,7 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.pre.config.Settings;
-import com.soeguet.gui.main_frame.ChatMainGuiImpl;
+import com.soeguet.gui.main_frame.ChatMainGuiElementsImpl;
 
 import javax.swing.*;
 
@@ -17,7 +17,7 @@ public class Main {
 
         setTheme(settings.getThemeSetting());
 
-        SwingUtilities.invokeLater(ChatMainGuiImpl::new);
+        SwingUtilities.invokeLater(ChatMainGuiElementsImpl::new);
     }
 
     private static void setTheme(String themeSetting) {

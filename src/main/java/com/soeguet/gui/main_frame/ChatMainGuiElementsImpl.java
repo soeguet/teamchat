@@ -21,9 +21,9 @@ import java.util.logging.Logger;
  * This class represents a GUI implementation for a chat application.
  * It extends the ChatPanel class and implements the MainGuiInterface.
  */
-public class ChatMainGuiImpl extends ChatPanel implements MainGuiInterface {
+public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElementsInterface {
 
-    private final Logger logger = Logger.getLogger(ChatMainGuiImpl.class.getName());
+    private final Logger logger = Logger.getLogger(ChatMainGuiElementsImpl.class.getName());
 
     private final GuiFunctionality guiFunctionality;
 
@@ -31,16 +31,21 @@ public class ChatMainGuiImpl extends ChatPanel implements MainGuiInterface {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
-    public ChatMainGuiImpl() {
+    public ChatMainGuiElementsImpl() {
 
         guiFunctionality = new GuiFunctionality(this);
 
         try {
-            websocketClient = new CustomWebsocketClient(new URI("ws://127.0.0.1:8100"));
+            websocketClient = new CustomWebsocketClient(new URI("ws://127.0.0.1:8100"), this);
             websocketClient.connect();
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public GuiFunctionality getGuiFunctionality() {
+
+        return guiFunctionality;
     }
 
     public ObjectMapper getObjectMapper() {

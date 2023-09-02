@@ -14,6 +14,7 @@ import com.pre.gui.util.EmojiConverter;
 import com.pre.model.ClientsList;
 import com.pre.model.MessageModel;
 import com.soeguet.Main;
+import com.soeguet.gui.behaviour.GuiFunctionality;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang3.StringUtils;
 import org.java_websocket.exceptions.WebsocketNotConnectedException;
@@ -1391,6 +1392,12 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
 
     @Override
     public ObjectMapper getObjectMapper() {
+
+        return null;
+    }
+
+    @Override
+    public GuiFunctionality getGuiFunctionality() {
 
         return null;
     }

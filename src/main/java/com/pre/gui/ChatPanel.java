@@ -1,6 +1,6 @@
 package com.pre.gui;
 
-import com.soeguet.gui.main_frame.MainGuiInterface;
+import com.soeguet.gui.main_frame.MainGuiElementsInterface;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -14,7 +14,7 @@ import java.beans.PropertyChangeEvent;
 /**
  * @author soeguet
  */
-public abstract class ChatPanel extends JFrame implements MainGuiInterface {
+public abstract class ChatPanel extends JFrame implements MainGuiElementsInterface {
     public ChatPanel() {
         initComponents();
     }
