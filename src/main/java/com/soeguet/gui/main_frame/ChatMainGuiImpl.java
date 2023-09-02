@@ -1,6 +1,7 @@
 package com.soeguet.gui.main_frame;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.gui.behaviour.GuiFunctionality;
 import com.soeguet.gui.main_frame.generated.ChatPanel;
 import com.soeguet.socket_client.CustomWebsocketClient;
@@ -28,6 +29,8 @@ public class ChatMainGuiImpl extends ChatPanel implements MainGuiInterface {
 
     private final CustomWebsocketClient websocketClient;
 
+    ObjectMapper objectMapper = new ObjectMapper();
+
     public ChatMainGuiImpl() {
 
         guiFunctionality = new GuiFunctionality(this);
@@ -38,6 +41,11 @@ public class ChatMainGuiImpl extends ChatPanel implements MainGuiInterface {
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public ObjectMapper getObjectMapper() {
+
+        return objectMapper;
     }
 
     /**
@@ -53,7 +61,7 @@ public class ChatMainGuiImpl extends ChatPanel implements MainGuiInterface {
     /**
      * Logs the provided event and method name.
      *
-     * @param event The event to be logged.
+     * @param event      The event to be logged.
      * @param methodName The name of the method to be logged.
      */
     private void logMethod(EventObject event, String methodName) {
@@ -132,9 +140,8 @@ public class ChatMainGuiImpl extends ChatPanel implements MainGuiInterface {
 
     /**
      * Appends a new line to the text editor pane.
-     *
+     * <p>
      * Retrieves the current text in the text editor pane and appends a new line character at the end of it.
-     *
      */
     private void appendNewLineToTextEditorPane() {
 
@@ -144,11 +151,10 @@ public class ChatMainGuiImpl extends ChatPanel implements MainGuiInterface {
 
     /**
      * Handles a key press event when the enter key is pressed without pressing the shift key.
-     *
+     * <p>
      * Retrieves the content of the text editor pane, trims any leading or trailing space, and checks if it is empty.
      * If the content is empty, it clears the text editor pane. Otherwise, it calls the `clearTextPaneAndSendMessageToSocket`
      * method to clear the text pane and send the current content to a socket.
-     *
      */
     private void handleNonShiftEnterKeyPress() {
 

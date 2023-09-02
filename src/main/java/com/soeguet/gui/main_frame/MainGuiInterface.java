@@ -1,5 +1,6 @@
 package com.soeguet.gui.main_frame;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.socket_client.CustomWebsocketClient;
 
 import javax.swing.*;
@@ -13,4 +14,6 @@ public interface MainGuiInterface {
     JPanel getMainTextPanel();
 
     JScrollPane getMainTextBackgroundScrollPane();
+
+    ObjectMapper getObjectMapper();
 }

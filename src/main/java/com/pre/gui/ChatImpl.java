@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formdev.flatlaf.ui.FlatListCellBorder;
 import com.formdev.flatlaf.ui.FlatTableCellBorder;
-import com.soeguet.Main;
 import com.pre.client.CustomWebsocketClient;
 import com.pre.client.WebSocketListener;
 import com.pre.config.Settings;
@@ -14,6 +13,7 @@ import com.pre.gui.properties.PropertiesImpl;
 import com.pre.gui.util.EmojiConverter;
 import com.pre.model.ClientsList;
 import com.pre.model.MessageModel;
+import com.soeguet.Main;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang3.StringUtils;
 import org.java_websocket.exceptions.WebsocketNotConnectedException;
@@ -1386,6 +1386,12 @@ public class ChatImpl extends ChatPanel implements WebSocketListener {
 
     @Override
     public com.soeguet.socket_client.CustomWebsocketClient getWebsocketClient() {
+        return null;
+    }
+
+    @Override
+    public ObjectMapper getObjectMapper() {
+
         return null;
     }
 }

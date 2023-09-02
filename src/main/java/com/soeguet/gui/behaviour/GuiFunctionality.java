@@ -1,10 +1,10 @@
 package com.soeguet.gui.behaviour;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.pre.model.MessageModel;
 import com.soeguet.gui.main_frame.MainGuiInterface;
-import com.soeguet.socket_client.CustomWebsocketClient;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class GuiFunctionality {
 
@@ -19,25 +19,28 @@ public class GuiFunctionality {
 
         if (mainFrame instanceof MainGuiInterface) {
 
-            ((MainGuiInterface) mainFrame).getMainTextPanel().setAutoscrolls(true);
+            String userTextInput = ((MainGuiInterface) mainFrame).getTextEditorPane().getText();
+            ((MainGuiInterface) mainFrame).getTextEditorPane().setText("");
 
-            JTextPane textPane = ((MainGuiInterface) mainFrame).getTextEditorPane();
-            String textPaneContent = textPane.getText();
-            textPane.setText("");
+            MessageModel messageModel = textToMessageModel(userTextInput);
 
-            JPanel mainTextPanel = ((MainGuiInterface) mainFrame).getMainTextPanel();
-            JLabel myLabel = new JLabel(textPaneContent);
-            mainTextPanel.add(myLabel, "wrap");
+            try {
 
-            mainTextPanel.repaint();
-            mainTextPanel.revalidate();
+                ((MainGuiInterface) mainFrame).getWebsocketClient().send(((MainGuiInterface) mainFrame).getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(messageModel));
 
-            JScrollPane scrollPane = ((MainGuiInterface) mainFrame).getMainTextBackgroundScrollPane();
-            scrollMainPanelDownToLastMessage(scrollPane);
+            } catch (JsonProcessingException e) {
+
+                throw new RuntimeException(e);
+            }
         }
     }
 
-    private void scrollMainPanelDownToLastMessage(JScrollPane scrollPane) {
+    private MessageModel textToMessageModel(String userTextInput) {
+
+        return new MessageModel("osman", userTextInput);
+    }
+
+    public void scrollMainPanelDownToLastMessage(JScrollPane scrollPane) {
 
         SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(scrollPane.getMaximumSize().height));
     }

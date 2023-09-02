@@ -32,6 +32,7 @@ public class CustomWebsocketClient extends WebSocketClient {
     @Override
     public void onMessage(String message) {
 
+        System.out.println("message = " + message);
         logger.info("onMessage");
     }
 
