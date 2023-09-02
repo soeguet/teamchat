@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pre.model.MessageModel;
 import com.soeguet.gui.main_frame.MainGuiElementsInterface;
 import com.soeguet.gui.newcomment.right.PanelRightImpl;
+import com.soeguet.model.MessageTypes;
 
 import javax.swing.*;
 
@@ -62,7 +63,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
     private MessageModel textToMessageModel(String userTextInput) {
 
-        return new MessageModel("osman", userTextInput);
+        return new MessageModel((byte) MessageTypes.NORMAL, "osman", userTextInput);
     }
 
     @Override

@@ -23,11 +23,20 @@ public class PanelRightImpl extends PanelRight {
     private void populateChatBubble() {
 
         JTextPane jTextPane = new JTextPane();
+        jTextPaneSettings(jTextPane);
+
+        jTextPane.setText(messageModel.getMessage());
+        form_nameLabel.setText(messageModel.getSender());
+        form_timeLabel.setText(messageModel.getTime());
+
+        this.getPanel1().add(jTextPane);
+    }
+
+    private void jTextPaneSettings(JTextPane jTextPane) {
+
         jTextPane.setMinimumSize(new Dimension(5,1));
         jTextPane.setEditable(false);
         jTextPane.setOpaque(false);
-        jTextPane.setText(messageModel.getMessage());
-        this.getPanel1().add(jTextPane);
     }
 
     @Override
