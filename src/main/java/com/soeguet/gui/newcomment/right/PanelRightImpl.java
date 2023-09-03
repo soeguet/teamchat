@@ -1,20 +1,23 @@
 package com.soeguet.gui.newcomment.right;
 
-import com.pre.model.MessageModel;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
 import java.awt.event.MouseEvent;
+
+import javax.swing.JFrame;
+import javax.swing.JTextPane;
+
+import com.pre.model.MessageModel;
+import com.soeguet.gui.main_frame.MainGuiElementsInterface;
 
 public class PanelRightImpl extends PanelRight {
 
-    private final JFrame mainFrame;
+    private final MainGuiElementsInterface mainFrame;
 
     private MessageModel messageModel;
 
     public PanelRightImpl(JFrame mainFrame, MessageModel messageModel) {
 
-        this.mainFrame = mainFrame;
+        this.mainFrame = (MainGuiElementsInterface) mainFrame;
         this.messageModel = messageModel;
 
         populateChatBubble();
@@ -22,21 +25,49 @@ public class PanelRightImpl extends PanelRight {
 
     private void populateChatBubble() {
 
-        JTextPane jTextPane = new JTextPane();
-        jTextPaneSettings(jTextPane);
-
-        jTextPane.setText(messageModel.getMessage());
-        form_nameLabel.setText(messageModel.getSender());
-        form_timeLabel.setText(messageModel.getTime());
-
-        this.getPanel1().add(jTextPane);
+        checkForQuotes(messageModel);
+        addActualMessage(messageModel);
     }
 
-    private void jTextPaneSettings(JTextPane jTextPane) {
+    private void addActualMessage(MessageModel messageModel) {
 
-        jTextPane.setMinimumSize(new Dimension(5,1));
+        JTextPane actualTextPane = createTextPane();
+
+        actualTextPane.setText(messageModel.getMessage());
+
+        this.getPanel1().add(actualTextPane, "cell 0 1, wrap");
+    }
+
+    private void checkForQuotes(MessageModel messageModel) {
+
+        if (messageModel.getQuotedMessageText() == null) {
+            return;
+        }
+
+        String quotedText = messageModel.getQuotedMessageText();
+        String quotedChatParticipant = messageModel.getQuotedMessageSender();
+        String quotedTime = messageModel.getQuotedMessageTime();
+
+        createQuotedSectionInChatBubble(quotedText, quotedChatParticipant, quotedTime);
+    }
+
+    private void createQuotedSectionInChatBubble(String quotedText, String quotedChatParticipant, String quotedTime) {
+
+        JTextPane quotedTextPane = createTextPane();
+        quotedTextPane.setText(quotedText);
+
+        this.getPanel1().add(quotedTextPane, "cell 0 0, wrap");
+    }
+
+    private JTextPane createTextPane() {
+
+        JTextPane jTextPane = new JTextPane();
+
         jTextPane.setEditable(false);
         jTextPane.setOpaque(false);
+        jTextPane.setMinimumSize(new Dimension(5, 5));
+
+        return jTextPane;
     }
 
     @Override
