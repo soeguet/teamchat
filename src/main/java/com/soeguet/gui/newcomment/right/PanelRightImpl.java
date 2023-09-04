@@ -8,6 +8,7 @@ import javax.swing.JTextPane;
 
 import com.pre.model.MessageModel;
 import com.soeguet.gui.main_frame.MainGuiElementsInterface;
+import com.soeguet.gui.newcomment.util.QuotePanelImpl;
 
 public class PanelRightImpl extends PanelRight {
 
@@ -53,8 +54,7 @@ public class PanelRightImpl extends PanelRight {
 
     private void createQuotedSectionInChatBubble(String quotedText, String quotedChatParticipant, String quotedTime) {
 
-        JTextPane quotedTextPane = createTextPane();
-        quotedTextPane.setText(quotedText);
+        QuotePanelImpl quotedTextPane = new QuotePanelImpl(quotedText, quotedChatParticipant, quotedTime);
 
         this.getPanel1().add(quotedTextPane, "cell 0 0, wrap");
     }
