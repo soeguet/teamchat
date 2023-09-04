@@ -86,7 +86,13 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     @Override
     protected void thisComponentResized(ComponentEvent e) {
 
-        //        logMethod(e,"ChatGuiImpl.thisComponentResized");
+        SwingUtilities.invokeLater(() -> {
+            this.getMainTextBackgroundScrollPane().setBounds(0, 0, e.getComponent().getWidth(), e.getComponent().getHeight() - this.getInteractionAreaPanel().getHeight() - 55);
+            this.revalidate();
+            this.repaint();
+        });
+
+//        logMethod(e, "ChatGuiImpl.thisComponentResized");
     }
 
     @Override

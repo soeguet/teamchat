@@ -63,35 +63,45 @@ new FormModel {
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "First"
 				} )
-				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
-					name: "mainTextBackgroundScrollPane"
-					"focusable": false
-					"requestFocusEnabled": false
-					"background": sfield com.jformdesigner.model.FormObject NULL_VALUE
-					"doubleBuffered": true
-					"horizontalScrollBarPolicy": 31
-					"autoscrolls": true
-					"maximumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
-					"alignmentX": 0.0f
-					"alignmentY": 0.0f
-					"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
-					"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
-					"opaque": false
-					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
-						"$layoutConstraints": "fill,hidemode 3"
-						"$columnConstraints": "[]"
-					} ) {
-						name: "mainTextPanel"
-						"autoscrolls": true
-						"verifyInputWhenFocusTarget": false
+				add( new FormContainer( "javax.swing.JLayeredPane", new FormLayoutManager( class javax.swing.JLayeredPane ) ) {
+					name: "mainTextPanelLayeredPane"
+					"opaque": true
+					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+						name: "mainTextBackgroundScrollPane"
+						"focusable": false
 						"requestFocusEnabled": false
+						"background": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"doubleBuffered": true
+						"horizontalScrollBarPolicy": 31
+						"autoscrolls": true
 						"maximumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
-						"font": new com.jformdesigner.model.SwingDerivedFont( "Calibri Light", 0, 18, true )
-						"background": new java.awt.Color( 255, 255, 255, 255 )
-						"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"alignmentX": 0.0f
+						"alignmentY": 0.0f
 						"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
 						"opaque": false
-						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "mainTextPanelMouseClicked", true ) )
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+							"$layoutConstraints": "fill,hidemode 3"
+							"$columnConstraints": "[fill]"
+							"$rowConstraints": "[fill]"
+						} ) {
+							name: "mainTextPanel"
+							"autoscrolls": true
+							"verifyInputWhenFocusTarget": false
+							"requestFocusEnabled": false
+							"maximumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+							"font": new com.jformdesigner.model.SwingDerivedFont( "Calibri Light", 0, 18, true )
+							"background": new java.awt.Color( 255, 255, 255, 255 )
+							"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+							"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+							"opaque": false
+							addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "mainTextPanelMouseClicked", true ) )
+						} )
+					}, new FormLayoutConstraints( null ) {
+						"width": 875
+						"height": 493
+						"x": 0
+						"y": 0
 					} )
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "Center"
@@ -101,7 +111,7 @@ new FormModel {
 					"$rowConstraints": "[][center]"
 					"$layoutConstraints": "fillx,insets 0,gap 0 0"
 				} ) {
-					name: "panel2"
+					name: "interactionAreaPanel"
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "typingLabel"
 						"background": new java.awt.Color( 255, 255, 255, 0 )
@@ -125,7 +135,7 @@ new FormModel {
 						"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
 						"opaque": false
 						add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
-							name: "scrollPane1"
+							name: "mainTextFieldScrollPane"
 							"minimumSize": new java.awt.Dimension( 22, 50 )
 							"preferredSize": new java.awt.Dimension( 53, 50 )
 							"maximumSize": new java.awt.Dimension( 32767, 50 )
@@ -191,7 +201,7 @@ new FormModel {
 			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 5, 25 )
-			"size": new java.awt.Dimension( 870, 610 )
+			"size": new java.awt.Dimension( 920, 630 )
 		} )
 	}
 }

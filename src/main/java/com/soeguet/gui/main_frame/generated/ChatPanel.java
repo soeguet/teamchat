@@ -1,20 +1,20 @@
 package com.soeguet.gui.main_frame.generated;
 
-import com.soeguet.gui.main_frame.MainGuiElementsInterface;
-import net.miginfocom.swing.MigLayout;
-
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
+import java.beans.*;
+import javax.swing.*;
+import net.miginfocom.swing.*;
 /*
- * Created by JFormDesigner on Thu Aug 31 19:58:35 CEST 2023
+ * Created by JFormDesigner on Mon Sep 04 21:08:05 CEST 2023
  */
+
+
 
 /**
  * @author soeguet
  */
-public abstract class ChatPanel extends JFrame implements MainGuiElementsInterface {
+public abstract class ChatPanel extends JFrame {
 	public ChatPanel() {
 		initComponents();
 	}
@@ -87,8 +87,8 @@ public abstract class ChatPanel extends JFrame implements MainGuiElementsInterfa
 		return this.form_mainTextPanel;
 	}
 
-	public JPanel getPanel2() {
-		return this.form_panel2;
+	public JPanel getInteractionAreaPanel() {
+		return this.form_interactionAreaPanel;
 	}
 
 	public JLabel getTypingLabel() {
@@ -99,8 +99,8 @@ public abstract class ChatPanel extends JFrame implements MainGuiElementsInterfa
 		return this.form_panel1;
 	}
 
-	public JScrollPane getScrollPane1() {
-		return this.form_scrollPane1;
+	public JScrollPane getMainTextFieldScrollPane() {
+		return this.form_mainTextFieldScrollPane;
 	}
 
 	public JTextPane getTextEditorPane() {
@@ -119,6 +119,10 @@ public abstract class ChatPanel extends JFrame implements MainGuiElementsInterfa
 		return this.form_sendButton;
 	}
 
+	public JLayeredPane getMainTextPanelLayeredPane() {
+		return this.form_mainTextPanelLayeredPane;
+	}
+
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
 		// Generated using JFormDesigner non-commercial license
@@ -130,12 +134,13 @@ public abstract class ChatPanel extends JFrame implements MainGuiElementsInterfa
 		this.form_exitMenuItem = new JMenuItem();
 		this.form_extraMenu = new JMenu();
 		this.form_participantsMenuItem = new JMenuItem();
+		this.form_mainTextPanelLayeredPane = new JLayeredPane();
 		this.form_mainTextBackgroundScrollPane = new JScrollPane();
 		this.form_mainTextPanel = new JPanel();
-		this.form_panel2 = new JPanel();
+		this.form_interactionAreaPanel = new JPanel();
 		this.form_typingLabel = new JLabel();
 		this.form_panel1 = new JPanel();
-		this.form_scrollPane1 = new JScrollPane();
+		this.form_mainTextFieldScrollPane = new JScrollPane();
 		this.form_textEditorPane = new JTextPane();
 		this.form_pictureButton = new JButton();
 		this.form_emojiButton = new JButton();
@@ -228,52 +233,59 @@ public abstract class ChatPanel extends JFrame implements MainGuiElementsInterfa
 			}
 			this.form_panel.add(this.form_menuBar1, BorderLayout.PAGE_START);
 
-			//======== form_mainTextBackgroundScrollPane ========
+			//======== form_mainTextPanelLayeredPane ========
 			{
-				this.form_mainTextBackgroundScrollPane.setFocusable(false);
-				this.form_mainTextBackgroundScrollPane.setRequestFocusEnabled(false);
-				this.form_mainTextBackgroundScrollPane.setBackground(null);
-				this.form_mainTextBackgroundScrollPane.setDoubleBuffered(true);
-				this.form_mainTextBackgroundScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-				this.form_mainTextBackgroundScrollPane.setAutoscrolls(true);
-				this.form_mainTextBackgroundScrollPane.setMaximumSize(null);
-				this.form_mainTextBackgroundScrollPane.setAlignmentX(0.0F);
-				this.form_mainTextBackgroundScrollPane.setAlignmentY(0.0F);
-				this.form_mainTextBackgroundScrollPane.setPreferredSize(null);
-				this.form_mainTextBackgroundScrollPane.setMinimumSize(null);
-				this.form_mainTextBackgroundScrollPane.setOpaque(false);
+				this.form_mainTextPanelLayeredPane.setOpaque(true);
 
-				//======== form_mainTextPanel ========
+				//======== form_mainTextBackgroundScrollPane ========
 				{
-					this.form_mainTextPanel.setAutoscrolls(true);
-					this.form_mainTextPanel.setVerifyInputWhenFocusTarget(false);
-					this.form_mainTextPanel.setRequestFocusEnabled(false);
-					this.form_mainTextPanel.setMaximumSize(null);
-					this.form_mainTextPanel.setFont(new Font("Calibri Light", this.form_mainTextPanel.getFont().getStyle(), 18));
-					this.form_mainTextPanel.setBackground(Color.white);
-					this.form_mainTextPanel.setMinimumSize(null);
-					this.form_mainTextPanel.setPreferredSize(null);
-					this.form_mainTextPanel.setOpaque(false);
-					this.form_mainTextPanel.addMouseListener(new MouseAdapter() {
-						@Override
-						public void mouseClicked(MouseEvent e) {
-							mainTextPanelMouseClicked(e);
-						}
-					});
-					this.form_mainTextPanel.setLayout(new MigLayout(
-						"fill,hidemode 3",
-						// columns
-						"[]",
-						// rows
-						null));
-				}
-				this.form_mainTextBackgroundScrollPane.setViewportView(this.form_mainTextPanel);
-			}
-			this.form_panel.add(this.form_mainTextBackgroundScrollPane, BorderLayout.CENTER);
+					this.form_mainTextBackgroundScrollPane.setFocusable(false);
+					this.form_mainTextBackgroundScrollPane.setRequestFocusEnabled(false);
+					this.form_mainTextBackgroundScrollPane.setBackground(null);
+					this.form_mainTextBackgroundScrollPane.setDoubleBuffered(true);
+					this.form_mainTextBackgroundScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+					this.form_mainTextBackgroundScrollPane.setAutoscrolls(true);
+					this.form_mainTextBackgroundScrollPane.setMaximumSize(null);
+					this.form_mainTextBackgroundScrollPane.setAlignmentX(0.0F);
+					this.form_mainTextBackgroundScrollPane.setAlignmentY(0.0F);
+					this.form_mainTextBackgroundScrollPane.setPreferredSize(null);
+					this.form_mainTextBackgroundScrollPane.setMinimumSize(null);
+					this.form_mainTextBackgroundScrollPane.setOpaque(false);
 
-			//======== form_panel2 ========
+					//======== form_mainTextPanel ========
+					{
+						this.form_mainTextPanel.setAutoscrolls(true);
+						this.form_mainTextPanel.setVerifyInputWhenFocusTarget(false);
+						this.form_mainTextPanel.setRequestFocusEnabled(false);
+						this.form_mainTextPanel.setMaximumSize(null);
+						this.form_mainTextPanel.setFont(new Font("Calibri Light", this.form_mainTextPanel.getFont().getStyle(), 18));
+						this.form_mainTextPanel.setBackground(Color.white);
+						this.form_mainTextPanel.setMinimumSize(null);
+						this.form_mainTextPanel.setPreferredSize(null);
+						this.form_mainTextPanel.setOpaque(false);
+						this.form_mainTextPanel.addMouseListener(new MouseAdapter() {
+							@Override
+							public void mouseClicked(MouseEvent e) {
+								mainTextPanelMouseClicked(e);
+							}
+						});
+						this.form_mainTextPanel.setLayout(new MigLayout(
+							"fill,hidemode 3",
+							// columns
+							"[fill]",
+							// rows
+							"[fill]"));
+					}
+					this.form_mainTextBackgroundScrollPane.setViewportView(this.form_mainTextPanel);
+				}
+				this.form_mainTextPanelLayeredPane.add(this.form_mainTextBackgroundScrollPane, JLayeredPane.DEFAULT_LAYER);
+				this.form_mainTextBackgroundScrollPane.setBounds(0, 0, 875, 493);
+			}
+			this.form_panel.add(this.form_mainTextPanelLayeredPane, BorderLayout.CENTER);
+
+			//======== form_interactionAreaPanel ========
 			{
-				this.form_panel2.setLayout(new MigLayout(
+				this.form_interactionAreaPanel.setLayout(new MigLayout(
 					"fillx,insets 0,gap 0 0",
 					// columns
 					"[grow,fill]",
@@ -289,7 +301,7 @@ public abstract class ChatPanel extends JFrame implements MainGuiElementsInterfa
 				this.form_typingLabel.setRequestFocusEnabled(false);
 				this.form_typingLabel.setVerifyInputWhenFocusTarget(false);
 				this.form_typingLabel.setText(" ");
-				this.form_panel2.add(this.form_typingLabel, "pad 0 15 0 15,cell 0 0");
+				this.form_interactionAreaPanel.add(this.form_typingLabel, "pad 0 15 0 15,cell 0 0");
 
 				//======== form_panel1 ========
 				{
@@ -307,11 +319,11 @@ public abstract class ChatPanel extends JFrame implements MainGuiElementsInterfa
 						// rows
 						"[baseline]"));
 
-					//======== form_scrollPane1 ========
+					//======== form_mainTextFieldScrollPane ========
 					{
-						this.form_scrollPane1.setMinimumSize(new Dimension(22, 50));
-						this.form_scrollPane1.setPreferredSize(new Dimension(53, 50));
-						this.form_scrollPane1.setMaximumSize(new Dimension(32767, 50));
+						this.form_mainTextFieldScrollPane.setMinimumSize(new Dimension(22, 50));
+						this.form_mainTextFieldScrollPane.setPreferredSize(new Dimension(53, 50));
+						this.form_mainTextFieldScrollPane.setMaximumSize(new Dimension(32767, 50));
 
 						//---- form_textEditorPane ----
 						this.form_textEditorPane.setMinimumSize(new Dimension(22, 50));
@@ -335,9 +347,9 @@ public abstract class ChatPanel extends JFrame implements MainGuiElementsInterfa
 								textEditorPaneKeyReleased(e);
 							}
 						});
-						this.form_scrollPane1.setViewportView(this.form_textEditorPane);
+						this.form_mainTextFieldScrollPane.setViewportView(this.form_textEditorPane);
 					}
-					this.form_panel1.add(this.form_scrollPane1, "cell 0 0");
+					this.form_panel1.add(this.form_mainTextFieldScrollPane, "cell 0 0");
 
 					//---- form_pictureButton ----
 					this.form_pictureButton.setText("@");
@@ -375,9 +387,9 @@ public abstract class ChatPanel extends JFrame implements MainGuiElementsInterfa
 					this.form_sendButton.addActionListener(e -> sendButton(e));
 					this.form_panel1.add(this.form_sendButton, "cell 3 0");
 				}
-				this.form_panel2.add(this.form_panel1, "cell 0 1");
+				this.form_interactionAreaPanel.add(this.form_panel1, "cell 0 1");
 			}
-			this.form_panel.add(this.form_panel2, BorderLayout.PAGE_END);
+			this.form_panel.add(this.form_interactionAreaPanel, BorderLayout.PAGE_END);
 		}
 		contentPane.add(this.form_panel, BorderLayout.CENTER);
 		pack();
@@ -395,12 +407,13 @@ public abstract class ChatPanel extends JFrame implements MainGuiElementsInterfa
 	protected JMenuItem form_exitMenuItem;
 	protected JMenu form_extraMenu;
 	protected JMenuItem form_participantsMenuItem;
+	protected JLayeredPane form_mainTextPanelLayeredPane;
 	protected JScrollPane form_mainTextBackgroundScrollPane;
 	protected JPanel form_mainTextPanel;
-	protected JPanel form_panel2;
+	protected JPanel form_interactionAreaPanel;
 	protected JLabel form_typingLabel;
 	protected JPanel form_panel1;
-	protected JScrollPane form_scrollPane1;
+	protected JScrollPane form_mainTextFieldScrollPane;
 	protected JTextPane form_textEditorPane;
 	protected JButton form_pictureButton;
 	protected JButton form_emojiButton;
