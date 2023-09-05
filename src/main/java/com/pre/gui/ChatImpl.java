@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
 /**
  Sets up the GUI. Interacts with the websocket (client side) via WebSocketListener.
  */
-public class ChatImpl extends ChatPanel implements WebSocketListener {
+public abstract class ChatImpl extends ChatPanel implements WebSocketListener {
 
     public static final ObjectMapper MAPPER = new ObjectMapper();
     // Time limit in milliseconds to establish server connection

@@ -31,6 +31,14 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
     ObjectMapper objectMapper = new ObjectMapper();
 
+    /**
+     * Initializes the ChatMainGuiElementsImpl object.
+     *
+     * It sets up the GUI functionality required for the chat application and
+     * establishes a connection to the WebSocket server.
+     *
+     * @throws RuntimeException if there is an error in the WebSocket URI syntax
+     */
     public ChatMainGuiElementsImpl() {
 
         guiFunctionality = new GuiFunctionality(this);
@@ -43,11 +51,21 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
         }
     }
 
+    /**
+     * Retrieves the GuiFunctionality.
+     *
+     * @return the GuiFunctionality object.
+     */
     public GuiFunctionality getGuiFunctionality() {
 
         return guiFunctionality;
     }
 
+    /**
+     * Gets the ObjectMapper instance used for converting JSON to Java objects and vice versa.
+     *
+     * @return the ObjectMapper instance
+     */
     public ObjectMapper getObjectMapper() {
 
         return objectMapper;
@@ -77,12 +95,26 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
         System.out.println();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * This method is called when a property change event occurs.
+     * It logs the provided event and method name.
+     *
+     * @param e           The property change event to be handled.
+     *                   Must not be null.
+     */
     @Override
     protected void thisPropertyChange(PropertyChangeEvent e) {
 
         logMethod(e, "ChatGuiImpl.thisPropertyChange");
     }
 
+    /**
+     * Method called when the component is resized.
+     *
+     * @param e The ComponentEvent object representing the resize event.
+     */
     @Override
     protected void thisComponentResized(ComponentEvent e) {
 
@@ -95,30 +127,62 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 //        logMethod(e, "ChatGuiImpl.thisComponentResized");
     }
 
+    /**
+     * Called when the mouse is pressed on the properties menu item.
+     *
+     * @param e The MouseEvent object representing the event.
+     */
     @Override
     protected void propertiesMenuItemMousePressed(MouseEvent e) {
 
         logMethod(e, "ChatGuiImpl.propertiesMenuItemMousePressed");
     }
 
+    /**
+     * Resets the connection when the reset connection menu item is pressed.
+     *
+     * @param e The mouse event that triggered the method.
+     */
     @Override
     protected void resetConnectionMenuItemMousePressed(MouseEvent e) {
 
         logMethod(e, "ChatGuiImp.resetConnectionMenuItemMousePressed");
     }
 
+    /**
+     * Called when the participants menu item is pressed.
+     * Logs the provided event and method name.
+     *
+     * @param e The MouseEvent associated with the button press.
+     */
     @Override
     protected void participantsMenuItemMousePressed(MouseEvent e) {
 
         logMethod(e, "ChatGuiImpl.participantsMenuItemMousePressed");
     }
 
+    /**
+     * Called when the main text panel is clicked.
+     * Logs the provided event and method name.
+     *
+     * @param e The MouseEvent associated with the click event.
+     */
     @Override
     protected void mainTextPanelMouseClicked(MouseEvent e) {
 
         logMethod(e, "ChatGuiImpl.mainTextPanelMouseClicked");
     }
 
+
+
+    /**
+     * {@inheritDoc}
+     *
+     * This method is called when the mouse is clicked on the text editor pane in the ChatGuiImpl class.
+     * It logs the method call with the provided MouseEvent object and the method name.
+     *
+     * @param e the MouseEvent object representing the mouse click event on the text editor pane
+     */
     @Override
     protected void textEditorPaneMouseClicked(MouseEvent e) {
 
@@ -178,11 +242,28 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
 
+    /**
+     * Invoked when a key is released in the text editor pane.
+     * <p>
+     * This method is an override of the textEditorPaneKeyReleased method from the superclass.
+     * It is called when a key is released in the text editor pane.
+     *
+     * @param e the KeyEvent object generated when a key is released
+     */
     @Override
     protected void textEditorPaneKeyReleased(KeyEvent e) {
 
     }
 
+
+    /**
+     * Invoked when the emoji button is clicked in the chat GUI.
+     * <p>
+     * This method is an override of the emojiButton method from the superclass.
+     * It is called when the emoji button is clicked.
+     *
+     * @param e the ActionEvent object generated when the emoji button is clicked
+     */
     @Override
     protected void emojiButton(ActionEvent e) {
 
@@ -204,12 +285,22 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
         System.exit(0);
     }
 
+    /**
+     * Handles the event when the mouse clicks the current JFrame.
+     *
+     * @param e the MouseEvent object that triggered this event
+     */
     @Override
     protected void thisMouseClicked(MouseEvent e) {
 
         logMethod(e, "ChatGuiImpl.thisMouseClicked");
     }
 
+    /**
+     * Handles the event when the mouse clicks the picture button in the current JFrame.
+     *
+     * @param e the MouseEvent object that triggered this event
+     */
     @Override
     protected void pictureButtonMouseClicked(MouseEvent e) {
 

@@ -16,13 +16,12 @@ public class QuotePanelImpl extends QuotePanel {
 
         super.paintComponent(g);
 
-        //draw rectangle
         g.setColor(Color.BLACK);
         g.drawLine(0, 0, 0, 100);
         g.drawLine(this.getWidth()-1, 0, this.getWidth()-1, 100);
 
-
-        //draw line
-//        g.drawLine(0, 0, 100, 100);
+        g.setColor(Color.LIGHT_GRAY);
+        g.drawLine(1, 0, 1, 100);
+        g.drawLine(this.getWidth()-2, 0, this.getWidth()-2, 100);
     }
 }
