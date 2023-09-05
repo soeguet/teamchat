@@ -9,7 +9,7 @@ import java.awt.Insets;
 import javax.swing.JTextPane;
 
 /**
- * @author Osman
+ * @author soeguet
  */
 
 public abstract class TextPaneComment extends JTextPane {

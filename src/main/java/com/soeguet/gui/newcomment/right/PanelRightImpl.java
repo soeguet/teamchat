@@ -1,8 +1,8 @@
 package com.soeguet.gui.newcomment.right;
 
-import com.pre.model.MessageModel;
 import com.soeguet.gui.main_frame.MainGuiElementsInterface;
 import com.soeguet.gui.newcomment.util.QuotePanelImpl;
+import com.soeguet.model.MessageModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +15,7 @@ public class PanelRightImpl extends PanelRight {
 
     private final JFrame mainFrame;
 
-    private MessageModel messageModel;
+    private final MessageModel messageModel;
 
     public PanelRightImpl(JFrame mainFrame, MessageModel messageModel) {
 

@@ -2,9 +2,10 @@ package com.soeguet.behaviour;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pre.model.MessageModel;
 import com.soeguet.gui.main_frame.MainGuiElementsInterface;
+import com.soeguet.gui.newcomment.left.PanelLeftImpl;
 import com.soeguet.gui.newcomment.right.PanelRightImpl;
+import com.soeguet.model.MessageModel;
 import com.soeguet.model.MessageTypes;
 
 import javax.swing.*;
@@ -135,7 +136,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
      */
     private MessageModel textToMessageModel(String userTextInput) {
 
-        return new MessageModel((byte) MessageTypes.NORMAL, "osman", userTextInput);
+        return new MessageModel((byte) MessageTypes.NORMAL, "yasman", userTextInput);
     }
 
     /**
@@ -163,16 +164,13 @@ public class GuiFunctionality implements SocketToGuiInterface {
             PanelRightImpl panelRight = new PanelRightImpl(mainFrame, messageModel);
             ((MainGuiElementsInterface) mainFrame).getMainTextPanel().add(panelRight, "w 80%, trailing, wrap");
         } else {
-            // PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, messageModel);
-            // ((MainGuiElementsInterface) mainFrame).getMainTextPanel().add(panelLeft, "w 80%, leading, wrap");
+            PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, messageModel);
+             ((MainGuiElementsInterface) mainFrame).getMainTextPanel().add(panelLeft, "w 80%, leading, wrap");
         }
 
-        if (mainFrame instanceof MainGuiElementsInterface) {
-
-            mainFrame.revalidate();
-            mainFrame.repaint();
-            scrollMainPanelDownToLastMessage(((MainGuiElementsInterface) mainFrame).getMainTextBackgroundScrollPane());
-        }
+        mainFrame.revalidate();
+        mainFrame.repaint();
+        scrollMainPanelDownToLastMessage(((MainGuiElementsInterface) mainFrame).getMainTextBackgroundScrollPane());
     }
 
     /**

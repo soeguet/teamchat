@@ -11,7 +11,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 
 /**
- * @author osmansogut
+ * @author soeguet
  */
 public abstract class EmojiWindow extends JFrame {
 

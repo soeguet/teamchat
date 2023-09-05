@@ -4,6 +4,7 @@
 
 package com.soeguet.gui.newcomment.left;
 
+import javax.swing.border.*;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -74,6 +75,38 @@ public abstract class PanelLeft extends JPanel {
 	protected abstract void actionLabelMouseEntered(MouseEvent e);
 	protected abstract void actionLabelMouseExited(MouseEvent e);
 	protected abstract void replyButtonClicked(MouseEvent e);
+	public JLayeredPane getLayeredPane1() {
+		return form_layeredPane1;
+	}
+
+	public JLabel getNameLabel() {
+		return form_nameLabel;
+	}
+
+	public JPanel getPanel1() {
+		return form_panel1;
+	}
+
+	public JLayeredPane getLayeredPane2() {
+		return form_layeredPane2;
+	}
+
+	public JLabel getActionLabel() {
+		return form_actionLabel;
+	}
+
+	public JButton getButton1() {
+		return form_button1;
+	}
+
+	public JLabel getTimeLabel() {
+		return form_timeLabel;
+	}
+
+	public JPanel getHSpacer1() {
+		return form_hSpacer1;
+	}
+
 	protected abstract void actionLabelMouseClicked(MouseEvent e);
 
 
@@ -101,8 +134,8 @@ public abstract class PanelLeft extends JPanel {
 			"[right]" +
 			"[fill]" +
 			"[fill]" +
-			"[fill]" +
-			"[fill]" +
+			"[shrink 0,fill]" +
+			"[grow,fill]" +
 			"[fill]",
 			// rows
 			"[grow]" +
@@ -127,24 +160,19 @@ public abstract class PanelLeft extends JPanel {
 
 		//======== form_panel1 ========
 		{
-			form_panel1.setBackground(null);
 			form_panel1.setMinimumSize(null);
 			form_panel1.setPreferredSize(null);
 			form_panel1.setMaximumSize(null);
-			form_panel1.setLayout(new MigLayout(
-				"",
-				// columns
-				"[7!]" +
-				"[grow,fill]",
-				// rows
-				"[]" +
-				"[]"));
+			form_panel1.setBorder(new EtchedBorder());
+			form_panel1.setBackground(Color.orange);
+			form_panel1.setLayout(new GridLayout(2, 1));
 		}
-		add(form_panel1, "cell 3 0 1 2");
+		add(form_panel1, "cell 3 0 1 2,align left center");
 
 		//======== form_layeredPane2 ========
 		{
 			form_layeredPane2.setMinimumSize(new Dimension(25, 25));
+			form_layeredPane2.setBorder(LineBorder.createBlackLineBorder());
 
 			//---- form_actionLabel ----
 			form_actionLabel.setHorizontalAlignment(SwingConstants.CENTER);
