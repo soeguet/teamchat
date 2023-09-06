@@ -10,17 +10,17 @@ import java.awt.event.MouseEvent;
 
 public class PanelLeftImpl extends PanelLeft {
 
-    private final JFrame mainFrame;
     private final MessageModel messageModel;
+
+    private final JFrame mainFrame;
 
     public PanelLeftImpl(JFrame mainFrame, MessageModel messageModel) {
 
-        this.mainFrame = mainFrame;
         this.messageModel = messageModel;
+        this.mainFrame = mainFrame;
 
         populateChatBubble();
     }
-
 
     /**
      * Populates the chat bubble by executing the steps of checking for quotes and adding the actual message.
@@ -57,8 +57,7 @@ public class PanelLeftImpl extends PanelLeft {
 
         JTextPane actualTextPane = createTextPane();
         actualTextPane.setText(messageModel.getMessage());
-
-        this.getPanel1().add(actualTextPane, "cell 0 1, grow, wrap");
+        this.getPanel1().add(actualTextPane, "cell 1 1, wrap");
     }
 
     /**
@@ -131,7 +130,7 @@ public class PanelLeftImpl extends PanelLeft {
 
         QuotePanelImpl quotedTextPane = new QuotePanelImpl(quotedText, quotedChatParticipant, quotedTime);
 
-        this.getPanel1().add(quotedTextPane, "cell 0 0, grow, wrap");
+        this.getPanel1().add(quotedTextPane, "cell 1 0, wrap");
     }
 
     /**
@@ -145,7 +144,7 @@ public class PanelLeftImpl extends PanelLeft {
 
         jTextPane.setEditable(false);
         jTextPane.setOpaque(false);
-        jTextPane.setMinimumSize(new Dimension(250, 5));
+        jTextPane.setMinimumSize(new Dimension(5, 5));
 
         return jTextPane;
     }
