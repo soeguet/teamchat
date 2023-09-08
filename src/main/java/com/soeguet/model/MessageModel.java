@@ -1,6 +1,6 @@
 package com.soeguet.model;
 
-import com.pre.gui.util.MessageTypes;
+import com.soeguet.model.MessageTypes;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -22,12 +22,12 @@ public class MessageModel {
 
     public MessageModel(String sender, String message) {
 
-        this(MessageTypes.NORMAL, sender, message, null, null, null);
+        this((byte) MessageTypes.NORMAL, sender, message, null, null, null);
     }
 
     public MessageModel(Long id) {
 
-        this(id, MessageTypes.DELETED, null, null, null, null, "delete by user", null, null, null);
+        this(id, (byte) MessageTypes.DELETED, null, null, null, null, "delete by user", null, null, null);
     }
 
     public MessageModel(byte messageType, String sender, String message) {
@@ -43,7 +43,7 @@ public class MessageModel {
             String quotedMessageText) {
 
         this(
-                MessageTypes.NORMAL,
+                (byte) MessageTypes.NORMAL,
                 sender,
                 message,
                 quotedMessageSender,
