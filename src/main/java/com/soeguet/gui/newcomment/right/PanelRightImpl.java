@@ -35,6 +35,9 @@ public class PanelRightImpl extends PanelRight {
         setPopupMenu();
     }
 
+
+
+
     private void setPopupMenu() {
 
         jPopupMenu = new JPopupMenu();
@@ -51,12 +54,9 @@ public class PanelRightImpl extends PanelRight {
 
                 ReplyPanelImpl replyPanel = new ReplyPanelImpl(mainFrame, messageModel);
                 gui.getMainTextPanelLayeredPane().add(replyPanel, JLayeredPane.MODAL_LAYER);
-
-
-                //////////////////
-
             }
         });
+
         jPopupMenu.add(reply);
 
         jPopupMenu.addSeparator();

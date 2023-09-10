@@ -1,9 +1,11 @@
 package com.soeguet.gui.interaction;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.soeguet.gui.interaction.generated.ReplyPanel;
 import com.soeguet.gui.main_frame.MainGuiElementsInterface;
 import com.soeguet.gui.newcomment.right.PanelRightImpl;
 import com.soeguet.model.MessageModel;
+import com.soeguet.model.MessageTypes;
 import com.soeguet.model.PanelTypes;
 
 import javax.swing.*;
@@ -27,6 +29,19 @@ public class ReplyPanelImpl extends ReplyPanel {
 
         populatePanel();
         setPosition();
+
+        requestAllFocus();
+    }
+
+    private void requestAllFocus() {
+
+        SwingUtilities.invokeLater(() -> {
+
+            this.setBorder(new LineBorder(Color.BLUE));
+
+            this.getReplyTextPane().requestFocus();
+            this.getReplyTextPane().grabFocus();
+        });
     }
 
     private void populatePanel() {
@@ -47,7 +62,6 @@ public class ReplyPanelImpl extends ReplyPanel {
         int textPaneWidth = gui.getMainTextPanelLayeredPane().getWidth();
         int textPaneHeight = gui.getMainTextPanelLayeredPane().getHeight();
 
-        System.out.println("this.getPreferredSize() = " + this.getPreferredSize());
 
         int height = (int) this.getPreferredSize().getHeight();
 
@@ -84,8 +98,24 @@ public class ReplyPanelImpl extends ReplyPanel {
 
         MainGuiElementsInterface gui = (MainGuiElementsInterface) mainFrame;
 
+        MessageModel sendModel = new MessageModel(
+                (byte) MessageTypes.NORMAL,
+                "osman",
+                this.getReplyTextPane().getText(),
+                messageModel.getQuotedMessageSender(),
+                messageModel.getQuotedMessageTime(),
+                messageModel.getMessage()
+        );
 
-//        gui.getWebsocketClient().send(this.getReplyTextPane().getText());
+
+        try {
+
+            gui.getWebsocketClient().send(gui.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(sendModel));
+
+        } catch (JsonProcessingException ex) {
+
+            throw new RuntimeException(ex);
+        }
 
         this.removeAll();
         this.setVisible(false);

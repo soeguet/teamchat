@@ -55,6 +55,7 @@ new FormModel {
 					name: "scrollPane1"
 					add( new FormComponent( "javax.swing.JTextPane" ) {
 						name: "replyTextPane"
+						"componentOrientation": sfield java.awt.ComponentOrientation LEFT_TO_RIGHT
 						addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "replyTextPaneFocusLost", true ) )
 					} )
 				}, new FormLayoutConstraints( class java.lang.String ) {

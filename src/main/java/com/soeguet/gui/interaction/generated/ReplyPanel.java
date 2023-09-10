@@ -170,6 +170,7 @@ public abstract class ReplyPanel extends JPanel {
 			{
 
 				//---- form_replyTextPane ----
+				form_replyTextPane.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 				form_replyTextPane.addFocusListener(new FocusAdapter() {
 					@Override
 					public void focusLost(FocusEvent e) {
