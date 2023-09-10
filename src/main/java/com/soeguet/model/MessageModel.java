@@ -1,7 +1,5 @@
 package com.soeguet.model;
 
-import com.soeguet.model.MessageTypes;
-
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -35,55 +33,18 @@ public class MessageModel {
         this(messageType, sender, message, null, null, null);
     }
 
-    public MessageModel(
-            String sender,
-            String message,
-            String quotedMessageSender,
-            String quotedMessageTime,
-            String quotedMessageText) {
+    public MessageModel(String sender, String message, String quotedMessageSender, String quotedMessageTime, String quotedMessageText) {
 
-        this(
-                (byte) MessageTypes.NORMAL,
-                sender,
-                message,
-                quotedMessageSender,
-                quotedMessageTime,
-                quotedMessageText);
+        this((byte) MessageTypes.NORMAL, sender, message, quotedMessageSender, quotedMessageTime, quotedMessageText);
     }
 
-    public MessageModel(
-            byte messageType,
-            String sender,
-            String message,
-            String quotedMessageSender,
-            String quotedMessageTime,
-            String quotedMessageText) {
+    public MessageModel(byte messageType, String sender, String message, String quotedMessageSender, String quotedMessageTime, String quotedMessageText) {
 
-        this(
-                null,
-                messageType,
-                null,
-                null,
-                sender,
-                LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")),
-                message,
-                quotedMessageSender,
-                quotedMessageTime,
-                quotedMessageText);
+        this(null, messageType, null, null, sender, LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")), message, quotedMessageSender, quotedMessageTime, quotedMessageText);
     }
 
     // for updating messages
-    public MessageModel(
-            Long id,
-            byte messageType,
-            List<UserInteraction> userInteraction,
-            String localIp,
-            String sender,
-            String time,
-            String message,
-            String quotedMessageSender,
-            String quotedMessageTime,
-            String quotedMessageText) {
+    public MessageModel(Long id, byte messageType, List<UserInteraction> userInteraction, String localIp, String sender, String time, String message, String quotedMessageSender, String quotedMessageTime, String quotedMessageText) {
 
         this.id = id;
         this.messageType = messageType;
@@ -214,17 +175,6 @@ public class MessageModel {
     @Override
     public String toString() {
 
-        return "MessageModel{" +
-                "id=" + id +
-                ", messageType=" + messageType +
-                ", userInteractions=" + userInteractions +
-                ", localIp='" + localIp + '\'' +
-                ", sender='" + sender + '\'' +
-                ", time='" + time + '\'' +
-                ", message='" + message + '\'' +
-                ", quotedMessageSender='" + quotedMessageSender + '\'' +
-                ", quotedMessageTime='" + quotedMessageTime + '\'' +
-                ", quotedMessageText='" + quotedMessageText + '\'' +
-                '}';
+        return "MessageModel{" + "id=" + id + ", messageType=" + messageType + ", userInteractions=" + userInteractions + ", localIp='" + localIp + '\'' + ", sender='" + sender + '\'' + ", time='" + time + '\'' + ", message='" + message + '\'' + ", quotedMessageSender='" + quotedMessageSender + '\'' + ", quotedMessageTime='" + quotedMessageTime + '\'' + ", quotedMessageText='" + quotedMessageText + '\'' + '}';
     }
 }

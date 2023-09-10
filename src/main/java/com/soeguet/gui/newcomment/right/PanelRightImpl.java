@@ -2,9 +2,11 @@ package com.soeguet.gui.newcomment.right;
 
 import com.soeguet.gui.main_frame.MainGuiElementsInterface;
 import com.soeguet.gui.newcomment.util.QuotePanelImpl;
+import com.soeguet.gui.newcomment.util.WrapEditorKit;
 import com.soeguet.model.MessageModel;
 
 import javax.swing.*;
+import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 
@@ -59,9 +61,17 @@ public class PanelRightImpl extends PanelRight {
     private void setUserMessage() {
 
         JTextPane actualTextPane = createTextPane();
+
+
+        actualTextPane.setEditorKit(new WrapEditorKit());
+
+        JScrollPane jsp = new JScrollPane(actualTextPane);
+        jsp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
         actualTextPane.setText(messageModel.getMessage());
         this.getPanel1().add(actualTextPane, "cell 0 1, wrap");
     }
+
 
     /**
      * Sets the name field of the message label.

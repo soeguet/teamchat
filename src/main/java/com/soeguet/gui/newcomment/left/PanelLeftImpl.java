@@ -2,10 +2,10 @@ package com.soeguet.gui.newcomment.left;
 
 import com.soeguet.gui.main_frame.MainGuiElementsInterface;
 import com.soeguet.gui.newcomment.util.QuotePanelImpl;
+import com.soeguet.gui.newcomment.util.WrapEditorKit;
 import com.soeguet.model.MessageModel;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.MouseEvent;
 
 public class PanelLeftImpl extends PanelLeft {
@@ -144,7 +144,10 @@ public class PanelLeftImpl extends PanelLeft {
 
         jTextPane.setEditable(false);
         jTextPane.setOpaque(false);
-        jTextPane.setMinimumSize(new Dimension(5, 5));
+        jTextPane.setEditorKit(new WrapEditorKit());
+
+        JScrollPane jsp = new JScrollPane(jTextPane);
+        jsp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         return jTextPane;
     }
