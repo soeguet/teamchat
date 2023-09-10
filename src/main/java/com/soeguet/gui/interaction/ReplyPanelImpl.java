@@ -3,6 +3,7 @@ package com.soeguet.gui.interaction;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.soeguet.gui.interaction.generated.ReplyPanel;
 import com.soeguet.gui.main_frame.MainGuiElementsInterface;
+import com.soeguet.gui.newcomment.left.PanelLeftImpl;
 import com.soeguet.gui.newcomment.right.PanelRightImpl;
 import com.soeguet.model.MessageModel;
 import com.soeguet.model.MessageTypes;
@@ -46,9 +47,22 @@ public class ReplyPanelImpl extends ReplyPanel {
 
     private void populatePanel() {
 
-        PanelRightImpl panelRight = new PanelRightImpl(mainFrame, messageModel, PanelTypes.REPLY);
+        if (!(mainFrame instanceof MainGuiElementsInterface)) {
+            return;
+        }
 
-        this.getFormerMessagePanel().add(panelRight);
+        MainGuiElementsInterface gui = (MainGuiElementsInterface) mainFrame;
+
+        if (gui.getUsername().equals(messageModel.getSender())) {
+
+            PanelRightImpl panelRight = new PanelRightImpl(mainFrame, messageModel, PanelTypes.REPLY);
+            this.getFormerMessagePanel().add(panelRight);
+
+        } else {
+
+            PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, messageModel, PanelTypes.REPLY);
+            this.getFormerMessagePanel().add(panelLeft);
+        }
     }
 
     private void setPosition() {
@@ -98,14 +112,7 @@ public class ReplyPanelImpl extends ReplyPanel {
 
         MainGuiElementsInterface gui = (MainGuiElementsInterface) mainFrame;
 
-        MessageModel sendModel = new MessageModel(
-                (byte) MessageTypes.NORMAL,
-                "osman",
-                this.getReplyTextPane().getText(),
-                messageModel.getSender(),
-                messageModel.getTime(),
-                messageModel.getMessage()
-        );
+        MessageModel sendModel = new MessageModel((byte) MessageTypes.NORMAL, "osman", this.getReplyTextPane().getText(), messageModel.getSender(), messageModel.getTime(), messageModel.getMessage());
 
 
         try {

@@ -165,7 +165,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
             PanelRightImpl panelRight = new PanelRightImpl(mainFrame, messageModel, PanelTypes.NORMAL);
             ((MainGuiElementsInterface) mainFrame).getMainTextPanel().add(panelRight, "w 80%, trailing, wrap");
         } else {
-            PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, messageModel);
+            PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, messageModel, PanelTypes.NORMAL);
              ((MainGuiElementsInterface) mainFrame).getMainTextPanel().add(panelLeft, "w 80%, leading, wrap");
         }
 

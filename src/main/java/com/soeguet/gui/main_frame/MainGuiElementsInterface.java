@@ -5,7 +5,6 @@ import com.soeguet.behaviour.GuiFunctionality;
 import com.soeguet.socket_client.CustomWebsocketClient;
 
 import javax.swing.*;
-import java.util.List;
 
 public interface MainGuiElementsInterface {
 
@@ -81,7 +80,24 @@ public interface MainGuiElementsInterface {
      */
     void setLastMessageSenderName(String lastMessageSenderName);
 
+    /**
+     * Returns the layered pane that contains the main text panel.
+     *
+     * @return the layered pane that contains the main text panel
+     */
     JLayeredPane getMainTextPanelLayeredPane();
 
+    /**
+     * Returns the username associated with the current user.
+     *
+     * @return the username as a String
+     */
+    String getUsername();
 
+    /**
+     * Sets the username for the current user.
+     *
+     * @param username the new username to be set
+     */
+    void setUsername(String username);
 }

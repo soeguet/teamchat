@@ -28,6 +28,15 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     private final GuiFunctionality guiFunctionality;
 
     private final CustomWebsocketClient websocketClient;
+    private String username = "osman";
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -119,7 +128,7 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     protected void thisComponentResized(ComponentEvent e) {
 
         SwingUtilities.invokeLater(() -> {
-            this.getMainTextBackgroundScrollPane().setBounds(0, 0, e.getComponent().getWidth(), e.getComponent().getHeight() - this.getInteractionAreaPanel().getHeight()-26);
+            this.getMainTextBackgroundScrollPane().setBounds(0, 0, e.getComponent().getWidth(), e.getComponent().getHeight() - this.getInteractionAreaPanel().getHeight() - 26);
             this.revalidate();
             this.repaint();
         });
