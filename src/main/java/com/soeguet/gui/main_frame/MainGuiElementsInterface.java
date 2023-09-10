@@ -5,6 +5,7 @@ import com.soeguet.behaviour.GuiFunctionality;
 import com.soeguet.socket_client.CustomWebsocketClient;
 
 import javax.swing.*;
+import java.util.List;
 
 public interface MainGuiElementsInterface {
 
@@ -65,6 +66,7 @@ public interface MainGuiElementsInterface {
      */
     String getLastMessageTimeStamp();
 
+
     /**
      * Sets the time stamp of the last message.
      *
@@ -78,4 +80,8 @@ public interface MainGuiElementsInterface {
      * @param lastMessageSenderName the sender name of the last message as a String
      */
     void setLastMessageSenderName(String lastMessageSenderName);
+
+    JLayeredPane getMainTextPanelLayeredPane();
+
+
 }

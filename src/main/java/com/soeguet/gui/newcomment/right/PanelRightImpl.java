@@ -1,14 +1,17 @@
 package com.soeguet.gui.newcomment.right;
 
+import com.soeguet.gui.interaction.ReplyPanelImpl;
 import com.soeguet.gui.main_frame.MainGuiElementsInterface;
 import com.soeguet.gui.newcomment.util.QuotePanelImpl;
 import com.soeguet.gui.newcomment.util.WrapEditorKit;
 import com.soeguet.model.MessageModel;
+import com.soeguet.model.PanelTypes;
 
 import javax.swing.*;
-import javax.swing.text.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Arrays;
 
 /**
  * Implementation of the PanelRight class that is responsible for populating the chat bubble and handling user interaction.
@@ -19,12 +22,46 @@ public class PanelRightImpl extends PanelRight {
 
     private final MessageModel messageModel;
 
-    public PanelRightImpl(JFrame mainFrame, MessageModel messageModel) {
+    private JPopupMenu jPopupMenu;
+    private final PanelTypes panelTyp;
+
+    public PanelRightImpl(JFrame mainFrame, MessageModel messageModel, PanelTypes panelTyp) {
 
         this.mainFrame = mainFrame;
         this.messageModel = messageModel;
+        this.panelTyp = panelTyp;
 
         populateChatBubble();
+        setPopupMenu();
+    }
+
+    private void setPopupMenu() {
+
+        jPopupMenu = new JPopupMenu();
+        JMenuItem reply = new JMenuItem("reply");
+        reply.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+
+                if (!(mainFrame instanceof MainGuiElementsInterface)) {
+                    return;
+                }
+                MainGuiElementsInterface gui = (MainGuiElementsInterface) mainFrame;
+
+                ReplyPanelImpl replyPanel = new ReplyPanelImpl(mainFrame, messageModel);
+                gui.getMainTextPanelLayeredPane().add(replyPanel, JLayeredPane.MODAL_LAYER);
+
+
+                //////////////////
+
+            }
+        });
+        jPopupMenu.add(reply);
+
+        jPopupMenu.addSeparator();
+        jPopupMenu.add(new JMenuItem("edit"));
+        jPopupMenu.add(new JMenuItem("delete"));
     }
 
     /**
@@ -82,7 +119,7 @@ public class PanelRightImpl extends PanelRight {
 
         String sender = messageModel.getSender();
 
-        if (sender.equals(mainFrame.getLastMessageSenderName())) {
+        if (panelTyp == PanelTypes.NORMAL && sender.equals(mainFrame.getLastMessageSenderName())) {
 
             this.getNameLabel().setText("");
 
@@ -103,7 +140,7 @@ public class PanelRightImpl extends PanelRight {
 
         String timeStamp = messageModel.getTime();
 
-        if (timeStamp.equals(mainFrame.getLastMessageTimeStamp())) {
+        if (panelTyp == PanelTypes.NORMAL && timeStamp.equals(mainFrame.getLastMessageTimeStamp())) {
 
             this.getTimeLabel().setText("");
 
@@ -165,6 +202,7 @@ public class PanelRightImpl extends PanelRight {
     @Override
     protected void replyButtonClicked(MouseEvent e) {
 
+        jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
     }
 
     @Override

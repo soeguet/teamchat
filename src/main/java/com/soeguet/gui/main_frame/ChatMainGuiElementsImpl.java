@@ -33,7 +33,7 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
     /**
      * Initializes the ChatMainGuiElementsImpl object.
-     *
+     * <p>
      * It sets up the GUI functionality required for the chat application and
      * establishes a connection to the WebSocket server.
      *
@@ -97,12 +97,12 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * This method is called when a property change event occurs.
      * It logs the provided event and method name.
      *
-     * @param e           The property change event to be handled.
-     *                   Must not be null.
+     * @param e The property change event to be handled.
+     *          Must not be null.
      */
     @Override
     protected void thisPropertyChange(PropertyChangeEvent e) {
@@ -174,10 +174,9 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
 
-
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * This method is called when the mouse is clicked on the text editor pane in the ChatGuiImpl class.
      * It logs the method call with the provided MouseEvent object and the method name.
      *

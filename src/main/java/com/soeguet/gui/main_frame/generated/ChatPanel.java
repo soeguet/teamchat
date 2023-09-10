@@ -258,6 +258,10 @@ public abstract class ChatPanel extends JFrame {
 		return this.form_mainTextPanelLayeredPane;
 	}
 
+	public JPanel getPanel2() {
+		return this.form_panel2;
+	}
+
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
 		// Generated using JFormDesigner non-commercial license
@@ -273,10 +277,11 @@ public abstract class ChatPanel extends JFrame {
 		this.form_mainTextBackgroundScrollPane = new JScrollPane();
 		this.form_mainTextPanel = new JPanel();
 		this.form_interactionAreaPanel = new JPanel();
-		this.form_typingLabel = new JLabel();
 		this.form_panel1 = new JPanel();
+		this.form_typingLabel = new JLabel();
 		this.form_mainTextFieldScrollPane = new JScrollPane();
 		this.form_textEditorPane = new JTextPane();
+		this.form_panel2 = new JPanel();
 		this.form_pictureButton = new JButton();
 		this.form_emojiButton = new JButton();
 		this.form_sendButton = new JButton();
@@ -414,7 +419,7 @@ public abstract class ChatPanel extends JFrame {
 					this.form_mainTextBackgroundScrollPane.setViewportView(this.form_mainTextPanel);
 				}
 				this.form_mainTextPanelLayeredPane.add(this.form_mainTextBackgroundScrollPane, JLayeredPane.DEFAULT_LAYER);
-				this.form_mainTextBackgroundScrollPane.setBounds(0, 0, 875, 493);
+				this.form_mainTextBackgroundScrollPane.setBounds(0, 0, 875, 485);
 			}
 			this.form_panel.add(this.form_mainTextPanelLayeredPane, BorderLayout.CENTER);
 
@@ -425,18 +430,7 @@ public abstract class ChatPanel extends JFrame {
 					// columns
 					"[grow,fill]",
 					// rows
-					"[]" +
 					"[center]"));
-
-				//---- form_typingLabel ----
-				this.form_typingLabel.setBackground(new Color(0x00ffffff, true));
-				this.form_typingLabel.setEnabled(false);
-				this.form_typingLabel.setFocusable(false);
-				this.form_typingLabel.setInheritsPopupMenu(false);
-				this.form_typingLabel.setRequestFocusEnabled(false);
-				this.form_typingLabel.setVerifyInputWhenFocusTarget(false);
-				this.form_typingLabel.setText(" ");
-				this.form_interactionAreaPanel.add(this.form_typingLabel, "pad 0 15 0 15,cell 0 0");
 
 				//======== form_panel1 ========
 				{
@@ -444,15 +438,17 @@ public abstract class ChatPanel extends JFrame {
 					this.form_panel1.setPreferredSize(null);
 					this.form_panel1.setMinimumSize(null);
 					this.form_panel1.setOpaque(false);
-					this.form_panel1.setLayout(new MigLayout(
-						"insets 0 10 5 10,hidemode 3,gap 5 10",
-						// columns
-						"[292:n,grow,fill]" +
-						"[fill]" +
-						"[fill]" +
-						"[fill]",
-						// rows
-						"[baseline]"));
+					this.form_panel1.setLayout(new BorderLayout());
+
+					//---- form_typingLabel ----
+					this.form_typingLabel.setBackground(new Color(0x00ffffff, true));
+					this.form_typingLabel.setEnabled(false);
+					this.form_typingLabel.setFocusable(false);
+					this.form_typingLabel.setInheritsPopupMenu(false);
+					this.form_typingLabel.setRequestFocusEnabled(false);
+					this.form_typingLabel.setVerifyInputWhenFocusTarget(false);
+					this.form_typingLabel.setText(" ");
+					this.form_panel1.add(this.form_typingLabel, BorderLayout.NORTH);
 
 					//======== form_mainTextFieldScrollPane ========
 					{
@@ -484,45 +480,58 @@ public abstract class ChatPanel extends JFrame {
 						});
 						this.form_mainTextFieldScrollPane.setViewportView(this.form_textEditorPane);
 					}
-					this.form_panel1.add(this.form_mainTextFieldScrollPane, "cell 0 0");
+					this.form_panel1.add(this.form_mainTextFieldScrollPane, BorderLayout.CENTER);
 
-					//---- form_pictureButton ----
-					this.form_pictureButton.setText("@");
-					this.form_pictureButton.setDoubleBuffered(true);
-					this.form_pictureButton.setMinimumSize(new Dimension(50, 50));
-					this.form_pictureButton.setPreferredSize(new Dimension(50, 50));
-					this.form_pictureButton.setMaximumSize(new Dimension(32767, 50));
-					this.form_pictureButton.setToolTipText("picture");
-					this.form_pictureButton.addMouseListener(new MouseAdapter() {
-						@Override
-						public void mouseClicked(MouseEvent e) {
-							pictureButtonMouseClicked(e);
-						}
-					});
-					this.form_panel1.add(this.form_pictureButton, "cell 1 0");
+					//======== form_panel2 ========
+					{
+						this.form_panel2.setLayout(new MigLayout(
+							"insets 0 10 5 10,hidemode 3,gap 5 10",
+							// columns
+							"[fill]" +
+							"[fill]" +
+							"[fill]",
+							// rows
+							"[baseline]"));
 
-					//---- form_emojiButton ----
-					this.form_emojiButton.setText("#");
-					this.form_emojiButton.setDoubleBuffered(true);
-					this.form_emojiButton.setMinimumSize(new Dimension(50, 50));
-					this.form_emojiButton.setPreferredSize(new Dimension(50, 50));
-					this.form_emojiButton.setMaximumSize(new Dimension(32767, 50));
-					this.form_emojiButton.setSelectedIcon(null);
-					this.form_emojiButton.setToolTipText("emoji");
-					this.form_emojiButton.addActionListener(e -> emojiButton(e));
-					this.form_panel1.add(this.form_emojiButton, "cell 2 0");
+						//---- form_pictureButton ----
+						this.form_pictureButton.setText("@");
+						this.form_pictureButton.setDoubleBuffered(true);
+						this.form_pictureButton.setMinimumSize(new Dimension(50, 50));
+						this.form_pictureButton.setPreferredSize(new Dimension(50, 50));
+						this.form_pictureButton.setMaximumSize(new Dimension(32767, 50));
+						this.form_pictureButton.setToolTipText("picture");
+						this.form_pictureButton.addMouseListener(new MouseAdapter() {
+							@Override
+							public void mouseClicked(MouseEvent e) {
+								pictureButtonMouseClicked(e);
+							}
+						});
+						this.form_panel2.add(this.form_pictureButton, "cell 0 0");
 
-					//---- form_sendButton ----
-					this.form_sendButton.setText("\u2192");
-					this.form_sendButton.setMinimumSize(new Dimension(50, 50));
-					this.form_sendButton.setMaximumSize(new Dimension(32767, 50));
-					this.form_sendButton.setPreferredSize(new Dimension(50, 50));
-					this.form_sendButton.setDoubleBuffered(true);
-					this.form_sendButton.setToolTipText("send");
-					this.form_sendButton.addActionListener(e -> sendButton(e));
-					this.form_panel1.add(this.form_sendButton, "cell 3 0");
+						//---- form_emojiButton ----
+						this.form_emojiButton.setText("#");
+						this.form_emojiButton.setDoubleBuffered(true);
+						this.form_emojiButton.setMinimumSize(new Dimension(50, 50));
+						this.form_emojiButton.setPreferredSize(new Dimension(50, 50));
+						this.form_emojiButton.setMaximumSize(new Dimension(32767, 50));
+						this.form_emojiButton.setSelectedIcon(null);
+						this.form_emojiButton.setToolTipText("emoji");
+						this.form_emojiButton.addActionListener(e -> emojiButton(e));
+						this.form_panel2.add(this.form_emojiButton, "cell 1 0");
+
+						//---- form_sendButton ----
+						this.form_sendButton.setText("\u2192");
+						this.form_sendButton.setMinimumSize(new Dimension(50, 50));
+						this.form_sendButton.setMaximumSize(new Dimension(32767, 50));
+						this.form_sendButton.setPreferredSize(new Dimension(50, 50));
+						this.form_sendButton.setDoubleBuffered(true);
+						this.form_sendButton.setToolTipText("send");
+						this.form_sendButton.addActionListener(e -> sendButton(e));
+						this.form_panel2.add(this.form_sendButton, "cell 2 0");
+					}
+					this.form_panel1.add(this.form_panel2, BorderLayout.EAST);
 				}
-				this.form_interactionAreaPanel.add(this.form_panel1, "cell 0 1");
+				this.form_interactionAreaPanel.add(this.form_panel1, "cell 0 0");
 			}
 			this.form_panel.add(this.form_interactionAreaPanel, BorderLayout.PAGE_END);
 		}
@@ -546,10 +555,11 @@ public abstract class ChatPanel extends JFrame {
 	protected JScrollPane form_mainTextBackgroundScrollPane;
 	protected JPanel form_mainTextPanel;
 	protected JPanel form_interactionAreaPanel;
-	protected JLabel form_typingLabel;
 	protected JPanel form_panel1;
+	protected JLabel form_typingLabel;
 	protected JScrollPane form_mainTextFieldScrollPane;
 	protected JTextPane form_textEditorPane;
+	protected JPanel form_panel2;
 	protected JButton form_pictureButton;
 	protected JButton form_emojiButton;
 	protected JButton form_sendButton;

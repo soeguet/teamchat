@@ -7,6 +7,7 @@ import com.soeguet.gui.newcomment.left.PanelLeftImpl;
 import com.soeguet.gui.newcomment.right.PanelRightImpl;
 import com.soeguet.model.MessageModel;
 import com.soeguet.model.MessageTypes;
+import com.soeguet.model.PanelTypes;
 
 import javax.swing.*;
 
@@ -161,7 +162,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         if (messageModel.getSender().equals("osman")) {
 
-            PanelRightImpl panelRight = new PanelRightImpl(mainFrame, messageModel);
+            PanelRightImpl panelRight = new PanelRightImpl(mainFrame, messageModel, PanelTypes.NORMAL);
             ((MainGuiElementsInterface) mainFrame).getMainTextPanel().add(panelRight, "w 80%, trailing, wrap");
         } else {
             PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, messageModel);
