@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.beans.*;
 import javax.swing.*;
+import javax.swing.border.*;
 import net.miginfocom.swing.*;
 /*
  * Created by JFormDesigner on Mon Sep 04 21:08:05 CEST 2023
@@ -262,6 +263,10 @@ public abstract class ChatPanel extends JFrame {
 		return this.form_panel2;
 	}
 
+	public JPanel getPanel3() {
+		return this.form_panel3;
+	}
+
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
 		// Generated using JFormDesigner non-commercial license
@@ -278,6 +283,7 @@ public abstract class ChatPanel extends JFrame {
 		this.form_mainTextPanel = new JPanel();
 		this.form_interactionAreaPanel = new JPanel();
 		this.form_panel1 = new JPanel();
+		this.form_panel3 = new JPanel();
 		this.form_typingLabel = new JLabel();
 		this.form_mainTextFieldScrollPane = new JScrollPane();
 		this.form_textEditorPane = new JTextPane();
@@ -376,6 +382,8 @@ public abstract class ChatPanel extends JFrame {
 			//======== form_mainTextPanelLayeredPane ========
 			{
 				this.form_mainTextPanelLayeredPane.setOpaque(true);
+				this.form_mainTextPanelLayeredPane.setBackground(null);
+				this.form_mainTextPanelLayeredPane.setForeground(null);
 
 				//======== form_mainTextBackgroundScrollPane ========
 				{
@@ -391,6 +399,8 @@ public abstract class ChatPanel extends JFrame {
 					this.form_mainTextBackgroundScrollPane.setPreferredSize(null);
 					this.form_mainTextBackgroundScrollPane.setMinimumSize(null);
 					this.form_mainTextBackgroundScrollPane.setOpaque(false);
+					this.form_mainTextBackgroundScrollPane.setBorder(null);
+					this.form_mainTextBackgroundScrollPane.setViewportBorder(new SoftBevelBorder(SoftBevelBorder.LOWERED));
 
 					//======== form_mainTextPanel ========
 					{
@@ -403,6 +413,7 @@ public abstract class ChatPanel extends JFrame {
 						this.form_mainTextPanel.setMinimumSize(null);
 						this.form_mainTextPanel.setPreferredSize(null);
 						this.form_mainTextPanel.setOpaque(false);
+						this.form_mainTextPanel.setBorder(null);
 						this.form_mainTextPanel.addMouseListener(new MouseAdapter() {
 							@Override
 							public void mouseClicked(MouseEvent e) {
@@ -410,7 +421,7 @@ public abstract class ChatPanel extends JFrame {
 							}
 						});
 						this.form_mainTextPanel.setLayout(new MigLayout(
-							"fill,hidemode 3",
+							"fill,novisualpadding,hidemode 3",
 							// columns
 							"[fill]",
 							// rows
@@ -426,11 +437,11 @@ public abstract class ChatPanel extends JFrame {
 			//======== form_interactionAreaPanel ========
 			{
 				this.form_interactionAreaPanel.setLayout(new MigLayout(
-					"fillx,insets 0,gap 0 0",
+					"fillx,insets 0,gap 5 5",
 					// columns
 					"[grow,fill]",
 					// rows
-					"[center]"));
+					"[bottom]"));
 
 				//======== form_panel1 ========
 				{
@@ -438,17 +449,23 @@ public abstract class ChatPanel extends JFrame {
 					this.form_panel1.setPreferredSize(null);
 					this.form_panel1.setMinimumSize(null);
 					this.form_panel1.setOpaque(false);
-					this.form_panel1.setLayout(new BorderLayout());
+					this.form_panel1.setLayout(new BorderLayout(5, 5));
 
-					//---- form_typingLabel ----
-					this.form_typingLabel.setBackground(new Color(0x00ffffff, true));
-					this.form_typingLabel.setEnabled(false);
-					this.form_typingLabel.setFocusable(false);
-					this.form_typingLabel.setInheritsPopupMenu(false);
-					this.form_typingLabel.setRequestFocusEnabled(false);
-					this.form_typingLabel.setVerifyInputWhenFocusTarget(false);
-					this.form_typingLabel.setText(" ");
-					this.form_panel1.add(this.form_typingLabel, BorderLayout.NORTH);
+					//======== form_panel3 ========
+					{
+						this.form_panel3.setLayout(new BorderLayout());
+
+						//---- form_typingLabel ----
+						this.form_typingLabel.setBackground(new Color(0x00ffffff, true));
+						this.form_typingLabel.setEnabled(false);
+						this.form_typingLabel.setFocusable(false);
+						this.form_typingLabel.setInheritsPopupMenu(false);
+						this.form_typingLabel.setRequestFocusEnabled(false);
+						this.form_typingLabel.setVerifyInputWhenFocusTarget(false);
+						this.form_typingLabel.setText(" ");
+						this.form_panel3.add(this.form_typingLabel, BorderLayout.CENTER);
+					}
+					this.form_panel1.add(this.form_panel3, BorderLayout.NORTH);
 
 					//======== form_mainTextFieldScrollPane ========
 					{
@@ -556,6 +573,7 @@ public abstract class ChatPanel extends JFrame {
 	protected JPanel form_mainTextPanel;
 	protected JPanel form_interactionAreaPanel;
 	protected JPanel form_panel1;
+	protected JPanel form_panel3;
 	protected JLabel form_typingLabel;
 	protected JScrollPane form_mainTextFieldScrollPane;
 	protected JTextPane form_textEditorPane;

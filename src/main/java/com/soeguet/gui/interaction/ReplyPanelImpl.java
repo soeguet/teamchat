@@ -102,8 +102,8 @@ public class ReplyPanelImpl extends ReplyPanel {
                 (byte) MessageTypes.NORMAL,
                 "osman",
                 this.getReplyTextPane().getText(),
-                messageModel.getQuotedMessageSender(),
-                messageModel.getQuotedMessageTime(),
+                messageModel.getSender(),
+                messageModel.getTime(),
                 messageModel.getMessage()
         );
 

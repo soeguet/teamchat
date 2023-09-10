@@ -66,6 +66,8 @@ new FormModel {
 				add( new FormContainer( "javax.swing.JLayeredPane", new FormLayoutManager( class javax.swing.JLayeredPane ) ) {
 					name: "mainTextPanelLayeredPane"
 					"opaque": true
+					"background": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					"foreground": sfield com.jformdesigner.model.FormObject NULL_VALUE
 					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 						name: "mainTextBackgroundScrollPane"
 						"focusable": false
@@ -80,8 +82,10 @@ new FormModel {
 						"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
 						"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
 						"opaque": false
+						"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"viewportBorder": new javax.swing.border.SoftBevelBorder( 1, null, null, null, null )
 						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
-							"$layoutConstraints": "fill,hidemode 3"
+							"$layoutConstraints": "fill,novisualpadding,hidemode 3"
 							"$columnConstraints": "[fill]"
 							"$rowConstraints": "[fill]"
 						} ) {
@@ -95,6 +99,7 @@ new FormModel {
 							"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
 							"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
 							"opaque": false
+							"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
 							addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "mainTextPanelMouseClicked", true ) )
 						} )
 					}, new FormLayoutConstraints( null ) {
@@ -108,25 +113,33 @@ new FormModel {
 				} )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 					"$columnConstraints": "[grow,fill]"
-					"$rowConstraints": "[center]"
-					"$layoutConstraints": "fillx,insets 0,gap 0 0"
+					"$rowConstraints": "[bottom]"
+					"$layoutConstraints": "fillx,insets 0,gap 5 5"
 				} ) {
 					name: "interactionAreaPanel"
-					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) {
+						"vgap": 5
+						"hgap": 5
+					} ) {
 						name: "panel1"
 						"maximumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
 						"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
 						"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
 						"opaque": false
-						add( new FormComponent( "javax.swing.JLabel" ) {
-							name: "typingLabel"
-							"background": new java.awt.Color( 255, 255, 255, 0 )
-							"enabled": false
-							"focusable": false
-							"inheritsPopupMenu": false
-							"requestFocusEnabled": false
-							"verifyInputWhenFocusTarget": false
-							"text": " "
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+							name: "panel3"
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "typingLabel"
+								"background": new java.awt.Color( 255, 255, 255, 0 )
+								"enabled": false
+								"focusable": false
+								"inheritsPopupMenu": false
+								"requestFocusEnabled": false
+								"verifyInputWhenFocusTarget": false
+								"text": " "
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "Center"
+							} )
 						}, new FormLayoutConstraints( class java.lang.String ) {
 							"value": "North"
 						} )

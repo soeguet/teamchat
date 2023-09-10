@@ -11,7 +11,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Arrays;
 
 /**
  * Implementation of the PanelRight class that is responsible for populating the chat bubble and handling user interaction.
@@ -33,15 +32,35 @@ public class PanelRightImpl extends PanelRight {
 
         populateChatBubble();
         setPopupMenu();
+
+        setupReplyPanels();
     }
 
+    /**
+     * This method is used to set up the reply panels based on the panel type.
+     * If the panel type is normal, the method will return without performing any action.
+     * Otherwise, it will set the visibility of button1 to false.
+     */
+    private void setupReplyPanels() {
 
+        if (panelTyp == PanelTypes.NORMAL) {
+            return;
+        }
 
+        this.getButton1().setVisible(false);
+    }
 
+    /**
+     * Sets up the popup menu.
+     * The popup menu is a JPopupMenu that contains options for replying, editing, and deleting a message.
+     * When the "reply" option is selected, a ReplyPanelImpl is added to the main text panel's layered pane.
+     * This method does not return any value.
+     */
     private void setPopupMenu() {
 
         jPopupMenu = new JPopupMenu();
         JMenuItem reply = new JMenuItem("reply");
+
         reply.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {

@@ -119,7 +119,7 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     protected void thisComponentResized(ComponentEvent e) {
 
         SwingUtilities.invokeLater(() -> {
-            this.getMainTextBackgroundScrollPane().setBounds(0, 0, e.getComponent().getWidth(), e.getComponent().getHeight() - this.getInteractionAreaPanel().getHeight() - 55);
+            this.getMainTextBackgroundScrollPane().setBounds(0, 0, e.getComponent().getWidth(), e.getComponent().getHeight() - this.getInteractionAreaPanel().getHeight()-26);
             this.revalidate();
             this.repaint();
         });
@@ -128,7 +128,7 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Called when the mouse is pressed on the properties menu item.
+     * Called when the mouse is pressed on the property menu item.
      *
      * @param e The MouseEvent object representing the event.
      */
