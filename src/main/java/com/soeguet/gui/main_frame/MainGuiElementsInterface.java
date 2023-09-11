@@ -5,6 +5,7 @@ import com.soeguet.behaviour.GuiFunctionality;
 import com.soeguet.socket_client.CustomWebsocketClient;
 
 import javax.swing.*;
+import java.awt.*;
 
 public interface MainGuiElementsInterface {
 
@@ -100,4 +101,6 @@ public interface MainGuiElementsInterface {
      * @param username the new username to be set
      */
     void setUsername(String username);
+
+    JFrame getMainFrame();
 }

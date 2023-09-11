@@ -38,6 +38,11 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
         this.username = username;
     }
 
+    @Override
+    public JFrame getMainFrame() {
+        return this;
+    }
+
     ObjectMapper objectMapper = new ObjectMapper();
 
     /**
