@@ -1,18 +1,12 @@
-package com.soeguet.gui.newcomment.util;
+package com.soeguet.gui.newcomment.util.generated;
 
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.border.*;
 import net.miginfocom.swing.*;
-/*
- * Created by JFormDesigner on Mon Sep 04 19:48:37 CEST 2023
- */
 
 
-
-/**
- * @author soeguet
- */
-public abstract class QuotePanel extends JPanel {
+public class QuotePanel extends JPanel {
 	public QuotePanel() {
 		initComponents();
 	}
@@ -21,7 +15,11 @@ public abstract class QuotePanel extends JPanel {
 		return form_quoteSender;
 	}
 
-	public JTextField getQuoteText() {
+	public JScrollPane getScrollPane1() {
+		return form_scrollPane1;
+	}
+
+	public JTextPane getQuoteText() {
 		return form_quoteText;
 	}
 
@@ -29,11 +27,17 @@ public abstract class QuotePanel extends JPanel {
 		return form_quoteTime;
 	}
 
+	public JPanel getPanel2() {
+		return form_panel2;
+	}
+
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
 		// Generated using JFormDesigner non-commercial license
 		form_quoteSender = new JTextField();
-		form_quoteText = new JTextField();
+		form_scrollPane1 = new JScrollPane();
+		form_panel2 = new JPanel();
+		form_quoteText = new JTextPane();
 		form_quoteTime = new JTextField();
 
 		//======== this ========
@@ -42,8 +46,8 @@ public abstract class QuotePanel extends JPanel {
 			// columns
 			"[fill]",
 			// rows
-			"[fill]" +
-			"[fill]" +
+			"[fill]rel" +
+			"[grow,fill]rel" +
 			"[fill]"));
 
 		//---- form_quoteSender ----
@@ -56,15 +60,38 @@ public abstract class QuotePanel extends JPanel {
 		form_quoteSender.setBorder(null);
 		add(form_quoteSender, "cell 0 0,gapx 3 0,gapy 5 0");
 
-		//---- form_quoteText ----
-		form_quoteText.setHorizontalAlignment(SwingConstants.CENTER);
-		form_quoteText.setText("test");
-		form_quoteText.setEditable(false);
-		form_quoteText.setEnabled(false);
-		form_quoteText.setFont(form_quoteText.getFont().deriveFont(form_quoteText.getFont().getSize() + 3f));
-		form_quoteText.setForeground(Color.black);
-		form_quoteText.setBorder(null);
-		add(form_quoteText, "cell 0 1");
+		//======== form_scrollPane1 ========
+		{
+			form_scrollPane1.setBorder(null);
+			form_scrollPane1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			form_scrollPane1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+
+			//======== form_panel2 ========
+			{
+				form_panel2.setBorder(new EtchedBorder());
+				form_panel2.setLayout(new MigLayout(
+					"insets 3,hidemode 3",
+					// columns
+					"[fill]" +
+					"[fill]" +
+					"[fill]",
+					// rows
+					"[fill]" +
+					"[fill]" +
+					"[fill]"));
+
+				//---- form_quoteText ----
+				form_quoteText.setText("test");
+				form_quoteText.setEditable(false);
+				form_quoteText.setEnabled(false);
+				form_quoteText.setForeground(Color.black);
+				form_quoteText.setBorder(null);
+				form_quoteText.setMargin(new Insets(10, 10, 10, 10));
+				form_panel2.add(form_quoteText, "cell 1 1,grow");
+			}
+			form_scrollPane1.setViewportView(form_panel2);
+		}
+		add(form_scrollPane1, "cell 0 1");
 
 		//---- form_quoteTime ----
 		form_quoteTime.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -81,7 +108,9 @@ public abstract class QuotePanel extends JPanel {
 	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
 	// Generated using JFormDesigner non-commercial license
 	protected JTextField form_quoteSender;
-	protected JTextField form_quoteText;
+	protected JScrollPane form_scrollPane1;
+	protected JPanel form_panel2;
+	protected JTextPane form_quoteText;
 	protected JTextField form_quoteTime;
 	// JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }

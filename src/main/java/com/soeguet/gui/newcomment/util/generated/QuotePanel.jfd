@@ -12,7 +12,7 @@ new FormModel {
 		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 			"$layoutConstraints": "fill,insets 5 15 5 15,hidemode 3,align center center"
 			"$columnConstraints": "[fill]"
-			"$rowConstraints": "[fill][fill][fill]"
+			"$rowConstraints": "[fill]rel[grow,fill]rel[fill]"
 		} ) {
 			name: "this"
 			add( new FormComponent( "javax.swing.JTextField" ) {
@@ -27,15 +27,30 @@ new FormModel {
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 0 0,gapx 3 0,gapy 5 0"
 			} )
-			add( new FormComponent( "javax.swing.JTextField" ) {
-				name: "quoteText"
-				"horizontalAlignment": 0
-				"text": "test"
-				"editable": false
-				"enabled": false
-				"font": new com.jformdesigner.model.SwingDerivedFont( null, 0, 3, false )
-				"foreground": #Color0
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "scrollPane1"
 				"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+				"horizontalScrollBarPolicy": 31
+				"verticalScrollBarPolicy": 21
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+					"$layoutConstraints": "insets 3,hidemode 3"
+					"$columnConstraints": "[fill][fill][fill]"
+					"$rowConstraints": "[fill][fill][fill]"
+				} ) {
+					name: "panel2"
+					"border": new javax.swing.border.EtchedBorder( 1, null, null )
+					add( new FormComponent( "javax.swing.JTextPane" ) {
+						name: "quoteText"
+						"text": "test"
+						"editable": false
+						"enabled": false
+						"foreground": #Color0
+						"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"margin": new java.awt.Insets( 10, 10, 10, 10 )
+					}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+						"value": "cell 1 1,grow"
+					} )
+				} )
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 0 1"
 			} )

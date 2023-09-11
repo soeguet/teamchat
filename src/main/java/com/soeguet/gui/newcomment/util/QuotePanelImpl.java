@@ -1,27 +1,15 @@
 package com.soeguet.gui.newcomment.util;
 
-import java.awt.*;
+import com.soeguet.gui.newcomment.util.generated.QuotePanel;
 
 public class QuotePanelImpl extends QuotePanel {
 
     public QuotePanelImpl(String text, String sender, String time) {
 
-        getQuoteText().setText(text);
-        getQuoteSender().setText(sender);
-        getQuoteTime().setText(time);
-    }
+        this.getQuoteText().setEditorKit(new WrapEditorKit());
 
-    @Override
-    protected void paintComponent(Graphics g) {
-
-        super.paintComponent(g);
-
-        g.setColor(Color.BLACK);
-        g.drawLine(0, 0, 0, 100);
-        g.drawLine(this.getWidth()-1, 0, this.getWidth()-1, 100);
-
-        g.setColor(Color.LIGHT_GRAY);
-        g.drawLine(1, 0, 1, 100);
-        g.drawLine(this.getWidth()-2, 0, this.getWidth()-2, 100);
+        this.getQuoteText().setText(text);
+        this.getQuoteSender().setText(sender);
+        this.getQuoteTime().setText(time);
     }
 }

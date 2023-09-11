@@ -2,6 +2,7 @@ package com.soeguet.gui.newcomment.left;
 
 import com.soeguet.gui.interaction.ReplyPanelImpl;
 import com.soeguet.gui.main_frame.MainGuiElementsInterface;
+import com.soeguet.gui.newcomment.left.generated.PanelLeft;
 import com.soeguet.gui.newcomment.util.QuotePanelImpl;
 import com.soeguet.gui.newcomment.util.WrapEditorKit;
 import com.soeguet.model.MessageModel;
@@ -113,7 +114,6 @@ public class PanelLeftImpl extends PanelLeft {
 
         JTextPane actualTextPane = createTextPane();
 
-
         actualTextPane.setEditorKit(new WrapEditorKit());
 
         JScrollPane jsp = new JScrollPane(actualTextPane);
@@ -141,7 +141,10 @@ public class PanelLeftImpl extends PanelLeft {
             this.getNameLabel().setText(sender);
         }
 
-        mainFrame.setLastMessageSenderName(sender);
+        if (panelTyp == PanelTypes.NORMAL) {
+
+            mainFrame.setLastMessageSenderName(sender);
+        }
     }
 
 
@@ -162,7 +165,10 @@ public class PanelLeftImpl extends PanelLeft {
             this.getTimeLabel().setText(timeStamp);
         }
 
-        mainFrame.setLastMessageTimeStamp(timeStamp);
+        if (panelTyp == PanelTypes.NORMAL) {
+
+            mainFrame.setLastMessageTimeStamp(timeStamp);
+        }
     }
 
     /**

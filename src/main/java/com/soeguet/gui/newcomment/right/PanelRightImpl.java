@@ -2,6 +2,7 @@ package com.soeguet.gui.newcomment.right;
 
 import com.soeguet.gui.interaction.ReplyPanelImpl;
 import com.soeguet.gui.main_frame.MainGuiElementsInterface;
+import com.soeguet.gui.newcomment.right.generated.PanelRight;
 import com.soeguet.gui.newcomment.util.QuotePanelImpl;
 import com.soeguet.gui.newcomment.util.WrapEditorKit;
 import com.soeguet.model.MessageModel;
@@ -147,7 +148,10 @@ public class PanelRightImpl extends PanelRight {
             this.getNameLabel().setText(sender);
         }
 
-        mainFrame.setLastMessageSenderName(sender);
+        if (panelTyp == PanelTypes.NORMAL) {
+
+            mainFrame.setLastMessageSenderName(sender);
+        }
     }
 
 
@@ -168,7 +172,10 @@ public class PanelRightImpl extends PanelRight {
             this.getTimeLabel().setText(timeStamp);
         }
 
-        mainFrame.setLastMessageTimeStamp(timeStamp);
+        if (panelTyp == PanelTypes.NORMAL) {
+
+            mainFrame.setLastMessageTimeStamp(timeStamp);
+        }
     }
 
     /**

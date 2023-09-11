@@ -86,6 +86,10 @@ public class ReplyPanelImpl extends ReplyPanel {
             height += 30;
         }
 
+        if (height > 500) {
+            height = 500;
+        }
+
         this.setBounds((textPaneWidth - 500) / 2, (textPaneHeight - height) / 2, 500, height);
     }
 

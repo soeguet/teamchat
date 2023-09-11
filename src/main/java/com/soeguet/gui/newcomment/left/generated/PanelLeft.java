@@ -2,7 +2,7 @@
  * Created by JFormDesigner on Sat Mar 04 00:03:24 CET 2023
  */
 
-package com.soeguet.gui.newcomment.left;
+package com.soeguet.gui.newcomment.left.generated;
 
 import net.miginfocom.swing.MigLayout;
 
