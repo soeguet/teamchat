@@ -8,7 +8,6 @@ import java.util.Timer;
 
 public class PopupPanelImpl extends PopupPanel {
 
-
     private final JFrame mainFrame;
 
     public PopupPanelImpl(JFrame mainFrame, String message) {

@@ -26,9 +26,11 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     private final Logger logger = Logger.getLogger(ChatMainGuiElementsImpl.class.getName());
 
     private final GuiFunctionality guiFunctionality;
+    private final URI serverUri;
 
-    private final CustomWebsocketClient websocketClient;
+    private CustomWebsocketClient websocketClient;
     private String username = "osman";
+    private JPanel messagePanel;
 
     public String getUsername() {
         return username;
@@ -36,6 +38,14 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public JPanel getMessagePanel() {
+        return messagePanel;
+    }
+
+    public void setMessagePanel(JPanel messagePanel) {
+        this.messagePanel = messagePanel;
     }
 
     @Override
@@ -58,7 +68,8 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
         guiFunctionality = new GuiFunctionality(this);
 
         try {
-            websocketClient = new CustomWebsocketClient(new URI("ws://127.0.0.1:8100"), this);
+            serverUri = new URI("ws://127.0.0.1:8100");
+            websocketClient = new CustomWebsocketClient(serverUri, this);
             websocketClient.connect();
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
@@ -133,7 +144,8 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     protected void thisComponentResized(ComponentEvent e) {
 
         SwingUtilities.invokeLater(() -> {
-            this.getMainTextBackgroundScrollPane().setBounds(0, 0, e.getComponent().getWidth(), e.getComponent().getHeight() - this.getInteractionAreaPanel().getHeight() - 26);
+            //-56 -> trial and error
+            this.getMainTextBackgroundScrollPane().setBounds(1, 1, e.getComponent().getWidth() - 1, e.getComponent().getHeight() - this.getInteractionAreaPanel().getHeight() - 56);
             this.revalidate();
             this.repaint();
         });
@@ -161,10 +173,32 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     protected void resetConnectionMenuItemMousePressed(MouseEvent e) {
 
         logMethod(e, "ChatGuiImp.resetConnectionMenuItemMousePressed");
+
+        if (getWebsocketClient().isOpen()) {
+
+            logger.info("Closing websocket client");
+            getWebsocketClient().close();
+        }
+
+        new Timer(1000, event -> {
+
+            if (getWebsocketClient().isClosed()) {
+
+                logger.info("Reconnecting websocket client");
+
+
+                setWebsocketClient(new CustomWebsocketClient(serverUri, this));
+                getWebsocketClient().connect();
+            }
+        }).start();
+    }
+
+    public void setWebsocketClient(CustomWebsocketClient websocketClient) {
+        this.websocketClient = websocketClient;
     }
 
     /**
-     * Called when the participants menu item is pressed.
+     * Called when the participant menu item is pressed.
      * Logs the provided event and method name.
      *
      * @param e The MouseEvent associated with the button press.

@@ -18,7 +18,6 @@ public class CustomWebsocketClient extends WebSocketClient {
     private final JFrame mainFrame;
 
     private SocketToGuiInterface socketToGuiInterface;
-    private JPanel messagePanel;
 
     public CustomWebsocketClient(URI serverUri, JFrame mainFrame) {
 
@@ -46,22 +45,28 @@ public class CustomWebsocketClient extends WebSocketClient {
         createPopup("Connected to server");
     }
 
-    private void createPopup(String message) {
+    private synchronized void createPopup(String message) {
 
         SwingUtilities.invokeLater(() -> {
 
+            JPanel messagePanel = ((MainGuiElementsInterface) mainFrame).getMessagePanel();
+
+            if (messagePanel != null) {
+
+                ((MainGuiElementsInterface) mainFrame).getMainTextPanelLayeredPane().remove(messagePanel);
+                messagePanel.setVisible(false);
+            }
+
             PopupPanelImpl popupPanel = new PopupPanelImpl(mainFrame, message);
 
-            messagePanel = popupPanel;
+            ((MainGuiElementsInterface) mainFrame).setMessagePanel(popupPanel);
             popupPanel.implementPopup();
         });
     }
 
-
     @Override
     public void onMessage(String message) {
 
-        System.out.println(message);
         if (!message.startsWith("{")) {
 
             return;
@@ -71,9 +76,6 @@ public class CustomWebsocketClient extends WebSocketClient {
 
             ((MainGuiElementsInterface) mainFrame).getGuiFunctionality().onMessage(message);
         }
-
-//        System.out.println("message = " + message);
-//        logger.info("onMessage");
     }
 
     @Override

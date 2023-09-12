@@ -267,6 +267,14 @@ public abstract class ChatPanel extends JFrame {
 		return this.form_panel3;
 	}
 
+	public JPanel getPanel4() {
+		return this.form_panel4;
+	}
+
+	public JPanel getPanel5() {
+		return this.form_panel5;
+	}
+
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
 		// Generated using JFormDesigner non-commercial license
@@ -291,6 +299,8 @@ public abstract class ChatPanel extends JFrame {
 		this.form_pictureButton = new JButton();
 		this.form_emojiButton = new JButton();
 		this.form_sendButton = new JButton();
+		this.form_panel4 = new JPanel();
+		this.form_panel5 = new JPanel();
 
 		//======== this ========
 		setFocusable(false);
@@ -399,8 +409,8 @@ public abstract class ChatPanel extends JFrame {
 					this.form_mainTextBackgroundScrollPane.setPreferredSize(null);
 					this.form_mainTextBackgroundScrollPane.setMinimumSize(null);
 					this.form_mainTextBackgroundScrollPane.setOpaque(false);
-					this.form_mainTextBackgroundScrollPane.setBorder(null);
-					this.form_mainTextBackgroundScrollPane.setViewportBorder(new SoftBevelBorder(SoftBevelBorder.LOWERED));
+					this.form_mainTextBackgroundScrollPane.setBorder(new EtchedBorder());
+					this.form_mainTextBackgroundScrollPane.setViewportBorder(null);
 
 					//======== form_mainTextPanel ========
 					{
@@ -430,7 +440,7 @@ public abstract class ChatPanel extends JFrame {
 					this.form_mainTextBackgroundScrollPane.setViewportView(this.form_mainTextPanel);
 				}
 				this.form_mainTextPanelLayeredPane.add(this.form_mainTextBackgroundScrollPane, JLayeredPane.DEFAULT_LAYER);
-				this.form_mainTextBackgroundScrollPane.setBounds(0, 0, 875, 485);
+				this.form_mainTextBackgroundScrollPane.setBounds(10, 15, 865, 440);
 			}
 			this.form_panel.add(this.form_mainTextPanelLayeredPane, BorderLayout.CENTER);
 
@@ -463,6 +473,9 @@ public abstract class ChatPanel extends JFrame {
 						this.form_typingLabel.setRequestFocusEnabled(false);
 						this.form_typingLabel.setVerifyInputWhenFocusTarget(false);
 						this.form_typingLabel.setText(" ");
+						this.form_typingLabel.setMinimumSize(new Dimension(3, 10));
+						this.form_typingLabel.setMaximumSize(new Dimension(3, 10));
+						this.form_typingLabel.setPreferredSize(new Dimension(3, 10));
 						this.form_panel3.add(this.form_typingLabel, BorderLayout.CENTER);
 					}
 					this.form_panel1.add(this.form_panel3, BorderLayout.NORTH);
@@ -547,6 +560,18 @@ public abstract class ChatPanel extends JFrame {
 						this.form_panel2.add(this.form_sendButton, "cell 2 0");
 					}
 					this.form_panel1.add(this.form_panel2, BorderLayout.EAST);
+
+					//======== form_panel4 ========
+					{
+						this.form_panel4.setLayout(new BorderLayout());
+					}
+					this.form_panel1.add(this.form_panel4, BorderLayout.SOUTH);
+
+					//======== form_panel5 ========
+					{
+						this.form_panel5.setLayout(new BorderLayout());
+					}
+					this.form_panel1.add(this.form_panel5, BorderLayout.WEST);
 				}
 				this.form_interactionAreaPanel.add(this.form_panel1, "cell 0 0");
 			}
@@ -581,5 +606,7 @@ public abstract class ChatPanel extends JFrame {
 	protected JButton form_pictureButton;
 	protected JButton form_emojiButton;
 	protected JButton form_sendButton;
+	protected JPanel form_panel4;
+	protected JPanel form_panel5;
 	// JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }

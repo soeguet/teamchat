@@ -83,7 +83,7 @@ new FormModel {
 						"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
 						"opaque": false
 						"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
-						"viewportBorder": new javax.swing.border.SoftBevelBorder( 1, null, null, null, null )
+						"viewportBorder": sfield com.jformdesigner.model.FormObject NULL_VALUE
 						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 							"$layoutConstraints": "fill,novisualpadding,hidemode 3"
 							"$columnConstraints": "[fill]"
@@ -104,7 +104,7 @@ new FormModel {
 						} )
 					}, new FormLayoutConstraints( null ) {
 						"width": 875
-						"height": 485
+						"height": 480
 						"x": 0
 						"y": 0
 					} )

@@ -5,7 +5,6 @@ import com.soeguet.behaviour.GuiFunctionality;
 import com.soeguet.socket_client.CustomWebsocketClient;
 
 import javax.swing.*;
-import java.awt.*;
 
 public interface MainGuiElementsInterface {
 
@@ -102,5 +101,24 @@ public interface MainGuiElementsInterface {
      */
     void setUsername(String username);
 
+    /**
+     * Retrieves the main JFrame of the application.
+     *
+     * @return the main JFrame of the application
+     */
     JFrame getMainFrame();
+
+    /**
+     * Retrieves the message panel of the application.
+     *
+     * @return the message panel of the application
+     */
+    JPanel getMessagePanel();
+
+    /**
+     * Sets the message panel of the application.
+     *
+     * @param messagePanel the message panel to be set for the application
+     */
+    void setMessagePanel(JPanel messagePanel);
 }
