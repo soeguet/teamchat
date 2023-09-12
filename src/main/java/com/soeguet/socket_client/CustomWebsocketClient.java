@@ -47,21 +47,35 @@ public class CustomWebsocketClient extends WebSocketClient {
 
     private synchronized void createPopup(String message) {
 
-        SwingUtilities.invokeLater(() -> {
+        if (!(mainFrame instanceof MainGuiElementsInterface)) {
 
-            JPanel messagePanel = ((MainGuiElementsInterface) mainFrame).getMessagePanel();
+            return;
+        }
 
-            if (messagePanel != null) {
+        MainGuiElementsInterface gui = (MainGuiElementsInterface) mainFrame;
 
-                ((MainGuiElementsInterface) mainFrame).getMainTextPanelLayeredPane().remove(messagePanel);
-                messagePanel.setVisible(false);
-            }
 
-            PopupPanelImpl popupPanel = new PopupPanelImpl(mainFrame, message);
+        if (gui.getMessagePanel() == null) {
 
-            ((MainGuiElementsInterface) mainFrame).setMessagePanel(popupPanel);
-            popupPanel.implementPopup();
-        });
+            SwingUtilities.invokeLater(() -> {
+
+                JPanel messagePanel = gui.getMessagePanel();
+
+                if (messagePanel != null) {
+
+                    gui.getMainTextPanelLayeredPane().remove(messagePanel);
+                    messagePanel.setVisible(false);
+                }
+
+                PopupPanelImpl popupPanel = new PopupPanelImpl(mainFrame, message);
+
+                gui.setMessagePanel(popupPanel);
+                popupPanel.implementPopup();
+            });
+        } else {
+
+            gui.getMessageQueue().add(message);
+        }
     }
 
     @Override

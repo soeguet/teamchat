@@ -5,6 +5,9 @@ import com.soeguet.behaviour.GuiFunctionality;
 import com.soeguet.socket_client.CustomWebsocketClient;
 
 import javax.swing.*;
+import java.lang.reflect.Array;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
 public interface MainGuiElementsInterface {
 
@@ -121,4 +124,12 @@ public interface MainGuiElementsInterface {
      * @param messagePanel the message panel to be set for the application
      */
     void setMessagePanel(JPanel messagePanel);
+
+
+    /**
+     * Returns the message queue containing Strings.
+     *
+     * @return the message queue containing Strings
+     */
+    ArrayDeque<String> getMessageQueue();
 }

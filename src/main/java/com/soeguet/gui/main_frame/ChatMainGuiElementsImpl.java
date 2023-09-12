@@ -14,7 +14,9 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayDeque;
 import java.util.EventObject;
+import java.util.Queue;
 import java.util.logging.Logger;
 
 /**
@@ -27,33 +29,11 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
     private final GuiFunctionality guiFunctionality;
     private final URI serverUri;
-
+    private final ArrayDeque<String> messageQueue = new ArrayDeque<>();
+    ObjectMapper objectMapper = new ObjectMapper();
     private CustomWebsocketClient websocketClient;
     private String username = "osman";
     private JPanel messagePanel;
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public JPanel getMessagePanel() {
-        return messagePanel;
-    }
-
-    public void setMessagePanel(JPanel messagePanel) {
-        this.messagePanel = messagePanel;
-    }
-
-    @Override
-    public JFrame getMainFrame() {
-        return this;
-    }
-
-    ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * Initializes the ChatMainGuiElementsImpl object.
@@ -77,47 +57,14 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Retrieves the GuiFunctionality.
+     * Returns the message queue.
+     * <p>
+     * This method retrieves the current message queue of the ChatMainGuiElementsImpl object.
      *
-     * @return the GuiFunctionality object.
+     * @return The message queue.
      */
-    public GuiFunctionality getGuiFunctionality() {
-
-        return guiFunctionality;
-    }
-
-    /**
-     * Gets the ObjectMapper instance used for converting JSON to Java objects and vice versa.
-     *
-     * @return the ObjectMapper instance
-     */
-    public ObjectMapper getObjectMapper() {
-
-        return objectMapper;
-    }
-
-    /**
-     * Retrieves the WebSocket client.
-     *
-     * @return The WebSocket client.
-     */
-    public CustomWebsocketClient getWebsocketClient() {
-
-        return websocketClient;
-    }
-
-    /**
-     * Logs the provided event and method name.
-     *
-     * @param event      The event to be logged.
-     * @param methodName The name of the method to be logged.
-     */
-    private void logMethod(EventObject event, String methodName) {
-
-        System.out.println();
-        System.out.println("__ " + methodName);
-        logger.info(event.toString());
-        System.out.println();
+    public ArrayDeque<String> getMessageQueue() {
+        return messageQueue;
     }
 
     /**
@@ -136,6 +83,20 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
+     * Logs the provided event and method name.
+     *
+     * @param event      The event to be logged.
+     * @param methodName The name of the method to be logged.
+     */
+    private void logMethod(EventObject event, String methodName) {
+
+        System.out.println();
+        System.out.println("__ " + methodName);
+        logger.info(event.toString());
+        System.out.println();
+    }
+
+    /**
      * Method called when the component is resized.
      *
      * @param e The ComponentEvent object representing the resize event.
@@ -151,6 +112,17 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
         });
 
 //        logMethod(e, "ChatGuiImpl.thisComponentResized");
+    }
+
+    /**
+     * Handles the event when the mouse clicks the current JFrame.
+     *
+     * @param e the MouseEvent object that triggered this event
+     */
+    @Override
+    protected void thisMouseClicked(MouseEvent e) {
+
+        logMethod(e, "ChatGuiImpl.thisMouseClicked");
     }
 
     /**
@@ -193,8 +165,74 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
         }).start();
     }
 
+    /**
+     * Retrieves the WebSocket client.
+     *
+     * @return The WebSocket client.
+     */
+    public CustomWebsocketClient getWebsocketClient() {
+
+        return websocketClient;
+    }
+
+    /**
+     * Gets the ObjectMapper instance used for converting JSON to Java objects and vice versa.
+     *
+     * @return the ObjectMapper instance
+     */
+    public ObjectMapper getObjectMapper() {
+
+        return objectMapper;
+    }
+
+    /**
+     * Retrieves the GuiFunctionality.
+     *
+     * @return the GuiFunctionality object.
+     */
+    public GuiFunctionality getGuiFunctionality() {
+
+        return guiFunctionality;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    @Override
+    public JFrame getMainFrame() {
+        return this;
+    }
+
+    public JPanel getMessagePanel() {
+        return messagePanel;
+    }
+
+    public void setMessagePanel(JPanel messagePanel) {
+        this.messagePanel = messagePanel;
+    }
+
     public void setWebsocketClient(CustomWebsocketClient websocketClient) {
         this.websocketClient = websocketClient;
+    }
+
+    /**
+     * Handles the event when the mouse presses the exit menu item.
+     * Sets the default close operation for the current JFrame to EXIT_ON_CLOSE
+     * and disposes the current JFrame.
+     *
+     * @param e the MouseEvent object that triggered this event
+     */
+    @Override
+    protected void exitMenuItemMousePressed(MouseEvent e) {
+
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.dispose();
+        System.exit(0);
     }
 
     /**
@@ -220,7 +258,6 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
         logMethod(e, "ChatGuiImpl.mainTextPanelMouseClicked");
     }
-
 
     /**
      * {@inheritDoc}
@@ -288,7 +325,6 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
         }
     }
 
-
     /**
      * Invoked when a key is released in the text editor pane.
      * <p>
@@ -302,6 +338,16 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
     }
 
+    /**
+     * Handles the event when the mouse clicks the picture button in the current JFrame.
+     *
+     * @param e the MouseEvent object that triggered this event
+     */
+    @Override
+    protected void pictureButtonMouseClicked(MouseEvent e) {
+
+        logMethod(e, "ChatGuiImpl.pictureButtonMouseClicked");
+    }
 
     /**
      * Invoked when the emoji button is clicked in the chat GUI.
@@ -315,43 +361,6 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     protected void emojiButton(ActionEvent e) {
 
         logMethod(e, "ChatGuiImpl.emojiButton");
-    }
-
-    /**
-     * Handles the event when the mouse presses the exit menu item.
-     * Sets the default close operation for the current JFrame to EXIT_ON_CLOSE
-     * and disposes the current JFrame.
-     *
-     * @param e the MouseEvent object that triggered this event
-     */
-    @Override
-    protected void exitMenuItemMousePressed(MouseEvent e) {
-
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.dispose();
-        System.exit(0);
-    }
-
-    /**
-     * Handles the event when the mouse clicks the current JFrame.
-     *
-     * @param e the MouseEvent object that triggered this event
-     */
-    @Override
-    protected void thisMouseClicked(MouseEvent e) {
-
-        logMethod(e, "ChatGuiImpl.thisMouseClicked");
-    }
-
-    /**
-     * Handles the event when the mouse clicks the picture button in the current JFrame.
-     *
-     * @param e the MouseEvent object that triggered this event
-     */
-    @Override
-    protected void pictureButtonMouseClicked(MouseEvent e) {
-
-        logMethod(e, "ChatGuiImpl.pictureButtonMouseClicked");
     }
 
     /**
