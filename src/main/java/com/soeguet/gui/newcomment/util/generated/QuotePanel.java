@@ -31,34 +31,91 @@ public class QuotePanel extends JPanel {
 		return form_panel2;
 	}
 
+	public JPanel getPanel1() {
+		return form_panel1;
+	}
+
+	public JTextField getTextField1() {
+		return form_textField1;
+	}
+
+	public JPanel getPanel3() {
+		return form_panel3;
+	}
+
+	public JPanel getPanel4() {
+		return form_panel4;
+	}
+
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
 		// Generated using JFormDesigner non-commercial license
+		form_panel3 = new JPanel();
+		form_panel1 = new JPanel();
 		form_quoteSender = new JTextField();
+		form_textField1 = new JTextField();
+		form_quoteTime = new JTextField();
+		form_panel4 = new JPanel();
 		form_scrollPane1 = new JScrollPane();
 		form_panel2 = new JPanel();
 		form_quoteText = new JTextPane();
-		form_quoteTime = new JTextField();
 
 		//======== this ========
-		setLayout(new MigLayout(
-			"fill,insets 5 15 5 15,hidemode 3,align center center",
-			// columns
-			"[fill]",
-			// rows
-			"[fill]rel" +
-			"[grow,fill]rel" +
-			"[fill]"));
+		setLayout(new BorderLayout());
 
-		//---- form_quoteSender ----
-		form_quoteSender.setHorizontalAlignment(SwingConstants.LEFT);
-		form_quoteSender.setText("test");
-		form_quoteSender.setEditable(false);
-		form_quoteSender.setEnabled(false);
-		form_quoteSender.setForeground(Color.black);
-		form_quoteSender.setFont(new Font("sansserif", Font.BOLD, 10));
-		form_quoteSender.setBorder(null);
-		add(form_quoteSender, "cell 0 0,gapx 3 0,gapy 5 0");
+		//======== form_panel3 ========
+		{
+			form_panel3.setLayout(new BorderLayout());
+
+			//======== form_panel1 ========
+			{
+				form_panel1.setMinimumSize(null);
+				form_panel1.setPreferredSize(null);
+				form_panel1.setInheritsPopupMenu(true);
+				form_panel1.setLayout(new BorderLayout());
+
+				//---- form_quoteSender ----
+				form_quoteSender.setText("test");
+				form_quoteSender.setEditable(false);
+				form_quoteSender.setEnabled(false);
+				form_quoteSender.setForeground(Color.black);
+				form_quoteSender.setFont(new Font("sansserif", Font.BOLD, 10));
+				form_quoteSender.setBorder(null);
+				form_quoteSender.setMinimumSize(null);
+				form_quoteSender.setPreferredSize(null);
+				form_quoteSender.setHorizontalAlignment(SwingConstants.TRAILING);
+				form_panel1.add(form_quoteSender, BorderLayout.WEST);
+
+				//---- form_textField1 ----
+				form_textField1.setText(" - ");
+				form_textField1.setEnabled(false);
+				form_textField1.setEditable(false);
+				form_textField1.setBorder(null);
+				form_textField1.setMinimumSize(null);
+				form_textField1.setPreferredSize(null);
+				form_textField1.setHorizontalAlignment(SwingConstants.CENTER);
+				form_panel1.add(form_textField1, BorderLayout.CENTER);
+
+				//---- form_quoteTime ----
+				form_quoteTime.setText("test");
+				form_quoteTime.setEditable(false);
+				form_quoteTime.setEnabled(false);
+				form_quoteTime.setFont(new Font("sansserif", Font.ITALIC, 10));
+				form_quoteTime.setForeground(Color.black);
+				form_quoteTime.setBorder(null);
+				form_quoteTime.setMinimumSize(null);
+				form_quoteTime.setPreferredSize(null);
+				form_panel1.add(form_quoteTime, BorderLayout.EAST);
+			}
+			form_panel3.add(form_panel1, BorderLayout.WEST);
+
+			//======== form_panel4 ========
+			{
+				form_panel4.setLayout(new BorderLayout());
+			}
+			form_panel3.add(form_panel4, BorderLayout.CENTER);
+		}
+		add(form_panel3, BorderLayout.NORTH);
 
 		//======== form_scrollPane1 ========
 		{
@@ -91,26 +148,20 @@ public class QuotePanel extends JPanel {
 			}
 			form_scrollPane1.setViewportView(form_panel2);
 		}
-		add(form_scrollPane1, "cell 0 1");
-
-		//---- form_quoteTime ----
-		form_quoteTime.setHorizontalAlignment(SwingConstants.RIGHT);
-		form_quoteTime.setText("test");
-		form_quoteTime.setEditable(false);
-		form_quoteTime.setEnabled(false);
-		form_quoteTime.setFont(new Font("sansserif", Font.ITALIC, 10));
-		form_quoteTime.setForeground(Color.black);
-		form_quoteTime.setBorder(null);
-		add(form_quoteTime, "cell 0 2,gapx 0 3,gapy 5 5");
+		add(form_scrollPane1, BorderLayout.CENTER);
 		// JFormDesigner - End of component initialization  //GEN-END:initComponents  @formatter:on
 	}
 
 	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
 	// Generated using JFormDesigner non-commercial license
+	protected JPanel form_panel3;
+	protected JPanel form_panel1;
 	protected JTextField form_quoteSender;
+	protected JTextField form_textField1;
+	protected JTextField form_quoteTime;
+	protected JPanel form_panel4;
 	protected JScrollPane form_scrollPane1;
 	protected JPanel form_panel2;
 	protected JTextPane form_quoteText;
-	protected JTextField form_quoteTime;
 	// JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }

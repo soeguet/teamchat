@@ -9,23 +9,64 @@ new FormModel {
 			"JavaCodeGenerator.defaultHandlerModifiers": 1028
 			"JavaCodeGenerator.memberVariablePrefix": "form_"
 		}
-		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
-			"$layoutConstraints": "fill,insets 5 15 5 15,hidemode 3,align center center"
-			"$columnConstraints": "[fill]"
-			"$rowConstraints": "[fill]rel[grow,fill]rel[fill]"
-		} ) {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
 			name: "this"
-			add( new FormComponent( "javax.swing.JTextField" ) {
-				name: "quoteSender"
-				"horizontalAlignment": 2
-				"text": "test"
-				"editable": false
-				"enabled": false
-				"foreground": &Color0 new java.awt.Color( 0, 0, 0, 255 )
-				"font": new java.awt.Font( "sansserif", 1, 10 )
-				"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
-			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-				"value": "cell 0 0,gapx 3 0,gapy 5 0"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "panel3"
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+					name: "panel1"
+					"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					"inheritsPopupMenu": true
+					add( new FormComponent( "javax.swing.JTextField" ) {
+						name: "quoteSender"
+						"text": "test"
+						"editable": false
+						"enabled": false
+						"foreground": &Color0 new java.awt.Color( 0, 0, 0, 255 )
+						"font": new java.awt.Font( "sansserif", 1, 10 )
+						"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"horizontalAlignment": 11
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "West"
+					} )
+					add( new FormComponent( "javax.swing.JTextField" ) {
+						name: "textField1"
+						"text": " - "
+						"enabled": false
+						"editable": false
+						"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"horizontalAlignment": 0
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "Center"
+					} )
+					add( new FormComponent( "javax.swing.JTextField" ) {
+						name: "quoteTime"
+						"text": "test"
+						"editable": false
+						"enabled": false
+						"font": new java.awt.Font( "sansserif", 2, 10 )
+						"foreground": #Color0
+						"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "East"
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "West"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+					name: "panel4"
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "North"
 			} )
 			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 				name: "scrollPane1"
@@ -51,20 +92,8 @@ new FormModel {
 						"value": "cell 1 1,grow"
 					} )
 				} )
-			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-				"value": "cell 0 1"
-			} )
-			add( new FormComponent( "javax.swing.JTextField" ) {
-				name: "quoteTime"
-				"horizontalAlignment": 4
-				"text": "test"
-				"editable": false
-				"enabled": false
-				"font": new java.awt.Font( "sansserif", 2, 10 )
-				"foreground": #Color0
-				"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
-			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-				"value": "cell 0 2,gapx 0 3,gapy 5 5"
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
 			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )

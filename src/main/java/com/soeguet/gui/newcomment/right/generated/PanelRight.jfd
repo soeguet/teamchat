@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "8.1.1.0.298" Java: "17.0.3" encoding: "UTF-8"
+JFDML JFormDesigner: "8.1.1.0.298" Java: "17.0.8" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
@@ -11,9 +11,9 @@ new FormModel {
 			"JavaCodeGenerator.memberVariableThis": true
 		}
 		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
-			"$layoutConstraints": "insets 0,trailing"
-			"$columnConstraints": "[right][fill][right][fill][center][right]"
-			"$rowConstraints": "[grow][grow,fill][center]"
+			"$layoutConstraints": "insets 0,align trailing bottom"
+			"$columnConstraints": "[right][fill][right][fill][center]"
+			"$rowConstraints": "[][][]"
 		} ) {
 			name: "this"
 			"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
@@ -28,14 +28,6 @@ new FormModel {
 				"background": new java.awt.Color( 204, 0, 51, 255 )
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 1 1 2 2,grow"
-			} )
-			add( new FormComponent( "javax.swing.JLabel" ) {
-				name: "nameLabel"
-				"text": "NAME"
-				"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 1, false )
-				"enabled": false
-			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-				"value": "pad 0,cell 4 0 2 1,growx"
 			} )
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 				"$columnConstraints": "[grow,fill][7!]"
@@ -83,28 +75,47 @@ new FormModel {
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 3 1"
 			} )
-			add( new FormComponent( "javax.swing.JLabel" ) {
-				name: "timeLabel"
-				"text": "TIME"
-				"enabled": false
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+				"$layoutConstraints": "insets 0,gap 0 0"
+				"$columnConstraints": "[grow,fill][fill]"
+				"$rowConstraints": "[fill][grow,fill]"
+			} ) {
+				name: "panel2"
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "timeLabel"
+					"text": "TIME"
+					"enabled": false
+					"horizontalAlignment": 11
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 0 1"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "button1"
+					"text": "..."
+					"maximumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					"borderPainted": false
+					"requestFocusEnabled": false
+					"opaque": false
+					"foreground": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					"background": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "replyButtonClicked", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 1 1"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "nameLabel"
+					"text": "NAME"
+					"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 1, false )
+					"enabled": false
+					"horizontalAlignment": 11
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 0 0 2 1"
+				} )
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-				"value": "pad 0,cell 4 1,growx"
-			} )
-			add( new FormComponent( "javax.swing.JButton" ) {
-				name: "button1"
-				"text": "..."
-				"maximumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
-				"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
-				"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
-				"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
-				"borderPainted": false
-				"requestFocusEnabled": false
-				"opaque": false
-				"foreground": sfield com.jformdesigner.model.FormObject NULL_VALUE
-				"background": sfield com.jformdesigner.model.FormObject NULL_VALUE
-				addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "replyButtonClicked", true ) )
-			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-				"value": "pad 0,cell 5 1"
+				"value": "cell 4 1,aligny bottom,growy 0"
 			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )

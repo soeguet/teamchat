@@ -112,6 +112,10 @@ public abstract class PanelRight extends JPanel {
 		return this.form_button1;
 	}
 
+	public JPanel getPanel2() {
+		return this.form_panel2;
+	}
+
 
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
@@ -119,11 +123,12 @@ public abstract class PanelRight extends JPanel {
 		createUIComponents();
 
 		this.form_layeredPane1 = new JLayeredPane();
-		this.form_nameLabel = new JLabel();
 		this.form_layeredPane2 = new JLayeredPane();
 		this.form_hSpacer1 = new JPanel(null);
+		this.form_panel2 = new JPanel();
 		this.form_timeLabel = new JLabel();
 		this.form_button1 = new JButton();
+		this.form_nameLabel = new JLabel();
 
 		//======== this ========
 		setPreferredSize(null);
@@ -131,18 +136,17 @@ public abstract class PanelRight extends JPanel {
 		setMaximumSize(null);
 		setOpaque(false);
 		setLayout(new MigLayout(
-			"insets 0,trailing",
+			"insets 0,align trailing bottom",
 			// columns
 			"[right]" +
 			"[fill]" +
 			"[right]" +
 			"[fill]" +
-			"[center]" +
-			"[right]",
+			"[center]",
 			// rows
-			"[grow]" +
-			"[grow,fill]" +
-			"[center]"));
+			"[]" +
+			"[]" +
+			"[]"));
 
 		//======== form_layeredPane1 ========
 		{
@@ -152,12 +156,6 @@ public abstract class PanelRight extends JPanel {
 			this.form_layeredPane1.setBackground(new Color(0xcc0033));
 		}
 		add(this.form_layeredPane1, "cell 1 1 2 2,grow");
-
-		//---- form_nameLabel ----
-		this.form_nameLabel.setText("NAME");
-		this.form_nameLabel.setFont(this.form_nameLabel.getFont().deriveFont(this.form_nameLabel.getFont().getStyle() | Font.BOLD, this.form_nameLabel.getFont().getSize() + 1f));
-		this.form_nameLabel.setEnabled(false);
-		add(this.form_nameLabel, "pad 0,cell 4 0 2 1,growx");
 
 		//======== form_panel1 ========
 		{
@@ -211,41 +209,63 @@ public abstract class PanelRight extends JPanel {
 		this.form_hSpacer1.setMinimumSize(new Dimension(10, 10));
 		add(this.form_hSpacer1, "cell 3 1");
 
-		//---- form_timeLabel ----
-		this.form_timeLabel.setText("TIME");
-		this.form_timeLabel.setEnabled(false);
-		add(this.form_timeLabel, "pad 0,cell 4 1,growx");
+		//======== form_panel2 ========
+		{
+			this.form_panel2.setLayout(new MigLayout(
+				"insets 0,gap 0 0",
+				// columns
+				"[grow,fill]" +
+				"[fill]",
+				// rows
+				"[fill]" +
+				"[grow,fill]"));
 
-		//---- form_button1 ----
-		this.form_button1.setText("...");
-		this.form_button1.setMaximumSize(null);
-		this.form_button1.setMinimumSize(null);
-		this.form_button1.setPreferredSize(null);
-		this.form_button1.setBorder(null);
-		this.form_button1.setBorderPainted(false);
-		this.form_button1.setRequestFocusEnabled(false);
-		this.form_button1.setOpaque(false);
-		this.form_button1.setForeground(null);
-		this.form_button1.setBackground(null);
-		this.form_button1.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				replyButtonClicked(e);
-			}
-		});
-		add(this.form_button1, "pad 0,cell 5 1");
+			//---- form_timeLabel ----
+			this.form_timeLabel.setText("TIME");
+			this.form_timeLabel.setEnabled(false);
+			this.form_timeLabel.setHorizontalAlignment(SwingConstants.TRAILING);
+			this.form_panel2.add(this.form_timeLabel, "cell 0 1");
+
+			//---- form_button1 ----
+			this.form_button1.setText("...");
+			this.form_button1.setMaximumSize(null);
+			this.form_button1.setMinimumSize(null);
+			this.form_button1.setPreferredSize(null);
+			this.form_button1.setBorder(null);
+			this.form_button1.setBorderPainted(false);
+			this.form_button1.setRequestFocusEnabled(false);
+			this.form_button1.setOpaque(false);
+			this.form_button1.setForeground(null);
+			this.form_button1.setBackground(null);
+			this.form_button1.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					replyButtonClicked(e);
+				}
+			});
+			this.form_panel2.add(this.form_button1, "cell 1 1");
+
+			//---- form_nameLabel ----
+			this.form_nameLabel.setText("NAME");
+			this.form_nameLabel.setFont(this.form_nameLabel.getFont().deriveFont(this.form_nameLabel.getFont().getStyle() | Font.BOLD, this.form_nameLabel.getFont().getSize() + 1f));
+			this.form_nameLabel.setEnabled(false);
+			this.form_nameLabel.setHorizontalAlignment(SwingConstants.TRAILING);
+			this.form_panel2.add(this.form_nameLabel, "cell 0 0 2 1");
+		}
+		add(this.form_panel2, "cell 4 1,aligny bottom,growy 0");
 		// JFormDesigner - End of component initialization  //GEN-END:initComponents  @formatter:on
 	}
 
 	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
 	// Generated using JFormDesigner non-commercial license
 	protected JLayeredPane form_layeredPane1;
-	protected JLabel form_nameLabel;
 	protected JPanel form_panel1;
 	protected JLayeredPane form_layeredPane2;
 	protected JLabel form_actionLabel;
 	protected JPanel form_hSpacer1;
+	protected JPanel form_panel2;
 	protected JLabel form_timeLabel;
 	protected JButton form_button1;
+	protected JLabel form_nameLabel;
 	// JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }

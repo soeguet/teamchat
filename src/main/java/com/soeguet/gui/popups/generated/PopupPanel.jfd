@@ -25,7 +25,7 @@ new FormModel {
 					"horizontalAlignment": 0
 					"enabled": false
 					"editable": false
-					"disabledTextColor": new java.awt.Color( 255, 153, 0, 255 )
+					"disabledTextColor": new java.awt.Color( 0, 0, 0, 255 )
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "Center"
 				} )

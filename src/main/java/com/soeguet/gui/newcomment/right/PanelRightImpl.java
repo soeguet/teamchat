@@ -139,13 +139,11 @@ public class PanelRightImpl extends PanelRight {
 
         String sender = messageModel.getSender();
 
+        this.getNameLabel().setText(sender);
+
         if (panelTyp == PanelTypes.NORMAL && sender.equals(mainFrame.getLastMessageSenderName())) {
 
-            this.getNameLabel().setText("");
-
-        } else {
-
-            this.getNameLabel().setText(sender);
+            this.getNameLabel().setVisible(false);
         }
 
         if (panelTyp == PanelTypes.NORMAL) {
@@ -163,13 +161,11 @@ public class PanelRightImpl extends PanelRight {
 
         String timeStamp = messageModel.getTime();
 
+        this.getTimeLabel().setText(timeStamp);
+
         if (panelTyp == PanelTypes.NORMAL && timeStamp.equals(mainFrame.getLastMessageTimeStamp())) {
 
-            this.getTimeLabel().setText("");
-
-        } else {
-
-            this.getTimeLabel().setText(timeStamp);
+            this.getTimeLabel().setVisible(false);
         }
 
         if (panelTyp == PanelTypes.NORMAL) {

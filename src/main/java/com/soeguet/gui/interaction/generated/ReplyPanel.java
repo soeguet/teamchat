@@ -77,6 +77,18 @@ public abstract class ReplyPanel extends JPanel {
 
 	protected abstract void replyTextPaneFocusLost(FocusEvent e);
 
+	public JScrollPane getPanel1() {
+		return form_panel1;
+	}
+
+	public JPanel getHSpacer1() {
+		return form_hSpacer1;
+	}
+
+	public JPanel getHSpacer2() {
+		return form_hSpacer2;
+	}
+
 	protected abstract void replySendButtonMouseReleased(MouseEvent e);
 
 	private void initComponents() {
@@ -85,7 +97,10 @@ public abstract class ReplyPanel extends JPanel {
 		form_panel4 = new JPanel();
 		form_label1 = new JLabel();
 		form_closeReplyPanelButton = new JButton();
+		form_panel1 = new JScrollPane();
 		form_formerMessagePanel = new JPanel();
+		form_hSpacer1 = new JPanel(null);
+		form_hSpacer2 = new JPanel(null);
 		form_panel2 = new JPanel();
 		form_scrollPane1 = new JScrollPane();
 		form_replyTextPane = new JTextPane();
@@ -156,11 +171,18 @@ public abstract class ReplyPanel extends JPanel {
 		}
 		add(form_panel4, "cell 0 0");
 
-		//======== form_formerMessagePanel ========
+		//======== form_panel1 ========
 		{
-			form_formerMessagePanel.setLayout(new BorderLayout());
+
+			//======== form_formerMessagePanel ========
+			{
+				form_formerMessagePanel.setLayout(new BorderLayout());
+				form_formerMessagePanel.add(form_hSpacer1, BorderLayout.WEST);
+				form_formerMessagePanel.add(form_hSpacer2, BorderLayout.EAST);
+			}
+			form_panel1.setViewportView(form_formerMessagePanel);
 		}
-		add(form_formerMessagePanel, "cell 0 1");
+		add(form_panel1, "cell 0 1");
 
 		//======== form_panel2 ========
 		{
@@ -214,7 +236,10 @@ public abstract class ReplyPanel extends JPanel {
 	protected JPanel form_panel4;
 	protected JLabel form_label1;
 	protected JButton form_closeReplyPanelButton;
+	protected JScrollPane form_panel1;
 	protected JPanel form_formerMessagePanel;
+	protected JPanel form_hSpacer1;
+	protected JPanel form_hSpacer2;
 	protected JPanel form_panel2;
 	protected JScrollPane form_scrollPane1;
 	protected JTextPane form_replyTextPane;

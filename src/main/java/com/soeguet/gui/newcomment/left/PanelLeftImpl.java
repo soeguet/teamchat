@@ -15,10 +15,9 @@ import java.awt.event.MouseEvent;
 public class PanelLeftImpl extends PanelLeft {
 
     private final MessageModel messageModel;
-
-    private JPopupMenu jPopupMenu;
     private final JFrame mainFrame;
     private final PanelTypes panelTyp;
+    private JPopupMenu jPopupMenu;
 
     public PanelLeftImpl(JFrame mainFrame, MessageModel messageModel, PanelTypes panelTyp) {
 
@@ -33,17 +32,13 @@ public class PanelLeftImpl extends PanelLeft {
     }
 
     /**
-     * This method is used to set up the reply panels based on the panel type.
-     * If the panel type is normal, the method will return without performing any action.
-     * Otherwise, it will set the visibility of button1 to false.
+     * Populates the chat bubble by executing the steps of checking for quotes and adding the actual message.
+     * This method does not return any value.
      */
-    private void setupReplyPanels() {
+    private void populateChatBubble() {
 
-        if (panelTyp == PanelTypes.NORMAL) {
-            return;
-        }
-
-        this.getButton1().setVisible(false);
+        checkForQuotes();
+        addActualMessage();
     }
 
     /**
@@ -80,13 +75,34 @@ public class PanelLeftImpl extends PanelLeft {
     }
 
     /**
-     * Populates the chat bubble by executing the steps of checking for quotes and adding the actual message.
-     * This method does not return any value.
+     * This method is used to set up the reply panels based on the panel type.
+     * If the panel type is normal, the method will return without performing any action.
+     * Otherwise, it will set the visibility of button1 to false.
      */
-    private void populateChatBubble() {
+    private void setupReplyPanels() {
 
-        checkForQuotes();
-        addActualMessage();
+        if (panelTyp == PanelTypes.NORMAL) {
+            return;
+        }
+
+        this.getButton1().setVisible(false);
+    }
+
+    /**
+     * Checks if a message has a quoted text and creates a quoted section in the chat bubble.
+     */
+    private void checkForQuotes() {
+
+        String quotedText = messageModel.getQuotedMessageText();
+
+        if (quotedText == null) {
+            return;
+        }
+
+        String quotedChatParticipant = messageModel.getQuotedMessageSender();
+        String quotedTime = messageModel.getQuotedMessageTime();
+
+        createQuotedSectionInChatBubble(quotedText, quotedChatParticipant, quotedTime);
     }
 
     /**
@@ -99,9 +115,25 @@ public class PanelLeftImpl extends PanelLeft {
 
             MainGuiElementsInterface mainGui = (MainGuiElementsInterface) mainFrame;
             setUserMessage();
-            setNameField(mainGui);
+
+            //time before name, since name is also checked in time -> else time will not be displayed in certain cases
             setTimestampField(mainGui);
+            setNameField(mainGui);
         }
+    }
+
+    /**
+     * Creates a quoted section in a chat bubble.
+     *
+     * @param quotedText            the text to be quoted
+     * @param quotedChatParticipant the participant whose text is being quoted
+     * @param quotedTime            the time when the text was quoted
+     */
+    private void createQuotedSectionInChatBubble(String quotedText, String quotedChatParticipant, String quotedTime) {
+
+        QuotePanelImpl quotedTextPane = new QuotePanelImpl(quotedText, quotedChatParticipant, quotedTime);
+
+        this.getPanel1().add(quotedTextPane, "cell 1 0, wrap");
     }
 
     /**
@@ -131,14 +163,11 @@ public class PanelLeftImpl extends PanelLeft {
     private void setNameField(MainGuiElementsInterface mainFrame) {
 
         String sender = messageModel.getSender();
+        this.getNameLabel().setText(sender);
 
         if (panelTyp == PanelTypes.NORMAL && sender.equals(mainFrame.getLastMessageSenderName())) {
 
-            this.getNameLabel().setText("");
-
-        } else {
-
-            this.getNameLabel().setText(sender);
+            this.getNameLabel().setVisible(false);
         }
 
         if (panelTyp == PanelTypes.NORMAL) {
@@ -147,7 +176,6 @@ public class PanelLeftImpl extends PanelLeft {
         }
     }
 
-
     /**
      * Sets timestamp field with the value from the message model.
      * The timestamp value is set as the text of the time label.
@@ -155,51 +183,23 @@ public class PanelLeftImpl extends PanelLeft {
     private void setTimestampField(MainGuiElementsInterface mainFrame) {
 
         String timeStamp = messageModel.getTime();
+        String sender = messageModel.getSender();
 
+        this.getTimeLabel().setText(timeStamp);
+
+        //also check for sender; if new sender, the time should always be visible
         if (panelTyp == PanelTypes.NORMAL && timeStamp.equals(mainFrame.getLastMessageTimeStamp())) {
 
-            this.getTimeLabel().setText("");
+            if (sender.equals(mainFrame.getLastMessageSenderName())) {
 
-        } else {
-
-            this.getTimeLabel().setText(timeStamp);
+                this.getTimeLabel().setVisible(false);
+            }
         }
 
         if (panelTyp == PanelTypes.NORMAL) {
 
             mainFrame.setLastMessageTimeStamp(timeStamp);
         }
-    }
-
-    /**
-     * Checks if a message has a quoted text and creates a quoted section in the chat bubble.
-     */
-    private void checkForQuotes() {
-
-        String quotedText = messageModel.getQuotedMessageText();
-
-        if (quotedText == null) {
-            return;
-        }
-
-        String quotedChatParticipant = messageModel.getQuotedMessageSender();
-        String quotedTime = messageModel.getQuotedMessageTime();
-
-        createQuotedSectionInChatBubble(quotedText, quotedChatParticipant, quotedTime);
-    }
-
-    /**
-     * Creates a quoted section in a chat bubble.
-     *
-     * @param quotedText            the text to be quoted
-     * @param quotedChatParticipant the participant whose text is being quoted
-     * @param quotedTime            the time when the text was quoted
-     */
-    private void createQuotedSectionInChatBubble(String quotedText, String quotedChatParticipant, String quotedTime) {
-
-        QuotePanelImpl quotedTextPane = new QuotePanelImpl(quotedText, quotedChatParticipant, quotedTime);
-
-        this.getPanel1().add(quotedTextPane, "cell 1 0, wrap");
     }
 
     /**

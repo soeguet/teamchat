@@ -56,12 +56,12 @@ public class ReplyPanelImpl extends ReplyPanel {
         if (gui.getUsername().equals(messageModel.getSender())) {
 
             PanelRightImpl panelRight = new PanelRightImpl(mainFrame, messageModel, PanelTypes.REPLY);
-            this.getFormerMessagePanel().add(panelRight);
+            this.getFormerMessagePanel().add(panelRight, BorderLayout.CENTER    );
 
         } else {
 
             PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, messageModel, PanelTypes.REPLY);
-            this.getFormerMessagePanel().add(panelLeft);
+            this.getFormerMessagePanel().add(panelLeft, BorderLayout.CENTER);
         }
     }
 
@@ -116,7 +116,7 @@ public class ReplyPanelImpl extends ReplyPanel {
 
         MainGuiElementsInterface gui = (MainGuiElementsInterface) mainFrame;
 
-        MessageModel sendModel = new MessageModel((byte) MessageTypes.NORMAL, "osman", this.getReplyTextPane().getText(), messageModel.getSender(), messageModel.getTime(), messageModel.getMessage());
+        MessageModel sendModel = new MessageModel((byte) MessageTypes.NORMAL, gui.getUsername(), this.getReplyTextPane().getText(), messageModel.getSender(), messageModel.getTime(), messageModel.getMessage());
 
 
         try {

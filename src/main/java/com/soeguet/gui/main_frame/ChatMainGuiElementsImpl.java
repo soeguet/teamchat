@@ -30,9 +30,10 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     private final GuiFunctionality guiFunctionality;
     private final URI serverUri;
     private final ArrayDeque<String> messageQueue = new ArrayDeque<>();
+    private final int JSCROLLPANE_MARGIN_RIGHT_BORDER = 3;
     ObjectMapper objectMapper = new ObjectMapper();
     private CustomWebsocketClient websocketClient;
-    private String username = "osman";
+    private String username = "osman - backoffice";
     private JPanel messagePanel;
 
     /**
@@ -106,7 +107,7 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
         SwingUtilities.invokeLater(() -> {
             //-56 -> trial and error
-            this.getMainTextBackgroundScrollPane().setBounds(1, 1, e.getComponent().getWidth() - 1, e.getComponent().getHeight() - this.getInteractionAreaPanel().getHeight() - 56);
+            this.getMainTextBackgroundScrollPane().setBounds(1, 1, e.getComponent().getWidth() - JSCROLLPANE_MARGIN_RIGHT_BORDER, e.getComponent().getHeight() - this.getInteractionAreaPanel().getHeight() - 56);
             this.revalidate();
             this.repaint();
         });

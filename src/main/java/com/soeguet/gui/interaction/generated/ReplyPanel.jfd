@@ -44,8 +44,21 @@ new FormModel {
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 0 0"
 			} )
-			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
-				name: "formerMessagePanel"
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "panel1"
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+					name: "formerMessagePanel"
+					add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
+						name: "hSpacer1"
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "West"
+					} )
+					add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
+						name: "hSpacer2"
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "East"
+					} )
+				} )
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 0 1"
 			} )

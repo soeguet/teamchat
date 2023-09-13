@@ -158,15 +158,22 @@ public class GuiFunctionality implements SocketToGuiInterface {
      */
     private void writeGuiMessageToChatPanel(String message) {
 
+        if (!(mainFrame instanceof MainGuiElementsInterface)) {
+            return;
+        }
+
+        MainGuiElementsInterface gui = (MainGuiElementsInterface) mainFrame;
+
+
         MessageModel messageModel = getMessageModel(message);
 
-        if (messageModel.getSender().equals("osman")) {
+        if (messageModel.getSender().equals(gui.getUsername())) {
 
             PanelRightImpl panelRight = new PanelRightImpl(mainFrame, messageModel, PanelTypes.NORMAL);
             ((MainGuiElementsInterface) mainFrame).getMainTextPanel().add(panelRight, "w 80%, trailing, wrap");
         } else {
             PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, messageModel, PanelTypes.NORMAL);
-             ((MainGuiElementsInterface) mainFrame).getMainTextPanel().add(panelLeft, "w 80%, leading, wrap");
+            ((MainGuiElementsInterface) mainFrame).getMainTextPanel().add(panelLeft, "w 80%, leading, wrap");
         }
 
         mainFrame.revalidate();

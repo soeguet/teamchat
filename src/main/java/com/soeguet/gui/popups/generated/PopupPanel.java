@@ -45,7 +45,7 @@ public class PopupPanel extends JPanel {
 			this.form_messageTextField.setHorizontalAlignment(SwingConstants.CENTER);
 			this.form_messageTextField.setEnabled(false);
 			this.form_messageTextField.setEditable(false);
-			this.form_messageTextField.setDisabledTextColor(new Color(0xff9900));
+			this.form_messageTextField.setDisabledTextColor(Color.black);
 			this.form_messagePanel.add(this.form_messageTextField, BorderLayout.CENTER);
 		}
 		add(this.form_messagePanel, BorderLayout.CENTER);
