@@ -7,17 +7,17 @@ import com.soeguet.gui.main_frame.generated.ChatPanel;
 import com.soeguet.socket_client.CustomWebsocketClient;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayDeque;
 import java.util.EventObject;
 import java.util.Queue;
 import java.util.logging.Logger;
+import java.net.URL;
 
 /**
  * This class represents a GUI implementation for a chat application.
@@ -361,7 +361,31 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     @Override
     protected void emojiButton(ActionEvent e) {
 
+        emojiMenu();
+
         logMethod(e, "ChatGuiImpl.emojiButton");
+    }
+
+    private void emojiMenu() {
+
+        JPopupMenu popupMenu = new JPopupMenu();
+        popupMenu.setLayout(new GridLayout(10,10));
+
+        for (int i = 0; i < 100; i++) {
+
+            JMenuItem label = new JMenuItem();
+            URL emojiUrl = getClass().getResource("/emojis/$+1f440$+.png");
+            assert emojiUrl != null;
+            ImageIcon emojiIcon = new ImageIcon(emojiUrl);
+
+            label.add(new JLabel(emojiIcon));
+            label.setHorizontalAlignment(JLabel.CENTER);
+            label.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+
+            popupMenu.add(label);
+        }
+
+        popupMenu.show(form_emojiButton, form_emojiButton.getMousePosition().x, form_emojiButton.getMousePosition().y);
     }
 
     /**

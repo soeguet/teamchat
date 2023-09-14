@@ -12,6 +12,7 @@ public class Main {
 
     public static void main(String[] args) {
 
+        System. out. println("Your OS name -> " + System. getProperty("os.name"));
 //        setTheme('');
         FlatIntelliJLaf.setup();
         SwingUtilities.invokeLater(ChatMainGuiElementsImpl::new);
