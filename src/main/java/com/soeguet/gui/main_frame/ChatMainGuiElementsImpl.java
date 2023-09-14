@@ -5,19 +5,27 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.behaviour.GuiFunctionality;
 import com.soeguet.gui.main_frame.generated.ChatPanel;
 import com.soeguet.socket_client.CustomWebsocketClient;
+import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
-import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayDeque;
-import java.util.EventObject;
-import java.util.Queue;
-import java.util.logging.Logger;
 import java.net.URL;
+import java.security.CodeSource;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.EventObject;
+import java.util.List;
+import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * This class represents a GUI implementation for a chat application.
@@ -35,6 +43,7 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     private CustomWebsocketClient websocketClient;
     private String username = "osman - backoffice";
     private JPanel messagePanel;
+    private List<ImageIcon> emojiList = createEmojiList();
 
     /**
      * Initializes the ChatMainGuiElementsImpl object.
@@ -55,17 +64,6 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * Returns the message queue.
-     * <p>
-     * This method retrieves the current message queue of the ChatMainGuiElementsImpl object.
-     *
-     * @return The message queue.
-     */
-    public ArrayDeque<String> getMessageQueue() {
-        return messageQueue;
     }
 
     /**
@@ -217,6 +215,17 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
         this.messagePanel = messagePanel;
     }
 
+    /**
+     * Returns the message queue.
+     * <p>
+     * This method retrieves the current message queue of the ChatMainGuiElementsImpl object.
+     *
+     * @return The message queue.
+     */
+    public ArrayDeque<String> getMessageQueue() {
+        return messageQueue;
+    }
+
     public void setWebsocketClient(CustomWebsocketClient websocketClient) {
         this.websocketClient = websocketClient;
     }
@@ -361,31 +370,46 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     @Override
     protected void emojiButton(ActionEvent e) {
 
-        emojiMenu();
+        createEmojiPopupMenu();
 
         logMethod(e, "ChatGuiImpl.emojiButton");
     }
 
-    private void emojiMenu() {
+    /**
+     * Creates a pop-up menu with emojis.
+     * <p>
+     * This method is responsible for creating a pop-up menu and adding emojis to it.
+     * The pop-up menu is then displayed at the position of the emoji button.
+     */
+    private void createEmojiPopupMenu() {
 
         JPopupMenu popupMenu = new JPopupMenu();
-        popupMenu.setLayout(new GridLayout(10,10));
 
-        for (int i = 0; i < 100; i++) {
+        popupMenu.setLayout(new MigLayout("wrap 10"));
 
-            JMenuItem label = new JMenuItem();
-            URL emojiUrl = getClass().getResource("/emojis/$+1f440$+.png");
-            assert emojiUrl != null;
-            ImageIcon emojiIcon = new ImageIcon(emojiUrl);
+        getEmojiList().forEach(emoji -> {
+            JMenuItem menuItem = new JMenuItem();
 
-            label.add(new JLabel(emojiIcon));
-            label.setHorizontalAlignment(JLabel.CENTER);
-            label.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+            menuItem.add(new JLabel(emoji));
+            menuItem.setHorizontalAlignment(JLabel.CENTER);
+            menuItem.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 
-            popupMenu.add(label);
-        }
+            popupMenu.add(menuItem);
+        });
 
         popupMenu.show(form_emojiButton, form_emojiButton.getMousePosition().x, form_emojiButton.getMousePosition().y);
+    }
+
+    /**
+     * Returns the list of emoji icons.
+     * <p>
+     * This method retrieves the list of emoji icons that are available for use in the chat GUI.
+     *
+     * @return the list of emoji icons
+     */
+    public List<ImageIcon> getEmojiList() {
+
+        return emojiList;
     }
 
     /**
@@ -398,5 +422,77 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     protected void sendButton(ActionEvent e) {
 
         guiFunctionality.clearTextPaneAndSendMessageToSocket();
+    }
+
+    /**
+     * Creates a list of ImageIcons for emojis.
+     *
+     * @return an ArrayList of ImageIcons representing emojis
+     */
+    private ArrayList<ImageIcon> createEmojiList() {
+
+        ArrayList<ImageIcon> imageIcons = new ArrayList<>();
+        CodeSource src = ChatMainGuiElementsImpl.class.getProtectionDomain().getCodeSource();
+
+        if (src != null) {
+
+            try (ZipInputStream zip = new ZipInputStream(src.getLocation().openStream())) {
+
+                processZipEntries(imageIcons, zip);
+
+            } catch (IOException e) {
+
+                logger.info(e.getMessage());
+            }
+
+        }
+
+        return imageIcons;
+    }
+
+    /**
+     * Processes the entries in a zip file and adds the emoji images to the provided ArrayList.
+     *
+     * @param imageIcons the ArrayList to store the emoji images
+     * @param zip the ZipInputStream representing the zip file to process
+     * @throws IOException if an I/O error occurs while reading the zip file
+     */
+    private void processZipEntries(ArrayList<ImageIcon> imageIcons, ZipInputStream zip) throws IOException {
+
+        ZipEntry ze;
+
+        while ((ze = zip.getNextEntry()) != null) {
+
+            String entryName = ze.getName();
+
+            if (isEmojiEntry(entryName)) {
+
+                createAndAddImageIcon(imageIcons, entryName);
+            }
+        }
+    }
+
+    /**
+     * Checks if the given entry name is an emoji entry.
+     *
+     * @param entryName the name of the entry to check
+     * @return true if the entry name starts with "emojis/" and is not equal to "emojis/", false otherwise
+     */
+    private boolean isEmojiEntry(String entryName) {
+
+        return entryName.startsWith("emojis/") && !entryName.equals("emojis/");
+    }
+
+    /**
+     * Creates an ImageIcon from a given entry name and adds it to the given list of ImageIcons.
+     *
+     * @param imageIcons the list of ImageIcons to add the created ImageIcon to
+     * @param entryName  the name of the entry to create the ImageIcon from
+     */
+    private void createAndAddImageIcon(ArrayList<ImageIcon> imageIcons, String entryName) {
+
+        URL emojiUrl = getClass().getResource("/" + entryName);
+        assert emojiUrl != null;
+        imageIcons.add(new ImageIcon(emojiUrl));
     }
 }
