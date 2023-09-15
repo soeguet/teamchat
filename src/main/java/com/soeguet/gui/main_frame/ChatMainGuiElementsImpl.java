@@ -1,6 +1,5 @@
 package com.soeguet.gui.main_frame;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.behaviour.GuiFunctionality;
 import com.soeguet.gui.main_frame.generated.ChatPanel;
@@ -28,8 +27,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * This class represents a GUI implementation for a chat application.
- * It extends the ChatPanel class and implements the MainGuiInterface.
+ * This class represents a GUI implementation for a chat application. It extends the ChatPanel class
+ * and implements the MainGuiInterface.
  */
 public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElementsInterface {
 
@@ -38,7 +37,8 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     private final GuiFunctionality guiFunctionality;
     private final URI serverUri;
     private final ArrayDeque<String> messageQueue = new ArrayDeque<>();
-    private final int JSCROLLPANE_MARGIN_RIGHT_BORDER = 3;
+    private final int JSCROLLPANE_MARGIN_RIGHT_BORDER;
+    private final int JSCROLLPANE_MARGIN_BOTTOM_BORDER;
     ObjectMapper objectMapper = new ObjectMapper();
     private CustomWebsocketClient websocketClient;
     private String username = "osman - backoffice";
@@ -47,15 +47,27 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
     /**
      * Initializes the ChatMainGuiElementsImpl object.
-     * <p>
-     * It sets up the GUI functionality required for the chat application and
-     * establishes a connection to the WebSocket server.
+     *
+     * <p>It sets up the GUI functionality required for the chat application and establishes a
+     * connection to the WebSocket server.
      *
      * @throws RuntimeException if there is an error in the WebSocket URI syntax
      */
     public ChatMainGuiElementsImpl() {
 
         guiFunctionality = new GuiFunctionality(this);
+
+        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+
+            JSCROLLPANE_MARGIN_BOTTOM_BORDER = 63;
+            JSCROLLPANE_MARGIN_RIGHT_BORDER = 20;
+
+        } else {
+
+            JSCROLLPANE_MARGIN_BOTTOM_BORDER = 56;
+            JSCROLLPANE_MARGIN_RIGHT_BORDER = 3;
+
+        }
 
         try {
             serverUri = new URI("ws://127.0.0.1:8100");
@@ -68,12 +80,11 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
     /**
      * {@inheritDoc}
-     * <p>
-     * This method is called when a property change event occurs.
-     * It logs the provided event and method name.
      *
-     * @param e The property change event to be handled.
-     *          Must not be null.
+     * <p>This method is called when a property change event occurs. It logs the provided event and
+     * method name.
+     *
+     * @param e The property change event to be handled. Must not be null.
      */
     @Override
     protected void thisPropertyChange(PropertyChangeEvent e) {
@@ -104,13 +115,11 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     protected void thisComponentResized(ComponentEvent e) {
 
         SwingUtilities.invokeLater(() -> {
-            //-56 -> trial and error
-            this.getMainTextBackgroundScrollPane().setBounds(1, 1, e.getComponent().getWidth() - JSCROLLPANE_MARGIN_RIGHT_BORDER, e.getComponent().getHeight() - this.getInteractionAreaPanel().getHeight() - 56);
+
+            this.getMainTextBackgroundScrollPane().setBounds(1, 1, e.getComponent().getWidth() - JSCROLLPANE_MARGIN_RIGHT_BORDER, e.getComponent().getHeight() - this.getInteractionAreaPanel().getHeight() - 63);
             this.revalidate();
             this.repaint();
         });
-
-//        logMethod(e, "ChatGuiImpl.thisComponentResized");
     }
 
     /**
@@ -152,11 +161,9 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
         }
 
         new Timer(1000, event -> {
-
             if (getWebsocketClient().isClosed()) {
 
                 logger.info("Reconnecting websocket client");
-
 
                 setWebsocketClient(new CustomWebsocketClient(serverUri, this));
                 getWebsocketClient().connect();
@@ -217,8 +224,8 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
     /**
      * Returns the message queue.
-     * <p>
-     * This method retrieves the current message queue of the ChatMainGuiElementsImpl object.
+     *
+     * <p>This method retrieves the current message queue of the ChatMainGuiElementsImpl object.
      *
      * @return The message queue.
      */
@@ -231,9 +238,8 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Handles the event when the mouse presses the exit menu item.
-     * Sets the default close operation for the current JFrame to EXIT_ON_CLOSE
-     * and disposes the current JFrame.
+     * Handles the event when the mouse presses the exit menu item. Sets the default close operation
+     * for the current JFrame to EXIT_ON_CLOSE and disposes the current JFrame.
      *
      * @param e the MouseEvent object that triggered this event
      */
@@ -246,8 +252,7 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Called when the participant menu item is pressed.
-     * Logs the provided event and method name.
+     * Called when the participant menu item is pressed. Logs the provided event and method name.
      *
      * @param e The MouseEvent associated with the button press.
      */
@@ -258,8 +263,7 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Called when the main text panel is clicked.
-     * Logs the provided event and method name.
+     * Called when the main text panel is clicked. Logs the provided event and method name.
      *
      * @param e The MouseEvent associated with the click event.
      */
@@ -271,9 +275,9 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
     /**
      * {@inheritDoc}
-     * <p>
-     * This method is called when the mouse is clicked on the text editor pane in the ChatGuiImpl class.
-     * It logs the method call with the provided MouseEvent object and the method name.
+     *
+     * <p>This method is called when the mouse is clicked on the text editor pane in the ChatGuiImpl
+     * class. It logs the method call with the provided MouseEvent object and the method name.
      *
      * @param e the MouseEvent object representing the mouse click event on the text editor pane
      */
@@ -284,9 +288,9 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Called when a key is pressed in the text editor pane.
-     * If the pressed key is not the Enter key, the method simply returns.
-     * If the pressed key is the Enter key, it consumes the event and performs the appropriate action based on whether the Shift key is pressed or not.
+     * Called when a key is pressed in the text editor pane. If the pressed key is not the Enter key,
+     * the method simply returns. If the pressed key is the Enter key, it consumes the event and
+     * performs the appropriate action based on whether the Shift key is pressed or not.
      *
      * @param e The KeyEvent object representing the key press event.
      */
@@ -309,8 +313,9 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
     /**
      * Appends a new line to the text editor pane.
-     * <p>
-     * Retrieves the current text in the text editor pane and appends a new line character at the end of it.
+     *
+     * <p>Retrieves the current text in the text editor pane and appends a new line character at the
+     * end of it.
      */
     private void appendNewLineToTextEditorPane() {
 
@@ -320,10 +325,11 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
     /**
      * Handles a key press event when the enter key is pressed without pressing the shift key.
-     * <p>
-     * Retrieves the content of the text editor pane, trims any leading or trailing space, and checks if it is empty.
-     * If the content is empty, it clears the text editor pane. Otherwise, it calls the `clearTextPaneAndSendMessageToSocket`
-     * method to clear the text pane and send the current content to a socket.
+     *
+     * <p>Retrieves the content of the text editor pane, trims any leading or trailing space, and
+     * checks if it is empty. If the content is empty, it clears the text editor pane. Otherwise, it
+     * calls the `clearTextPaneAndSendMessageToSocket` method to clear the text pane and send the
+     * current content to a socket.
      */
     private void handleNonShiftEnterKeyPress() {
 
@@ -337,15 +343,14 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
     /**
      * Invoked when a key is released in the text editor pane.
-     * <p>
-     * This method is an override of the textEditorPaneKeyReleased method from the superclass.
-     * It is called when a key is released in the text editor pane.
+     *
+     * <p>This method is an override of the textEditorPaneKeyReleased method from the superclass. It
+     * is called when a key is released in the text editor pane.
      *
      * @param e the KeyEvent object generated when a key is released
      */
     @Override
     protected void textEditorPaneKeyReleased(KeyEvent e) {
-
     }
 
     /**
@@ -361,9 +366,9 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
     /**
      * Invoked when the emoji button is clicked in the chat GUI.
-     * <p>
-     * This method is an override of the emojiButton method from the superclass.
-     * It is called when the emoji button is clicked.
+     *
+     * <p>This method is an override of the emojiButton method from the superclass. It is called when
+     * the emoji button is clicked.
      *
      * @param e the ActionEvent object generated when the emoji button is clicked
      */
@@ -377,9 +382,9 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
     /**
      * Creates a pop-up menu with emojis.
-     * <p>
-     * This method is responsible for creating a pop-up menu and adding emojis to it.
-     * The pop-up menu is then displayed at the position of the emoji button.
+     *
+     * <p>This method is responsible for creating a pop-up menu and adding emojis to it. The pop-up
+     * menu is then displayed at the position of the emoji button.
      */
     private void createEmojiPopupMenu() {
 
@@ -389,7 +394,6 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
         emojiPanelWrapper.setLayout(new MigLayout("wrap 10", "[center]", "[center]"));
 
         getEmojiList().forEach(emoji -> {
-
             JPanel emojiPanelForOneEmoji = new JPanel();
             JLabel emojiLabel = new JLabel(emoji);
             emojiPanelForOneEmoji.add(emojiLabel);
@@ -422,8 +426,8 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
     /**
      * Returns the list of emoji icons.
-     * <p>
-     * This method retrieves the list of emoji icons that are available for use in the chat GUI.
+     *
+     * <p>This method retrieves the list of emoji icons that are available for use in the chat GUI.
      *
      * @return the list of emoji icons
      */
@@ -433,8 +437,8 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Handles the event when the send button is clicked.
-     * Clears the text pane in the GUI and sends the message to the socket.
+     * Handles the event when the send button is clicked. Clears the text pane in the GUI and sends
+     * the message to the socket.
      *
      * @param e the ActionEvent object that triggered this event
      */
@@ -464,7 +468,6 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
                 logger.info(e.getMessage());
             }
-
         }
 
         return imageIcons;
@@ -496,7 +499,8 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
      * Checks if the given entry name is an emoji entry.
      *
      * @param entryName the name of the entry to check
-     * @return true if the entry name starts with "emojis/" and is not equal to "emojis/", false otherwise
+     * @return true if the entry name starts with "emojis/" and is not equal to "emojis/", false
+     * otherwise
      */
     private boolean isEmojiEntry(String entryName) {
 

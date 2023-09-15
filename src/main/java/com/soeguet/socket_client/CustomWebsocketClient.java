@@ -100,7 +100,7 @@ public class CustomWebsocketClient extends WebSocketClient {
         logger.info(reason);
         logger.info(String.valueOf(remote));
 
-        createPopup(reason + " " + code);
+        createPopup("close: " + reason + " " + code);
     }
 
     @Override
