@@ -164,7 +164,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         MainGuiElementsInterface gui = (MainGuiElementsInterface) mainFrame;
 
-
         MessageModel messageModel = getMessageModel(message);
 
         if (messageModel.getSender().equals(gui.getUsername())) {

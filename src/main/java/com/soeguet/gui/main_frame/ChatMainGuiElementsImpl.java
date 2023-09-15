@@ -7,6 +7,7 @@ import com.soeguet.socket_client.CustomWebsocketClient;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
@@ -27,8 +28,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * This class represents a GUI implementation for a chat application. It extends the ChatPanel class
- * and implements the MainGuiInterface.
+ This class represents a GUI implementation for a chat application. It extends the ChatPanel class
+ and implements the MainGuiInterface.
  */
 public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElementsInterface {
 
@@ -43,15 +44,15 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     private CustomWebsocketClient websocketClient;
     private String username = "osman - backoffice";
     private JPanel messagePanel;
-    private List<ImageIcon> emojiList = createEmojiList();
+    private final List<ImageIcon> emojiList = createEmojiList();
 
     /**
-     * Initializes the ChatMainGuiElementsImpl object.
-     *
-     * <p>It sets up the GUI functionality required for the chat application and establishes a
-     * connection to the WebSocket server.
-     *
-     * @throws RuntimeException if there is an error in the WebSocket URI syntax
+     Initializes the ChatMainGuiElementsImpl object.
+
+     <p>It sets up the GUI functionality required for the chat application and establishes a
+     connection to the WebSocket server.
+
+     @throws RuntimeException if there is an error in the WebSocket URI syntax
      */
     public ChatMainGuiElementsImpl() {
 
@@ -79,12 +80,12 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * <p>This method is called when a property change event occurs. It logs the provided event and
-     * method name.
-     *
-     * @param e The property change event to be handled. Must not be null.
+     {@inheritDoc}
+
+     <p>This method is called when a property change event occurs. It logs the provided event and
+     method name.
+
+     @param e The property change event to be handled. Must not be null.
      */
     @Override
     protected void thisPropertyChange(PropertyChangeEvent e) {
@@ -93,10 +94,10 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Logs the provided event and method name.
-     *
-     * @param event      The event to be logged.
-     * @param methodName The name of the method to be logged.
+     Logs the provided event and method name.
+
+     @param event      The event to be logged.
+     @param methodName The name of the method to be logged.
      */
     private void logMethod(EventObject event, String methodName) {
 
@@ -107,25 +108,25 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Method called when the component is resized.
-     *
-     * @param e The ComponentEvent object representing the resize event.
+     Method called when the component is resized.
+
+     @param e The ComponentEvent object representing the resize event.
      */
     @Override
     protected void thisComponentResized(ComponentEvent e) {
 
         SwingUtilities.invokeLater(() -> {
 
-            this.getMainTextBackgroundScrollPane().setBounds(1, 1, e.getComponent().getWidth() - JSCROLLPANE_MARGIN_RIGHT_BORDER, e.getComponent().getHeight() - this.getInteractionAreaPanel().getHeight() - 63);
+            this.getMainTextBackgroundScrollPane().setBounds(1, 1, e.getComponent().getWidth() - JSCROLLPANE_MARGIN_RIGHT_BORDER, e.getComponent().getHeight() - this.getInteractionAreaPanel().getHeight() - JSCROLLPANE_MARGIN_BOTTOM_BORDER);
             this.revalidate();
             this.repaint();
         });
     }
 
     /**
-     * Handles the event when the mouse clicks the current JFrame.
-     *
-     * @param e the MouseEvent object that triggered this event
+     Handles the event when the mouse clicks the current JFrame.
+
+     @param e the MouseEvent object that triggered this event
      */
     @Override
     protected void thisMouseClicked(MouseEvent e) {
@@ -134,9 +135,9 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Called when the mouse is pressed on the property menu item.
-     *
-     * @param e The MouseEvent object representing the event.
+     Called when the mouse is pressed on the property menu item.
+
+     @param e The MouseEvent object representing the event.
      */
     @Override
     protected void propertiesMenuItemMousePressed(MouseEvent e) {
@@ -145,9 +146,9 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Resets the connection when the reset connection menu item is pressed.
-     *
-     * @param e The mouse event that triggered the method.
+     Resets the connection when the reset connection menu item is pressed.
+
+     @param e The mouse event that triggered the method.
      */
     @Override
     protected void resetConnectionMenuItemMousePressed(MouseEvent e) {
@@ -172,9 +173,9 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Retrieves the WebSocket client.
-     *
-     * @return The WebSocket client.
+     Retrieves the WebSocket client.
+
+     @return The WebSocket client.
      */
     public CustomWebsocketClient getWebsocketClient() {
 
@@ -182,9 +183,9 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Gets the ObjectMapper instance used for converting JSON to Java objects and vice versa.
-     *
-     * @return the ObjectMapper instance
+     Gets the ObjectMapper instance used for converting JSON to Java objects and vice versa.
+
+     @return the ObjectMapper instance
      */
     public ObjectMapper getObjectMapper() {
 
@@ -192,9 +193,9 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Retrieves the GuiFunctionality.
-     *
-     * @return the GuiFunctionality object.
+     Retrieves the GuiFunctionality.
+
+     @return the GuiFunctionality object.
      */
     public GuiFunctionality getGuiFunctionality() {
 
@@ -202,46 +203,53 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     public String getUsername() {
+
         return username;
     }
 
     public void setUsername(String username) {
+
         this.username = username;
     }
 
     @Override
     public JFrame getMainFrame() {
+
         return this;
     }
 
     public JPanel getMessagePanel() {
+
         return messagePanel;
     }
 
     public void setMessagePanel(JPanel messagePanel) {
+
         this.messagePanel = messagePanel;
     }
 
     /**
-     * Returns the message queue.
-     *
-     * <p>This method retrieves the current message queue of the ChatMainGuiElementsImpl object.
-     *
-     * @return The message queue.
+     Returns the message queue.
+
+     <p>This method retrieves the current message queue of the ChatMainGuiElementsImpl object.
+
+     @return The message queue.
      */
     public ArrayDeque<String> getMessageQueue() {
+
         return messageQueue;
     }
 
     public void setWebsocketClient(CustomWebsocketClient websocketClient) {
+
         this.websocketClient = websocketClient;
     }
 
     /**
-     * Handles the event when the mouse presses the exit menu item. Sets the default close operation
-     * for the current JFrame to EXIT_ON_CLOSE and disposes the current JFrame.
-     *
-     * @param e the MouseEvent object that triggered this event
+     Handles the event when the mouse presses the exit menu item. Sets the default close operation
+     for the current JFrame to EXIT_ON_CLOSE and disposes the current JFrame.
+
+     @param e the MouseEvent object that triggered this event
      */
     @Override
     protected void exitMenuItemMousePressed(MouseEvent e) {
@@ -252,9 +260,9 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Called when the participant menu item is pressed. Logs the provided event and method name.
-     *
-     * @param e The MouseEvent associated with the button press.
+     Called when the participant menu item is pressed. Logs the provided event and method name.
+
+     @param e The MouseEvent associated with the button press.
      */
     @Override
     protected void participantsMenuItemMousePressed(MouseEvent e) {
@@ -263,9 +271,9 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Called when the main text panel is clicked. Logs the provided event and method name.
-     *
-     * @param e The MouseEvent associated with the click event.
+     Called when the main text panel is clicked. Logs the provided event and method name.
+
+     @param e The MouseEvent associated with the click event.
      */
     @Override
     protected void mainTextPanelMouseClicked(MouseEvent e) {
@@ -274,12 +282,12 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * <p>This method is called when the mouse is clicked on the text editor pane in the ChatGuiImpl
-     * class. It logs the method call with the provided MouseEvent object and the method name.
-     *
-     * @param e the MouseEvent object representing the mouse click event on the text editor pane
+     {@inheritDoc}
+
+     <p>This method is called when the mouse is clicked on the text editor pane in the ChatGuiImpl
+     class. It logs the method call with the provided MouseEvent object and the method name.
+
+     @param e the MouseEvent object representing the mouse click event on the text editor pane
      */
     @Override
     protected void textEditorPaneMouseClicked(MouseEvent e) {
@@ -288,11 +296,11 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Called when a key is pressed in the text editor pane. If the pressed key is not the Enter key,
-     * the method simply returns. If the pressed key is the Enter key, it consumes the event and
-     * performs the appropriate action based on whether the Shift key is pressed or not.
-     *
-     * @param e The KeyEvent object representing the key press event.
+     Called when a key is pressed in the text editor pane. If the pressed key is not the Enter key,
+     the method simply returns. If the pressed key is the Enter key, it consumes the event and
+     performs the appropriate action based on whether the Shift key is pressed or not.
+
+     @param e The KeyEvent object representing the key press event.
      */
     @Override
     protected void textEditorPaneKeyPressed(KeyEvent e) {
@@ -312,10 +320,10 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Appends a new line to the text editor pane.
-     *
-     * <p>Retrieves the current text in the text editor pane and appends a new line character at the
-     * end of it.
+     Appends a new line to the text editor pane.
+
+     <p>Retrieves the current text in the text editor pane and appends a new line character at the
+     end of it.
      */
     private void appendNewLineToTextEditorPane() {
 
@@ -324,39 +332,46 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Handles a key press event when the enter key is pressed without pressing the shift key.
-     *
-     * <p>Retrieves the content of the text editor pane, trims any leading or trailing space, and
-     * checks if it is empty. If the content is empty, it clears the text editor pane. Otherwise, it
-     * calls the `clearTextPaneAndSendMessageToSocket` method to clear the text pane and send the
-     * current content to a socket.
+     Handles a key press event when the enter key is pressed without pressing the shift key.
+
+     <p>Retrieves the content of the text editor pane, trims any leading or trailing space, and
+     checks if it is empty. If the content is empty, it clears the text editor pane. Otherwise, it
+     calls the `clearTextPaneAndSendMessageToSocket` method to clear the text pane and send the
+     current content to a socket.
      */
     private void handleNonShiftEnterKeyPress() {
 
         String textPaneContent = getTextEditorPane().getText().trim();
+
         if (textPaneContent.isEmpty()) {
+
             getTextEditorPane().setText("");
+
         } else {
+
             guiFunctionality.clearTextPaneAndSendMessageToSocket();
+
         }
+
     }
 
     /**
-     * Invoked when a key is released in the text editor pane.
-     *
-     * <p>This method is an override of the textEditorPaneKeyReleased method from the superclass. It
-     * is called when a key is released in the text editor pane.
-     *
-     * @param e the KeyEvent object generated when a key is released
+     Invoked when a key is released in the text editor pane.
+
+     <p>This method is an override of the textEditorPaneKeyReleased method from the superclass. It
+     is called when a key is released in the text editor pane.
+
+     @param e the KeyEvent object generated when a key is released
      */
     @Override
     protected void textEditorPaneKeyReleased(KeyEvent e) {
+
     }
 
     /**
-     * Handles the event when the mouse clicks the picture button in the current JFrame.
-     *
-     * @param e the MouseEvent object that triggered this event
+     Handles the event when the mouse clicks the picture button in the current JFrame.
+
+     @param e the MouseEvent object that triggered this event
      */
     @Override
     protected void pictureButtonMouseClicked(MouseEvent e) {
@@ -365,12 +380,12 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Invoked when the emoji button is clicked in the chat GUI.
-     *
-     * <p>This method is an override of the emojiButton method from the superclass. It is called when
-     * the emoji button is clicked.
-     *
-     * @param e the ActionEvent object generated when the emoji button is clicked
+     Invoked when the emoji button is clicked in the chat GUI.
+
+     <p>This method is an override of the emojiButton method from the superclass. It is called when
+     the emoji button is clicked.
+
+     @param e the ActionEvent object generated when the emoji button is clicked
      */
     @Override
     protected void emojiButton(ActionEvent e) {
@@ -381,10 +396,10 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Creates a pop-up menu with emojis.
-     *
-     * <p>This method is responsible for creating a pop-up menu and adding emojis to it. The pop-up
-     * menu is then displayed at the position of the emoji button.
+     Creates a pop-up menu with emojis.
+
+     <p>This method is responsible for creating a pop-up menu and adding emojis to it. The pop-up
+     menu is then displayed at the position of the emoji button.
      */
     private void createEmojiPopupMenu() {
 
@@ -400,10 +415,26 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
             emojiPanelForOneEmoji.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 
             emojiPanelForOneEmoji.addMouseListener(new java.awt.event.MouseAdapter() {
+
                 @Override
                 public void mousePressed(MouseEvent e) {
 
-                    getTextEditorPane().insertIcon(new ImageIcon(emoji.getImage()));
+                    StyledDocument doc = getTextEditorPane().getStyledDocument();
+
+                    Style style = getTextEditorPane().addStyle("Image", null);
+
+                    ImageIcon imageIcon = new ImageIcon(emoji.getImage());
+                    imageIcon.setDescription(emoji.getDescription());
+                    StyleConstants.setIcon(style, imageIcon);
+
+                    try {
+
+                        doc.insertString(doc.getLength(), " ", style);
+
+                    } catch (BadLocationException ex) {
+
+                        logger.info(ex.getMessage());
+                    }
                 }
 
                 public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -425,11 +456,11 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Returns the list of emoji icons.
-     *
-     * <p>This method retrieves the list of emoji icons that are available for use in the chat GUI.
-     *
-     * @return the list of emoji icons
+     Returns the list of emoji icons.
+
+     <p>This method retrieves the list of emoji icons that are available for use in the chat GUI.
+
+     @return the list of emoji icons
      */
     public List<ImageIcon> getEmojiList() {
 
@@ -437,21 +468,48 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Handles the event when the send button is clicked. Clears the text pane in the GUI and sends
-     * the message to the socket.
-     *
-     * @param e the ActionEvent object that triggered this event
+     Handles the event when the send button is clicked. Clears the text pane in the GUI and sends
+     the message to the socket.
+
+     @param e the ActionEvent object that triggered this event
      */
     @Override
     protected void sendButton(ActionEvent e) {
 
+        testEmojiFunction();
+
         guiFunctionality.clearTextPaneAndSendMessageToSocket();
     }
 
+    private void testEmojiFunction() {
+        Element root = getTextEditorPane().getStyledDocument().getDefaultRootElement();
+        findImagesInElement(root);
+    }
+    private static void findImagesInElement(Element element) {
+        for (int i = 0; i < element.getElementCount(); i++) {
+            Element childElement = element.getElement(i);
+            AttributeSet attributes = childElement.getAttributes();
+
+            // Überprüfen, ob das Element ein ImageIcon enthält
+            if (StyleConstants.getIcon(attributes) != null) {
+                System.out.println("Found an ImageIcon!");
+
+                ImageIcon foundIcon = (ImageIcon) StyleConstants.getIcon(attributes);
+                String description = foundIcon.getDescription();
+                System.out.println("Description: " + description);
+
+
+                // Weitere Aktionen...
+            }
+
+            // Rekursiv in Unter-Elementen suchen
+            findImagesInElement(childElement);
+        }
+    }
     /**
-     * Creates a list of ImageIcons for emojis.
-     *
-     * @return an ArrayList of ImageIcons representing emojis
+     Creates a list of ImageIcons for emojis.
+
+     @return an ArrayList of ImageIcons representing emojis
      */
     private ArrayList<ImageIcon> createEmojiList() {
 
@@ -474,11 +532,12 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Processes the entries in a zip file and adds the emoji images to the provided ArrayList.
-     *
-     * @param imageIcons the ArrayList to store the emoji images
-     * @param zip        the ZipInputStream representing the zip file to process
-     * @throws IOException if an I/O error occurs while reading the zip file
+     Processes the entries in a zip file and adds the emoji images to the provided ArrayList.
+
+     @param imageIcons the ArrayList to store the emoji images
+     @param zip        the ZipInputStream representing the zip file to process
+
+     @throws IOException if an I/O error occurs while reading the zip file
      */
     private void processZipEntries(ArrayList<ImageIcon> imageIcons, ZipInputStream zip) throws IOException {
 
@@ -496,11 +555,12 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Checks if the given entry name is an emoji entry.
-     *
-     * @param entryName the name of the entry to check
-     * @return true if the entry name starts with "emojis/" and is not equal to "emojis/", false
-     * otherwise
+     Checks if the given entry name is an emoji entry.
+
+     @param entryName the name of the entry to check
+
+     @return true if the entry name starts with "emojis/" and is not equal to "emojis/", false
+     otherwise
      */
     private boolean isEmojiEntry(String entryName) {
 
@@ -508,15 +568,17 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     * Creates an ImageIcon from a given entry name and adds it to the given list of ImageIcons.
-     *
-     * @param imageIcons the list of ImageIcons to add the created ImageIcon to
-     * @param entryName  the name of the entry to create the ImageIcon from
+     Creates an ImageIcon from a given entry name and adds it to the given list of ImageIcons.
+
+     @param imageIcons the list of ImageIcons to add the created ImageIcon to
+     @param entryName  the name of the entry to create the ImageIcon from
      */
     private void createAndAddImageIcon(ArrayList<ImageIcon> imageIcons, String entryName) {
 
         URL emojiUrl = getClass().getResource("/" + entryName);
         assert emojiUrl != null;
-        imageIcons.add(new ImageIcon(emojiUrl));
+        ImageIcon imageIcon = new ImageIcon(emojiUrl);
+        imageIcon.setDescription(entryName.replace("emojis/", "").replace(".png", ""));
+        imageIcons.add(imageIcon);
     }
 }
