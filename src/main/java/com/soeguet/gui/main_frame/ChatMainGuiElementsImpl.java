@@ -78,6 +78,7 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
         }
     }
 
+
     /**
      {@inheritDoc}
 
@@ -129,6 +130,7 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
      */
     @Override
     protected void thisMouseClicked(MouseEvent e) {
+
 
         logMethod(e, "ChatGuiImpl.thisMouseClicked");
     }
@@ -276,6 +278,7 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
      */
     @Override
     protected void mainTextPanelMouseClicked(MouseEvent e) {
+
 
         logMethod(e, "ChatGuiImpl.mainTextPanelMouseClicked");
     }
@@ -428,7 +431,7 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
                     try {
 
-                        doc.insertString(doc.getLength(), " ", style);
+                        doc.insertString(getTextEditorPane().getCaretPosition(), " ", style);
 
                     } catch (BadLocationException ex) {
 
