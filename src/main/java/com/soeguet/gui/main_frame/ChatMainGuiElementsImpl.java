@@ -383,21 +383,41 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
      */
     private void createEmojiPopupMenu() {
 
-        JPopupMenu popupMenu = new JPopupMenu();
+        JPopupMenu emojiPopupMenu = new JPopupMenu();
+        JPanel emojiPanelWrapper = new JPanel();
 
-        popupMenu.setLayout(new MigLayout("wrap 10"));
+        emojiPanelWrapper.setLayout(new MigLayout("wrap 10", "[center]", "[center]"));
 
         getEmojiList().forEach(emoji -> {
-            JMenuItem menuItem = new JMenuItem();
 
-            menuItem.add(new JLabel(emoji));
-            menuItem.setHorizontalAlignment(JLabel.CENTER);
-            menuItem.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+            JPanel emojiPanelForOneEmoji = new JPanel();
+            JLabel emojiLabel = new JLabel(emoji);
+            emojiPanelForOneEmoji.add(emojiLabel);
+            emojiPanelForOneEmoji.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 
-            popupMenu.add(menuItem);
+            emojiPanelForOneEmoji.addMouseListener(new java.awt.event.MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+
+                    getTextEditorPane().insertIcon(new ImageIcon(emoji.getImage()));
+                }
+
+                public void mouseEntered(java.awt.event.MouseEvent evt) {
+
+                    emojiPanelForOneEmoji.setBackground(new Color(0, 136, 191));
+                }
+
+                public void mouseExited(java.awt.event.MouseEvent evt) {
+
+                    emojiPanelForOneEmoji.setBackground(null);
+                }
+            });
+
+            emojiPanelWrapper.add(emojiPanelForOneEmoji);
         });
 
-        popupMenu.show(form_emojiButton, form_emojiButton.getMousePosition().x, form_emojiButton.getMousePosition().y);
+        emojiPopupMenu.add(emojiPanelWrapper);
+        emojiPopupMenu.show(form_emojiButton, form_emojiButton.getMousePosition().x, form_emojiButton.getMousePosition().y);
     }
 
     /**
@@ -454,7 +474,7 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
      * Processes the entries in a zip file and adds the emoji images to the provided ArrayList.
      *
      * @param imageIcons the ArrayList to store the emoji images
-     * @param zip the ZipInputStream representing the zip file to process
+     * @param zip        the ZipInputStream representing the zip file to process
      * @throws IOException if an I/O error occurs while reading the zip file
      */
     private void processZipEntries(ArrayList<ImageIcon> imageIcons, ZipInputStream zip) throws IOException {
