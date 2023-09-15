@@ -169,10 +169,10 @@ public class GuiFunctionality implements SocketToGuiInterface {
         if (messageModel.getSender().equals(gui.getUsername())) {
 
             PanelRightImpl panelRight = new PanelRightImpl(mainFrame, messageModel, PanelTypes.NORMAL);
-            ((MainGuiElementsInterface) mainFrame).getMainTextPanel().add(panelRight, "w 80%, trailing, wrap");
+            ((MainGuiElementsInterface) mainFrame).getMainTextPanel().add(panelRight, "w 70%, trailing, wrap");
         } else {
             PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, messageModel, PanelTypes.NORMAL);
-            ((MainGuiElementsInterface) mainFrame).getMainTextPanel().add(panelLeft, "w 80%, leading, wrap");
+            ((MainGuiElementsInterface) mainFrame).getMainTextPanel().add(panelLeft, "w 70%, leading, wrap");
         }
 
         mainFrame.revalidate();

@@ -20,9 +20,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.CodeSource;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.EventObject;
-import java.util.List;
+import java.util.HashMap;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -40,11 +39,11 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     private final ArrayDeque<String> messageQueue = new ArrayDeque<>();
     private final int JSCROLLPANE_MARGIN_RIGHT_BORDER;
     private final int JSCROLLPANE_MARGIN_BOTTOM_BORDER;
+    private final HashMap<String, ImageIcon> emojiList = createEmojiList();
     ObjectMapper objectMapper = new ObjectMapper();
     private CustomWebsocketClient websocketClient;
     private String username = "osman - backoffice";
     private JPanel messagePanel;
-    private final List<ImageIcon> emojiList = createEmojiList();
 
     /**
      Initializes the ChatMainGuiElementsImpl object.
@@ -408,7 +407,7 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
         emojiPanelWrapper.setLayout(new MigLayout("wrap 10", "[center]", "[center]"));
 
-        getEmojiList().forEach(emoji -> {
+        getEmojiList().forEach((key, emoji) -> {
             JPanel emojiPanelForOneEmoji = new JPanel();
             JLabel emojiLabel = new JLabel(emoji);
             emojiPanelForOneEmoji.add(emojiLabel);
@@ -424,7 +423,7 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
                     Style style = getTextEditorPane().addStyle("Image", null);
 
                     ImageIcon imageIcon = new ImageIcon(emoji.getImage());
-                    imageIcon.setDescription(emoji.getDescription());
+                    imageIcon.setDescription(key);
                     StyleConstants.setIcon(style, imageIcon);
 
                     try {
@@ -462,7 +461,7 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
      @return the list of emoji icons
      */
-    public List<ImageIcon> getEmojiList() {
+    public HashMap<String, ImageIcon> getEmojiList() {
 
         return emojiList;
     }
@@ -482,15 +481,22 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     private void testEmojiFunction() {
+
         Element root = getTextEditorPane().getStyledDocument().getDefaultRootElement();
-        findImagesInElement(root);
+
+        try {
+            findImagesInElement(root);
+        } catch (BadLocationException e) {
+            throw new RuntimeException(e);
+        }
     }
-    private static void findImagesInElement(Element element) {
+
+    private void findImagesInElement(Element element) throws BadLocationException {
+
         for (int i = 0; i < element.getElementCount(); i++) {
             Element childElement = element.getElement(i);
             AttributeSet attributes = childElement.getAttributes();
 
-            // Überprüfen, ob das Element ein ImageIcon enthält
             if (StyleConstants.getIcon(attributes) != null) {
                 System.out.println("Found an ImageIcon!");
 
@@ -498,22 +504,21 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
                 String description = foundIcon.getDescription();
                 System.out.println("Description: " + description);
 
-
-                // Weitere Aktionen...
+                childElement.getDocument().insertString(childElement.getEndOffset(), description + " ", null);
             }
 
-            // Rekursiv in Unter-Elementen suchen
             findImagesInElement(childElement);
         }
     }
+
     /**
      Creates a list of ImageIcons for emojis.
 
      @return an ArrayList of ImageIcons representing emojis
      */
-    private ArrayList<ImageIcon> createEmojiList() {
+    private HashMap<String, ImageIcon> createEmojiList() {
 
-        ArrayList<ImageIcon> imageIcons = new ArrayList<>();
+        HashMap<String, ImageIcon> imageIcons = new HashMap<>();
         CodeSource src = ChatMainGuiElementsImpl.class.getProtectionDomain().getCodeSource();
 
         if (src != null) {
@@ -539,7 +544,7 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
      @throws IOException if an I/O error occurs while reading the zip file
      */
-    private void processZipEntries(ArrayList<ImageIcon> imageIcons, ZipInputStream zip) throws IOException {
+    private void processZipEntries(HashMap<String, ImageIcon> imageIcons, ZipInputStream zip) throws IOException {
 
         ZipEntry ze;
 
@@ -573,12 +578,12 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
      @param imageIcons the list of ImageIcons to add the created ImageIcon to
      @param entryName  the name of the entry to create the ImageIcon from
      */
-    private void createAndAddImageIcon(ArrayList<ImageIcon> imageIcons, String entryName) {
+    private void createAndAddImageIcon(HashMap<String, ImageIcon> imageIcons, String entryName) {
 
         URL emojiUrl = getClass().getResource("/" + entryName);
         assert emojiUrl != null;
         ImageIcon imageIcon = new ImageIcon(emojiUrl);
         imageIcon.setDescription(entryName.replace("emojis/", "").replace(".png", ""));
-        imageIcons.add(imageIcon);
+        imageIcons.put(imageIcon.getDescription(), imageIcon);
     }
 }

@@ -7,6 +7,7 @@ import com.soeguet.socket_client.CustomWebsocketClient;
 import javax.swing.*;
 import java.lang.reflect.Array;
 import java.util.ArrayDeque;
+import java.util.HashMap;
 import java.util.Queue;
 
 public interface MainGuiElementsInterface {
@@ -132,4 +133,11 @@ public interface MainGuiElementsInterface {
      * @return the message queue containing Strings
      */
     ArrayDeque<String> getMessageQueue();
+
+    /**
+     * Returns the HashMap containing the emoji image icons.
+     *
+     * @return the HashMap containing the emoji image icons
+     */
+    HashMap<String, ImageIcon> getEmojiList();
 }

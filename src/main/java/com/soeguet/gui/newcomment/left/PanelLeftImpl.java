@@ -9,11 +9,18 @@ import com.soeguet.model.MessageModel;
 import com.soeguet.model.PanelTypes;
 
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PanelLeftImpl extends PanelLeft {
 
+    private final Logger logger = Logger.getLogger(PanelLeftImpl.class.getName());
     private final MessageModel messageModel;
     private final JFrame mainFrame;
     private final PanelTypes panelTyp;
@@ -32,8 +39,8 @@ public class PanelLeftImpl extends PanelLeft {
     }
 
     /**
-     * Populates the chat bubble by executing the steps of checking for quotes and adding the actual message.
-     * This method does not return any value.
+     Populates the chat bubble by executing the steps of checking for quotes and adding the actual message.
+     This method does not return any value.
      */
     private void populateChatBubble() {
 
@@ -42,10 +49,10 @@ public class PanelLeftImpl extends PanelLeft {
     }
 
     /**
-     * Sets up the popup menu.
-     * The popup menu is a JPopupMenu that contains options for replying, editing, and deleting a message.
-     * When the "reply" option is selected, a ReplyPanelImpl is added to the main text panel's layered pane.
-     * This method does not return any value.
+     Sets up the popup menu.
+     The popup menu is a JPopupMenu that contains options for replying, editing, and deleting a message.
+     When the "reply" option is selected, a ReplyPanelImpl is added to the main text panel's layered pane.
+     This method does not return any value.
      */
     private void setPopupMenu() {
 
@@ -53,8 +60,10 @@ public class PanelLeftImpl extends PanelLeft {
         JMenuItem reply = new JMenuItem("reply");
 
         reply.addMouseListener(new MouseAdapter() {
+
             @Override
             public void mouseReleased(MouseEvent e) {
+
                 super.mouseReleased(e);
 
                 if (!(mainFrame instanceof MainGuiElementsInterface)) {
@@ -75,9 +84,9 @@ public class PanelLeftImpl extends PanelLeft {
     }
 
     /**
-     * This method is used to set up the reply panels based on the panel type.
-     * If the panel type is normal, the method will return without performing any action.
-     * Otherwise, it will set the visibility of button1 to false.
+     This method is used to set up the reply panels based on the panel type.
+     If the panel type is normal, the method will return without performing any action.
+     Otherwise, it will set the visibility of button1 to false.
      */
     private void setupReplyPanels() {
 
@@ -89,7 +98,7 @@ public class PanelLeftImpl extends PanelLeft {
     }
 
     /**
-     * Checks if a message has a quoted text and creates a quoted section in the chat bubble.
+     Checks if a message has a quoted text and creates a quoted section in the chat bubble.
      */
     private void checkForQuotes() {
 
@@ -106,8 +115,8 @@ public class PanelLeftImpl extends PanelLeft {
     }
 
     /**
-     * This method adds the actual message by setting the user message,
-     * name field, and timestamp field.
+     This method adds the actual message by setting the user message,
+     name field, and timestamp field.
      */
     private void addActualMessage() {
 
@@ -123,24 +132,24 @@ public class PanelLeftImpl extends PanelLeft {
     }
 
     /**
-     * Creates a quoted section in a chat bubble.
-     *
-     * @param quotedText            the text to be quoted
-     * @param quotedChatParticipant the participant whose text is being quoted
-     * @param quotedTime            the time when the text was quoted
+     Creates a quoted section in a chat bubble.
+
+     @param quotedText            the text to be quoted
+     @param quotedChatParticipant the participant whose text is being quoted
+     @param quotedTime            the time when the text was quoted
      */
     private void createQuotedSectionInChatBubble(String quotedText, String quotedChatParticipant, String quotedTime) {
 
-        QuotePanelImpl quotedTextPane = new QuotePanelImpl(quotedText, quotedChatParticipant, quotedTime);
+        QuotePanelImpl quotedTextPane = new QuotePanelImpl(mainFrame, quotedText, quotedChatParticipant, quotedTime);
 
         this.getPanel1().add(quotedTextPane, "cell 1 0, wrap");
     }
 
     /**
-     * Sets the user message in the GUI.
-     * <p>
-     * This method creates a JTextPane and sets its text to the user message retrieved from the message model.
-     * It then adds the JTextPane to the panel at the specified position.
+     Sets the user message in the GUI.
+     <p>
+     This method creates a JTextPane and sets its text to the user message retrieved from the message model.
+     It then adds the JTextPane to the panel at the specified position.
      */
     private void setUserMessage() {
 
@@ -151,34 +160,13 @@ public class PanelLeftImpl extends PanelLeft {
         JScrollPane jsp = new JScrollPane(actualTextPane);
         jsp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
-        actualTextPane.setText(messageModel.getMessage());
+        createTextOnPane(actualTextPane);
         this.getPanel1().add(actualTextPane, "cell 1 1, wrap");
     }
 
     /**
-     * Sets the name field of the message label.
-     * This method retrieves the sender's name from the message model
-     * and displays it in the name label of the message.
-     */
-    private void setNameField(MainGuiElementsInterface mainFrame) {
-
-        String sender = messageModel.getSender();
-        this.getNameLabel().setText(sender);
-
-        if (panelTyp == PanelTypes.NORMAL && sender.equals(mainFrame.getLastMessageSenderName())) {
-
-            this.getNameLabel().setVisible(false);
-        }
-
-        if (panelTyp == PanelTypes.NORMAL) {
-
-            mainFrame.setLastMessageSenderName(sender);
-        }
-    }
-
-    /**
-     * Sets timestamp field with the value from the message model.
-     * The timestamp value is set as the text of the time label.
+     Sets timestamp field with the value from the message model.
+     The timestamp value is set as the text of the time label.
      */
     private void setTimestampField(MainGuiElementsInterface mainFrame) {
 
@@ -203,9 +191,30 @@ public class PanelLeftImpl extends PanelLeft {
     }
 
     /**
-     * Creates a JTextPane instance.
-     *
-     * @return a JTextPane instance with set properties.
+     Sets the name field of the message label.
+     This method retrieves the sender's name from the message model
+     and displays it in the name label of the message.
+     */
+    private void setNameField(MainGuiElementsInterface mainFrame) {
+
+        String sender = messageModel.getSender();
+        this.getNameLabel().setText(sender);
+
+        if (panelTyp == PanelTypes.NORMAL && sender.equals(mainFrame.getLastMessageSenderName())) {
+
+            this.getNameLabel().setVisible(false);
+        }
+
+        if (panelTyp == PanelTypes.NORMAL) {
+
+            mainFrame.setLastMessageSenderName(sender);
+        }
+    }
+
+    /**
+     Creates a JTextPane instance.
+
+     @return a JTextPane instance with set properties.
      */
     private JTextPane createTextPane() {
 
@@ -219,6 +228,94 @@ public class PanelLeftImpl extends PanelLeft {
         jsp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         return jTextPane;
+    }
+
+    /**
+     Creates text on a JTextPane instance.
+
+     @param actualTextPane the JTextPane instance where the text should be created.
+     */
+    private void createTextOnPane(JTextPane actualTextPane) {
+
+        if (!(mainFrame instanceof MainGuiElementsInterface)) {
+            return;
+        }
+
+        MainGuiElementsInterface gui = (MainGuiElementsInterface) mainFrame;
+        StyledDocument doc = actualTextPane.getStyledDocument();
+
+        processText(actualTextPane, gui, doc);
+    }
+
+    /**
+     Processes text in a given JTextPane by splitting the message into words and handling each word accordingly.
+
+     @param actualTextPane The JTextPane instance to process the text.
+     @param gui            The main GUI interface that provides access to necessary resources.
+     @param doc            The StyledDocument associated with the JTextPane.
+     */
+    private void processText(JTextPane actualTextPane, MainGuiElementsInterface gui, StyledDocument doc) {
+
+        try {
+            for (String word : messageModel.getMessage().split(" ")) {
+
+                if (gui.getEmojiList().containsKey(word)) {
+                    processEmoji(actualTextPane, gui, doc, word);
+
+                } else {
+
+                    doc.insertString(doc.getLength(), word + " ", null);
+                }
+
+            }
+
+        } catch (Exception e) {
+
+            logger.log(Level.WARNING, e.getMessage(), e);
+        }
+    }
+
+    /**
+     Processes the insertion of an emoji in the given JTextPane.
+
+     @param actualTextPane the JTextPane in which the emoji should be inserted
+     @param gui            the MainGuiElementsInterface implementation providing GUI elements
+     @param doc            the StyledDocument to insert the emoji into
+     @param word           the emoji word to insert
+     */
+    private void processEmoji(JTextPane actualTextPane, MainGuiElementsInterface gui, StyledDocument doc, String word) {
+
+        Style style = createImageStyle(actualTextPane, gui, word);
+
+        try {
+
+            doc.insertString(doc.getLength(), " ", style);
+
+        } catch (BadLocationException ex) {
+
+            logger.log(Level.WARNING, ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     Creates a Style instance for displaying an image in a JTextPane.
+
+     @param actualTextPane the JTextPane instance where the image style will be applied
+     @param gui            the MainGuiElementsInterface instance that provides access to emoji images
+     @param word           the word associated with the desired image
+
+     @return a Style instance with the image set as an icon
+     */
+    private static Style createImageStyle(JTextPane actualTextPane, MainGuiElementsInterface gui, String word) {
+
+        Style style = actualTextPane.addStyle("Image", null);
+
+        ImageIcon emojiImage = gui.getEmojiList().get(word);
+        ImageIcon imageIcon = new ImageIcon(emojiImage.getImage());
+        imageIcon.setDescription(emojiImage.getDescription());
+        StyleConstants.setIcon(style, imageIcon);
+
+        return style;
     }
 
     @Override
