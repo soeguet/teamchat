@@ -28,24 +28,18 @@ import java.util.logging.Logger;
 public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElementsInterface {
 
     private final Logger logger = Logger.getLogger(ChatMainGuiElementsImpl.class.getName());
-
+    private final ArrayDeque<String> messageQueue = new ArrayDeque<>();
+    private final HashMap<String, CustomUserProperties> chatClientPropertiesHashMap = new HashMap<>();
+    ObjectMapper objectMapper = new ObjectMapper();
     private GuiFunctionality guiFunctionality;
     private URI serverUri;
-    private final ArrayDeque<String> messageQueue = new ArrayDeque<>();
     private int JSCROLLPANE_MARGIN_RIGHT_BORDER;
     private int JSCROLLPANE_MARGIN_BOTTOM_BORDER;
     private HashMap<String, ImageIcon> emojiList;
     private EmojiHandler emojiHandler;
-    ObjectMapper objectMapper = new ObjectMapper();
     private CustomWebsocketClient websocketClient;
     private String username = "yasman";
     private JPanel messagePanel;
-    private final HashMap<String, CustomUserProperties> chatClientPropertiesHashMap = new HashMap<>();
-
-    public HashMap<String, CustomUserProperties> getChatClientPropertiesHashMap() {
-
-        return chatClientPropertiesHashMap;
-    }
 
     /**
      Initializes the main GUI elements for the chat application.
@@ -262,6 +256,24 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
         return messageQueue;
     }
 
+    /**
+     Returns a HashMap containing the list of emojis and their corresponding image icons.
+
+     <p>This method returns the emojiList HashMap, which contains the emojis and their corresponding image icons.
+     The key in the HashMap represents the emoji text, and the value represents the corresponding image icon.
+
+     @return the HashMap containing the list of emojis and their corresponding image icons
+     */
+    public HashMap<String, ImageIcon> getEmojiList() {
+
+        return emojiList;
+    }
+
+    public HashMap<String, CustomUserProperties> getChatClientPropertiesHashMap() {
+
+        return chatClientPropertiesHashMap;
+    }
+
     public void setWebsocketClient(CustomWebsocketClient websocketClient) {
 
         this.websocketClient = websocketClient;
@@ -413,19 +425,6 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     protected void emojiButton(ActionEvent e) {
 
         new EmojiPopUpMenuHandler(this, this.getTextEditorPane(), this.getEmojiButton());
-    }
-
-    /**
-     Returns a HashMap containing the list of emojis and their corresponding image icons.
-
-     <p>This method returns the emojiList HashMap, which contains the emojis and their corresponding image icons.
-     The key in the HashMap represents the emoji text, and the value represents the corresponding image icon.
-
-     @return the HashMap containing the list of emojis and their corresponding image icons
-     */
-    public HashMap<String, ImageIcon> getEmojiList() {
-
-        return emojiList;
     }
 
     /**

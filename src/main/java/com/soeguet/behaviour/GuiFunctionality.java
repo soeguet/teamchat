@@ -11,14 +11,26 @@ import com.soeguet.model.PanelTypes;
 import com.soeguet.properties.CustomUserProperties;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.HashMap;
 
+/**
+ This class provides additional functionality to the GUI.
+
+ Implements the SocketToGuiInterface for receiving messages from the socket.
+ */
 public class GuiFunctionality implements SocketToGuiInterface {
 
     private final JFrame mainFrame;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    /**
+     Constructs a new GuiFunctionality object with the given main frame.
+     This class is responsible for providing additional functionality to the GUI.
+
+     @param mainFrame the main frame of the GUI
+     */
     public GuiFunctionality(JFrame mainFrame) {
 
         this.mainFrame = mainFrame;
@@ -26,9 +38,9 @@ public class GuiFunctionality implements SocketToGuiInterface {
     }
 
     /**
-     * Fixes the scroll speed of the scroll pane associated with the main text background.
-     * If the main frame is an instance of {@link MainGuiElementsInterface}, then it retrieves the vertical scroll bar
-     * of the main text background scroll pane and sets its unit increment to 16.
+     Fixes the scroll speed of the scroll pane associated with the main text background.
+     If the main frame is an instance of {@link MainGuiElementsInterface}, then it retrieves the vertical scroll bar
+     of the main text background scroll pane and sets its unit increment to 16.
      */
     private void fixScrollPaneScrollSpeed() {
 
@@ -38,12 +50,12 @@ public class GuiFunctionality implements SocketToGuiInterface {
     }
 
     /**
-     * Clears the text pane and sends a message to the socket.
-     * If the main frame is an instance of {@link MainGuiElementsInterface}, it performs the following steps:
-     * 1. Retrieves the user's input from the GUI and stores it in a variable.
-     * 2. Clears the text pane in the GUI.
-     * 3. Converts the user's input to JSON format and stores it in a variable.
-     * 4. Sends the message to the socket using the JSON string and the GUI.
+     Clears the text pane and sends a message to the socket.
+     If the main frame is an instance of {@link MainGuiElementsInterface}, it performs the following steps:
+     1. Retrieves the user's input from the GUI and stores it in a variable.
+     2. Clears the text pane in the GUI.
+     3. Converts the user's input to JSON format and stores it in a variable.
+     4. Sends the message to the socket using the JSON string and the GUI.
      */
     public void clearTextPaneAndSendMessageToSocket() {
 
@@ -58,10 +70,11 @@ public class GuiFunctionality implements SocketToGuiInterface {
     }
 
     /**
-     * Checks if the given object is an instance of {@link MainGuiElementsInterface}.
-     *
-     * @param obj The object to check.
-     * @return <code>true</code> if the given object is an instance of {@link MainGuiElementsInterface}, <code>false</code> otherwise.
+     Checks if the given object is an instance of {@link MainGuiElementsInterface}.
+
+     @param obj The object to check.
+
+     @return <code>true</code> if the given object is an instance of {@link MainGuiElementsInterface}, <code>false</code> otherwise.
      */
     private boolean isInstanceOfMainGuiElementsInterface(Object obj) {
 
@@ -69,10 +82,11 @@ public class GuiFunctionality implements SocketToGuiInterface {
     }
 
     /**
-     * Retrieves the text from the input in the graphical user interface.
-     *
-     * @param gui The instance of {@link MainGuiElementsInterface} representing the graphical user interface.
-     * @return The text from the input in the graphical user interface.
+     Retrieves the text from the input in the graphical user interface.
+
+     @param gui The instance of {@link MainGuiElementsInterface} representing the graphical user interface.
+
+     @return The text from the input in the graphical user interface.
      */
     private String getTextFromInput(MainGuiElementsInterface gui) {
 
@@ -80,22 +94,9 @@ public class GuiFunctionality implements SocketToGuiInterface {
     }
 
     /**
-     * Converts user input text to JSON format.
-     *
-     * @param userTextInput the text input provided by the user
-     * @param gui           the MainGuiElementsInterface object used to convert the text to JSON
-     * @return the converted JSON string
-     */
-    private String convertUserTextToJSON(String userTextInput, MainGuiElementsInterface gui) {
+     Clears the text contents of a text pane.
 
-        return convertToJSON(textToMessageModel(userTextInput), gui);
-    }
-
-
-    /**
-     * Clears the text contents of a text pane.
-     *
-     * @param gui the MainGuiElementsInterface object representing the GUI elements
+     @param gui the MainGuiElementsInterface object representing the GUI elements
      */
     private void clearTextPane(MainGuiElementsInterface gui) {
 
@@ -103,12 +104,38 @@ public class GuiFunctionality implements SocketToGuiInterface {
     }
 
     /**
-     * Converts the given MessageModel object to a JSON string representation.
-     *
-     * @param messageModel The MessageModel object to be converted.
-     * @param gui          The MainGuiElementsInterface object used to access the ObjectMapper for JSON conversion.
-     * @return The JSON string representation of the MessageModel object.
-     * @throws RuntimeException if there is an error during the JSON conversion process.
+     Converts user input text to JSON format.
+
+     @param userTextInput the text input provided by the user
+     @param gui           the MainGuiElementsInterface object used to convert the text to JSON
+
+     @return the converted JSON string
+     */
+    private String convertUserTextToJSON(String userTextInput, MainGuiElementsInterface gui) {
+
+        return convertToJSON(textToMessageModel(userTextInput), gui);
+    }
+
+    /**
+     Sends a message to the socket.
+
+     @param messageString The message to be sent.
+     @param gui           The interface for accessing the main GUI elements.
+     */
+    private void sendMessageToSocket(String messageString, MainGuiElementsInterface gui) {
+
+        gui.getWebsocketClient().send(messageString);
+    }
+
+    /**
+     Converts the given MessageModel object to a JSON string representation.
+
+     @param messageModel The MessageModel object to be converted.
+     @param gui          The MainGuiElementsInterface object used to access the ObjectMapper for JSON conversion.
+
+     @return The JSON string representation of the MessageModel object.
+
+     @throws RuntimeException if there is an error during the JSON conversion process.
      */
     private String convertToJSON(MessageModel messageModel, MainGuiElementsInterface gui) {
 
@@ -120,22 +147,11 @@ public class GuiFunctionality implements SocketToGuiInterface {
     }
 
     /**
-     * Sends a message to the socket.
-     *
-     * @param messageString The message to be sent.
-     * @param gui           The interface for accessing the main GUI elements.
-     */
-    private void sendMessageToSocket(String messageString, MainGuiElementsInterface gui) {
+     Converts a user input text into a MessageModel object.
 
-        gui.getWebsocketClient().send(messageString);
-    }
+     @param userTextInput The text entered by the user.
 
-
-    /**
-     * Converts a user input text into a MessageModel object.
-     *
-     * @param userTextInput The text entered by the user.
-     * @return A MessageModel object representing the user input.
+     @return A MessageModel object representing the user input.
      */
     private MessageModel textToMessageModel(String userTextInput) {
 
@@ -143,9 +159,9 @@ public class GuiFunctionality implements SocketToGuiInterface {
     }
 
     /**
-     * This method is called when a new message is received.
-     *
-     * @param message The message received from the chat.
+     This method is called when a new message is received.
+
+     @param message The message received from the chat.
      */
     @Override
     public void onMessage(String message) {
@@ -154,9 +170,9 @@ public class GuiFunctionality implements SocketToGuiInterface {
     }
 
     /**
-     * Writes a GUI message to the chat panel.
-     *
-     * @param message the message to write
+     Writes a GUI message to the chat panel.
+
+     @param message the message to write
      */
     private void writeGuiMessageToChatPanel(String message) {
 
@@ -168,14 +184,18 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         MessageModel messageModel = getMessageModel(message);
 
-        checkIfMessageSenderAlreadyRegisteredInLocalChache(gui.getChatClientPropertiesHashMap(), messageModel.getSender());
+        checkIfMessageSenderAlreadyRegisteredInLocalCache(gui.getChatClientPropertiesHashMap(), messageModel.getSender());
+
+        Color borderColor = determineBorderColor(gui, messageModel.getSender());
 
         if (messageModel.getSender().equals(gui.getUsername())) {
 
             PanelRightImpl panelRight = new PanelRightImpl(mainFrame, messageModel, PanelTypes.NORMAL);
+            panelRight.setBorderColor(borderColor);
             ((MainGuiElementsInterface) mainFrame).getMainTextPanel().add(panelRight, "w 70%, trailing, wrap");
         } else {
             PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, messageModel, PanelTypes.NORMAL);
+            panelLeft.setBorderColor(borderColor);
             ((MainGuiElementsInterface) mainFrame).getMainTextPanel().add(panelLeft, "w 70%, leading, wrap");
         }
 
@@ -184,23 +204,14 @@ public class GuiFunctionality implements SocketToGuiInterface {
         scrollMainPanelDownToLastMessage(((MainGuiElementsInterface) mainFrame).getMainTextBackgroundScrollPane());
     }
 
-    private void checkIfMessageSenderAlreadyRegisteredInLocalChache(HashMap<String, CustomUserProperties> clientMap, String sender) {
-
-        if (clientMap.containsKey(sender)) {
-            return;
-        } else {
-
-            CustomUserProperties
-        }
-
-    }
-
     /**
-     * Converts a JSON string to a MessageModel object.
-     *
-     * @param message the JSON string to be converted
-     * @return the MessageModel object representing the converted JSON string
-     * @throws IllegalArgumentException if the JSON string is malformed
+     Converts a JSON string to a MessageModel object.
+
+     @param message the JSON string to be converted
+
+     @return the MessageModel object representing the converted JSON string
+
+     @throws IllegalArgumentException if the JSON string is malformed
      */
     private MessageModel getMessageModel(String message) {
 
@@ -212,21 +223,48 @@ public class GuiFunctionality implements SocketToGuiInterface {
     }
 
     /**
-     * Converts a JSON message into a MessageModel object.
-     *
-     * @param jsonMessage the JSON message to be converted
-     * @return the converted MessageModel object
-     * @throws JsonProcessingException if there is an error processing the JSON message
-     */
-    private MessageModel convertJsonToMessageModel(String jsonMessage) throws JsonProcessingException {
+     Checks if the message sender is already registered in the local cache.
+     If not, it adds the sender to the cache with default properties.
 
-        return objectMapper.readValue(jsonMessage, MessageModel.class);
+     @param clientMap the map representing the local cache of message senders
+     @param sender    the sender to be checked and possibly added to the cache
+     */
+    private void checkIfMessageSenderAlreadyRegisteredInLocalCache(HashMap<String, CustomUserProperties> clientMap, String sender) {
+
+        if (!clientMap.containsKey(sender)) {
+
+            CustomUserProperties customUserProperties = new CustomUserProperties();
+            customUserProperties.setUsername(sender);
+            clientMap.put(sender, customUserProperties);
+        }
     }
 
     /**
-     * Scrolls the main panel down to the last message in the given scroll pane.
-     *
-     * @param scrollPane the scroll pane containing the main panel
+     Determines the border color for a given sender in the GUI.
+
+     @param gui    the MainGuiElementsInterface object representing the GUI
+     @param sender the sender for whom the border color needs to be determined
+
+     @return the Color object representing the border color for the given sender, or Color.BLACK if no border color is set
+
+     @see MainGuiElementsInterface#getChatClientPropertiesHashMap()
+     @see ChatClientProperties#getBorderColor()
+     @since 1.0
+     */
+    private Color determineBorderColor(MainGuiElementsInterface gui, String sender) {
+
+        if (gui.getChatClientPropertiesHashMap().containsKey(sender) && gui.getChatClientPropertiesHashMap().get(sender).getBorderColor() != -1) {
+
+            return new Color(gui.getChatClientPropertiesHashMap().get(sender).getBorderColor());
+        }
+
+        return Color.BLACK;
+    }
+
+    /**
+     Scrolls the main panel down to the last message in the given scroll pane.
+
+     @param scrollPane the scroll pane containing the main panel
      */
     public void scrollMainPanelDownToLastMessage(JScrollPane scrollPane) {
 
@@ -234,9 +272,23 @@ public class GuiFunctionality implements SocketToGuiInterface {
     }
 
     /**
-     * Scrolls the given scroll bar to its maximum value.
-     *
-     * @param scrollBar the scroll bar to be scrolled
+     Converts a JSON message into a MessageModel object.
+
+     @param jsonMessage the JSON message to be converted
+
+     @return the converted MessageModel object
+
+     @throws JsonProcessingException if there is an error processing the JSON message
+     */
+    private MessageModel convertJsonToMessageModel(String jsonMessage) throws JsonProcessingException {
+
+        return objectMapper.readValue(jsonMessage, MessageModel.class);
+    }
+
+    /**
+     Scrolls the given scroll bar to its maximum value.
+
+     @param scrollBar the scroll bar to be scrolled
      */
     private void scrollToMax(JScrollBar scrollBar) {
 
