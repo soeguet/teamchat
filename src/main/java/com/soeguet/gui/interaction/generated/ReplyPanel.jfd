@@ -9,11 +9,7 @@ new FormModel {
 			"JavaCodeGenerator.defaultHandlerModifiers": 1028
 			"JavaCodeGenerator.memberVariablePrefix": "form_"
 		}
-		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
-			"$layoutConstraints": "hidemode 3"
-			"$columnConstraints": "[grow,fill]"
-			"$rowConstraints": "[][grow][]"
-		} ) {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
 			name: "this"
 			"border": new javax.swing.border.EtchedBorder( 1, null, null )
 			addEvent( new FormEvent( "java.awt.event.MouseListener", "mousePressed", "thisMousePressed", true ) )
@@ -41,59 +37,149 @@ new FormModel {
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "East"
 				} )
-			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-				"value": "cell 0 0"
-			} )
-			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
-				name: "panel1"
-				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
-					name: "formerMessagePanel"
-					add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
-						name: "hSpacer1"
-					}, new FormLayoutConstraints( class java.lang.String ) {
-						"value": "West"
-					} )
-					add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
-						name: "hSpacer2"
-					}, new FormLayoutConstraints( class java.lang.String ) {
-						"value": "East"
-					} )
-				} )
-			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-				"value": "cell 0 1"
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "First"
 			} )
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
-				name: "panel2"
-				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
-					name: "scrollPane1"
-					add( new FormComponent( "javax.swing.JTextPane" ) {
-						name: "replyTextPane"
-						"componentOrientation": sfield java.awt.ComponentOrientation LEFT_TO_RIGHT
-						addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "replyTextPaneFocusLost", true ) )
+				name: "formerMessagePanel"
+				add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
+					name: "hSpacer1"
+					"minimumSize": new java.awt.Dimension( 15, 12 )
+					"preferredSize": new java.awt.Dimension( 15, 10 )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "West"
+				} )
+				add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
+					name: "hSpacer2"
+					"minimumSize": new java.awt.Dimension( 15, 12 )
+					"preferredSize": new java.awt.Dimension( 15, 10 )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "East"
+				} )
+				add( new FormComponent( "com.jformdesigner.designer.wrapper.VSpacer" ) {
+					name: "vSpacer2"
+					"preferredSize": new java.awt.Dimension( 10, 15 )
+					"minimumSize": new java.awt.Dimension( 12, 15 )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "North"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+					name: "panel6"
+					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+						name: "panel5"
+						"horizontalScrollBarPolicy": 31
+						add( new FormComponent( "javax.swing.JTextPane" ) {
+							name: "mainQuoteTextField"
+							"editable": false
+							"enabled": false
+						} )
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "Center"
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.FlowLayout ) {
+						"alignment": 3
+					} ) {
+						name: "panel7"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "quotedTime"
+							"text": "text"
+							"enabled": false
+							"focusable": false
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label3"
+							"text": "  -  "
+							"enabled": false
+							"focusable": false
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "quotedSender"
+							"text": "text"
+							"focusable": false
+							"enabled": false
+						} )
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "North"
+					} )
+					add( new FormComponent( "com.jformdesigner.designer.wrapper.VSpacer" ) {
+						name: "vSpacer1"
+						"minimumSize": new java.awt.Dimension( 12, 15 )
+						"preferredSize": new java.awt.Dimension( 10, 15 )
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "South"
 					} )
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "Center"
 				} )
-				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.FlowLayout ) ) {
-					name: "panel3"
-					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "button1"
-						"text": "p"
-					} )
-					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "button3"
-						"text": "e"
-					} )
-					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "replySendButton"
-						"text": "s"
-						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseReleased", "replySendButtonMouseReleased", true ) )
-					} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "panel2"
+				add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
+					name: "hSpacer3"
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "West"
+				} )
+				add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
+					name: "hSpacer4"
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "East"
 				} )
-			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-				"value": "cell 0 2"
+				add( new FormComponent( "com.jformdesigner.designer.wrapper.VSpacer" ) {
+					name: "vSpacer3"
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "South"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) {
+					"hgap": 5
+				} ) {
+					name: "panel8"
+					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+						name: "scrollPane1"
+						add( new FormComponent( "javax.swing.JTextPane" ) {
+							name: "replyTextPane"
+							"componentOrientation": sfield java.awt.ComponentOrientation LEFT_TO_RIGHT
+							addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "replyTextPaneFocusLost", true ) )
+						} )
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "Center"
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
+						"columns": 3
+						"hgap": 4
+					} ) {
+						name: "panel3"
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "quotePanelPictureButton"
+							"text": "@"
+							"preferredSize": new java.awt.Dimension( 35, 35 )
+							"maximumSize": new java.awt.Dimension( 35, 35 )
+							"minimumSize": new java.awt.Dimension( 35, 35 )
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "quotePanelEmojiButton"
+							"text": "#"
+							"preferredSize": new java.awt.Dimension( 35, 35 )
+							"maximumSize": new java.awt.Dimension( 35, 35 )
+							"minimumSize": new java.awt.Dimension( 35, 35 )
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "quotePanelSenButton"
+							"text": "→"
+							"minimumSize": new java.awt.Dimension( 35, 35 )
+							"preferredSize": new java.awt.Dimension( 35, 35 )
+							"maximumSize": new java.awt.Dimension( 35, 35 )
+							addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseReleased", "quotePanelSenButtonMouseReleased", true ) )
+						} )
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "After"
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Last"
 			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )
