@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
+import net.miginfocom.swing.*;
 /*
  * Created by JFormDesigner on Sat Sep 16 21:17:08 CEST 2023
  */
@@ -83,6 +84,112 @@ public abstract class PropertiesPanel extends JPanel {
 		return form_clientsPanel;
 	}
 
+	public JPanel getVSpacer1() {
+		return form_vSpacer1;
+	}
+
+	public JPanel getPanel3() {
+		return form_panel3;
+	}
+
+	public JPanel getPanel5() {
+		return form_panel5;
+	}
+
+	public JComboBox<String> getComboBox1() {
+		return form_comboBox1;
+	}
+
+	public JPanel getPanel6() {
+		return form_panel6;
+	}
+
+	public JPanel getPanel7() {
+		return form_panel7;
+	}
+
+	public JLabel getLabel2() {
+		return form_label2;
+	}
+
+	public JTextField getTextField2() {
+		return form_textField2;
+	}
+
+	public JPanel getPanel8() {
+		return form_panel8;
+	}
+
+	public JLabel getLabel3() {
+		return form_label3;
+	}
+
+	public JTextField getTextField1() {
+		return form_textField1;
+	}
+
+	public JPanel getPanel9() {
+		return form_panel9;
+	}
+
+	public JLabel getLabel4() {
+		return form_label4;
+	}
+
+	public JPanel getColorPickerPanel() {
+		return form_colorPickerPanel;
+	}
+
+	public JPanel getHSpacer3() {
+		return form_hSpacer3;
+	}
+
+	public JPanel getHSpacer11() {
+		return form_hSpacer11;
+	}
+
+	public JPanel getHSpacer4() {
+		return form_hSpacer4;
+	}
+
+	public JPanel getHSpacer5() {
+		return form_hSpacer5;
+	}
+
+	public JPanel getHSpacer10() {
+		return form_hSpacer10;
+	}
+
+	public JPanel getHSpacer6() {
+		return form_hSpacer6;
+	}
+
+	public JPanel getHSpacer7() {
+		return form_hSpacer7;
+	}
+
+	public JPanel getHSpacer9() {
+		return form_hSpacer9;
+	}
+
+	public JPanel getHSpacer8() {
+		return form_hSpacer8;
+	}
+
+	public JPanel getHSpacer12() {
+		return form_hSpacer12;
+	}
+
+	public JPanel getHSpacer13() {
+		return form_hSpacer13;
+	}
+
+	public JPanel getVSpacer3() {
+		return form_vSpacer3;
+	}
+
+	protected abstract void colorPickerPanelMouseClicked(MouseEvent e);
+
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
 		// Generated using JFormDesigner non-commercial license
@@ -93,14 +200,40 @@ public abstract class PropertiesPanel extends JPanel {
 		form_hSpacer1 = new JPanel(null);
 		form_hSpacer2 = new JPanel(null);
 		form_vSpacer2 = new JPanel(null);
+		form_panel3 = new JPanel();
+		form_vSpacer1 = new JPanel(null);
 		form_tabbedPane = new JTabbedPane();
 		form_clientsScrollPane = new JScrollPane();
 		form_clientsPanel = new JPanel();
+		form_panel5 = new JPanel();
+		form_vSpacer3 = new JPanel(null);
+		form_panel6 = new JPanel();
+		form_hSpacer12 = new JPanel(null);
+		form_comboBox1 = new JComboBox<>();
+		form_hSpacer13 = new JPanel(null);
+		form_panel7 = new JPanel();
+		form_hSpacer3 = new JPanel(null);
+		form_label2 = new JLabel();
+		form_hSpacer11 = new JPanel(null);
+		form_textField2 = new JTextField();
+		form_hSpacer4 = new JPanel(null);
+		form_panel8 = new JPanel();
+		form_hSpacer5 = new JPanel(null);
+		form_label3 = new JLabel();
+		form_hSpacer10 = new JPanel(null);
+		form_textField1 = new JTextField();
+		form_hSpacer6 = new JPanel(null);
+		form_panel9 = new JPanel();
+		form_hSpacer7 = new JPanel(null);
+		form_label4 = new JLabel();
+		form_hSpacer9 = new JPanel(null);
+		form_colorPickerPanel = new JPanel();
+		form_hSpacer8 = new JPanel(null);
 		form_scrollPane1 = new JScrollPane();
 		form_panel2 = new JPanel();
 
 		//======== this ========
-		setBorder(new EtchedBorder());
+		setBorder(new LineBorder(Color.black, 2, true));
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -169,9 +302,20 @@ public abstract class PropertiesPanel extends JPanel {
 			form_formerMessagePanel.add(form_hSpacer2, BorderLayout.EAST);
 
 			//---- form_vSpacer2 ----
-			form_vSpacer2.setPreferredSize(new Dimension(10, 15));
-			form_vSpacer2.setMinimumSize(new Dimension(12, 15));
+			form_vSpacer2.setPreferredSize(new Dimension(10, 5));
+			form_vSpacer2.setMinimumSize(new Dimension(12, 5));
 			form_formerMessagePanel.add(form_vSpacer2, BorderLayout.NORTH);
+
+			//======== form_panel3 ========
+			{
+				form_panel3.setLayout(new BorderLayout());
+
+				//---- form_vSpacer1 ----
+				form_vSpacer1.setMinimumSize(new Dimension(12, 15));
+				form_vSpacer1.setPreferredSize(new Dimension(10, 15));
+				form_panel3.add(form_vSpacer1, BorderLayout.CENTER);
+			}
+			form_formerMessagePanel.add(form_panel3, BorderLayout.SOUTH);
 
 			//======== form_tabbedPane ========
 			{
@@ -183,6 +327,79 @@ public abstract class PropertiesPanel extends JPanel {
 					//======== form_clientsPanel ========
 					{
 						form_clientsPanel.setLayout(new BorderLayout());
+
+						//======== form_panel5 ========
+						{
+							form_panel5.setLayout(new GridLayout(5, 0));
+							form_panel5.add(form_vSpacer3);
+
+							//======== form_panel6 ========
+							{
+								form_panel6.setLayout(new GridLayout());
+								form_panel6.add(form_hSpacer12);
+								form_panel6.add(form_comboBox1);
+								form_panel6.add(form_hSpacer13);
+							}
+							form_panel5.add(form_panel6);
+
+							//======== form_panel7 ========
+							{
+								form_panel7.setLayout(new GridLayout());
+								form_panel7.add(form_hSpacer3);
+
+								//---- form_label2 ----
+								form_label2.setText("username:");
+								form_panel7.add(form_label2);
+								form_panel7.add(form_hSpacer11);
+
+								//---- form_textField2 ----
+								form_textField2.setEditable(false);
+								form_panel7.add(form_textField2);
+								form_panel7.add(form_hSpacer4);
+							}
+							form_panel5.add(form_panel7);
+
+							//======== form_panel8 ========
+							{
+								form_panel8.setLayout(new GridLayout());
+								form_panel8.add(form_hSpacer5);
+
+								//---- form_label3 ----
+								form_label3.setText("nickname:");
+								form_panel8.add(form_label3);
+								form_panel8.add(form_hSpacer10);
+								form_panel8.add(form_textField1);
+								form_panel8.add(form_hSpacer6);
+							}
+							form_panel5.add(form_panel8);
+
+							//======== form_panel9 ========
+							{
+								form_panel9.setLayout(new GridLayout());
+								form_panel9.add(form_hSpacer7);
+
+								//---- form_label4 ----
+								form_label4.setText("border color:");
+								form_panel9.add(form_label4);
+								form_panel9.add(form_hSpacer9);
+
+								//======== form_colorPickerPanel ========
+								{
+									form_colorPickerPanel.setBorder(new LineBorder(Color.black, 1, true));
+									form_colorPickerPanel.addMouseListener(new MouseAdapter() {
+										@Override
+										public void mouseClicked(MouseEvent e) {
+											colorPickerPanelMouseClicked(e);
+										}
+									});
+									form_colorPickerPanel.setLayout(new BorderLayout());
+								}
+								form_panel9.add(form_colorPickerPanel);
+								form_panel9.add(form_hSpacer8);
+							}
+							form_panel5.add(form_panel9);
+						}
+						form_clientsPanel.add(form_panel5, BorderLayout.NORTH);
 					}
 					form_clientsScrollPane.setViewportView(form_clientsPanel);
 				}
@@ -214,9 +431,35 @@ public abstract class PropertiesPanel extends JPanel {
 	protected JPanel form_hSpacer1;
 	protected JPanel form_hSpacer2;
 	protected JPanel form_vSpacer2;
+	protected JPanel form_panel3;
+	protected JPanel form_vSpacer1;
 	protected JTabbedPane form_tabbedPane;
 	protected JScrollPane form_clientsScrollPane;
 	protected JPanel form_clientsPanel;
+	protected JPanel form_panel5;
+	protected JPanel form_vSpacer3;
+	protected JPanel form_panel6;
+	protected JPanel form_hSpacer12;
+	protected JComboBox<String> form_comboBox1;
+	protected JPanel form_hSpacer13;
+	protected JPanel form_panel7;
+	protected JPanel form_hSpacer3;
+	protected JLabel form_label2;
+	protected JPanel form_hSpacer11;
+	protected JTextField form_textField2;
+	protected JPanel form_hSpacer4;
+	protected JPanel form_panel8;
+	protected JPanel form_hSpacer5;
+	protected JLabel form_label3;
+	protected JPanel form_hSpacer10;
+	protected JTextField form_textField1;
+	protected JPanel form_hSpacer6;
+	protected JPanel form_panel9;
+	protected JPanel form_hSpacer7;
+	protected JLabel form_label4;
+	protected JPanel form_hSpacer9;
+	protected JPanel form_colorPickerPanel;
+	protected JPanel form_hSpacer8;
 	protected JScrollPane form_scrollPane1;
 	protected JPanel form_panel2;
 	// JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
