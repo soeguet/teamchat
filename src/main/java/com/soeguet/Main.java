@@ -6,6 +6,12 @@ import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.soeguet.gui.main_frame.ChatMainGuiElementsImpl;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
+
 import javax.swing.*;
 
 public class Main {
@@ -17,6 +23,7 @@ public class Main {
         FlatIntelliJLaf.setup();
         SwingUtilities.invokeLater(ChatMainGuiElementsImpl::new);
     }
+
 
     private static void setTheme(String themeSetting) {
 

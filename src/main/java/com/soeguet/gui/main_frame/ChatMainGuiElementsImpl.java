@@ -3,18 +3,13 @@ package com.soeguet.gui.main_frame;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.behaviour.GuiFunctionality;
 import com.soeguet.gui.main_frame.generated.ChatPanel;
+import com.soeguet.properties.CustomUserProperties;
 import com.soeguet.socket_client.CustomWebsocketClient;
 import com.soeguet.util.EmojiHandler;
 import com.soeguet.util.EmojiInitializer;
 import com.soeguet.util.EmojiPopUpMenuHandler;
-import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
@@ -23,7 +18,6 @@ import java.beans.PropertyChangeEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayDeque;
-import java.util.EventObject;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
@@ -44,16 +38,22 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     private EmojiHandler emojiHandler;
     ObjectMapper objectMapper = new ObjectMapper();
     private CustomWebsocketClient websocketClient;
-    private String username = "osman - backoffice";
+    private String username = "yasman";
     private JPanel messagePanel;
+    private final HashMap<String, CustomUserProperties> chatClientPropertiesHashMap = new HashMap<>();
 
+    public HashMap<String, CustomUserProperties> getChatClientPropertiesHashMap() {
+
+        return chatClientPropertiesHashMap;
+    }
 
     /**
-     * Initializes the main GUI elements for the chat application.
-     * Sets up the GUI functionality, calculates the margins for the scroll pane,
-     * initializes the emoji handler and list, and establishes a WebSocket connection.
+     Initializes the main GUI elements for the chat application.
+     Sets up the GUI functionality, calculates the margins for the scroll pane,
+     initializes the emoji handler and list, and establishes a WebSocket connection.
      */
     public ChatMainGuiElementsImpl() {
+
         initGuiFunctionality();
         setScrollPaneMargins();
         initEmojiHandlerAndList();
@@ -61,10 +61,12 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     private void initGuiFunctionality() {
+
         guiFunctionality = new GuiFunctionality(this);
     }
 
     private void setScrollPaneMargins() {
+
         if (System.getProperty("os.name").toLowerCase().contains("windows")) {
             JSCROLLPANE_MARGIN_BOTTOM_BORDER = 63;
             JSCROLLPANE_MARGIN_RIGHT_BORDER = 20;
@@ -75,11 +77,13 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     private void initEmojiHandlerAndList() {
+
         emojiHandler = new EmojiHandler(this);
         emojiList = new EmojiInitializer().createEmojiList();
     }
 
     private void initWebSocketClient() {
+
         try {
             serverUri = new URI("ws://127.0.0.1:8100");
             websocketClient = new CustomWebsocketClient(serverUri, this);
@@ -100,21 +104,6 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     @Override
     protected void thisPropertyChange(PropertyChangeEvent e) {
 
-        logMethod(e, "ChatGuiImpl.thisPropertyChange");
-    }
-
-    /**
-     Logs the provided event and method name.
-
-     @param event      The event to be logged.
-     @param methodName The name of the method to be logged.
-     */
-    private void logMethod(EventObject event, String methodName) {
-
-        System.out.println();
-        System.out.println("__ " + methodName);
-        logger.info(event.toString());
-        System.out.println();
     }
 
     /**
@@ -141,7 +130,6 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     @Override
     protected void thisMouseClicked(MouseEvent e) {
 
-        logMethod(e, "ChatGuiImpl.thisMouseClicked");
     }
 
     /**
@@ -152,7 +140,6 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     @Override
     protected void propertiesMenuItemMousePressed(MouseEvent e) {
 
-        logMethod(e, "ChatGuiImpl.propertiesMenuItemMousePressed");
     }
 
     /**
@@ -162,8 +149,6 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
      */
     @Override
     protected void resetConnectionMenuItemMousePressed(MouseEvent e) {
-
-        logMethod(e, "ChatGuiImp.resetConnectionMenuItemMousePressed");
 
         if (getWebsocketClient().isOpen()) {
 
@@ -305,7 +290,6 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     @Override
     protected void participantsMenuItemMousePressed(MouseEvent e) {
 
-        logMethod(e, "ChatGuiImpl.participantsMenuItemMousePressed");
     }
 
     /**
@@ -316,7 +300,6 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     @Override
     protected void mainTextPanelMouseClicked(MouseEvent e) {
 
-        logMethod(e, "ChatGuiImpl.mainTextPanelMouseClicked");
     }
 
     /**
@@ -330,7 +313,6 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     @Override
     protected void textEditorPaneMouseClicked(MouseEvent e) {
 
-        logMethod(e, "ChatGuiImpl.textEditorPaneMouseClicked");
     }
 
     /**
@@ -417,7 +399,6 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     @Override
     protected void pictureButtonMouseClicked(MouseEvent e) {
 
-        logMethod(e, "ChatGuiImpl.pictureButtonMouseClicked");
     }
 
     /**
@@ -431,28 +412,25 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     @Override
     protected void emojiButton(ActionEvent e) {
 
-        new EmojiPopUpMenuHandler(this, this.getTextEditorPane(),this.getEmojiButton());
-
-        logMethod(e, "ChatGuiImpl.emojiButton");
+        new EmojiPopUpMenuHandler(this, this.getTextEditorPane(), this.getEmojiButton());
     }
 
-
     /**
-     Returns the list of emoji icons.
+     Returns a HashMap containing the list of emojis and their corresponding image icons.
 
-     <p>This method retrieves the list of emoji icons that are available for use in the chat GUI.
+     <p>This method returns the emojiList HashMap, which contains the emojis and their corresponding image icons.
+     The key in the HashMap represents the emoji text, and the value represents the corresponding image icon.
 
-     @return the list of emoji icons
+     @return the HashMap containing the list of emojis and their corresponding image icons
      */
     public HashMap<String, ImageIcon> getEmojiList() {
 
         return emojiList;
     }
 
-
-
     /**
-     Handles the event when the send button is clicked. Clears the text pane in the GUI and sends
+     Handles the event when the send-button is clicked.
+     Clears the text pane in the GUI and sends
      the message to the socket.
 
      @param e the ActionEvent object that triggered this event

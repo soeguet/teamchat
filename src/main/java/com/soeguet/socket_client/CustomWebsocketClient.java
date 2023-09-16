@@ -1,6 +1,5 @@
 package com.soeguet.socket_client;
 
-import com.soeguet.behaviour.SocketToGuiInterface;
 import com.soeguet.gui.main_frame.MainGuiElementsInterface;
 import com.soeguet.gui.popups.PopupPanelImpl;
 import org.java_websocket.WebSocket;
@@ -17,17 +16,10 @@ public class CustomWebsocketClient extends WebSocketClient {
     private final Logger logger = Logger.getLogger(CustomWebsocketClient.class.getName());
     private final JFrame mainFrame;
 
-    private SocketToGuiInterface socketToGuiInterface;
-
     public CustomWebsocketClient(URI serverUri, JFrame mainFrame) {
 
         super(serverUri);
         this.mainFrame = mainFrame;
-    }
-
-    public void setSocketToGuiInterface(SocketToGuiInterface socketToGuiInterface) {
-
-        this.socketToGuiInterface = socketToGuiInterface;
     }
 
     @Override
@@ -35,7 +27,6 @@ public class CustomWebsocketClient extends WebSocketClient {
 
         super.onWebsocketPong(conn, f);
     }
-
 
     @Override
     public void onOpen(ServerHandshake handshakedata) {
@@ -53,7 +44,6 @@ public class CustomWebsocketClient extends WebSocketClient {
         }
 
         MainGuiElementsInterface gui = (MainGuiElementsInterface) mainFrame;
-
 
         if (gui.getMessagePanel() == null) {
 

@@ -41,7 +41,6 @@ public class QuotePanelImpl extends QuotePanel {
 
     private void processText(JTextPane actualTextPane, MainGuiElementsInterface gui, StyledDocument doc, String text) {
 
-        System.out.println("text = " + text);
         try {
             for (String word : text.split(" ")) {
 

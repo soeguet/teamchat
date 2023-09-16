@@ -8,8 +8,10 @@ import com.soeguet.gui.newcomment.right.PanelRightImpl;
 import com.soeguet.model.MessageModel;
 import com.soeguet.model.MessageTypes;
 import com.soeguet.model.PanelTypes;
+import com.soeguet.properties.CustomUserProperties;
 
 import javax.swing.*;
+import java.util.HashMap;
 
 public class GuiFunctionality implements SocketToGuiInterface {
 
@@ -166,6 +168,8 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         MessageModel messageModel = getMessageModel(message);
 
+        checkIfMessageSenderAlreadyRegisteredInLocalChache(gui.getChatClientPropertiesHashMap(), messageModel.getSender());
+
         if (messageModel.getSender().equals(gui.getUsername())) {
 
             PanelRightImpl panelRight = new PanelRightImpl(mainFrame, messageModel, PanelTypes.NORMAL);
@@ -178,6 +182,17 @@ public class GuiFunctionality implements SocketToGuiInterface {
         mainFrame.revalidate();
         mainFrame.repaint();
         scrollMainPanelDownToLastMessage(((MainGuiElementsInterface) mainFrame).getMainTextBackgroundScrollPane());
+    }
+
+    private void checkIfMessageSenderAlreadyRegisteredInLocalChache(HashMap<String, CustomUserProperties> clientMap, String sender) {
+
+        if (clientMap.containsKey(sender)) {
+            return;
+        } else {
+
+            CustomUserProperties
+        }
+
     }
 
     /**

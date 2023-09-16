@@ -2,6 +2,7 @@ package com.soeguet.gui.main_frame;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.behaviour.GuiFunctionality;
+import com.soeguet.properties.CustomUserProperties;
 import com.soeguet.socket_client.CustomWebsocketClient;
 
 import javax.swing.*;
@@ -10,6 +11,10 @@ import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Queue;
 
+/**
+ * The MainGuiElementsInterface is an interface that defines the main GUI elements and functionalities
+ * required by the application.
+ */
 public interface MainGuiElementsInterface {
 
     /**
@@ -140,4 +145,11 @@ public interface MainGuiElementsInterface {
      * @return the HashMap containing the emoji image icons
      */
     HashMap<String, ImageIcon> getEmojiList();
+
+    /**
+     * Returns the HashMap containing the chat client properties.
+     *
+     * @return the HashMap containing the chat client properties
+     */
+    HashMap<String, CustomUserProperties> getChatClientPropertiesHashMap();
 }

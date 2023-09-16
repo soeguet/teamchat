@@ -10,6 +10,7 @@ public class PopupPanelImpl extends PopupPanel {
 
     private static final int TIMER_DELAY = 3000;
     private static final int TIMER_PERIOD = 1;
+    private static final int POPUP_MOVE_SPEED = 3;
     private final JFrame mainFrame;
 
     public PopupPanelImpl(JFrame mainFrame, String message) {
@@ -126,7 +127,7 @@ public class PopupPanelImpl extends PopupPanel {
      * Relocates the pop-up panel to a new position by decreasing its Y-coordinate by 1.
      */
     private void relocatedPopup() {
-        this.setLocation(getX(), getY() - 1);
+        this.setLocation(getX(), getY() - POPUP_MOVE_SPEED);
     }
 
     /**

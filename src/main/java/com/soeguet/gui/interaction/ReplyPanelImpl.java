@@ -38,7 +38,7 @@ public class ReplyPanelImpl extends ReplyPanel {
 
         getMainQuoteTextField().setEditorKit(new WrapEditorKit());
 
-        new EmojiHandler(mainFrame).processText(getMainQuoteTextField(), messageModel.getMessage());
+        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(getMainQuoteTextField(), messageModel.getMessage());
         form_quotedSender.setText(messageModel.getSender());
         form_quotedTime.setText(messageModel.getTime());
     }
@@ -123,7 +123,6 @@ public class ReplyPanelImpl extends ReplyPanel {
     @Override
     protected void thisFocusLost(FocusEvent e) {
 
-        System.out.println("lost");
     }
 
     @Override
@@ -145,6 +144,8 @@ public class ReplyPanelImpl extends ReplyPanel {
         }
 
         MainGuiElementsInterface gui = (MainGuiElementsInterface) mainFrame;
+
+        new EmojiHandler(mainFrame).replaceImageIconWithEmojiDescription(this.getReplyTextPane());
 
         MessageModel sendModel = new MessageModel((byte) MessageTypes.NORMAL, gui.getUsername(), this.getReplyTextPane().getText(), messageModel.getSender(), messageModel.getTime(), messageModel.getMessage());
 

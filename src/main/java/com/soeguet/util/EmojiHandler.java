@@ -17,6 +17,11 @@ public class EmojiHandler {
         this.mainFrame = mainFrame;
     }
 
+    /**
+     * Replaces image icons with emoji descriptions in a JTextPane.
+     *
+     * @param jTextPane the JTextPane in which to replace the image icons
+     */
     public void replaceImageIconWithEmojiDescription(JTextPane jTextPane) {
 
         Element root = jTextPane.getStyledDocument().getDefaultRootElement();
@@ -42,11 +47,9 @@ public class EmojiHandler {
             AttributeSet attributes = childElement.getAttributes();
 
             if (StyleConstants.getIcon(attributes) != null) {
-                System.out.println("Found an ImageIcon!");
 
                 ImageIcon foundIcon = (ImageIcon) StyleConstants.getIcon(attributes);
                 String description = foundIcon.getDescription();
-                System.out.println("Description: " + description);
 
                 childElement.getDocument().insertString(childElement.getEndOffset(), description + " ", null);
             }
@@ -61,7 +64,7 @@ public class EmojiHandler {
 
      @param text the text to be processed
      */
-    public void processText(JTextPane actualTextPane, String text) {
+    public void replaceEmojiDescriptionWithActualImageIcon(JTextPane actualTextPane, String text) {
 
         if (!(mainFrame instanceof MainGuiElementsInterface)) {
             return;
