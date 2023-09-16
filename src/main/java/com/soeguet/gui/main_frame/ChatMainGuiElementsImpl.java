@@ -3,6 +3,7 @@ package com.soeguet.gui.main_frame;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.behaviour.GuiFunctionality;
 import com.soeguet.gui.main_frame.generated.ChatPanel;
+import com.soeguet.gui.properties.PropertiesPanelImpl;
 import com.soeguet.properties.CustomUserProperties;
 import com.soeguet.socket_client.CustomWebsocketClient;
 import com.soeguet.util.EmojiHandler;
@@ -134,6 +135,7 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     @Override
     protected void propertiesMenuItemMousePressed(MouseEvent e) {
 
+        new PropertiesPanelImpl(this);
     }
 
     /**

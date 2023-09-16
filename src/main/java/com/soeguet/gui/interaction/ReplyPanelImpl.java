@@ -18,10 +18,10 @@ import java.awt.event.MouseEvent;
 
 public class ReplyPanelImpl extends ReplyPanel {
 
-    final Point offset = new Point();
+    private final Point offset = new Point();
     private final JFrame mainFrame;
     private final MessageModel messageModel;
-    private Border border = this.getBorder();
+    private final Border border = this.getBorder();
 
     public ReplyPanelImpl(JFrame mainFrame, MessageModel messageModel) {
 
