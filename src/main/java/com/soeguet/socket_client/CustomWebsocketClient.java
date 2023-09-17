@@ -60,8 +60,10 @@ public class CustomWebsocketClient extends WebSocketClient {
                 PopupPanelImpl popupPanel = new PopupPanelImpl(mainFrame, message);
 
                 gui.setMessagePanel(popupPanel);
-                popupPanel.implementPopup();
+                popupPanel.implementPopup(2000);
+
             });
+
         } else {
 
             gui.getMessageQueue().add(message);

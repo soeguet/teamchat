@@ -14,6 +14,7 @@ import com.soeguet.properties.CustomUserProperties;
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
+import java.util.Random;
 
 /**
  This class provides additional functionality to the GUI.
@@ -84,6 +85,24 @@ public class GuiFunctionality implements SocketToGuiInterface {
     private static void addMessagePanelToMainChatPanel(MainGuiElementsInterface gui, CommentInterface message, String alignment) {
 
         SwingUtilities.invokeLater(() -> gui.getMainTextPanel().add((JPanel) message, "w 70%, " + alignment + ", wrap"));
+    }
+
+    /**
+     Generates a random RGB integer value.
+
+     This method creates a new instance of the Random class to generate random values for the red, green,
+     and blue components of the RGB color. It then creates a new Color object using the generated values
+     and retrieves the RGB integer value using the getRGB() method.
+
+     @return the random RGB integer value
+     */
+    private static int getRandomRgbIntValue() {
+
+        Random rand = new Random();
+        int r = rand.nextInt(256);
+        int g = rand.nextInt(256);
+        int b = rand.nextInt(256);
+        return new Color(r, g, b).getRGB();
     }
 
     /**
@@ -225,10 +244,11 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         checkIfMessageSenderAlreadyRegisteredInLocalCache(gui.getChatClientPropertiesHashMap(), messageModel.getSender());
 
-        Color borderColor = determineBorderColor(gui, messageModel.getSender());
         String nickname = checkForNickname(gui, messageModel.getSender());
 
         if (messageModel.getSender().equals(gui.getUsername())) {
+
+            Color borderColor = determineBorderColor(gui, "own");
 
             PanelRightImpl panelRight = new PanelRightImpl(mainFrame, messageModel, PanelTypes.NORMAL);
             panelRight.setBorderColor(borderColor);
@@ -236,6 +256,8 @@ public class GuiFunctionality implements SocketToGuiInterface {
             addMessagePanelToMainChatPanel(gui, panelRight, "trailing");
 
         } else {
+
+            Color borderColor = determineBorderColor(gui, messageModel.getSender());
 
             PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, messageModel, PanelTypes.NORMAL);
             panelLeft.setBorderColor(borderColor);
@@ -275,8 +297,10 @@ public class GuiFunctionality implements SocketToGuiInterface {
     private MessageModel getMessageModel(String message) {
 
         try {
+
             return convertJsonToMessageModel(message);
         } catch (JsonProcessingException e) {
+
             throw new IllegalArgumentException("Malformed message", e);
         }
     }
@@ -290,34 +314,46 @@ public class GuiFunctionality implements SocketToGuiInterface {
      */
     private void checkIfMessageSenderAlreadyRegisteredInLocalCache(HashMap<String, CustomUserProperties> clientMap, String sender) {
 
+        MainGuiElementsInterface gui = getMainFrame();
+        assert gui != null;
+
+        if (sender.equals(gui.getUsername())) {
+
+            if (!gui.getChatClientPropertiesHashMap().containsKey("own")) {
+
+                CustomUserProperties customUserProperties = new CustomUserProperties();
+                customUserProperties.setUsername("own");
+                customUserProperties.setBorderColor(getRandomRgbIntValue());
+                clientMap.put("own", customUserProperties);
+            }
+            return;
+        }
+
         if (!clientMap.containsKey(sender)) {
 
             CustomUserProperties customUserProperties = new CustomUserProperties();
             customUserProperties.setUsername(sender);
+            customUserProperties.setBorderColor(getRandomRgbIntValue());
             clientMap.put(sender, customUserProperties);
         }
     }
 
     /**
-     Determines the border color for a given sender in the GUI.
+     Determines the border color for a given sender.
 
-     If the sender is present in the chat client properties map and has a valid border color defined,
-     the method returns the Color object representing that color. Otherwise, it returns the default
-     Color.BLACK.
+     @param gui    the interface to access the chat client properties hashmap
+     @param sender the sender to determine the border color for
 
-     @param gui    the main GUI elements interface containing the chat client properties map
-     @param sender the sender for which the border color is to be determined
-
-     @return the Color object representing the border color for the sender, or Color.BLACK if not found
+     @return the determined border color for the given sender
      */
     private Color determineBorderColor(MainGuiElementsInterface gui, String sender) {
 
-        if (gui.getChatClientPropertiesHashMap().containsKey(sender) && gui.getChatClientPropertiesHashMap().get(sender).getBorderColor() != -1) {
+        if (gui.getChatClientPropertiesHashMap().containsKey(sender)) {
 
             return new Color(gui.getChatClientPropertiesHashMap().get(sender).getBorderColor());
         }
 
-        return new Color(-((int) (Math.random() * 100)) * -((int) (Math.random() * 100)));
+        return new Color(getRandomRgbIntValue());
     }
 
     /**

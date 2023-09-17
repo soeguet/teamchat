@@ -75,6 +75,10 @@ public class PropertiesPanelImpl extends PropertiesPanel {
 
         gui.getChatClientPropertiesHashMap().forEach((key, value) -> {
 
+            if (key.equals("own")) {
+                return;
+            }
+
             getClientSelectorComboBox().addItem(key);
         });
 

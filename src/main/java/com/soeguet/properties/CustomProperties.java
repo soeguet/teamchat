@@ -37,7 +37,6 @@ public class CustomProperties extends Properties {
 
     private void populateHashMapWithNewValues() {
 
-
         MainGuiElementsInterface gui = getMainFrame();
         assert gui != null;
 
@@ -124,7 +123,7 @@ public class CustomProperties extends Properties {
             setProperty(key, json);
         });
 
-        new PopupPanelImpl(mainFrame,"properties saved").implementPopup();
+        new PopupPanelImpl(mainFrame,"properties saved").implementPopup(1000);
 
         createPropertiesFile(configFilePath);
     }
