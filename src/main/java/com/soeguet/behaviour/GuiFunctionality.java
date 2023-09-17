@@ -187,15 +187,22 @@ public class GuiFunctionality implements SocketToGuiInterface {
         checkIfMessageSenderAlreadyRegisteredInLocalCache(gui.getChatClientPropertiesHashMap(), messageModel.getSender());
 
         Color borderColor = determineBorderColor(gui, messageModel.getSender());
+        String nickname = checkForNickname(gui, messageModel.getSender());
 
         if (messageModel.getSender().equals(gui.getUsername())) {
 
             PanelRightImpl panelRight = new PanelRightImpl(mainFrame, messageModel, PanelTypes.NORMAL);
+
             panelRight.setBorderColor(borderColor);
+            displayNicknameInsteadOfUsername(nickname, panelRight.getNameLabel());
+
             ((MainGuiElementsInterface) mainFrame).getMainTextPanel().add(panelRight, "w 70%, trailing, wrap");
         } else {
             PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, messageModel, PanelTypes.NORMAL);
+
             panelLeft.setBorderColor(borderColor);
+            displayNicknameInsteadOfUsername(nickname, panelLeft.getNameLabel());
+
             ((MainGuiElementsInterface) mainFrame).getMainTextPanel().add(panelLeft, "w 70%, leading, wrap");
         }
 
@@ -239,17 +246,17 @@ public class GuiFunctionality implements SocketToGuiInterface {
         }
     }
 
+
     /**
      Determines the border color for a given sender in the GUI.
 
-     @param gui    the MainGuiElementsInterface object representing the GUI
-     @param sender the sender for whom the border color needs to be determined
+     If the sender is present in the chat client properties map and has a valid border color defined,
+     the method returns the Color object representing that color. Otherwise, it returns the default
+     Color.BLACK.
 
-     @return the Color object representing the border color for the given sender, or Color.BLACK if no border color is set
-
-     @see MainGuiElementsInterface#getChatClientPropertiesHashMap()
-     @see ChatClientProperties#getBorderColor()
-     @since 1.0
+     @param gui    the main GUI elements interface containing the chat client properties map
+     @param sender the sender for which the border color is to be determined
+     @return the Color object representing the border color for the sender, or Color.BLACK if not found
      */
     private Color determineBorderColor(MainGuiElementsInterface gui, String sender) {
 
@@ -259,6 +266,44 @@ public class GuiFunctionality implements SocketToGuiInterface {
         }
 
         return Color.BLACK;
+    }
+
+    /**
+     * Checks if a nickname is defined for a given sender in the GUI.
+     *
+     * If the sender is present in the chat client properties map and has a valid nickname defined,
+     * the method returns the nickname as a String. Otherwise, it returns null.
+     *
+     * @param gui    the main GUI elements interface containing the chat client properties map
+     * @param sender the sender for which the nickname is to be checked
+     * @return the nickname for the sender as a String, or null if not found
+     */
+    private String checkForNickname(MainGuiElementsInterface gui, String sender) {
+
+        if (gui.getChatClientPropertiesHashMap().containsKey(sender) &&
+                gui.getChatClientPropertiesHashMap().get(sender).getNickname() != null &&
+                !gui.getChatClientPropertiesHashMap().get(sender).getNickname().isEmpty()) {
+
+            return gui.getChatClientPropertiesHashMap().get(sender).getNickname();
+        }
+
+        return null;
+    }
+
+    /**
+     * Displays the nickname instead of the username in the label.
+     *
+     * If the nickname is not null, it sets the name property of the label to the nickname.
+     * Otherwise, it leaves the name property of the label as is.
+     *
+     * @param nickname  the nickname to be displayed in the label
+     * @param nameLabel the label where the nickname will be displayed
+     */
+    private static void displayNicknameInsteadOfUsername(String nickname, JLabel nameLabel) {
+
+        if (nickname != null) {
+            nameLabel.setName(nickname);
+        }
     }
 
     /**
