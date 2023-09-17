@@ -2,6 +2,7 @@ package com.soeguet.gui.newcomment.left;
 
 import com.soeguet.gui.interaction.ReplyPanelImpl;
 import com.soeguet.gui.main_frame.MainGuiElementsInterface;
+import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.newcomment.left.generated.PanelLeft;
 import com.soeguet.gui.newcomment.util.QuotePanelImpl;
 import com.soeguet.gui.newcomment.util.WrapEditorKit;
@@ -14,7 +15,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.logging.Logger;
 
-public class PanelLeftImpl extends PanelLeft {
+public class PanelLeftImpl extends PanelLeft implements CommentInterface {
 
     private final Logger logger = Logger.getLogger(PanelLeftImpl.class.getName());
     private final MessageModel messageModel;
@@ -156,7 +157,7 @@ public class PanelLeftImpl extends PanelLeft {
         JScrollPane jsp = new JScrollPane(actualTextPane);
         jsp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
-        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(actualTextPane,messageModel.getMessage());
+        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(actualTextPane, messageModel.getMessage());
 
         this.getPanel1().add(actualTextPane, "cell 1 1, wrap");
     }

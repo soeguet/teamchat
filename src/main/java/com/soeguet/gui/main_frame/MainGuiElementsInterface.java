@@ -9,6 +9,8 @@ import com.soeguet.socket_client.CustomWebsocketClient;
 import javax.swing.*;
 import java.util.ArrayDeque;
 import java.util.HashMap;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  This interface defines the main GUI elements and functionality that can be accessed and manipulated by other classes.
@@ -133,7 +135,7 @@ public interface MainGuiElementsInterface {
 
      @return the message queue containing Strings
      */
-    ArrayDeque<String> getMessageQueue();
+    LinkedBlockingDeque<String> getMessageQueue();
 
     /**
      Returns the HashMap containing the emoji image icons.
@@ -155,4 +157,25 @@ public interface MainGuiElementsInterface {
      @return the custom properties of the chat client
      */
     CustomProperties getCustomProperties();
+
+    /**
+     * Returns the client message queue containing the messages to be sent by the chat client.
+     *
+     * @return the client message queue containing the messages to be sent
+     */
+    LinkedBlockingDeque<String> getClientMessageQueue();
+
+    /**
+     * Sets the flag indicating whether the chat client is currently processing client messages.
+     *
+     * @param isProcessingClientMessages the flag indicating whether the chat client is currently processing client messages
+     */
+    void setIsProcessingClientMessages(AtomicBoolean isProcessingClientMessages);
+
+    /**
+     * Gets the flag indicating whether the chat client is currently processing client messages.
+     *
+     * @return the flag indicating whether the chat client is currently processing client messages
+     */
+    AtomicBoolean getIsProcessingClientMessages();
 }

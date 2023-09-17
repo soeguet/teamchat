@@ -2,6 +2,7 @@ package com.soeguet.properties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.gui.main_frame.MainGuiElementsInterface;
+import com.soeguet.gui.popups.PopupPanelImpl;
 
 import javax.swing.*;
 import java.io.*;
@@ -104,8 +105,6 @@ public class CustomProperties extends Properties {
 
     public void save() {
 
-        System.out.println("Saving properties triggered!");
-
         MainGuiElementsInterface gui = getMainFrame();
         assert gui != null;
 
@@ -123,9 +122,9 @@ public class CustomProperties extends Properties {
             }
 
             setProperty(key, json);
-
-            logger.info("Saved user " + key);
         });
+
+        new PopupPanelImpl(mainFrame,"properties saved").implementPopup();
 
         createPropertiesFile(configFilePath);
     }

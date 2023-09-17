@@ -1,12 +1,10 @@
 package com.soeguet.gui.properties.generated;
 
-import java.awt.*;
-
-import java.awt.event.*;
-import java.beans.*;
 import javax.swing.*;
-import javax.swing.border.*;
-import net.miginfocom.swing.*;
+import javax.swing.border.LineBorder;
+import java.awt.*;
+import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
 /*
  * Created by JFormDesigner on Sat Sep 16 21:17:08 CEST 2023
  */
@@ -195,6 +193,74 @@ public abstract class PropertiesPanel extends JPanel {
 
 	protected abstract void clientSelectorComboBoxItemStateChanged(ItemEvent e);
 
+	public JScrollPane getScrollPane2() {
+		return form_scrollPane2;
+	}
+
+	public JPanel getClientsPanel2() {
+		return form_clientsPanel2;
+	}
+
+	public JPanel getPanel10() {
+		return form_panel10;
+	}
+
+	public JPanel getVSpacer4() {
+		return form_vSpacer4;
+	}
+
+	public JPanel getPanel13() {
+		return form_panel13;
+	}
+
+	public JPanel getHSpacer19() {
+		return form_hSpacer19;
+	}
+
+	public JLabel getLabel6() {
+		return form_label6;
+	}
+
+	public JPanel getHSpacer20() {
+		return form_hSpacer20;
+	}
+
+	public JTextField getOwnUserNameTextField() {
+		return form_ownUserNameTextField;
+	}
+
+	public JPanel getHSpacer21() {
+		return form_hSpacer21;
+	}
+
+	public JPanel getPanel14() {
+		return form_panel14;
+	}
+
+	public JPanel getHSpacer22() {
+		return form_hSpacer22;
+	}
+
+	public JLabel getLabel7() {
+		return form_label7;
+	}
+
+	public JPanel getHSpacer23() {
+		return form_hSpacer23;
+	}
+
+	public JPanel getOwnBorderColorPanel() {
+		return form_ownBorderColorPanel;
+	}
+
+	public JPanel getHSpacer24() {
+		return form_hSpacer24;
+	}
+
+	protected abstract void ownUserNameTextFieldFocusLost(FocusEvent e);
+
+	protected abstract void ownBorderColorPanelMouseClicked(MouseEvent e);
+
 	protected abstract void colorPickerPanelMouseClicked(MouseEvent e);
 
 	private void initComponents() {
@@ -210,13 +276,29 @@ public abstract class PropertiesPanel extends JPanel {
 		form_panel3 = new JPanel();
 		form_vSpacer1 = new JPanel(null);
 		form_tabbedPane = new JTabbedPane();
+		form_scrollPane2 = new JScrollPane();
+		form_clientsPanel2 = new JPanel();
+		form_panel10 = new JPanel();
+		form_vSpacer4 = new JPanel(null);
+		form_panel13 = new JPanel();
+		form_hSpacer19 = new JPanel(null);
+		form_label6 = new JLabel();
+		form_hSpacer20 = new JPanel(null);
+		form_ownUserNameTextField = new JTextField();
+		form_hSpacer21 = new JPanel(null);
+		form_panel14 = new JPanel();
+		form_hSpacer22 = new JPanel(null);
+		form_label7 = new JLabel();
+		form_hSpacer23 = new JPanel(null);
+		form_ownBorderColorPanel = new JPanel();
+		form_hSpacer24 = new JPanel(null);
 		form_clientsScrollPane = new JScrollPane();
 		form_clientsPanel = new JPanel();
 		form_panel5 = new JPanel();
 		form_vSpacer3 = new JPanel(null);
 		form_panel6 = new JPanel();
 		form_hSpacer12 = new JPanel(null);
-		form_clientSelectorComboBox = new JComboBox();
+		form_clientSelectorComboBox = new JComboBox<>();
 		form_hSpacer13 = new JPanel(null);
 		form_panel7 = new JPanel();
 		form_hSpacer3 = new JPanel(null);
@@ -327,6 +409,72 @@ public abstract class PropertiesPanel extends JPanel {
 			//======== form_tabbedPane ========
 			{
 
+				//======== form_scrollPane2 ========
+				{
+
+					//======== form_clientsPanel2 ========
+					{
+						form_clientsPanel2.setLayout(new BorderLayout());
+
+						//======== form_panel10 ========
+						{
+							form_panel10.setLayout(new GridLayout(5, 0));
+							form_panel10.add(form_vSpacer4);
+
+							//======== form_panel13 ========
+							{
+								form_panel13.setLayout(new GridLayout());
+								form_panel13.add(form_hSpacer19);
+
+								//---- form_label6 ----
+								form_label6.setText("username:");
+								form_panel13.add(form_label6);
+								form_panel13.add(form_hSpacer20);
+
+								//---- form_ownUserNameTextField ----
+								form_ownUserNameTextField.addFocusListener(new FocusAdapter() {
+									@Override
+									public void focusLost(FocusEvent e) {
+										ownUserNameTextFieldFocusLost(e);
+									}
+								});
+								form_panel13.add(form_ownUserNameTextField);
+								form_panel13.add(form_hSpacer21);
+							}
+							form_panel10.add(form_panel13);
+
+							//======== form_panel14 ========
+							{
+								form_panel14.setLayout(new GridLayout());
+								form_panel14.add(form_hSpacer22);
+
+								//---- form_label7 ----
+								form_label7.setText("border color:");
+								form_panel14.add(form_label7);
+								form_panel14.add(form_hSpacer23);
+
+								//======== form_ownBorderColorPanel ========
+								{
+									form_ownBorderColorPanel.setBorder(new LineBorder(Color.black, 1, true));
+									form_ownBorderColorPanel.addMouseListener(new MouseAdapter() {
+										@Override
+										public void mouseClicked(MouseEvent e) {
+											ownBorderColorPanelMouseClicked(e);
+										}
+									});
+									form_ownBorderColorPanel.setLayout(new BorderLayout());
+								}
+								form_panel14.add(form_ownBorderColorPanel);
+								form_panel14.add(form_hSpacer24);
+							}
+							form_panel10.add(form_panel14);
+						}
+						form_clientsPanel2.add(form_panel10, BorderLayout.NORTH);
+					}
+					form_scrollPane2.setViewportView(form_clientsPanel2);
+				}
+				form_tabbedPane.addTab("user", form_scrollPane2);
+
 				//======== form_clientsScrollPane ========
 				{
 					form_clientsScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -346,6 +494,7 @@ public abstract class PropertiesPanel extends JPanel {
 								form_panel6.add(form_hSpacer12);
 
 								//---- form_clientSelectorComboBox ----
+								form_clientSelectorComboBox.addPropertyChangeListener(e -> clientSelectorComboBoxPropertyChange(e));
 								form_clientSelectorComboBox.addItemListener(e -> clientSelectorComboBoxItemStateChanged(e));
 								form_panel6.add(form_clientSelectorComboBox);
 								form_panel6.add(form_hSpacer13);
@@ -452,13 +601,29 @@ public abstract class PropertiesPanel extends JPanel {
 	protected JPanel form_panel3;
 	protected JPanel form_vSpacer1;
 	protected JTabbedPane form_tabbedPane;
+	protected JScrollPane form_scrollPane2;
+	protected JPanel form_clientsPanel2;
+	protected JPanel form_panel10;
+	protected JPanel form_vSpacer4;
+	protected JPanel form_panel13;
+	protected JPanel form_hSpacer19;
+	protected JLabel form_label6;
+	protected JPanel form_hSpacer20;
+	protected JTextField form_ownUserNameTextField;
+	protected JPanel form_hSpacer21;
+	protected JPanel form_panel14;
+	protected JPanel form_hSpacer22;
+	protected JLabel form_label7;
+	protected JPanel form_hSpacer23;
+	protected JPanel form_ownBorderColorPanel;
+	protected JPanel form_hSpacer24;
 	protected JScrollPane form_clientsScrollPane;
 	protected JPanel form_clientsPanel;
 	protected JPanel form_panel5;
 	protected JPanel form_vSpacer3;
 	protected JPanel form_panel6;
 	protected JPanel form_hSpacer12;
-	protected JComboBox form_clientSelectorComboBox;
+	protected JComboBox<String> form_clientSelectorComboBox;
 	protected JPanel form_hSpacer13;
 	protected JPanel form_panel7;
 	protected JPanel form_hSpacer3;

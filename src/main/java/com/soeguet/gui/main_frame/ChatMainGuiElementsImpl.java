@@ -19,8 +19,9 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayDeque;
 import java.util.HashMap;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 /**
@@ -30,8 +31,9 @@ import java.util.logging.Logger;
 public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElementsInterface {
 
     private final Logger logger = Logger.getLogger(ChatMainGuiElementsImpl.class.getName());
-    private final ArrayDeque<String> messageQueue;
+    private final LinkedBlockingDeque<String> messageQueue;
     private final HashMap<String, CustomUserProperties> chatClientPropertiesHashMap;
+    private final LinkedBlockingDeque<String> clientMessageQueue;
     private final ObjectMapper objectMapper;
     private final CustomProperties customProperties;
     private GuiFunctionality guiFunctionality;
@@ -44,6 +46,8 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     private String username = "yasman";
     private JPanel messagePanel;
 
+    private AtomicBoolean isProcessingClientMessages = new AtomicBoolean(false);
+
     /**
      Initializes the main GUI elements for the chat application.
      Sets up the GUI functionality, calculates the margins for the scroll pane,
@@ -51,7 +55,8 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
      */
     public ChatMainGuiElementsImpl() {
 
-        messageQueue = new ArrayDeque<>();
+        clientMessageQueue = new LinkedBlockingDeque<>();
+        messageQueue = new LinkedBlockingDeque<>();
         chatClientPropertiesHashMap = new HashMap<>();
         objectMapper = new ObjectMapper();
         customProperties = new CustomProperties(this);
@@ -95,14 +100,14 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
         }
     }
 
-    /**
-     * Returns the custom properties object.
-     *
-     * @return the custom properties object.
-     */
-    public CustomProperties getCustomProperties() {
+    public AtomicBoolean getIsProcessingClientMessages() {
 
-        return customProperties;
+        return isProcessingClientMessages;
+    }
+
+    public void setIsProcessingClientMessages(AtomicBoolean isProcessingClientMessages) {
+
+        this.isProcessingClientMessages = isProcessingClientMessages;
     }
 
     /**
@@ -264,13 +269,11 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     }
 
     /**
-     Returns the message queue.
+     Retrieves the message queue containing the messages.
 
-     <p>This method retrieves the current message queue of the ChatMainGuiElementsImpl object.
-
-     @return The message queue.
+     @return the LinkedBlockingDeque<String> representing the message queue.
      */
-    public ArrayDeque<String> getMessageQueue() {
+    public LinkedBlockingDeque<String> getMessageQueue() {
 
         return messageQueue;
     }
@@ -291,6 +294,26 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     public HashMap<String, CustomUserProperties> getChatClientPropertiesHashMap() {
 
         return chatClientPropertiesHashMap;
+    }
+
+    /**
+     Returns the custom properties object.
+
+     @return the custom properties object.
+     */
+    public CustomProperties getCustomProperties() {
+
+        return customProperties;
+    }
+
+    /**
+     Retrieves the client message queue.
+
+     @return A LinkedBlockingDeque object representing the client message queue.
+     */
+    public LinkedBlockingDeque<String> getClientMessageQueue() {
+
+        return clientMessageQueue;
     }
 
     public void setWebsocketClient(CustomWebsocketClient websocketClient) {

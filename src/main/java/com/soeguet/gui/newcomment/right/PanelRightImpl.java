@@ -2,6 +2,7 @@ package com.soeguet.gui.newcomment.right;
 
 import com.soeguet.gui.interaction.ReplyPanelImpl;
 import com.soeguet.gui.main_frame.MainGuiElementsInterface;
+import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.newcomment.right.generated.PanelRight;
 import com.soeguet.gui.newcomment.util.QuotePanelImpl;
 import com.soeguet.gui.newcomment.util.WrapEditorKit;
@@ -18,7 +19,7 @@ import java.util.logging.Logger;
 /**
  Implementation of the PanelRight class that is responsible for populating the chat bubble and handling user interaction.
  */
-public class PanelRightImpl extends PanelRight {
+public class PanelRightImpl extends PanelRight implements CommentInterface {
 
     private final Logger logger = Logger.getLogger(PanelRightImpl.class.getName());
     private final JFrame mainFrame;

@@ -119,6 +119,15 @@ public class PropertiesPanelImpl extends PropertiesPanel {
     @Override
     protected void nicknameTextFieldFocusLost(FocusEvent e) {
 
+        MainGuiElementsInterface gui = getMainFrame();
+        assert gui != null;
+
+        String nickname = getNicknameTextField().getText();
+        String username = getUsernameTextField().getText();
+
+        gui.getChatClientPropertiesHashMap().get(username).setNickname(nickname);
+
+        gui.getCustomProperties().save();
     }
 
     @Override
@@ -137,19 +146,16 @@ public class PropertiesPanelImpl extends PropertiesPanel {
 
         selectedClientInComboBox = gui.getChatClientPropertiesHashMap().get(selectedItem);
 
-        setUpComponentsOnPropertiesPanel(selectedClientInComboBox);
-
         gui.getCustomProperties().save();
+
+        setUpComponentsOnPropertiesPanel(selectedClientInComboBox);
     }
 
     @Override
     protected void colorPickerPanelMouseClicked(MouseEvent e) {
 
-        if (!(mainFrame instanceof MainGuiElementsInterface)) {
-            return;
-        }
-
         MainGuiElementsInterface gui = getMainFrame();
+        assert gui != null;
 
         //determin selected client from combobox
         String selectedItem = (String) getClientSelectorComboBox().getSelectedItem();
@@ -160,5 +166,23 @@ public class PropertiesPanelImpl extends PropertiesPanel {
         getColorPickerPanel().setBackground(color);
 
         gui.getChatClientPropertiesHashMap().get(selectedItem).setBorderColor(color.getRGB());
+    }
+
+    @Override
+    protected void ownUserNameTextFieldFocusLost(FocusEvent e) {
+
+    }
+
+    @Override
+    protected void ownBorderColorPanelMouseClicked(MouseEvent e) {
+        MainGuiElementsInterface gui = getMainFrame();
+        assert gui != null;
+
+        Color borderColor = new Color(gui.getChatClientPropertiesHashMap().get("own").getBorderColor());
+
+        Color color = JColorChooser.showDialog(this, "Choose a color", borderColor);
+        getColorPickerPanel().setBackground(color);
+
+        gui.getChatClientPropertiesHashMap().get("own").setBorderColor(color.getRGB());
     }
 }

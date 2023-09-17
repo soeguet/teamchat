@@ -78,6 +78,65 @@ new FormModel {
 				add( new FormContainer( "javax.swing.JTabbedPane", new FormLayoutManager( class javax.swing.JTabbedPane ) ) {
 					name: "tabbedPane"
 					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+						name: "scrollPane2"
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+							name: "clientsPanel2"
+							add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
+								"rows": 5
+							} ) {
+								name: "panel10"
+								add( new FormComponent( "com.jformdesigner.designer.wrapper.VSpacer" ) {
+									name: "vSpacer4"
+								} )
+								add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) ) {
+									name: "panel13"
+									add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
+										name: "hSpacer19"
+									} )
+									add( new FormComponent( "javax.swing.JLabel" ) {
+										name: "label6"
+										"text": "username:"
+									} )
+									add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
+										name: "hSpacer20"
+									} )
+									add( new FormComponent( "javax.swing.JTextField" ) {
+										name: "ownUserNameTextField"
+										addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "ownUserNameTextFieldFocusLost", true ) )
+									} )
+									add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
+										name: "hSpacer21"
+									} )
+								} )
+								add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) ) {
+									name: "panel14"
+									add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
+										name: "hSpacer22"
+									} )
+									add( new FormComponent( "javax.swing.JLabel" ) {
+										name: "label7"
+										"text": "border color:"
+									} )
+									add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
+										name: "hSpacer23"
+									} )
+									add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+										name: "ownBorderColorPanel"
+										"border": &LineBorder0 new javax.swing.border.LineBorder( sfield java.awt.Color black, 1, true )
+										addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "ownBorderColorPanelMouseClicked", true ) )
+									} )
+									add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
+										name: "hSpacer24"
+									} )
+								} )
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "North"
+							} )
+						} )
+					}, new FormLayoutConstraints( null ) {
+						"title": "user"
+					} )
+					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 						name: "clientsScrollPane"
 						"horizontalScrollBarPolicy": 31
 						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
@@ -96,7 +155,11 @@ new FormModel {
 									} )
 									add( new FormComponent( "javax.swing.JComboBox" ) {
 										name: "clientSelectorComboBox"
+										auxiliary() {
+											"JavaCodeGenerator.typeParameters": "String"
+										}
 										addEvent( new FormEvent( "java.beans.PropertyChangeListener", "propertyChange", "clientSelectorComboBoxPropertyChange", true ) )
+										addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "clientSelectorComboBoxItemStateChanged", true ) )
 									} )
 									add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
 										name: "hSpacer13"
@@ -156,7 +219,7 @@ new FormModel {
 									} )
 									add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
 										name: "colorPickerPanel"
-										"border": new javax.swing.border.LineBorder( sfield java.awt.Color black, 1, true )
+										"border": #LineBorder0
 										addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "colorPickerPanelMouseClicked", true ) )
 									} )
 									add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {

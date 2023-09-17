@@ -3,6 +3,7 @@ package com.soeguet.behaviour;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.gui.main_frame.MainGuiElementsInterface;
+import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.newcomment.left.PanelLeftImpl;
 import com.soeguet.gui.newcomment.right.PanelRightImpl;
 import com.soeguet.model.MessageModel;
@@ -38,47 +39,78 @@ public class GuiFunctionality implements SocketToGuiInterface {
     }
 
     /**
-     Fixes the scroll speed of the scroll pane associated with the main text background.
-     If the main frame is an instance of {@link MainGuiElementsInterface}, then it retrieves the vertical scroll bar
-     of the main text background scroll pane and sets its unit increment to 16.
+     Fixes the scroll speed for the main text background scroll pane.
+     This method sets the unit increment of the vertical scrollbar of the main text background scroll pane to 20.
+     This ensures that the scrolling speed is faster.
      */
     private void fixScrollPaneScrollSpeed() {
 
-        if (mainFrame instanceof MainGuiElementsInterface) {
-            ((MainGuiElementsInterface) mainFrame).getMainTextBackgroundScrollPane().getVerticalScrollBar().setUnitIncrement(16);
-        }
+        MainGuiElementsInterface gui = getMainFrame();
+        assert gui != null;
+
+        gui.getMainTextBackgroundScrollPane().getVerticalScrollBar().setUnitIncrement(25);
     }
 
     /**
-     Clears the text pane and sends a message to the socket.
-     If the main frame is an instance of {@link MainGuiElementsInterface}, it performs the following steps:
-     1. Retrieves the user's input from the GUI and stores it in a variable.
-     2. Clears the text pane in the GUI.
-     3. Converts the user's input to JSON format and stores it in a variable.
-     4. Sends the message to the socket using the JSON string and the GUI.
+     Retrieves the main frame if it is an instance of {@link MainGuiElementsInterface}.
+
+     @return The main frame if it is an instance of {@link MainGuiElementsInterface}, otherwise null.
+     */
+    private MainGuiElementsInterface getMainFrame() {
+
+        if (!(mainFrame instanceof MainGuiElementsInterface)) {
+            return null;
+        }
+
+        return (MainGuiElementsInterface) mainFrame;
+    }
+
+    /**
+     Displays the nickname instead of the username in a comment.
+
+     If the nickname parameter is not null and not empty after trimming,
+     it sets the text of the name label in the comment to the nickname.
+
+     @param nickname the nickname to be displayed
+     @param comment  the comment object containing the name label
+     */
+    private static void displayNicknameInsteadOfUsername(String nickname, CommentInterface comment) {
+
+        if (nickname != null && !nickname.trim().isEmpty()) {
+            comment.getNameLabel().setText(nickname);
+        }
+    }
+
+    private static void addMessagePanelToMainChatPanel(MainGuiElementsInterface gui, CommentInterface message, String alignment) {
+
+        gui.getMainTextPanel().add((JPanel) message, "w 70%, " + alignment + ", wrap");
+    }
+
+    /**
+     Clear the text pane and send the message to the socket.
+
+     This method retrieves the main frame instance and performs the following steps:
+     1. Retrieves the text input from the GUI using the {@link #getTextFromInput(MainGuiElementsInterface)} method.
+     2. Clears the text pane using the {@link #clearTextPane(MainGuiElementsInterface)} method.
+     3. Converts the user text input to JSON format using the {@link #convertUserTextToJSON(String, MainGuiElementsInterface)} method.
+     4. Sends the message to the socket using the {@link #sendMessageToSocket(String, MainGuiElementsInterface)} method.
+
+     @throws AssertionError if the main frame instance is null
+     @see #getTextFromInput(MainGuiElementsInterface)
+     @see #clearTextPane(MainGuiElementsInterface)
+     @see #convertUserTextToJSON(String, MainGuiElementsInterface)
+     @see #sendMessageToSocket(String, MainGuiElementsInterface)
      */
     public void clearTextPaneAndSendMessageToSocket() {
 
-        if (isInstanceOfMainGuiElementsInterface(mainFrame)) {
+        MainGuiElementsInterface gui = getMainFrame();
+        assert gui != null;
 
-            MainGuiElementsInterface gui = (MainGuiElementsInterface) mainFrame;
-            String userTextInput = getTextFromInput(gui);
-            clearTextPane(gui);
-            String messageString = convertUserTextToJSON(userTextInput, gui);
-            sendMessageToSocket(messageString, gui);
-        }
-    }
+        String userTextInput = getTextFromInput(gui);
+        clearTextPane(gui);
+        String messageString = convertUserTextToJSON(userTextInput, gui);
+        sendMessageToSocket(messageString, gui);
 
-    /**
-     Checks if the given object is an instance of {@link MainGuiElementsInterface}.
-
-     @param obj The object to check.
-
-     @return <code>true</code> if the given object is an instance of {@link MainGuiElementsInterface}, <code>false</code> otherwise.
-     */
-    private boolean isInstanceOfMainGuiElementsInterface(Object obj) {
-
-        return obj instanceof MainGuiElementsInterface;
     }
 
     /**
@@ -140,8 +172,11 @@ public class GuiFunctionality implements SocketToGuiInterface {
     private String convertToJSON(MessageModel messageModel, MainGuiElementsInterface gui) {
 
         try {
+
             return gui.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(messageModel);
+
         } catch (JsonProcessingException e) {
+
             throw new RuntimeException(e);
         }
     }
@@ -166,21 +201,25 @@ public class GuiFunctionality implements SocketToGuiInterface {
     @Override
     public void onMessage(String message) {
 
-        writeGuiMessageToChatPanel(message);
+        MainGuiElementsInterface gui = getMainFrame();
+        assert gui != null;
+
+        gui.getClientMessageQueue().add(message);
+
+        if (!gui.getIsProcessingClientMessages().get()) {
+            writeGuiMessageToChatPanel();
+        }
     }
 
-    /**
-     Writes a GUI message to the chat panel.
+    private void writeGuiMessageToChatPanel() {
 
-     @param message the message to write
-     */
-    private void writeGuiMessageToChatPanel(String message) {
+        MainGuiElementsInterface gui = getMainFrame();
+        assert gui != null;
 
-        if (!(mainFrame instanceof MainGuiElementsInterface)) {
-            return;
-        }
+        gui.getIsProcessingClientMessages().set(true);
 
-        MainGuiElementsInterface gui = (MainGuiElementsInterface) mainFrame;
+        String message = gui.getClientMessageQueue().poll();
+        assert message != null;
 
         MessageModel messageModel = getMessageModel(message);
 
@@ -192,23 +231,35 @@ public class GuiFunctionality implements SocketToGuiInterface {
         if (messageModel.getSender().equals(gui.getUsername())) {
 
             PanelRightImpl panelRight = new PanelRightImpl(mainFrame, messageModel, PanelTypes.NORMAL);
-
             panelRight.setBorderColor(borderColor);
-            displayNicknameInsteadOfUsername(nickname, panelRight.getNameLabel());
+            displayNicknameInsteadOfUsername(nickname, panelRight);
+            addMessagePanelToMainChatPanel(gui, panelRight, "trailing");
 
-            ((MainGuiElementsInterface) mainFrame).getMainTextPanel().add(panelRight, "w 70%, trailing, wrap");
         } else {
+
             PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, messageModel, PanelTypes.NORMAL);
-
             panelLeft.setBorderColor(borderColor);
-            displayNicknameInsteadOfUsername(nickname, panelLeft.getNameLabel());
-
-            ((MainGuiElementsInterface) mainFrame).getMainTextPanel().add(panelLeft, "w 70%, leading, wrap");
+            displayNicknameInsteadOfUsername(nickname, panelLeft);
+            addMessagePanelToMainChatPanel(gui, panelLeft, "leading");
         }
 
         mainFrame.revalidate();
         mainFrame.repaint();
-        scrollMainPanelDownToLastMessage(((MainGuiElementsInterface) mainFrame).getMainTextBackgroundScrollPane());
+        scrollMainPanelDownToLastMessage(gui.getMainTextBackgroundScrollPane());
+
+        checkIfDequeIsEmptyOrStartOver(gui);
+    }
+
+    private void checkIfDequeIsEmptyOrStartOver(MainGuiElementsInterface gui) {
+
+        if (!gui.getClientMessageQueue().isEmpty()) {
+
+            writeGuiMessageToChatPanel();
+
+        } else {
+
+            gui.getIsProcessingClientMessages().set(false);
+        }
     }
 
     /**
@@ -246,7 +297,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
         }
     }
 
-
     /**
      Determines the border color for a given sender in the GUI.
 
@@ -256,6 +306,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
      @param gui    the main GUI elements interface containing the chat client properties map
      @param sender the sender for which the border color is to be determined
+
      @return the Color object representing the border color for the sender, or Color.BLACK if not found
      */
     private Color determineBorderColor(MainGuiElementsInterface gui, String sender) {
@@ -269,41 +320,24 @@ public class GuiFunctionality implements SocketToGuiInterface {
     }
 
     /**
-     * Checks if a nickname is defined for a given sender in the GUI.
-     *
-     * If the sender is present in the chat client properties map and has a valid nickname defined,
-     * the method returns the nickname as a String. Otherwise, it returns null.
-     *
-     * @param gui    the main GUI elements interface containing the chat client properties map
-     * @param sender the sender for which the nickname is to be checked
-     * @return the nickname for the sender as a String, or null if not found
+     Checks if a nickname is defined for a given sender in the GUI.
+
+     If the sender is present in the chat client properties map and has a valid nickname defined,
+     the method returns the nickname as a String. Otherwise, it returns null.
+
+     @param gui    the main GUI elements interface containing the chat client properties map
+     @param sender the sender for which the nickname is to be checked
+
+     @return the nickname for the sender as a String, or null if not found
      */
     private String checkForNickname(MainGuiElementsInterface gui, String sender) {
 
-        if (gui.getChatClientPropertiesHashMap().containsKey(sender) &&
-                gui.getChatClientPropertiesHashMap().get(sender).getNickname() != null &&
-                !gui.getChatClientPropertiesHashMap().get(sender).getNickname().isEmpty()) {
+        if (gui.getChatClientPropertiesHashMap().containsKey(sender) && gui.getChatClientPropertiesHashMap().get(sender).getNickname() != null && !gui.getChatClientPropertiesHashMap().get(sender).getNickname().isEmpty()) {
 
             return gui.getChatClientPropertiesHashMap().get(sender).getNickname();
         }
 
         return null;
-    }
-
-    /**
-     * Displays the nickname instead of the username in the label.
-     *
-     * If the nickname is not null, it sets the name property of the label to the nickname.
-     * Otherwise, it leaves the name property of the label as is.
-     *
-     * @param nickname  the nickname to be displayed in the label
-     * @param nameLabel the label where the nickname will be displayed
-     */
-    private static void displayNicknameInsteadOfUsername(String nickname, JLabel nameLabel) {
-
-        if (nickname != null) {
-            nameLabel.setName(nickname);
-        }
     }
 
     /**

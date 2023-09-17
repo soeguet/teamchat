@@ -1,6 +1,7 @@
 package com.soeguet.gui.popups;
 
 import com.soeguet.gui.main_frame.MainGuiElementsInterface;
+import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.popups.generated.PopupPanel;
 
 import javax.swing.*;
@@ -137,8 +138,6 @@ public class PopupPanelImpl extends PopupPanel {
      */
     private void configurePopupPanelPlacement(MainGuiElementsInterface gui) {
         this.setBounds((gui.getMainTextPanelLayeredPane().getWidth() - 250) / 2, 100, 250, 100);
-        gui.getMainTextPanelLayeredPane().add(this, JLayeredPane.MODAL_LAYER);
+        gui.getMainTextPanelLayeredPane().add(this, JLayeredPane.POPUP_LAYER);
     }
-
-
 }
