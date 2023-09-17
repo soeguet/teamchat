@@ -83,7 +83,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
     private static void addMessagePanelToMainChatPanel(MainGuiElementsInterface gui, CommentInterface message, String alignment) {
 
-        gui.getMainTextPanel().add((JPanel) message, "w 70%, " + alignment + ", wrap");
+        SwingUtilities.invokeLater(() -> gui.getMainTextPanel().add((JPanel) message, "w 70%, " + alignment + ", wrap"));
     }
 
     /**
@@ -259,6 +259,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
         } else {
 
             gui.getIsProcessingClientMessages().set(false);
+            scrollToMax(gui.getMainTextBackgroundScrollPane().getVerticalScrollBar());
         }
     }
 
@@ -316,7 +317,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
             return new Color(gui.getChatClientPropertiesHashMap().get(sender).getBorderColor());
         }
 
-        return Color.BLACK;
+        return new Color(-((int) (Math.random() * 100)) * -((int) (Math.random() * 100)));
     }
 
     /**
@@ -341,13 +342,20 @@ public class GuiFunctionality implements SocketToGuiInterface {
     }
 
     /**
-     Scrolls the main panel down to the last message in the given scroll pane.
+     Scrolls the main panel down to the last message in the scroll pane.
+
+     This method updates the main frame, repaints it, and scrolls the vertical scroll bar
+     to its maximum position in order to display the last message.
 
      @param scrollPane the scroll pane containing the main panel
      */
     public void scrollMainPanelDownToLastMessage(JScrollPane scrollPane) {
 
-        SwingUtilities.invokeLater(() -> scrollToMax(scrollPane.getVerticalScrollBar()));
+        SwingUtilities.invokeLater(() -> {
+            mainFrame.revalidate();
+            mainFrame.repaint();
+            scrollToMax(scrollPane.getVerticalScrollBar());
+        });
     }
 
     /**

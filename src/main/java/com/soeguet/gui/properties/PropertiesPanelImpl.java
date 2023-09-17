@@ -28,6 +28,18 @@ public class PropertiesPanelImpl extends PropertiesPanel {
         setUpComponentsOnPropertiesPanel(selectedClientInComboBox);
     }
 
+    /**
+     This method sets the position of the current element.
+     It sets the bounds of the element based on the size of the main text panel in the GUI.
+     The element is added to the main text panel layered pane with a modal layer.
+
+     Preconditions:
+     - The main frame must be set in the GUI.
+
+     Postconditions:
+     - The position of the element is set.
+     - The element is added to the main text panel layered pane.
+     */
     private void setPosition() {
 
         MainGuiElementsInterface gui = getMainFrame();
@@ -41,6 +53,21 @@ public class PropertiesPanelImpl extends PropertiesPanel {
         gui.getMainTextPanelLayeredPane().add(this, JLayeredPane.MODAL_LAYER);
     }
 
+    /**
+     This method adds clients to the combo box.
+     It retrieves the main frame from the GUI and asserts that it is not null.
+     For each client in the chat client properties hash map, the client is added to the combo box.
+     The selected item in the combo box is retrieved as a string.
+     The selected client in the combo box is set based on the chat client properties hash map.
+
+     Preconditions:
+     - The main frame must be set in the GUI.
+     - The chat client properties hash map must not be null.
+
+     Postconditions:
+     - The clients are added to the combo box.
+     - The selected client in the combo box is set.
+     */
     private void addClientsToComboBox() {
 
         MainGuiElementsInterface gui = getMainFrame();
@@ -55,6 +82,18 @@ public class PropertiesPanelImpl extends PropertiesPanel {
         selectedClientInComboBox = gui.getChatClientPropertiesHashMap().get(selectedItem);
     }
 
+    /**
+     This method sets up the components on the properties panel using the given CustomUserProperties object.
+     It sets the username text field with the username from the CustomUserProperties object.
+     It sets the nickname text field with the nickname from the CustomUserProperties object.
+     It sets the background color of the color picker panel with the border color from the CustomUserProperties object.
+
+     Preconditions:
+     - The CustomUserProperties object must not be null.
+
+     Postconditions:
+     - The components on the properties panel are set up with the values from the CustomUserProperties object.
+     */
     private void setUpComponentsOnPropertiesPanel(CustomUserProperties client) {
 
         form_usernameTextField.setText(client.getUsername());
@@ -152,6 +191,25 @@ public class PropertiesPanelImpl extends PropertiesPanel {
     }
 
     @Override
+    protected void ownUserNameTextFieldFocusLost(FocusEvent e) {
+
+    }
+
+    @Override
+    protected void ownBorderColorPanelMouseClicked(MouseEvent e) {
+
+        MainGuiElementsInterface gui = getMainFrame();
+        assert gui != null;
+
+        Color borderColor = new Color(gui.getChatClientPropertiesHashMap().get("own").getBorderColor());
+
+        Color color = JColorChooser.showDialog(this, "Choose a color", borderColor);
+        getColorPickerPanel().setBackground(color);
+
+        gui.getChatClientPropertiesHashMap().get("own").setBorderColor(color.getRGB());
+    }
+
+    @Override
     protected void colorPickerPanelMouseClicked(MouseEvent e) {
 
         MainGuiElementsInterface gui = getMainFrame();
@@ -166,23 +224,5 @@ public class PropertiesPanelImpl extends PropertiesPanel {
         getColorPickerPanel().setBackground(color);
 
         gui.getChatClientPropertiesHashMap().get(selectedItem).setBorderColor(color.getRGB());
-    }
-
-    @Override
-    protected void ownUserNameTextFieldFocusLost(FocusEvent e) {
-
-    }
-
-    @Override
-    protected void ownBorderColorPanelMouseClicked(MouseEvent e) {
-        MainGuiElementsInterface gui = getMainFrame();
-        assert gui != null;
-
-        Color borderColor = new Color(gui.getChatClientPropertiesHashMap().get("own").getBorderColor());
-
-        Color color = JColorChooser.showDialog(this, "Choose a color", borderColor);
-        getColorPickerPanel().setBackground(color);
-
-        gui.getChatClientPropertiesHashMap().get("own").setBorderColor(color.getRGB());
     }
 }
