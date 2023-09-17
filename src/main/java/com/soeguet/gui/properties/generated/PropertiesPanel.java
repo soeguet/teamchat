@@ -3,6 +3,7 @@ package com.soeguet.gui.properties.generated;
 import java.awt.*;
 
 import java.awt.event.*;
+import java.beans.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import net.miginfocom.swing.*;
@@ -96,8 +97,8 @@ public abstract class PropertiesPanel extends JPanel {
 		return form_panel5;
 	}
 
-	public JComboBox<String> getComboBox1() {
-		return form_comboBox1;
+	public JComboBox<String> getClientSelectorComboBox() {
+		return form_clientSelectorComboBox;
 	}
 
 	public JPanel getPanel6() {
@@ -112,8 +113,8 @@ public abstract class PropertiesPanel extends JPanel {
 		return form_label2;
 	}
 
-	public JTextField getTextField2() {
-		return form_textField2;
+	public JTextField getUsernameTextField() {
+		return form_usernameTextField;
 	}
 
 	public JPanel getPanel8() {
@@ -124,8 +125,8 @@ public abstract class PropertiesPanel extends JPanel {
 		return form_label3;
 	}
 
-	public JTextField getTextField1() {
-		return form_textField1;
+	public JTextField getNicknameTextField() {
+		return form_nicknameTextField;
 	}
 
 	public JPanel getPanel9() {
@@ -188,6 +189,12 @@ public abstract class PropertiesPanel extends JPanel {
 		return form_vSpacer3;
 	}
 
+	protected abstract void nicknameTextFieldFocusLost(FocusEvent e);
+
+	protected abstract void clientSelectorComboBoxPropertyChange(PropertyChangeEvent e);
+
+	protected abstract void clientSelectorComboBoxItemStateChanged(ItemEvent e);
+
 	protected abstract void colorPickerPanelMouseClicked(MouseEvent e);
 
 	private void initComponents() {
@@ -209,19 +216,19 @@ public abstract class PropertiesPanel extends JPanel {
 		form_vSpacer3 = new JPanel(null);
 		form_panel6 = new JPanel();
 		form_hSpacer12 = new JPanel(null);
-		form_comboBox1 = new JComboBox<>();
+		form_clientSelectorComboBox = new JComboBox();
 		form_hSpacer13 = new JPanel(null);
 		form_panel7 = new JPanel();
 		form_hSpacer3 = new JPanel(null);
 		form_label2 = new JLabel();
 		form_hSpacer11 = new JPanel(null);
-		form_textField2 = new JTextField();
+		form_usernameTextField = new JTextField();
 		form_hSpacer4 = new JPanel(null);
 		form_panel8 = new JPanel();
 		form_hSpacer5 = new JPanel(null);
 		form_label3 = new JLabel();
 		form_hSpacer10 = new JPanel(null);
-		form_textField1 = new JTextField();
+		form_nicknameTextField = new JTextField();
 		form_hSpacer6 = new JPanel(null);
 		form_panel9 = new JPanel();
 		form_hSpacer7 = new JPanel(null);
@@ -337,7 +344,10 @@ public abstract class PropertiesPanel extends JPanel {
 							{
 								form_panel6.setLayout(new GridLayout());
 								form_panel6.add(form_hSpacer12);
-								form_panel6.add(form_comboBox1);
+
+								//---- form_clientSelectorComboBox ----
+								form_clientSelectorComboBox.addItemListener(e -> clientSelectorComboBoxItemStateChanged(e));
+								form_panel6.add(form_clientSelectorComboBox);
 								form_panel6.add(form_hSpacer13);
 							}
 							form_panel5.add(form_panel6);
@@ -352,9 +362,9 @@ public abstract class PropertiesPanel extends JPanel {
 								form_panel7.add(form_label2);
 								form_panel7.add(form_hSpacer11);
 
-								//---- form_textField2 ----
-								form_textField2.setEditable(false);
-								form_panel7.add(form_textField2);
+								//---- form_usernameTextField ----
+								form_usernameTextField.setEditable(false);
+								form_panel7.add(form_usernameTextField);
 								form_panel7.add(form_hSpacer4);
 							}
 							form_panel5.add(form_panel7);
@@ -368,7 +378,15 @@ public abstract class PropertiesPanel extends JPanel {
 								form_label3.setText("nickname:");
 								form_panel8.add(form_label3);
 								form_panel8.add(form_hSpacer10);
-								form_panel8.add(form_textField1);
+
+								//---- form_nicknameTextField ----
+								form_nicknameTextField.addFocusListener(new FocusAdapter() {
+									@Override
+									public void focusLost(FocusEvent e) {
+										nicknameTextFieldFocusLost(e);
+									}
+								});
+								form_panel8.add(form_nicknameTextField);
 								form_panel8.add(form_hSpacer6);
 							}
 							form_panel5.add(form_panel8);
@@ -440,19 +458,19 @@ public abstract class PropertiesPanel extends JPanel {
 	protected JPanel form_vSpacer3;
 	protected JPanel form_panel6;
 	protected JPanel form_hSpacer12;
-	protected JComboBox<String> form_comboBox1;
+	protected JComboBox form_clientSelectorComboBox;
 	protected JPanel form_hSpacer13;
 	protected JPanel form_panel7;
 	protected JPanel form_hSpacer3;
 	protected JLabel form_label2;
 	protected JPanel form_hSpacer11;
-	protected JTextField form_textField2;
+	protected JTextField form_usernameTextField;
 	protected JPanel form_hSpacer4;
 	protected JPanel form_panel8;
 	protected JPanel form_hSpacer5;
 	protected JLabel form_label3;
 	protected JPanel form_hSpacer10;
-	protected JTextField form_textField1;
+	protected JTextField form_nicknameTextField;
 	protected JPanel form_hSpacer6;
 	protected JPanel form_panel9;
 	protected JPanel form_hSpacer7;

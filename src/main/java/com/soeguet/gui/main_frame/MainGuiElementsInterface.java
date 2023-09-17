@@ -2,6 +2,7 @@ package com.soeguet.gui.main_frame;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.behaviour.GuiFunctionality;
+import com.soeguet.properties.CustomProperties;
 import com.soeguet.properties.CustomUserProperties;
 import com.soeguet.socket_client.CustomWebsocketClient;
 
@@ -147,4 +148,11 @@ public interface MainGuiElementsInterface {
      @return the HashMap containing the chat client properties
      */
     HashMap<String, CustomUserProperties> getChatClientPropertiesHashMap();
+
+    /**
+     Returns the custom properties of the chat client.
+
+     @return the custom properties of the chat client
+     */
+    CustomProperties getCustomProperties();
 }

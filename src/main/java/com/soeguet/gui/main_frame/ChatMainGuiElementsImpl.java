@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.behaviour.GuiFunctionality;
 import com.soeguet.gui.main_frame.generated.ChatPanel;
 import com.soeguet.gui.properties.PropertiesPanelImpl;
+import com.soeguet.properties.CustomProperties;
 import com.soeguet.properties.CustomUserProperties;
 import com.soeguet.socket_client.CustomWebsocketClient;
 import com.soeguet.util.EmojiHandler;
@@ -29,9 +30,10 @@ import java.util.logging.Logger;
 public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElementsInterface {
 
     private final Logger logger = Logger.getLogger(ChatMainGuiElementsImpl.class.getName());
-    private final ArrayDeque<String> messageQueue = new ArrayDeque<>();
-    private final HashMap<String, CustomUserProperties> chatClientPropertiesHashMap = new HashMap<>();
-    ObjectMapper objectMapper = new ObjectMapper();
+    private final ArrayDeque<String> messageQueue;
+    private final HashMap<String, CustomUserProperties> chatClientPropertiesHashMap;
+    private final ObjectMapper objectMapper;
+    private final CustomProperties customProperties;
     private GuiFunctionality guiFunctionality;
     private URI serverUri;
     private int JSCROLLPANE_MARGIN_RIGHT_BORDER;
@@ -48,6 +50,11 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
      initializes the emoji handler and list, and establishes a WebSocket connection.
      */
     public ChatMainGuiElementsImpl() {
+
+        messageQueue = new ArrayDeque<>();
+        chatClientPropertiesHashMap = new HashMap<>();
+        objectMapper = new ObjectMapper();
+        customProperties = new CustomProperties(this);
 
         initGuiFunctionality();
         setScrollPaneMargins();
@@ -86,6 +93,16 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Returns the custom properties object.
+     *
+     * @return the custom properties object.
+     */
+    public CustomProperties getCustomProperties() {
+
+        return customProperties;
     }
 
     /**

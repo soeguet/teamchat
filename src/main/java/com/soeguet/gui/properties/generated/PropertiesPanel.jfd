@@ -95,7 +95,8 @@ new FormModel {
 										name: "hSpacer12"
 									} )
 									add( new FormComponent( "javax.swing.JComboBox" ) {
-										name: "comboBox1"
+										name: "clientSelectorComboBox"
+										addEvent( new FormEvent( "java.beans.PropertyChangeListener", "propertyChange", "clientSelectorComboBoxPropertyChange", true ) )
 									} )
 									add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
 										name: "hSpacer13"
@@ -114,7 +115,7 @@ new FormModel {
 										name: "hSpacer11"
 									} )
 									add( new FormComponent( "javax.swing.JTextField" ) {
-										name: "textField2"
+										name: "usernameTextField"
 										"editable": false
 									} )
 									add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
@@ -134,7 +135,8 @@ new FormModel {
 										name: "hSpacer10"
 									} )
 									add( new FormComponent( "javax.swing.JTextField" ) {
-										name: "textField1"
+										name: "nicknameTextField"
+										addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "nicknameTextFieldFocusLost", true ) )
 									} )
 									add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
 										name: "hSpacer6"
