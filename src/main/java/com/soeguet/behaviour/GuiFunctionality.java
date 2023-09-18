@@ -2,6 +2,7 @@ package com.soeguet.behaviour;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.soeguet.gui.image_panel.ImagePanelImpl;
 import com.soeguet.gui.main_frame.MainGuiElementsInterface;
 import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.newcomment.left.PanelLeftImpl;
@@ -12,9 +13,16 @@ import com.soeguet.model.PanelTypes;
 import com.soeguet.properties.CustomUserProperties;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.logging.Logger;
 
 /**
  This class provides additional functionality to the GUI.
@@ -23,6 +31,7 @@ import java.util.Random;
  */
 public class GuiFunctionality implements SocketToGuiInterface {
 
+    Logger logger = Logger.getLogger(GuiFunctionality.class.getName());
     private final JFrame mainFrame;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -37,6 +46,96 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         this.mainFrame = mainFrame;
         fixScrollPaneScrollSpeed();
+        addDocumentListenerToTextPane();
+        overrideTransferHandlerOfTextPane();
+    }
+
+    /**
+     Overrides the transfer handler of the text pane in the GUI.
+     This method is responsible for handling dropped data onto the text pane,
+     distinguishing between image and text data and triggering the appropriate actions.
+
+     The original transfer handler is preserved before overriding it with a new transfer handler.
+     */
+    private void overrideTransferHandlerOfTextPane() {
+
+        MainGuiElementsInterface gui = getFrame();
+        assert gui != null;
+
+        //preserve the original transfer handler
+        TransferHandler originalHandler = gui.getTextEditorPane().getTransferHandler();
+
+        gui.getTextEditorPane().setTransferHandler(new TransferHandler() {
+
+            @Override
+            public boolean importData(JComponent comp, Transferable t) {
+
+                if (t.isDataFlavorSupported(DataFlavor.imageFlavor)) {
+                    logger.info("Image dropped");
+                    // trigger if image is dropped
+
+                    new ImagePanelImpl(mainFrame).populateImagePanelFromClipboard();
+
+                    return true;
+                } else if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+                    logger.info("Text dropped");
+                    // trigger if text is dropped
+                    return originalHandler.importData(comp, t);
+                }
+                return false;
+            }
+        });
+    }
+
+    private void addDocumentListenerToTextPane() {
+
+        MainGuiElementsInterface gui = getFrame();
+        assert gui != null;
+        gui.getTextEditorPane().getDocument().addDocumentListener(new DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+
+                int offset = e.getOffset();
+                int length = e.getLength();
+                Document doc = e.getDocument();
+
+                try {
+                    String insertedText = doc.getText(offset, length);
+                    System.out.println("Zuletzt eingefügt: " + insertedText);
+                } catch (BadLocationException ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+
+            }
+        });
+
+    }
+
+    /**
+     Returns the main GUI frame as a MainGuiElementsInterface object.
+     The main frame is responsible for displaying the graphical user interface.
+
+     @return the main GUI frame as a MainGuiElementsInterface object,
+     or null if the main frame is not an instance of MainGuiElementsInterface
+     */
+    private MainGuiElementsInterface getFrame() {
+
+        if (!(mainFrame instanceof MainGuiElementsInterface)) {
+
+            return null;
+        }
+
+        return (MainGuiElementsInterface) mainFrame;
     }
 
     /**
@@ -63,7 +162,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
             return null;
         }
 
-        return (MainGuiElementsInterface) mainFrame;
+        return getFrame();
     }
 
     /**

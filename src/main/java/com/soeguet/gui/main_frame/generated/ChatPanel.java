@@ -1,306 +1,338 @@
 package com.soeguet.gui.main_frame.generated;
 
+import net.miginfocom.swing.MigLayout;
+
+import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import net.miginfocom.swing.*;
+import java.beans.PropertyChangeEvent;
 /*
  * Created by JFormDesigner on Mon Sep 04 21:08:05 CEST 2023
  */
 
-
-
 /**
- * @author soeguet
- */
+ @author soeguet */
 public abstract class ChatPanel extends JFrame {
 
-	protected String lastMessageSenderName = "";
-	protected String lastMessageTimeStamp = "";
+    protected String lastMessageSenderName = "";
+    protected String lastMessageTimeStamp = "";
 
-	public ChatPanel() {
-		initComponents();
-	}
+    public ChatPanel() {
 
-	protected abstract void thisPropertyChange(PropertyChangeEvent e);
+        initComponents();
+    }
 
-	protected abstract void thisComponentResized(ComponentEvent e);
+    protected abstract void thisPropertyChange(PropertyChangeEvent e);
 
-	protected abstract void thisMouseClicked(MouseEvent e);
+    protected abstract void thisComponentResized(ComponentEvent e);
 
-	protected abstract void propertiesMenuItemMousePressed(MouseEvent e);
+    protected abstract void thisMouseClicked(MouseEvent e);
 
-	protected abstract void resetConnectionMenuItemMousePressed(MouseEvent e);
+    protected abstract void propertiesMenuItemMousePressed(MouseEvent e);
 
-	protected abstract void exitMenuItemMousePressed(MouseEvent e);
+    protected abstract void resetConnectionMenuItemMousePressed(MouseEvent e);
 
-	protected abstract void participantsMenuItemMousePressed(MouseEvent e);
+    protected abstract void exitMenuItemMousePressed(MouseEvent e);
 
-	protected abstract void mainTextPanelMouseClicked(MouseEvent e);
+    protected abstract void participantsMenuItemMousePressed(MouseEvent e);
 
-	protected abstract void textEditorPaneMouseClicked(MouseEvent e);
+    protected abstract void mainTextPanelMouseClicked(MouseEvent e);
 
-	protected abstract void textEditorPaneKeyPressed(KeyEvent e);
+    protected abstract void textEditorPaneMouseClicked(MouseEvent e);
 
-	protected abstract void textEditorPaneKeyReleased(KeyEvent e);
+    protected abstract void textEditorPaneKeyPressed(KeyEvent e);
 
-	protected abstract void pictureButtonMouseClicked(MouseEvent e);
+    protected abstract void textEditorPaneKeyReleased(KeyEvent e);
 
-	protected abstract void emojiButton(ActionEvent e);
+    protected abstract void pictureButtonMouseClicked(MouseEvent e);
 
-	protected abstract void sendButton(ActionEvent e);
+    protected abstract void emojiButton(ActionEvent e);
 
-	/**
-	 * This method returns the name of the sender of the last message.
-	 *
-	 * @return the name of the last message sender
-	 */
-	public String getLastMessageSenderName() {
-		return this.lastMessageSenderName;
-	}
+    protected abstract void sendButton(ActionEvent e);
 
-	/**
-	 * This method sets the name of the sender of the last message.
-	 *
-	 * @param lastMessageSenderName the name of the sender of the last message
-	 */
-	public void setLastMessageSenderName(String lastMessageSenderName) {
-		this.lastMessageSenderName = lastMessageSenderName;
-	}
+    /**
+     * This method returns the name of the sender of the last message.
+     *
+     * @return the name of the last message sender
+     */
+    public String getLastMessageSenderName() {
 
-	/**
-	 * Retrieves the timestamp of the last message.
-	 *
-	 * @return The timestamp of the last message as a string.
-	 */
-	public String getLastMessageTimeStamp() {
-		return this.lastMessageTimeStamp;
-	}
+        return this.lastMessageSenderName;
+    }
 
-	/**
-	 * Sets the timestamp of the last message.
-	 *
-	 * @param lastMessageTimeStamp The timestamp of the last message as a string.
-	 */
-	public void setLastMessageTimeStamp(String lastMessageTimeStamp) {
-		this.lastMessageTimeStamp = lastMessageTimeStamp;
-	}
+    /**
+     * This method sets the name of the sender of the last message.
+     *
+     * @param lastMessageSenderName the name of the sender of the last message
+     */
+    public void setLastMessageSenderName(String lastMessageSenderName) {
 
-	/**
-	 * Returns the panel associated with this object.
-	 *
-	 * @return the panel associated with this object
-	 */
-	public JPanel getPanel() {
-		return this.form_panel;
-	}
+        this.lastMessageSenderName = lastMessageSenderName;
+    }
 
-	/**
-	 * Retrieves the menu bar associated with the form.
-	 *
-	 * @return the JMenuBar associated with the form.
-	 */
-	public JMenuBar getMenuBar1() {
-		return this.form_menuBar1;
-	}
+    /**
+     * Retrieves the timestamp of the last message.
+     *
+     * @return The timestamp of the last message as a string.
+     */
+    public String getLastMessageTimeStamp() {
 
-	/**
-	 * Retrieves the file menu.
-	 *
-	 * @return the file menu as a JMenu object.
-	 */
-	public JMenu getFileMenu() {
-		return this.form_fileMenu;
-	}
+        return this.lastMessageTimeStamp;
+    }
 
-	/**
-	 * Retrieves the properties menu item of the form.
-	 *
-	 * @return The properties menu item.
-	 */
-	public JMenuItem getPropertiesMenuItem() {
-		return this.form_propertiesMenuItem;
-	}
+    /**
+     * Sets the timestamp of the last message.
+     *
+     * @param lastMessageTimeStamp The timestamp of the last message as a string.
+     */
+    public void setLastMessageTimeStamp(String lastMessageTimeStamp) {
 
-	/**
-	 * Returns the reset connection menu item.
-	 *
-	 * @return the reset connection menu item.
-	 */
-	public JMenuItem getResetConnectionMenuItem() {
-		return this.form_resetConnectionMenuItem;
-	}
+        this.lastMessageTimeStamp = lastMessageTimeStamp;
+    }
 
-	/**
-	 * Retrieves the exit menu item.
-	 *
-	 * @return the exit menu item
-	 */
-	public JMenuItem getExitMenuItem() {
-		return this.form_exitMenuItem;
-	}
+    /**
+     * Returns the panel associated with this object.
+     *
+     * @return the panel associated with this object
+     */
+    public JPanel getPanel() {
 
-	/**
-	 * Retrieves the extra menu associated with this form.
-	 *
-	 * @return the extra menu.
-	 */
-	public JMenu getExtraMenu() {
-		return this.form_extraMenu;
-	}
+        return this.form_panel;
+    }
 
-	/**
-	 * Retrieves the "Participants" menu item.
-	 *
-	 * @return the "Participants" menu item
-	 */
-	public JMenuItem getParticipantsMenuItem() {
-		return this.form_participantsMenuItem;
-	}
+    /**
+     * Retrieves the menu bar associated with the form.
+     *
+     * @return the JMenuBar associated with the form.
+     */
+    public JMenuBar getMenuBar1() {
 
-	/**
-	 * Returns the main text background scroll pane.
-	 *
-	 * @return the main text background scroll pane
-	 */
-	public JScrollPane getMainTextBackgroundScrollPane() {
-		return this.form_mainTextBackgroundScrollPane;
-	}
+        return this.form_menuBar1;
+    }
 
-	/**
-	 * Returns the main text panel.
-	 *
-	 * @return the main text panel
-	 */
-	public JPanel getMainTextPanel() {
-		return this.form_mainTextPanel;
-	}
+    /**
+     * Retrieves the file menu.
+     *
+     * @return the file menu as a JMenu object.
+     */
+    public JMenu getFileMenu() {
 
-	/**
-	 * Retrieves the interaction area panel.
-	 *
-	 * @return the interaction area panel
-	 */
-	public JPanel getInteractionAreaPanel() {
-		return this.form_interactionAreaPanel;
-	}
+        return this.form_fileMenu;
+    }
 
-	/**
-	 * Retrieves the typing label.
-	 *
-	 * @return the typing label
-	 */
-	public JLabel getTypingLabel() {
-		return this.form_typingLabel;
-	}
+    /**
+     * Retrieves the properties menu item of the form.
+     *
+     * @return The properties menu item.
+     */
+    public JMenuItem getPropertiesMenuItem() {
 
-	/**
-	 * Retrieves Panel1.
-	 *
-	 * @return the Panel1
-	 */
-	/**
-	 * Retrieves the main text field scroll pane.
-	 *
-	 * @return the main text field scroll pane
-	 */
-	public JScrollPane getMainTextFieldScrollPane() {
-		return this.form_mainTextFieldScrollPane;
-	}
+        return this.form_propertiesMenuItem;
+    }
 
-	/**
-	 * Retrieves the TextEditorPane.
-	 *
-	 * @return the TextEditorPane
-	 */
-	public JTextPane getTextEditorPane() {
-		return this.form_textEditorPane;
-	}
+    /**
+     * Returns the reset connection menu item.
+     *
+     * @return the reset connection menu item.
+     */
+    public JMenuItem getResetConnectionMenuItem() {
 
-	/**
-	 * Retrieves the Picture button.
-	 *
-	 * @return the Picture button
-	 */
-	public JButton getPictureButton() {
-		return this.form_pictureButton;
-	}
+        return this.form_resetConnectionMenuItem;
+    }
 
-	/**
-	 * Retrieves the Emoji button.
-	 *
-	 * @return the Emoji button
-	 */
-	public JButton getEmojiButton() {
-		return this.form_emojiButton;
-	}
+    /**
+     * Retrieves the exit menu item.
+     *
+     * @return the exit menu item
+     */
+    public JMenuItem getExitMenuItem() {
 
-	/**
-	 * Retrieves the Send button.
-	 *
-	 * @return the Send button
-	 */
-	public JButton getSendButton() {
-		return this.form_sendButton;
-	}
+        return this.form_exitMenuItem;
+    }
 
-	/**
-	 * Retrieves the layered pane of the main text panel.
-	 *
-	 * @return the layered pane of the main text panel
-	 */
-	public JLayeredPane getMainTextPanelLayeredPane() {
-		return this.form_mainTextPanelLayeredPane;
-	}
+    /**
+     * Retrieves the extra menu associated with this form.
+     *
+     * @return the extra menu.
+     */
+    public JMenu getExtraMenu() {
 
-	public JPanel getPanel2() {
-		return this.form_panel2;
-	}
+        return this.form_extraMenu;
+    }
 
-	public JPanel getPanel3() {
-		return this.form_panel3;
-	}
+    /**
+     * Retrieves the "Participants" menu item.
+     *
+     * @return the "Participants" menu item
+     */
+    public JMenuItem getParticipantsMenuItem() {
 
-	public JPanel getPanel4() {
-		return this.form_panel4;
-	}
+        return this.form_participantsMenuItem;
+    }
 
-	public JPanel getWestMarginPanel() {
-		return this.form_westMarginPanel;
-	}
+    /**
+     * Returns the main text background scroll pane.
+     *
+     * @return the main text background scroll pane
+     */
+    public JScrollPane getMainTextBackgroundScrollPane() {
 
-	public JPanel getPanel6() {
-		return this.form_panel6;
-	}
+        return this.form_mainTextBackgroundScrollPane;
+    }
 
-	public JPanel getPanel5() {
-		return this.form_panel5;
-	}
+    /**
+     * Returns the main text panel.
+     *
+     * @return the main text panel
+     */
+    public JPanel getMainTextPanel() {
 
-	public JPanel getPanel7() {
-		return this.form_panel7;
-	}
+        return this.form_mainTextPanel;
+    }
 
-	public JPanel getHSpacer1() {
-		return this.form_hSpacer1;
-	}
+    /**
+     * Retrieves the interaction area panel.
+     *
+     * @return the interaction area panel
+     */
+    public JPanel getInteractionAreaPanel() {
 
-	public JPanel getVSpacer1() {
-		return this.form_vSpacer1;
-	}
+        return this.form_interactionAreaPanel;
+    }
 
-	public JPanel getHSpacer2() {
-		return this.form_hSpacer2;
-	}
+    /**
+     * Retrieves the typing label.
+     *
+     * @return the typing label
+     */
+    public JLabel getTypingLabel() {
 
-	public JPanel getHSpacer3() {
-		return this.form_hSpacer3;
-	}
+        return this.form_typingLabel;
+    }
 
-	private void initComponents() {
-		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
+    /**
+     * Retrieves Panel1.
+     *
+     * @return the Panel1
+     */
+    /**
+     * Retrieves the main text field scroll pane.
+     *
+     * @return the main text field scroll pane
+     */
+    public JScrollPane getMainTextFieldScrollPane() {
+
+        return this.form_mainTextFieldScrollPane;
+    }
+
+    /**
+     * Retrieves the TextEditorPane.
+     *
+     * @return the TextEditorPane
+     */
+    public JTextPane getTextEditorPane() {
+
+        return this.form_textEditorPane;
+    }
+
+    /**
+     * Retrieves the Picture button.
+     *
+     * @return the Picture button
+     */
+    public JButton getPictureButton() {
+
+        return this.form_pictureButton;
+    }
+
+    /**
+     * Retrieves the Emoji button.
+     *
+     * @return the Emoji button
+     */
+    public JButton getEmojiButton() {
+
+        return this.form_emojiButton;
+    }
+
+    /**
+     * Retrieves the Send button.
+     *
+     * @return the Send button
+     */
+    public JButton getSendButton() {
+
+        return this.form_sendButton;
+    }
+
+    /**
+     * Retrieves the layered pane of the main text panel.
+     *
+     * @return the layered pane of the main text panel
+     */
+    public JLayeredPane getMainTextPanelLayeredPane() {
+
+        return this.form_mainTextPanelLayeredPane;
+    }
+
+    public JPanel getPanel2() {
+
+        return this.form_panel2;
+    }
+
+    public JPanel getPanel3() {
+
+        return this.form_panel3;
+    }
+
+    public JPanel getPanel4() {
+
+        return this.form_panel4;
+    }
+
+    public JPanel getWestMarginPanel() {
+
+        return this.form_westMarginPanel;
+    }
+
+    public JPanel getPanel6() {
+
+        return this.form_panel6;
+    }
+
+    public JPanel getPanel5() {
+
+        return this.form_panel5;
+    }
+
+    public JPanel getPanel7() {
+
+        return this.form_panel7;
+    }
+
+    public JPanel getHSpacer1() {
+
+        return this.form_hSpacer1;
+    }
+
+    public JPanel getVSpacer1() {
+
+        return this.form_vSpacer1;
+    }
+
+    public JPanel getHSpacer2() {
+
+        return this.form_hSpacer2;
+    }
+
+    public JPanel getHSpacer3() {
+
+        return this.form_hSpacer3;
+    }
+
+    private void initComponents() {
+        // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
 		// Generated using JFormDesigner non-commercial license
 		this.form_panel = new JPanel();
 		this.form_menuBar1 = new JMenuBar();
@@ -626,9 +658,9 @@ public abstract class ChatPanel extends JFrame {
 		pack();
 		setLocationRelativeTo(getOwner());
 		// JFormDesigner - End of component initialization  //GEN-END:initComponents  @formatter:on
-	}
+    }
 
-	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
+    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
 	// Generated using JFormDesigner non-commercial license
 	protected JPanel form_panel;
 	protected JMenuBar form_menuBar1;

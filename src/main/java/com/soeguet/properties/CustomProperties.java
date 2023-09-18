@@ -5,7 +5,10 @@ import com.soeguet.gui.main_frame.MainGuiElementsInterface;
 import com.soeguet.gui.popups.PopupPanelImpl;
 
 import javax.swing.*;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -31,7 +34,6 @@ public class CustomProperties extends Properties {
 
             throw new RuntimeException(e);
         }
-
 
     }
 
@@ -123,7 +125,7 @@ public class CustomProperties extends Properties {
             setProperty(key, json);
         });
 
-        new PopupPanelImpl(mainFrame,"properties saved").implementPopup(1000);
+        new PopupPanelImpl(mainFrame, "properties saved").implementPopup(1000);
 
         createPropertiesFile(configFilePath);
     }
@@ -131,20 +133,20 @@ public class CustomProperties extends Properties {
     private MainGuiElementsInterface getMainFrame() {
 
         if (!(mainFrame instanceof MainGuiElementsInterface)) {
+
             return null;
         }
+
         return (MainGuiElementsInterface) mainFrame;
     }
 
     private void random() {
 
         // Versuchen, die Konfigurationsdatei zu laden
-
         // Einstellungen verwenden
         String username = getProperty("username");
         String theme = getProperty("theme");
         System.out.println("username = " + username);
         System.out.println("theme = " + theme);
     }
-
 }
