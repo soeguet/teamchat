@@ -53,6 +53,20 @@ public class PropertiesPanelImpl extends PropertiesPanel {
         gui.getMainTextPanelLayeredPane().add(this, JLayeredPane.MODAL_LAYER);
     }
 
+    /**
+     This method sets up the own tabbed pane with the custom user properties.
+     It sets the username text field with the username from the own client properties.
+     It sets the background color of the border color panel with the border color from the own client properties.
+
+     Preconditions:
+     - The main frame must be set in the GUI.
+     - The "own" chat client properties must exist in the chat client properties hash map.
+
+     Postconditions:
+     - The own tabbed pane is set up with the custom user properties.
+     - The username text field is set with the username from the own client properties.
+     - The background color of the border color panel is set with the border color from the own client properties.
+     */
     private void setupOwnTabbedPane() {
 
         MainGuiElementsInterface gui = getMainFrame();
@@ -64,12 +78,30 @@ public class PropertiesPanelImpl extends PropertiesPanel {
         getOwnBorderColorPanel().setBackground(new Color(ownClient.getBorderColor()));
     }
 
+    /**
+     This method sets up the clients tabbed pane.
+     It adds clients to the combo box and sets up components on the properties panel.
+
+     Preconditions:
+     - None.
+
+     Postconditions:
+     - Clients are added to the combo box.
+     - Components on the properties panel are set up.
+     */
     private void setupClientsTabbedPane() {
 
         addClientsToComboBox();
         setUpComponentsOnPropertiesPanel(selectedClientInComboBox);
     }
 
+    /**
+     This method returns the main frame of the GUI, cast as a MainGuiElementsInterface object.
+     The main frame must implement the MainGuiElementsInterface for the method to return a valid instance.
+     If the main frame does not implement the MainGuiElementsInterface, null is returned.
+
+     @return the main frame of the GUI as a MainGuiElementsInterface object, or null if the main frame does not implement the MainGuiElementsInterface.
+     */
     private MainGuiElementsInterface getMainFrame() {
 
         if (!(mainFrame instanceof MainGuiElementsInterface)) {

@@ -3,7 +3,10 @@ package com.soeguet.gui.main_frame;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.behaviour.GuiFunctionality;
 import com.soeguet.gui.main_frame.generated.ChatPanel;
+import com.soeguet.gui.newcomment.right.PanelRightImpl;
 import com.soeguet.gui.properties.PropertiesPanelImpl;
+import com.soeguet.model.MessageModel;
+import com.soeguet.model.PanelTypes;
 import com.soeguet.properties.CustomProperties;
 import com.soeguet.properties.CustomUserProperties;
 import com.soeguet.socket_client.CustomWebsocketClient;
@@ -12,11 +15,17 @@ import com.soeguet.util.EmojiInitializer;
 import com.soeguet.util.EmojiPopUpMenuHandler;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -100,16 +109,6 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
         }
     }
 
-    public AtomicBoolean getIsProcessingClientMessages() {
-
-        return isProcessingClientMessages;
-    }
-
-    public void setIsProcessingClientMessages(AtomicBoolean isProcessingClientMessages) {
-
-        this.isProcessingClientMessages = isProcessingClientMessages;
-    }
-
     /**
      {@inheritDoc}
 
@@ -121,6 +120,9 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     @Override
     protected void thisPropertyChange(PropertyChangeEvent e) {
 
+    }    public AtomicBoolean getIsProcessingClientMessages() {
+
+        return isProcessingClientMessages;
     }
 
     /**
@@ -137,6 +139,9 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
             this.revalidate();
             this.repaint();
         });
+    }    public void setIsProcessingClientMessages(AtomicBoolean isProcessingClientMessages) {
+
+        this.isProcessingClientMessages = isProcessingClientMessages;
     }
 
     /**
@@ -483,5 +488,9 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
         guiFunctionality.clearTextPaneAndSendMessageToSocket();
     }
+
+
+
+
 
 }
