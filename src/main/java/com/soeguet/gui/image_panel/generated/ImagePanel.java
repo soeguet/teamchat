@@ -21,11 +21,9 @@ public abstract class ImagePanel extends JPanel {
 
 	protected abstract void zoomOutButtonMouseClicked(MouseEvent e);
 
-	protected abstract void zoomOutButtonMousePressed(MouseEvent e);
 
 	protected abstract void zoomInButtonMouseClicked(MouseEvent e);
 
-	protected abstract void zoomInButtonMousePressed(MouseEvent e);
 
 
 	public JPanel getPanel4() {
@@ -262,10 +260,6 @@ public abstract class ImagePanel extends JPanel {
 								public void mouseClicked(MouseEvent e) {
 									zoomOutButtonMouseClicked(e);
 								}
-								@Override
-								public void mousePressed(MouseEvent e) {
-									zoomOutButtonMousePressed(e);
-								}
 							});
 							form_zoomPanel.add(form_zoomOutButton);
 
@@ -275,10 +269,6 @@ public abstract class ImagePanel extends JPanel {
 								@Override
 								public void mouseClicked(MouseEvent e) {
 									zoomInButtonMouseClicked(e);
-								}
-								@Override
-								public void mousePressed(MouseEvent e) {
-									zoomInButtonMousePressed(e);
 								}
 							});
 							form_zoomPanel.add(form_zoomInButton);

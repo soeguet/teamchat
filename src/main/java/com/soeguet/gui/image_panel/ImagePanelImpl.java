@@ -174,7 +174,11 @@ public class ImagePanelImpl extends ImagePanel {
     @Override
     protected void zoomOutButtonMouseClicked(MouseEvent e) {
 
-        zoomFactor -= 0.1;
+        zoomFactor -= 0.2;
+
+        if (zoomFactor < 0.2) {
+            zoomFactor = 0.2;
+        }
 
         addImageToPanel(zoomFactor);
     }
@@ -209,16 +213,17 @@ public class ImagePanelImpl extends ImagePanel {
      */
     private Image resizeImage(double zoomFactor) {
 
-        return image.getScaledInstance((int) (image.getWidth(null) * zoomFactor), (int) (image.getHeight(null) * zoomFactor), Image.SCALE_SMOOTH);
-    }
+        int width = (int) (image.getWidth(null) * zoomFactor);
+        if (width < 100) {
+            width = 100;
+        }
 
-    @Override
-    protected void zoomOutButtonMousePressed(MouseEvent e) {
+        int height = (int) (image.getHeight(null) * zoomFactor);
+        if (height < 100) {
+            height = 100;
+        }
 
-        System.out.println("zoomOutButtonMousePressed");
-        zoomFactor -= 0.1;
-
-        addImageToPanel(zoomFactor);
+        return image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
     }
 
     /**
@@ -229,21 +234,10 @@ public class ImagePanelImpl extends ImagePanel {
     @Override
     protected void zoomInButtonMouseClicked(MouseEvent e) {
 
-        zoomFactor += 0.1;
+        zoomFactor += 0.2;
 
         addImageToPanel(zoomFactor);
     }
-
-    @Override
-    protected void zoomInButtonMousePressed(MouseEvent e) {
-
-        System.out.println("zoomInButtonMousePressed");
-        zoomFactor += 0.1;
-
-        addImageToPanel(zoomFactor);
-    }
-
-
 
     /**
      * Zooms the mother panel based on the mouse wheel movement.
@@ -255,7 +249,6 @@ public class ImagePanelImpl extends ImagePanel {
 
         if (e.isControlDown()) {
 
-            SwingUtilities.invokeLater(() -> {
 
                 if (e.getWheelRotation() < 0) {
 
@@ -264,12 +257,15 @@ public class ImagePanelImpl extends ImagePanel {
                 } else {
 
                     zoomFactor -= 0.1;
+
+                    if (zoomFactor < 0.2) {
+                        zoomFactor = 0.2;
+                    }
                 }
 
                 addImageToPanel(zoomFactor);
                 redrawEverything();
 
-            });
 
         } else {
 
