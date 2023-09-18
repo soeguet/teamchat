@@ -24,8 +24,8 @@ public class PropertiesPanelImpl extends PropertiesPanel {
         setPosition();
         this.setVisible(true);
 
-        addClientsToComboBox();
-        setUpComponentsOnPropertiesPanel(selectedClientInComboBox);
+        setupOwnTabbedPane();
+        setupClientsTabbedPane();
     }
 
     /**
@@ -51,6 +51,31 @@ public class PropertiesPanelImpl extends PropertiesPanel {
         this.setBounds(20, 20, textPaneWidth - 40, textPaneHeight - 40);
 
         gui.getMainTextPanelLayeredPane().add(this, JLayeredPane.MODAL_LAYER);
+    }
+
+    private void setupOwnTabbedPane() {
+
+        MainGuiElementsInterface gui = getMainFrame();
+        assert gui != null;
+
+        CustomUserProperties ownClient = gui.getChatClientPropertiesHashMap().get("own");
+
+        getOwnUserNameTextField().setText(ownClient.getUsername());
+        getOwnBorderColorPanel().setBackground(new Color(ownClient.getBorderColor()));
+    }
+
+    private void setupClientsTabbedPane() {
+
+        addClientsToComboBox();
+        setUpComponentsOnPropertiesPanel(selectedClientInComboBox);
+    }
+
+    private MainGuiElementsInterface getMainFrame() {
+
+        if (!(mainFrame instanceof MainGuiElementsInterface)) {
+            return null;
+        }
+        return (MainGuiElementsInterface) mainFrame;
     }
 
     /**
@@ -103,14 +128,6 @@ public class PropertiesPanelImpl extends PropertiesPanel {
         form_usernameTextField.setText(client.getUsername());
         form_nicknameTextField.setText(client.getNickname());
         form_colorPickerPanel.setBackground(new Color(client.getBorderColor()));
-    }
-
-    private MainGuiElementsInterface getMainFrame() {
-
-        if (!(mainFrame instanceof MainGuiElementsInterface)) {
-            return null;
-        }
-        return (MainGuiElementsInterface) mainFrame;
     }
 
     @Override
@@ -208,9 +225,12 @@ public class PropertiesPanelImpl extends PropertiesPanel {
         Color borderColor = new Color(gui.getChatClientPropertiesHashMap().get("own").getBorderColor());
 
         Color color = JColorChooser.showDialog(this, "Choose a color", borderColor);
-        getColorPickerPanel().setBackground(color);
 
-        gui.getChatClientPropertiesHashMap().get("own").setBorderColor(color.getRGB());
+        if (color != null) {
+
+            getOwnBorderColorPanel().setBackground(color);
+            gui.getChatClientPropertiesHashMap().get("own").setBorderColor(color.getRGB());
+        }
     }
 
     @Override
@@ -225,8 +245,11 @@ public class PropertiesPanelImpl extends PropertiesPanel {
         Color borderColor = new Color(gui.getChatClientPropertiesHashMap().get(selectedItem).getBorderColor());
 
         Color color = JColorChooser.showDialog(this, "Choose a color", borderColor);
-        getColorPickerPanel().setBackground(color);
 
-        gui.getChatClientPropertiesHashMap().get(selectedItem).setBorderColor(color.getRGB());
+        if (color != null) {
+
+            getColorPickerPanel().setBackground(color);
+            gui.getChatClientPropertiesHashMap().get(selectedItem).setBorderColor(color.getRGB());
+        }
     }
 }

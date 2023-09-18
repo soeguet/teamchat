@@ -322,7 +322,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
             if (!gui.getChatClientPropertiesHashMap().containsKey("own")) {
 
                 CustomUserProperties customUserProperties = new CustomUserProperties();
-                customUserProperties.setUsername("own");
+                customUserProperties.setUsername(gui.getUsername());
                 customUserProperties.setBorderColor(getRandomRgbIntValue());
                 clientMap.put("own", customUserProperties);
             }
