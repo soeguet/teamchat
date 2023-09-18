@@ -4,14 +4,9 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.swing.event.*;
 /*
  * Created by JFormDesigner on Mon Sep 18 17:48:08 CEST 2023
- */
-
-
-
-/**
- * @author Osman
  */
 public abstract class ImagePanel extends JPanel {
 	public ImagePanel() {
@@ -23,6 +18,15 @@ public abstract class ImagePanel extends JPanel {
 	protected abstract void thisMouseDragged(MouseEvent e);
 
 	protected abstract void closeImagePanelButtonMouseReleased(MouseEvent e);
+
+	protected abstract void zoomOutButtonMouseClicked(MouseEvent e);
+
+	protected abstract void zoomOutButtonMousePressed(MouseEvent e);
+
+	protected abstract void zoomInButtonMouseClicked(MouseEvent e);
+
+	protected abstract void zoomInButtonMousePressed(MouseEvent e);
+
 
 	public JPanel getPanel4() {
 		return form_panel4;
@@ -84,33 +88,35 @@ public abstract class ImagePanel extends JPanel {
 		return form_button1;
 	}
 
-	public JPanel getPicturePanel() {
-		return form_picturePanel;
-	}
-
-	public JScrollPane getPictureScrollPane() {
-		return form_pictureScrollPane;
-	}
-
 	public JLayeredPane getPictureLayeredPane() {
 		return form_pictureLayeredPane;
+	}
+
+	public JPanel getZoomMotherPanel() {
+		return form_zoomMotherPanel;
 	}
 
 	public JPanel getZoomPanel() {
 		return form_zoomPanel;
 	}
 
-	public JButton getButton2() {
-		return form_button2;
+	public JButton getZoomOutButton() {
+		return form_zoomOutButton;
 	}
 
-	public JButton getButton3() {
-		return form_button3;
+	public JButton getZoomInButton() {
+		return form_zoomInButton;
 	}
 
-	public JPanel getZoomMotherPanel() {
-		return form_zoomMotherPanel;
+	public JScrollPane getPictureScrollPane() {
+		return form_pictureScrollPane;
 	}
+
+	public JPanel getPicturePanel() {
+		return form_picturePanel;
+	}
+
+	protected abstract void zoomMotherPanelMouseWheelMoved(MouseWheelEvent e);
 
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
@@ -133,8 +139,8 @@ public abstract class ImagePanel extends JPanel {
 		form_pictureLayeredPane = new JLayeredPane();
 		form_zoomMotherPanel = new JPanel();
 		form_zoomPanel = new JPanel();
-		form_button2 = new JButton();
-		form_button3 = new JButton();
+		form_zoomOutButton = new JButton();
+		form_zoomInButton = new JButton();
 		form_pictureScrollPane = new JScrollPane();
 		form_picturePanel = new JPanel();
 
@@ -241,6 +247,7 @@ public abstract class ImagePanel extends JPanel {
 					{
 						form_zoomMotherPanel.setBorder(null);
 						form_zoomMotherPanel.setOpaque(false);
+						form_zoomMotherPanel.addMouseWheelListener(e -> zoomMotherPanelMouseWheelMoved(e));
 						form_zoomMotherPanel.setLayout(new BorderLayout());
 
 						//======== form_zoomPanel ========
@@ -248,13 +255,33 @@ public abstract class ImagePanel extends JPanel {
 							form_zoomPanel.setOpaque(false);
 							form_zoomPanel.setLayout(new FlowLayout());
 
-							//---- form_button2 ----
-							form_button2.setText("-");
-							form_zoomPanel.add(form_button2);
+							//---- form_zoomOutButton ----
+							form_zoomOutButton.setText("-");
+							form_zoomOutButton.addMouseListener(new MouseAdapter() {
+								@Override
+								public void mouseClicked(MouseEvent e) {
+									zoomOutButtonMouseClicked(e);
+								}
+								@Override
+								public void mousePressed(MouseEvent e) {
+									zoomOutButtonMousePressed(e);
+								}
+							});
+							form_zoomPanel.add(form_zoomOutButton);
 
-							//---- form_button3 ----
-							form_button3.setText("+");
-							form_zoomPanel.add(form_button3);
+							//---- form_zoomInButton ----
+							form_zoomInButton.setText("+");
+							form_zoomInButton.addMouseListener(new MouseAdapter() {
+								@Override
+								public void mouseClicked(MouseEvent e) {
+									zoomInButtonMouseClicked(e);
+								}
+								@Override
+								public void mousePressed(MouseEvent e) {
+									zoomInButtonMousePressed(e);
+								}
+							});
+							form_zoomPanel.add(form_zoomInButton);
 						}
 						form_zoomMotherPanel.add(form_zoomPanel, BorderLayout.NORTH);
 					}
@@ -302,8 +329,8 @@ public abstract class ImagePanel extends JPanel {
 	protected JLayeredPane form_pictureLayeredPane;
 	protected JPanel form_zoomMotherPanel;
 	protected JPanel form_zoomPanel;
-	protected JButton form_button2;
-	protected JButton form_button3;
+	protected JButton form_zoomOutButton;
+	protected JButton form_zoomInButton;
 	protected JScrollPane form_pictureScrollPane;
 	protected JPanel form_picturePanel;
 	// JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on

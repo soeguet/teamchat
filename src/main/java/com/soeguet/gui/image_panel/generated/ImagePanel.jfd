@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "8.0.3.0.246" Java: "17.0.3" encoding: "UTF-8"
+JFDML JFormDesigner: "8.1.1.0.298" Java: "17.0.8" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
@@ -107,16 +107,21 @@ new FormModel {
 							name: "zoomMotherPanel"
 							"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
 							"opaque": false
+							addEvent( new FormEvent( "java.awt.event.MouseWheelListener", "mouseWheelMoved", "zoomMotherPanelMouseWheelMoved", true ) )
 							add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.FlowLayout ) ) {
 								name: "zoomPanel"
 								"opaque": false
 								add( new FormComponent( "javax.swing.JButton" ) {
-									name: "button2"
+									name: "zoomOutButton"
 									"text": "-"
+									addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "zoomOutButtonMouseClicked", true ) )
+									addEvent( new FormEvent( "java.awt.event.MouseListener", "mousePressed", "zoomOutButtonMousePressed", true ) )
 								} )
 								add( new FormComponent( "javax.swing.JButton" ) {
-									name: "button3"
+									name: "zoomInButton"
 									"text": "+"
+									addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "zoomInButtonMouseClicked", true ) )
+									addEvent( new FormEvent( "java.awt.event.MouseListener", "mousePressed", "zoomInButtonMousePressed", true ) )
 								} )
 							}, new FormLayoutConstraints( class java.lang.String ) {
 								"value": "North"
