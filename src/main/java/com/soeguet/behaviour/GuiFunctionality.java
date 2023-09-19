@@ -288,7 +288,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
      @throws RuntimeException if there is an error during the JSON conversion process.
      */
-    private String convertToJSON(MessageModel messageModel, MainGuiElementsInterface gui) {
+    private String convertToJSON(BaseModel messageModel, MainGuiElementsInterface gui) {
 
         try {
 
@@ -402,6 +402,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
         try {
 
             return convertJsonToMessageModel(message);
+
         } catch (JsonProcessingException e) {
 
             throw new IllegalArgumentException("Malformed message", e);
