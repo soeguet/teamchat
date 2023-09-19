@@ -22,6 +22,8 @@ import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.logging.Logger;
@@ -35,7 +37,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
     private final JFrame mainFrame;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    Logger logger = Logger.getLogger(GuiFunctionality.class.getName());
+    Logger LOGGER = Logger.getLogger(GuiFunctionality.class.getName());
 
     /**
      Constructs a new GuiFunctionality object with the given main frame.
@@ -110,7 +112,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
         MainGuiElementsInterface gui = getFrame();
         assert gui != null;
 
-        //preserve the original transfer handler
+        //preserve the original transfer handler, otherwise clucky behavior
         TransferHandler originalHandler = gui.getTextEditorPane().getTransferHandler();
 
         gui.getTextEditorPane().setTransferHandler(new TransferHandler() {
@@ -119,15 +121,31 @@ public class GuiFunctionality implements SocketToGuiInterface {
             public boolean importData(JComponent comp, Transferable t) {
 
                 if (t.isDataFlavorSupported(DataFlavor.imageFlavor)) {
-                    logger.info("Image dropped");
-                    // trigger if image is dropped
 
+                    // image to text pane -> activate image panel
                     new ImagePanelImpl(mainFrame).populateImagePanelFromClipboard();
 
                     return true;
                 } else if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-                    logger.info("Text dropped");
-                    // trigger if text is dropped
+
+                    try {
+                        String data = (String) t.getTransferData(DataFlavor.stringFlavor);
+
+                        //TODO maybe emoji detection?
+
+                        if (data.startsWith("http://") || data.startsWith("https://")) {
+                            //TODO maybe link detection?
+                            LOGGER.info("HTTP Link detected");
+                        } else {
+                            return originalHandler.importData(comp, t);
+                        }
+
+                    } catch (UnsupportedFlavorException | IOException e) {
+
+                        LOGGER.log(java.util.logging.Level.SEVERE, "Error importing data", e);
+                    }
+
+                    //TODO clickable links
                     return originalHandler.importData(comp, t);
                 }
                 return false;
@@ -296,7 +314,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         } catch (JsonProcessingException e) {
 
-            logger.log(java.util.logging.Level.SEVERE, "Error converting to JSON", e);
+            LOGGER.log(java.util.logging.Level.SEVERE, "Error converting to JSON", e);
         }
 
         return null;
@@ -397,7 +415,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
             }
         } else {
 
-            logger.info("Unknown message type");
+            LOGGER.info("Unknown message type");
         }
 
         mainFrame.revalidate();

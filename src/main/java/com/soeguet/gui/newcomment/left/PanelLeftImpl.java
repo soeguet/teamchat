@@ -48,6 +48,16 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
 
     }
 
+    @Override
+    public void addMaximizePictureOnClick(JLabel imageLabel) {
+
+    }
+
+    @Override
+    public void addRightClickOptionToPanel() {
+
+    }
+
     public PanelLeftImpl(JFrame mainFrame, PictureModel baseModel) {
 
         this.baseModel = baseModel;

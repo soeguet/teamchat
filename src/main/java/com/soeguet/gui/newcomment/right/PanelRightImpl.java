@@ -54,10 +54,13 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     @Override
     public void setupTextPanel() {
 
-        assert baseModel instanceof MessageModel;
+        if (!(baseModel instanceof MessageModel)) {
+            return;
+        }
 
-        populateChatBubble();
-        setPopupMenu();
+        checkForQuotesInMessage();
+        addActualMessage();
+        setupEditorPopupMenu();
         addRightClickOptionToPanel();
 
         setupReplyPanels();
@@ -67,53 +70,27 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     public void setupPicturePanel() {
 
         MainGuiElementsInterface gui = getMainFrame();
-        assert gui != null;
+        if (gui == null) {
+            return;
+        }
 
-        setPopupMenu();
+        setupEditorPopupMenu();
 
         extractImageFromMessage();
 
-        JLabel imageLabel = new JLabel(scaleImageIfTooBig());
-        this.getPanel1().add(imageLabel, "cell 0 0, wrap");
+        JLabel imageLabel = new JLabel(scaleImageIfTooBig(image));
+        form_panel1.add(imageLabel, "cell 0 0, wrap");
 
         addMaximizePictureOnClick(imageLabel);
 
-        JTextPane imageCaptionTextPane = getImageCaptionTextPane();
-        this.getPanel1().add(imageCaptionTextPane, "cell 0 1, wrap");
-
+        JTextPane imageCaptionTextPane = createImageCaptionTextPane();
+        form_panel1.add(imageCaptionTextPane, "cell 0 1, wrap");
 
         addRightClickOptionToPanel();
 
         setNameField(gui);
         setTimestampField(gui);
 
-    }
-
-    private void addMaximizePictureOnClick(JLabel imageLabel) {
-
-        imageLabel.addMouseListener(new MouseAdapter() {
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                File imgFile = new File("temp-image.jpg");
-
-                try {
-                    ImageIO.write(image, "png", imgFile);
-                } catch (IOException ex) {
-                    logger.log(java.util.logging.Level.SEVERE, "Error writing image", ex);
-                }
-
-                if (Desktop.isDesktopSupported()) {
-                    try {
-                        Desktop.getDesktop().open(imgFile);
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
-                } else {
-                    System.out.println("Desktop not supported");
-                }
-            }
-        });
     }
 
     private void extractImageFromMessage() {
@@ -128,22 +105,88 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
         }
     }
 
-    private ImageIcon scaleImageIfTooBig() {
+    private ImageIcon scaleImageIfTooBig(BufferedImage bufferedImage) {
 
-        ImageIcon imageIcon = new ImageIcon(image);
+        if (bufferedImage == null) {
 
-        if (imageIcon.getIconWidth() > 500) {
+            logger.log(java.util.logging.Level.SEVERE, "Buffered image is null");
+            return null;
+        }
 
-            imageIcon = new ImageIcon(imageIcon.getImage().getScaledInstance(500, -1, Image.SCALE_AREA_AVERAGING));
-        } else if (imageIcon.getIconHeight() > 350) {
+        ImageIcon imageIcon;
 
-            imageIcon = new ImageIcon(imageIcon.getImage().getScaledInstance(-1, 350, Image.SCALE_AREA_AVERAGING));
+        if (image.getWidth() > 500) {
+
+            imageIcon = new ImageIcon(image.getScaledInstance(500, -1, Image.SCALE_AREA_AVERAGING));
+
+        } else if (image.getHeight() > 350) {
+
+            imageIcon = new ImageIcon(image.getScaledInstance(-1, 350, Image.SCALE_AREA_AVERAGING));
+
+        } else {
+
+            imageIcon = new ImageIcon(image);
         }
 
         return imageIcon;
     }
 
-    private JTextPane getImageCaptionTextPane() {
+    @Override
+    public void addMaximizePictureOnClick(JLabel imageLabel) {
+
+        imageLabel.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+                new Thread(() -> {
+
+                    File imgFile = new File("temp-image.jpg");
+
+                    try {
+
+                        ImageIO.write(image, "png", imgFile);
+
+                    } catch (IOException ex) {
+
+                        logger.log(java.util.logging.Level.SEVERE, "Error writing image", ex);
+                    }
+
+                    if (Desktop.isDesktopSupported()) {
+
+                        try {
+
+                            if (imgFile.exists()) {
+
+                                Desktop.getDesktop().open(imgFile);
+
+                            } else {
+
+                                logger.log(java.util.logging.Level.SEVERE, "Image file does not exist");
+                                throw new IOException();
+
+                            }
+
+                        } catch (IOException ex) {
+
+                            logger.log(java.util.logging.Level.SEVERE, "Error opening image", ex);
+                        }
+
+                    } else {
+
+                        logger.log(java.util.logging.Level.SEVERE, "Desktop not supported");
+                    }
+
+                    if (!imgFile.delete()) {
+
+                        logger.log(java.util.logging.Level.SEVERE, "Error deleting temp image file");
+                    }
+                });
+            }
+        });
+    }
+
+    private JTextPane createImageCaptionTextPane() {
 
         actualTextPane = new JTextPane();
         actualTextPane.setText(baseModel.getMessage());
@@ -153,74 +196,83 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     }
 
     /**
-     Populates the chat bubble by executing the steps of checking for quotes and adding the actual message.
-     This method does not return any value.
-     */
-    private void populateChatBubble() {
+     Checks if a message has a quoted text and creates a quoted section in the chat bubble.
 
-        checkForQuotes();
-        addActualMessage();
+     If the message does not have a quoted text, the method will return without performing any action.
+     Otherwise, it will create a QuotePanelImpl and add it to the panel1.
+
+     @see MessageModel#getQuotedMessageText()
+     @see MessageModel#getQuotedMessageSender()
+     @see MessageModel#getQuotedMessageTime()
+     @see QuotePanelImpl
+     */
+    private void checkForQuotesInMessage() {
+
+        MessageModel messageModel = (MessageModel) baseModel;
+
+        String quotedText = messageModel.getQuotedMessageText();
+
+        if (quotedText == null) {
+            return;
+        }
+
+        String quotedChatParticipant = messageModel.getQuotedMessageSender();
+        String quotedTime = messageModel.getQuotedMessageTime();
+
+        QuotePanelImpl quotedSectionPanel = new QuotePanelImpl(mainFrame, quotedText, quotedChatParticipant, quotedTime);
+        this.getPanel1().add(quotedSectionPanel, "cell 0 0, wrap");
     }
 
     /**
-     Sets up the popup menu.
+     Adds the actual message to the chat bubble.
+
+     This method sets the user message, name field, and timestamp field in the main GUI elements.
+     */
+    private void addActualMessage() {
+
+        MainGuiElementsInterface mainGui = getMainFrame();
+
+        if (mainGui == null) {
+
+            logger.log(java.util.logging.Level.SEVERE, "Main GUI is null");
+            return;
+        }
+
+        setUserMessage();
+        setNameField(mainGui);
+        setTimestampField(mainGui);
+    }
+
+    /**
+     Sets up the popup menu for the editor.
      The popup menu is a JPopupMenu that contains options for replying, editing, and deleting a message.
      When the "reply" option is selected, a ReplyPanelImpl is added to the main text panel's layered pane.
      This method does not return any value.
      */
-    private void setPopupMenu() {
+    private void setupEditorPopupMenu() {
 
         jPopupMenu = new JPopupMenu();
-        JMenuItem reply = new JMenuItem("reply");
 
-        reply.addMouseListener(new MouseAdapter() {
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-
-                super.mouseReleased(e);
-
-                MainGuiElementsInterface gui = getMainFrame();
-                assert gui != null;
-
-                ReplyPanelImpl replyPanel = new ReplyPanelImpl(mainFrame, baseModel);
-                gui.getMainTextPanelLayeredPane().add(replyPanel, JLayeredPane.MODAL_LAYER);
-            }
-        });
-
-        jPopupMenu.add(reply);
+        JMenuItem reply = createAndAddMenuItem(jPopupMenu, "reply");
+        addMouseListenerToReplyMenuItem(reply);
 
         jPopupMenu.addSeparator();
-        jPopupMenu.add(new JMenuItem("edit"));
-        jPopupMenu.add(new JMenuItem("delete"));
+        createAndAddMenuItem(jPopupMenu, "edit");
+        //TODO add action listener to edit menu item
+        createAndAddMenuItem(jPopupMenu, "delete");
+        //TODO add action listener to delete menu item
     }
 
-    private void addRightClickOptionToPanel() {
+    public void addRightClickOptionToPanel() {
+
         JPopupMenu popupMenu = new JPopupMenu();
-        JMenuItem copyItem = new JMenuItem("copy");
 
-        copyItem.addActionListener(e -> {
-            final String selectedText = actualTextPane.getSelectedText();
-            if (selectedText != null) {
-                StringSelection selection = new StringSelection(selectedText);
-                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, selection);
-            }
-        });
+        JMenuItem copyItem = createAndAddMenuItem(popupMenu, "copy");
 
-
-        popupMenu.add(copyItem);
+        addActionListenerToCopyJMenuItem(copyItem);
+        addMouseListenerToJTextPane(actualTextPane, popupMenu);
 
         actualTextPane.setComponentPopupMenu(popupMenu);
-
-        actualTextPane.addMouseListener(
-                new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        if (SwingUtilities.isRightMouseButton(e)) {
-                            popupMenu.show(PanelRightImpl.this, e.getX(), e.getY());
-                        }
-                    }
-                });
     }
 
     /**
@@ -238,40 +290,6 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
         this.getButton1().setVisible(false);
     }
 
-    /**
-     Checks if a message has a quoted text and creates a quoted section in the chat bubble.
-     */
-    private void checkForQuotes() {
-
-        assert baseModel instanceof MessageModel;
-
-        String quotedText = ((MessageModel) baseModel).getQuotedMessageText();
-
-        if (quotedText == null) {
-            return;
-        }
-
-        String quotedChatParticipant = ((MessageModel) baseModel).getQuotedMessageSender();
-        String quotedTime = ((MessageModel) baseModel).getQuotedMessageTime();
-
-        createQuotedSectionInChatBubble(quotedText, quotedChatParticipant, quotedTime);
-    }
-
-    /**
-     This method adds the actual message by setting the user message,
-     name field, and timestamp field.
-     */
-    private void addActualMessage() {
-
-        if (mainFrame instanceof MainGuiElementsInterface) {
-
-            MainGuiElementsInterface mainGui = getMainFrame();
-            setUserMessage();
-            setNameField(mainGui);
-            setTimestampField(mainGui);
-        }
-    }
-
     private MainGuiElementsInterface getMainFrame() {
 
         if (!(mainFrame instanceof MainGuiElementsInterface)) {
@@ -280,20 +298,6 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
         }
 
         return (MainGuiElementsInterface) mainFrame;
-    }
-
-    /**
-     Creates a quoted section in a chat bubble.
-
-     @param quotedText            the text to be quoted
-     @param quotedChatParticipant the participant whose text is being quoted
-     @param quotedTime            the time when the text was quoted
-     */
-    private void createQuotedSectionInChatBubble(String quotedText, String quotedChatParticipant, String quotedTime) {
-
-        QuotePanelImpl quotedTextPane = new QuotePanelImpl(mainFrame, quotedText, quotedChatParticipant, quotedTime);
-
-        this.getPanel1().add(quotedTextPane, "cell 0 0, wrap");
     }
 
     /**
@@ -307,9 +311,6 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
         actualTextPane = createTextPane();
 
         actualTextPane.setEditorKit(new WrapEditorKit());
-
-        JScrollPane jsp = new JScrollPane(actualTextPane);
-        jsp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(actualTextPane, baseModel.getMessage());
 
@@ -325,11 +326,11 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
 
         String sender = baseModel.getSender();
 
-        this.getNameLabel().setText(sender);
+        form_nameLabel.setText(sender);
 
         if (panelTyp == PanelTypes.NORMAL && sender.equals(mainFrame.getLastMessageSenderName())) {
 
-            this.getNameLabel().setVisible(false);
+            form_nameLabel.setVisible(false);
         }
 
         if (panelTyp == PanelTypes.NORMAL) {
@@ -346,17 +347,77 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
 
         String timeStamp = baseModel.getTime();
 
-        this.getTimeLabel().setText(timeStamp);
+        form_timeLabel.setText(timeStamp);
 
         if (panelTyp == PanelTypes.NORMAL && timeStamp.equals(mainFrame.getLastMessageTimeStamp())) {
 
-            this.getTimeLabel().setVisible(false);
+            form_timeLabel.setVisible(false);
         }
 
         if (panelTyp == PanelTypes.NORMAL) {
 
             mainFrame.setLastMessageTimeStamp(timeStamp);
         }
+    }
+
+    /**
+     Creates a menu item with the given name and adds it to the specified popup menu.
+
+     @param popupMenu    the popup menu to add the menu item to
+     @param menuItemName the name of the menu item to be created
+
+     @return the created menu item
+     */
+    private JMenuItem createAndAddMenuItem(JPopupMenu popupMenu, String menuItemName) {
+
+        JMenuItem copyItem = new JMenuItem(menuItemName);
+        popupMenu.add(copyItem);
+        return copyItem;
+    }
+
+    private void addMouseListenerToReplyMenuItem(JMenuItem reply) {
+
+        reply.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+                super.mouseReleased(e);
+
+                MainGuiElementsInterface gui = getMainFrame();
+                if (gui == null) {
+                    return;
+                }
+
+                ReplyPanelImpl replyPanel = new ReplyPanelImpl(mainFrame, baseModel);
+                gui.getMainTextPanelLayeredPane().add(replyPanel, JLayeredPane.MODAL_LAYER);
+            }
+        });
+    }
+
+    private void addActionListenerToCopyJMenuItem(JMenuItem menuOption) {
+
+        menuOption.addActionListener(e -> {
+            final String selectedText = actualTextPane.getSelectedText();
+            if (selectedText != null) {
+                StringSelection selection = new StringSelection(selectedText);
+                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, selection);
+            }
+        });
+    }
+
+    private void addMouseListenerToJTextPane(JTextPane textPane, JPopupMenu popupMenu) {
+
+        textPane.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    popupMenu.show(PanelRightImpl.this, e.getX(), e.getY());
+                }
+            }
+        });
     }
 
     /**
