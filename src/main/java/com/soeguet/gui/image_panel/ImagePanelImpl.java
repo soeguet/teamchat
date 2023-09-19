@@ -2,8 +2,10 @@ package com.soeguet.gui.image_panel;
 
 import com.soeguet.gui.image_panel.generated.ImagePanel;
 import com.soeguet.gui.main_frame.MainGuiElementsInterface;
+import com.soeguet.model.jackson.PictureModel;
 import org.jetbrains.annotations.NotNull;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -14,11 +16,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.time.LocalTime;
 import java.util.logging.Logger;
 
 public class ImagePanelImpl extends ImagePanel {
 
-    private final Logger logger = Logger.getLogger(ImagePanelImpl.class.getName());
+    private final Logger LOGGER = Logger.getLogger(ImagePanelImpl.class.getName());
     private final JFrame mainFrame;
     private final Point offset = new Point();
     private double zoomFactor = 1.0;
@@ -108,7 +111,7 @@ public class ImagePanelImpl extends ImagePanel {
                 redrawEverything();
 
             } catch (UnsupportedFlavorException | IOException ex) {
-                logger.log(java.util.logging.Level.SEVERE, "Could not load image from clipboard", ex);
+                LOGGER.log(java.util.logging.Level.SEVERE, "Could not load image from clipboard", ex);
             }
         } else {
             System.out.println("No image found in clipboard");
@@ -239,64 +242,34 @@ public class ImagePanelImpl extends ImagePanel {
         addImageToPanel(zoomFactor);
     }
 
-    /**
-     * Zooms the mother panel based on the mouse wheel movement.
-     *
-     * @param e the MouseWheelEvent object representing the event
-     */
-    @Override
-    protected void zoomMotherPanelMouseWheelMoved(MouseWheelEvent e) {
-
-        if (e.isControlDown()) {
-
-
-                if (e.getWheelRotation() < 0) {
-
-                    zoomFactor += 0.1;
-
-                } else {
-
-                    zoomFactor -= 0.1;
-
-                    if (zoomFactor < 0.2) {
-                        zoomFactor = 0.2;
-                    }
-                }
-
-                addImageToPanel(zoomFactor);
-
-        } else {
-
-            if (e.isShiftDown()) {
-
-                if (e.getWheelRotation() < 0) {
-
-                    form_pictureScrollPane.getHorizontalScrollBar().setValue(form_pictureScrollPane.getHorizontalScrollBar().getValue() - 50);
-                } else {
-
-                    form_pictureScrollPane.getHorizontalScrollBar().setValue(form_pictureScrollPane.getHorizontalScrollBar().getValue() + 50);
-                }
-
-            } else {
-
-                if (e.getWheelRotation() < 0) {
-
-                    form_pictureScrollPane.getVerticalScrollBar().setValue(form_pictureScrollPane.getVerticalScrollBar().getValue() - 50);
-                } else {
-
-                    form_pictureScrollPane.getVerticalScrollBar().setValue(form_pictureScrollPane.getVerticalScrollBar().getValue() + 50);
-                }
-            }
-
-            redrawEverything();
-        }
-    }
-
     @Override
     protected void sendPictureButtonMouseClicked(MouseEvent e) {
 
+        MainGuiElementsInterface gui = getMainFrame();
+        assert gui != null;
 
+        PictureModel pictureModel = new PictureModel();
 
+        //convert image to byte array
+        try (java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream()) {
+
+            ImageIO.write(image, "png", baos);
+
+            byte[] imageBytesArray = baos.toByteArray();
+
+            pictureModel.setPicture(imageBytesArray);
+            pictureModel.setSender(gui.getUsername());
+            pictureModel.setTime(LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm")));
+            pictureModel.setMessage(form_pictureDescriptionTextField.getText());
+
+            final String imageObjectJson = gui.getObjectMapper().writeValueAsString(pictureModel);
+
+            gui.getWebsocketClient().send(imageObjectJson);
+
+        } catch (IOException ex) {
+
+            LOGGER.log(java.util.logging.Level.SEVERE, "Could not convert image to byte array", ex);
+        }
     }
 
     @Override
@@ -333,7 +306,7 @@ public class ImagePanelImpl extends ImagePanel {
 
                 form_picturePanel.removeAll();
 
-                image = javax.imageio.ImageIO.read(selectedFile);
+                image = ImageIO.read(selectedFile);
 
                 JLabel imageLabel = createImageLabel(new ImageIcon(image));
 
@@ -342,8 +315,60 @@ public class ImagePanelImpl extends ImagePanel {
                 redrawEverything();
 
             } catch (IOException ex) {
-                logger.log(java.util.logging.Level.SEVERE, "Could not load image from file", ex);
+                LOGGER.log(java.util.logging.Level.SEVERE, "Could not load image from file", ex);
             }
+        }
+    }
+
+    /**
+     Zooms the mother panel based on the mouse wheel movement.
+
+     @param e the MouseWheelEvent object representing the event
+     */
+    @Override
+    protected void zoomMotherPanelMouseWheelMoved(MouseWheelEvent e) {
+
+        if (e.isControlDown()) {
+
+            if (e.getWheelRotation() < 0) {
+
+                zoomFactor += 0.1;
+
+            } else {
+
+                zoomFactor -= 0.1;
+
+                if (zoomFactor < 0.2) {
+                    zoomFactor = 0.2;
+                }
+            }
+
+            addImageToPanel(zoomFactor);
+
+        } else {
+
+            if (e.isShiftDown()) {
+
+                if (e.getWheelRotation() < 0) {
+
+                    form_pictureScrollPane.getHorizontalScrollBar().setValue(form_pictureScrollPane.getHorizontalScrollBar().getValue() - 50);
+                } else {
+
+                    form_pictureScrollPane.getHorizontalScrollBar().setValue(form_pictureScrollPane.getHorizontalScrollBar().getValue() + 50);
+                }
+
+            } else {
+
+                if (e.getWheelRotation() < 0) {
+
+                    form_pictureScrollPane.getVerticalScrollBar().setValue(form_pictureScrollPane.getVerticalScrollBar().getValue() - 50);
+                } else {
+
+                    form_pictureScrollPane.getVerticalScrollBar().setValue(form_pictureScrollPane.getVerticalScrollBar().getValue() + 50);
+                }
+            }
+
+            redrawEverything();
         }
     }
 }

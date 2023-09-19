@@ -292,7 +292,9 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         try {
 
-            return gui.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(messageModel);
+            final String jsonString = gui.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(messageModel);
+            System.out.println("jsonString = " + jsonString);
+            return jsonString;
 
         } catch (JsonProcessingException e) {
 
@@ -309,7 +311,10 @@ public class GuiFunctionality implements SocketToGuiInterface {
      */
     private MessageModel textToMessageModel(String userTextInput) {
 
-        return new MessageModel((byte) MessageTypes.NORMAL, "yasman", userTextInput);
+        MainGuiElementsInterface gui = getMainFrame();
+        assert gui != null;
+
+        return new MessageModel((byte) MessageTypes.NORMAL, gui.getUsername(), userTextInput);
     }
 
     /**
