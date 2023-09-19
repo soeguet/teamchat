@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.soeguet.gui.interaction.generated.ReplyPanel;
 import com.soeguet.gui.main_frame.MainGuiElementsInterface;
 import com.soeguet.gui.newcomment.util.WrapEditorKit;
-import com.soeguet.model.MessageModel;
+import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.MessageTypes;
 import com.soeguet.util.EmojiHandler;
 import com.soeguet.util.EmojiPopUpMenuHandler;

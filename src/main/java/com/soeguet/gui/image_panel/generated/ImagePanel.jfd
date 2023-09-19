@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "8.1.1.0.298" Java: "17.0.8" encoding: "UTF-8"
+JFDML JFormDesigner: "8.1.1.0.298" Java: "17.0.3" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
@@ -86,12 +86,14 @@ new FormModel {
 							add( new FormComponent( "javax.swing.JButton" ) {
 								name: "sendPictureButton"
 								"text": "send"
+								addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "sendPictureButtonMouseClicked", true ) )
 							}, new FormLayoutConstraints( class java.lang.String ) {
 								"value": "Center"
 							} )
 							add( new FormComponent( "javax.swing.JButton" ) {
-								name: "button1"
+								name: "selectPictureButton"
 								"text": "select"
+								addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "selectPictureButtonMouseClicked", true ) )
 							}, new FormLayoutConstraints( class java.lang.String ) {
 								"value": "West"
 							} )

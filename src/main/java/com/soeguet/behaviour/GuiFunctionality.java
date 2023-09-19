@@ -7,7 +7,8 @@ import com.soeguet.gui.main_frame.MainGuiElementsInterface;
 import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.newcomment.left.PanelLeftImpl;
 import com.soeguet.gui.newcomment.right.PanelRightImpl;
-import com.soeguet.model.MessageModel;
+import com.soeguet.model.jackson.BaseModel;
+import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.MessageTypes;
 import com.soeguet.model.PanelTypes;
 import com.soeguet.properties.CustomUserProperties;
@@ -339,36 +340,39 @@ public class GuiFunctionality implements SocketToGuiInterface {
         String message = gui.getClientMessageQueue().poll();
         assert message != null;
 
-        MessageModel messageModel = getMessageModel(message);
+        BaseModel messageModel = getMessageModel(message);
 
-        checkIfMessageSenderAlreadyRegisteredInLocalCache(gui.getChatClientPropertiesHashMap(), messageModel.getSender());
+        if (messageModel instanceof MessageModel) {
 
-        String nickname = checkForNickname(gui, messageModel.getSender());
+            checkIfMessageSenderAlreadyRegisteredInLocalCache(gui.getChatClientPropertiesHashMap(), messageModel.getSender());
 
-        if (messageModel.getSender().equals(gui.getUsername())) {
+            String nickname = checkForNickname(gui, messageModel.getSender());
 
-            Color borderColor = determineBorderColor(gui, "own");
+            if (messageModel.getSender().equals(gui.getUsername())) {
 
-            PanelRightImpl panelRight = new PanelRightImpl(mainFrame, messageModel, PanelTypes.NORMAL);
-            panelRight.setBorderColor(borderColor);
-            displayNicknameInsteadOfUsername(nickname, panelRight);
-            addMessagePanelToMainChatPanel(gui, panelRight, "trailing");
+                Color borderColor = determineBorderColor(gui, "own");
 
-        } else {
+                PanelRightImpl panelRight = new PanelRightImpl(mainFrame, (MessageModel) messageModel, PanelTypes.NORMAL);
+                panelRight.setBorderColor(borderColor);
+                displayNicknameInsteadOfUsername(nickname, panelRight);
+                addMessagePanelToMainChatPanel(gui, panelRight, "trailing");
 
-            Color borderColor = determineBorderColor(gui, messageModel.getSender());
+            } else {
 
-            PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, messageModel, PanelTypes.NORMAL);
-            panelLeft.setBorderColor(borderColor);
-            displayNicknameInsteadOfUsername(nickname, panelLeft);
-            addMessagePanelToMainChatPanel(gui, panelLeft, "leading");
+                Color borderColor = determineBorderColor(gui, messageModel.getSender());
+
+                PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, (MessageModel) messageModel, PanelTypes.NORMAL);
+                panelLeft.setBorderColor(borderColor);
+                displayNicknameInsteadOfUsername(nickname, panelLeft);
+                addMessagePanelToMainChatPanel(gui, panelLeft, "leading");
+            }
+
+            mainFrame.revalidate();
+            mainFrame.repaint();
+            scrollMainPanelDownToLastMessage(gui.getMainTextBackgroundScrollPane());
+
+            checkIfDequeIsEmptyOrStartOver(gui);
         }
-
-        mainFrame.revalidate();
-        mainFrame.repaint();
-        scrollMainPanelDownToLastMessage(gui.getMainTextBackgroundScrollPane());
-
-        checkIfDequeIsEmptyOrStartOver(gui);
     }
 
     private void checkIfDequeIsEmptyOrStartOver(MainGuiElementsInterface gui) {
@@ -393,7 +397,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
      @throws IllegalArgumentException if the JSON string is malformed
      */
-    private MessageModel getMessageModel(String message) {
+    private BaseModel getMessageModel(String message) {
 
         try {
 
@@ -502,9 +506,9 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
      @throws JsonProcessingException if there is an error processing the JSON message
      */
-    private MessageModel convertJsonToMessageModel(String jsonMessage) throws JsonProcessingException {
+    private BaseModel convertJsonToMessageModel(String jsonMessage) throws JsonProcessingException {
 
-        return objectMapper.readValue(jsonMessage, MessageModel.class);
+        return objectMapper.readValue(jsonMessage, BaseModel.class);
     }
 
     /**

@@ -82,8 +82,8 @@ public abstract class ImagePanel extends JPanel {
 		return form_sendPictureButton;
 	}
 
-	public JButton getButton1() {
-		return form_button1;
+	public JButton getSelectPictureButton() {
+		return form_selectPictureButton;
 	}
 
 	public JLayeredPane getPictureLayeredPane() {
@@ -114,6 +114,10 @@ public abstract class ImagePanel extends JPanel {
 		return form_picturePanel;
 	}
 
+	protected abstract void sendPictureButtonMouseClicked(MouseEvent e);
+
+	protected abstract void selectPictureButtonMouseClicked(MouseEvent e);
+
 	protected abstract void zoomMotherPanelMouseWheelMoved(MouseWheelEvent e);
 
 	private void initComponents() {
@@ -133,7 +137,7 @@ public abstract class ImagePanel extends JPanel {
 		form_pictureDescriptionTextField = new JTextField();
 		form_panel2 = new JPanel();
 		form_sendPictureButton = new JButton();
-		form_button1 = new JButton();
+		form_selectPictureButton = new JButton();
 		form_pictureLayeredPane = new JLayeredPane();
 		form_zoomMotherPanel = new JPanel();
 		form_zoomPanel = new JPanel();
@@ -228,11 +232,23 @@ public abstract class ImagePanel extends JPanel {
 
 						//---- form_sendPictureButton ----
 						form_sendPictureButton.setText("send");
+						form_sendPictureButton.addMouseListener(new MouseAdapter() {
+							@Override
+							public void mouseClicked(MouseEvent e) {
+								sendPictureButtonMouseClicked(e);
+							}
+						});
 						form_panel2.add(form_sendPictureButton, BorderLayout.CENTER);
 
-						//---- form_button1 ----
-						form_button1.setText("select");
-						form_panel2.add(form_button1, BorderLayout.WEST);
+						//---- form_selectPictureButton ----
+						form_selectPictureButton.setText("select");
+						form_selectPictureButton.addMouseListener(new MouseAdapter() {
+							@Override
+							public void mouseClicked(MouseEvent e) {
+								selectPictureButtonMouseClicked(e);
+							}
+						});
+						form_panel2.add(form_selectPictureButton, BorderLayout.WEST);
 					}
 					form_pictureInteractionPanel.add(form_panel2, BorderLayout.EAST);
 				}
@@ -315,7 +331,7 @@ public abstract class ImagePanel extends JPanel {
 	protected JTextField form_pictureDescriptionTextField;
 	protected JPanel form_panel2;
 	protected JButton form_sendPictureButton;
-	protected JButton form_button1;
+	protected JButton form_selectPictureButton;
 	protected JLayeredPane form_pictureLayeredPane;
 	protected JPanel form_zoomMotherPanel;
 	protected JPanel form_zoomPanel;

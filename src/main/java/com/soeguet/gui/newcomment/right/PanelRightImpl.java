@@ -6,7 +6,7 @@ import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.newcomment.right.generated.PanelRight;
 import com.soeguet.gui.newcomment.util.QuotePanelImpl;
 import com.soeguet.gui.newcomment.util.WrapEditorKit;
-import com.soeguet.model.MessageModel;
+import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.PanelTypes;
 import com.soeguet.util.EmojiHandler;
 

@@ -1,18 +1,16 @@
-package com.soeguet.model;
+package com.soeguet.model.jackson;
+
+import com.soeguet.model.MessageTypes;
+import com.soeguet.model.UserInteraction;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MessageModel {
+public class MessageModel extends BaseModel {
 
-    private Long id;
     private byte messageType;
-    private List<UserInteraction> userInteractions;
-    private String localIp;
-    private String sender;
-    private String time;
     private String message;
     private String quotedMessageSender;
     private String quotedMessageTime;
@@ -177,4 +175,6 @@ public class MessageModel {
 
         return "MessageModel{" + "id=" + id + ", messageType=" + messageType + ", userInteractions=" + userInteractions + ", localIp='" + localIp + '\'' + ", sender='" + sender + '\'' + ", time='" + time + '\'' + ", message='" + message + '\'' + ", quotedMessageSender='" + quotedMessageSender + '\'' + ", quotedMessageTime='" + quotedMessageTime + '\'' + ", quotedMessageText='" + quotedMessageText + '\'' + '}';
     }
+
+
 }

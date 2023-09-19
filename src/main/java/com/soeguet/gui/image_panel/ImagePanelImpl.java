@@ -264,8 +264,6 @@ public class ImagePanelImpl extends ImagePanel {
                 }
 
                 addImageToPanel(zoomFactor);
-                redrawEverything();
-
 
         } else {
 
@@ -289,7 +287,63 @@ public class ImagePanelImpl extends ImagePanel {
                     form_pictureScrollPane.getVerticalScrollBar().setValue(form_pictureScrollPane.getVerticalScrollBar().getValue() + 50);
                 }
             }
-        }
 
+            redrawEverything();
+        }
+    }
+
+    @Override
+    protected void sendPictureButtonMouseClicked(MouseEvent e) {
+
+
+
+    }
+
+    @Override
+    protected void selectPictureButtonMouseClicked(MouseEvent e) {
+
+        JFileChooser jFileChooser = new JFileChooser(System.getProperty("user.home"));
+        jFileChooser.setDialogTitle("Select a picture");
+        jFileChooser.addChoosableFileFilter(new javax.swing.filechooser.FileFilter() {
+
+            @Override
+            public boolean accept(java.io.File f) {
+
+                return f.getName().toLowerCase().endsWith(".png") || f.getName().toLowerCase().endsWith(".jpg") || f.isDirectory();
+            }
+
+            @Override
+            public String getDescription() {
+
+                return "PNG Images (*.png), JPG Images (*.jpg)";
+            }
+        });
+
+        jFileChooser.setAcceptAllFileFilterUsed(false);
+        jFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        jFileChooser.setMultiSelectionEnabled(false);
+
+        int result = jFileChooser.showOpenDialog(this);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+
+            java.io.File selectedFile = jFileChooser.getSelectedFile();
+
+            try {
+
+                form_picturePanel.removeAll();
+
+                image = javax.imageio.ImageIO.read(selectedFile);
+
+                JLabel imageLabel = createImageLabel(new ImageIcon(image));
+
+                form_picturePanel.add(imageLabel);
+
+                redrawEverything();
+
+            } catch (IOException ex) {
+                logger.log(java.util.logging.Level.SEVERE, "Could not load image from file", ex);
+            }
+        }
     }
 }
