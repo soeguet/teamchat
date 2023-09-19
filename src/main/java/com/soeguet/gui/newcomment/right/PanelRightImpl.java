@@ -6,14 +6,23 @@ import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.newcomment.right.generated.PanelRight;
 import com.soeguet.gui.newcomment.util.QuotePanelImpl;
 import com.soeguet.gui.newcomment.util.WrapEditorKit;
-import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.PanelTypes;
+import com.soeguet.model.jackson.BaseModel;
+import com.soeguet.model.jackson.MessageModel;
+import com.soeguet.model.jackson.PictureModel;
 import com.soeguet.util.EmojiHandler;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.logging.Logger;
 
 /**
@@ -23,21 +32,124 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
 
     private final Logger logger = Logger.getLogger(PanelRightImpl.class.getName());
     private final JFrame mainFrame;
-
-    private final MessageModel messageModel;
-    private final PanelTypes panelTyp;
+    private final BaseModel baseModel;
+    private PanelTypes panelTyp;
     private JPopupMenu jPopupMenu;
+    private BufferedImage image;
+    private JTextPane actualTextPane;
 
-    public PanelRightImpl(JFrame mainFrame, MessageModel messageModel, PanelTypes panelTyp) {
+    public PanelRightImpl(JFrame mainFrame, BaseModel baseModel, PanelTypes panelTyp) {
 
         this.mainFrame = mainFrame;
-        this.messageModel = messageModel;
+        this.baseModel = baseModel;
         this.panelTyp = panelTyp;
+    }
+
+    public PanelRightImpl(JFrame mainFrame, BaseModel baseModel) {
+
+        this.mainFrame = mainFrame;
+        this.baseModel = baseModel;
+    }
+
+    @Override
+    public void setupTextPanel() {
+
+        assert baseModel instanceof MessageModel;
 
         populateChatBubble();
         setPopupMenu();
+        addRightClickOptionToPanel();
 
         setupReplyPanels();
+    }
+
+    @Override
+    public void setupPicturePanel() {
+
+        MainGuiElementsInterface gui = getMainFrame();
+        assert gui != null;
+
+        setPopupMenu();
+
+        extractImageFromMessage();
+
+        JLabel imageLabel = new JLabel(scaleImageIfTooBig());
+        this.getPanel1().add(imageLabel, "cell 0 0, wrap");
+
+        addMaximizePictureOnClick(imageLabel);
+
+        JTextPane imageCaptionTextPane = getImageCaptionTextPane();
+        this.getPanel1().add(imageCaptionTextPane, "cell 0 1, wrap");
+
+
+        addRightClickOptionToPanel();
+
+        setNameField(gui);
+        setTimestampField(gui);
+
+    }
+
+    private void addMaximizePictureOnClick(JLabel imageLabel) {
+
+        imageLabel.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                File imgFile = new File("temp-image.jpg");
+
+                try {
+                    ImageIO.write(image, "png", imgFile);
+                } catch (IOException ex) {
+                    logger.log(java.util.logging.Level.SEVERE, "Error writing image", ex);
+                }
+
+                if (Desktop.isDesktopSupported()) {
+                    try {
+                        Desktop.getDesktop().open(imgFile);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                } else {
+                    System.out.println("Desktop not supported");
+                }
+            }
+        });
+    }
+
+    private void extractImageFromMessage() {
+
+        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(((PictureModel) baseModel).getPicture())) {
+
+            image = ImageIO.read(byteArrayInputStream);
+
+        } catch (IOException e) {
+
+            logger.log(java.util.logging.Level.SEVERE, "Error reading image", e);
+        }
+    }
+
+    private ImageIcon scaleImageIfTooBig() {
+
+        ImageIcon imageIcon = new ImageIcon(image);
+
+        if (imageIcon.getIconWidth() > 500) {
+
+            imageIcon = new ImageIcon(imageIcon.getImage().getScaledInstance(500, -1, Image.SCALE_AREA_AVERAGING));
+        } else if (imageIcon.getIconHeight() > 350) {
+
+            imageIcon = new ImageIcon(imageIcon.getImage().getScaledInstance(-1, 350, Image.SCALE_AREA_AVERAGING));
+        }
+
+        return imageIcon;
+    }
+
+    private JTextPane getImageCaptionTextPane() {
+
+        actualTextPane = new JTextPane();
+        actualTextPane.setText(baseModel.getMessage());
+        actualTextPane.setEditable(false);
+        actualTextPane.setOpaque(false);
+        return actualTextPane;
     }
 
     /**
@@ -68,12 +180,10 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
 
                 super.mouseReleased(e);
 
-                if (!(mainFrame instanceof MainGuiElementsInterface)) {
-                    return;
-                }
-                MainGuiElementsInterface gui = (MainGuiElementsInterface) mainFrame;
+                MainGuiElementsInterface gui = getMainFrame();
+                assert gui != null;
 
-                ReplyPanelImpl replyPanel = new ReplyPanelImpl(mainFrame, messageModel);
+                ReplyPanelImpl replyPanel = new ReplyPanelImpl(mainFrame, baseModel);
                 gui.getMainTextPanelLayeredPane().add(replyPanel, JLayeredPane.MODAL_LAYER);
             }
         });
@@ -85,6 +195,34 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
         jPopupMenu.add(new JMenuItem("delete"));
     }
 
+    private void addRightClickOptionToPanel() {
+        JPopupMenu popupMenu = new JPopupMenu();
+        JMenuItem copyItem = new JMenuItem("copy");
+
+        copyItem.addActionListener(e -> {
+            final String selectedText = actualTextPane.getSelectedText();
+            if (selectedText != null) {
+                StringSelection selection = new StringSelection(selectedText);
+                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, selection);
+            }
+        });
+
+
+        popupMenu.add(copyItem);
+
+        actualTextPane.setComponentPopupMenu(popupMenu);
+
+        actualTextPane.addMouseListener(
+                new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        if (SwingUtilities.isRightMouseButton(e)) {
+                            popupMenu.show(PanelRightImpl.this, e.getX(), e.getY());
+                        }
+                    }
+                });
+    }
+
     /**
      This method is used to set up the reply panels based on the panel type.
      If the panel type is normal, the method will return without performing any action.
@@ -93,6 +231,7 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     private void setupReplyPanels() {
 
         if (panelTyp == PanelTypes.NORMAL) {
+
             return;
         }
 
@@ -104,14 +243,16 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
      */
     private void checkForQuotes() {
 
-        String quotedText = messageModel.getQuotedMessageText();
+        assert baseModel instanceof MessageModel;
+
+        String quotedText = ((MessageModel) baseModel).getQuotedMessageText();
 
         if (quotedText == null) {
             return;
         }
 
-        String quotedChatParticipant = messageModel.getQuotedMessageSender();
-        String quotedTime = messageModel.getQuotedMessageTime();
+        String quotedChatParticipant = ((MessageModel) baseModel).getQuotedMessageSender();
+        String quotedTime = ((MessageModel) baseModel).getQuotedMessageTime();
 
         createQuotedSectionInChatBubble(quotedText, quotedChatParticipant, quotedTime);
     }
@@ -124,11 +265,21 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
 
         if (mainFrame instanceof MainGuiElementsInterface) {
 
-            MainGuiElementsInterface mainGui = (MainGuiElementsInterface) mainFrame;
+            MainGuiElementsInterface mainGui = getMainFrame();
             setUserMessage();
             setNameField(mainGui);
             setTimestampField(mainGui);
         }
+    }
+
+    private MainGuiElementsInterface getMainFrame() {
+
+        if (!(mainFrame instanceof MainGuiElementsInterface)) {
+
+            return null;
+        }
+
+        return (MainGuiElementsInterface) mainFrame;
     }
 
     /**
@@ -153,14 +304,14 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
      */
     private void setUserMessage() {
 
-        JTextPane actualTextPane = createTextPane();
+        actualTextPane = createTextPane();
 
         actualTextPane.setEditorKit(new WrapEditorKit());
 
         JScrollPane jsp = new JScrollPane(actualTextPane);
         jsp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
-        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(actualTextPane,messageModel.getMessage());
+        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(actualTextPane, baseModel.getMessage());
 
         this.getPanel1().add(actualTextPane, "cell 0 1, wrap");
     }
@@ -172,7 +323,7 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
      */
     private void setNameField(MainGuiElementsInterface mainFrame) {
 
-        String sender = messageModel.getSender();
+        String sender = baseModel.getSender();
 
         this.getNameLabel().setText(sender);
 
@@ -193,7 +344,7 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
      */
     private void setTimestampField(MainGuiElementsInterface mainFrame) {
 
-        String timeStamp = messageModel.getTime();
+        String timeStamp = baseModel.getTime();
 
         this.getTimeLabel().setText(timeStamp);
 
@@ -224,7 +375,6 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
         return jTextPane;
     }
 
-
     @Override
     protected void replyButtonClicked(MouseEvent e) {
 
@@ -243,6 +393,11 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
 
     @Override
     protected void actionLabelMouseExited(MouseEvent e) {
+
+    }
+
+    @Override
+    protected void thisComponentResized(ComponentEvent e) {
 
     }
 }

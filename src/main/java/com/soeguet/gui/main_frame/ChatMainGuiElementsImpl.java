@@ -51,6 +51,7 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     private String username = "yasman";
     private JPanel messagePanel;
 
+
     private AtomicBoolean isProcessingClientMessages = new AtomicBoolean(false);
 
     /**
@@ -491,6 +492,11 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     protected void sendButton(ActionEvent e) {
 
         emojiHandler.replaceImageIconWithEmojiDescription(getTextEditorPane());
+
+        if (getTextEditorPane().getText().trim().isEmpty()) {
+
+            return;
+        }
 
         guiFunctionality.clearTextPaneAndSendMessageToSocket();
     }

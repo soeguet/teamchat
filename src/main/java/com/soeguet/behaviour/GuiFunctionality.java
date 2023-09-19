@@ -7,10 +7,11 @@ import com.soeguet.gui.main_frame.MainGuiElementsInterface;
 import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.newcomment.left.PanelLeftImpl;
 import com.soeguet.gui.newcomment.right.PanelRightImpl;
-import com.soeguet.model.jackson.BaseModel;
-import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.MessageTypes;
 import com.soeguet.model.PanelTypes;
+import com.soeguet.model.jackson.BaseModel;
+import com.soeguet.model.jackson.MessageModel;
+import com.soeguet.model.jackson.PictureModel;
 import com.soeguet.properties.CustomUserProperties;
 
 import javax.swing.*;
@@ -32,10 +33,9 @@ import java.util.logging.Logger;
  */
 public class GuiFunctionality implements SocketToGuiInterface {
 
-    Logger logger = Logger.getLogger(GuiFunctionality.class.getName());
     private final JFrame mainFrame;
-
     private final ObjectMapper objectMapper = new ObjectMapper();
+    Logger logger = Logger.getLogger(GuiFunctionality.class.getName());
 
     /**
      Constructs a new GuiFunctionality object with the given main frame.
@@ -49,6 +49,53 @@ public class GuiFunctionality implements SocketToGuiInterface {
         fixScrollPaneScrollSpeed();
         addDocumentListenerToTextPane();
         overrideTransferHandlerOfTextPane();
+    }
+
+    /**
+     Fixes the scroll speed for the main text background scroll pane.
+     This method sets the unit increment of the vertical scrollbar of the main text background scroll pane to 20.
+     This ensures that the scrolling speed is faster.
+     */
+    private void fixScrollPaneScrollSpeed() {
+
+        MainGuiElementsInterface gui = getMainFrame();
+        assert gui != null;
+
+        gui.getMainTextBackgroundScrollPane().getVerticalScrollBar().setUnitIncrement(25);
+    }
+
+    private void addDocumentListenerToTextPane() {
+
+        MainGuiElementsInterface gui = getFrame();
+        assert gui != null;
+        gui.getTextEditorPane().getDocument().addDocumentListener(new DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+
+                int offset = e.getOffset();
+                int length = e.getLength();
+                Document doc = e.getDocument();
+
+                try {
+                    String insertedText = doc.getText(offset, length);
+                    //TODO clickable links
+                } catch (BadLocationException ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+
+            }
+        });
+
     }
 
     /**
@@ -88,38 +135,18 @@ public class GuiFunctionality implements SocketToGuiInterface {
         });
     }
 
-    private void addDocumentListenerToTextPane() {
+    /**
+     Retrieves the main frame if it is an instance of {@link MainGuiElementsInterface}.
 
-        MainGuiElementsInterface gui = getFrame();
-        assert gui != null;
-        gui.getTextEditorPane().getDocument().addDocumentListener(new DocumentListener() {
+     @return The main frame if it is an instance of {@link MainGuiElementsInterface}, otherwise null.
+     */
+    private MainGuiElementsInterface getMainFrame() {
 
-            @Override
-            public void insertUpdate(DocumentEvent e) {
+        if (!(mainFrame instanceof MainGuiElementsInterface)) {
+            return null;
+        }
 
-                int offset = e.getOffset();
-                int length = e.getLength();
-                Document doc = e.getDocument();
-
-                try {
-                    String insertedText = doc.getText(offset, length);
-                    System.out.println("Zuletzt eingefügt: " + insertedText);
-                } catch (BadLocationException ex) {
-                    ex.printStackTrace();
-                }
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-
-            }
-        });
-
+        return getFrame();
     }
 
     /**
@@ -137,33 +164,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
         }
 
         return (MainGuiElementsInterface) mainFrame;
-    }
-
-    /**
-     Fixes the scroll speed for the main text background scroll pane.
-     This method sets the unit increment of the vertical scrollbar of the main text background scroll pane to 20.
-     This ensures that the scrolling speed is faster.
-     */
-    private void fixScrollPaneScrollSpeed() {
-
-        MainGuiElementsInterface gui = getMainFrame();
-        assert gui != null;
-
-        gui.getMainTextBackgroundScrollPane().getVerticalScrollBar().setUnitIncrement(25);
-    }
-
-    /**
-     Retrieves the main frame if it is an instance of {@link MainGuiElementsInterface}.
-
-     @return The main frame if it is an instance of {@link MainGuiElementsInterface}, otherwise null.
-     */
-    private MainGuiElementsInterface getMainFrame() {
-
-        if (!(mainFrame instanceof MainGuiElementsInterface)) {
-            return null;
-        }
-
-        return getFrame();
     }
 
     /**
@@ -292,14 +292,14 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         try {
 
-            final String jsonString = gui.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(messageModel);
-            System.out.println("jsonString = " + jsonString);
-            return jsonString;
+            return gui.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(messageModel);
 
         } catch (JsonProcessingException e) {
 
-            throw new RuntimeException(e);
+            logger.log(java.util.logging.Level.SEVERE, "Error converting to JSON", e);
         }
+
+        return null;
     }
 
     /**
@@ -347,17 +347,17 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         BaseModel messageModel = getMessageModel(message);
 
+        checkIfMessageSenderAlreadyRegisteredInLocalCache(gui.getChatClientPropertiesHashMap(), messageModel.getSender());
+        String nickname = checkForNickname(gui, messageModel.getSender());
+
         if (messageModel instanceof MessageModel) {
-
-            checkIfMessageSenderAlreadyRegisteredInLocalCache(gui.getChatClientPropertiesHashMap(), messageModel.getSender());
-
-            String nickname = checkForNickname(gui, messageModel.getSender());
 
             if (messageModel.getSender().equals(gui.getUsername())) {
 
                 Color borderColor = determineBorderColor(gui, "own");
 
                 PanelRightImpl panelRight = new PanelRightImpl(mainFrame, (MessageModel) messageModel, PanelTypes.NORMAL);
+                panelRight.setupTextPanel();
                 panelRight.setBorderColor(borderColor);
                 displayNicknameInsteadOfUsername(nickname, panelRight);
                 addMessagePanelToMainChatPanel(gui, panelRight, "trailing");
@@ -367,17 +367,43 @@ public class GuiFunctionality implements SocketToGuiInterface {
                 Color borderColor = determineBorderColor(gui, messageModel.getSender());
 
                 PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, (MessageModel) messageModel, PanelTypes.NORMAL);
+                panelLeft.setupTextPanel();
                 panelLeft.setBorderColor(borderColor);
                 displayNicknameInsteadOfUsername(nickname, panelLeft);
                 addMessagePanelToMainChatPanel(gui, panelLeft, "leading");
             }
 
-            mainFrame.revalidate();
-            mainFrame.repaint();
-            scrollMainPanelDownToLastMessage(gui.getMainTextBackgroundScrollPane());
+        } else if (messageModel instanceof PictureModel) {
 
-            checkIfDequeIsEmptyOrStartOver(gui);
+            if (messageModel.getSender().equals(gui.getUsername())) {
+
+                Color borderColor = determineBorderColor(gui, "own");
+
+                PanelRightImpl panelRight = new PanelRightImpl(mainFrame, (PictureModel) messageModel);
+                panelRight.setupPicturePanel();
+                panelRight.setBorderColor(borderColor);
+                displayNicknameInsteadOfUsername(nickname, panelRight);
+                addMessagePanelToMainChatPanel(gui, panelRight, "trailing");
+
+            } else {
+
+                Color borderColor = determineBorderColor(gui, messageModel.getSender());
+
+                PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, (PictureModel) messageModel);
+                panelLeft.setupPicturePanel();
+                panelLeft.setBorderColor(borderColor);
+                displayNicknameInsteadOfUsername(nickname, panelLeft);
+                addMessagePanelToMainChatPanel(gui, panelLeft, "leading");
+            }
+        } else {
+
+            logger.info("Unknown message type");
         }
+
+        mainFrame.revalidate();
+        mainFrame.repaint();
+        scrollMainPanelDownToLastMessage(gui.getMainTextBackgroundScrollPane());
+        checkIfDequeIsEmptyOrStartOver(gui);
     }
 
     private void checkIfDequeIsEmptyOrStartOver(MainGuiElementsInterface gui) {

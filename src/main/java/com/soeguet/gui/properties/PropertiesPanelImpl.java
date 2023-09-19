@@ -225,7 +225,6 @@ public class PropertiesPanelImpl extends PropertiesPanel {
     @Override
     protected void clientSelectorComboBoxPropertyChange(PropertyChangeEvent e) {
 
-        System.out.println("Property changed");
     }
 
     @Override
@@ -246,6 +245,15 @@ public class PropertiesPanelImpl extends PropertiesPanel {
     @Override
     protected void ownUserNameTextFieldFocusLost(FocusEvent e) {
 
+        MainGuiElementsInterface gui = getMainFrame();
+        assert gui != null;
+
+        String username = getOwnUserNameTextField().getText();
+
+        gui.getChatClientPropertiesHashMap().get("own").setUsername(username);
+        gui.setUsername(username);
+
+        gui.getCustomProperties().save();
     }
 
     @Override

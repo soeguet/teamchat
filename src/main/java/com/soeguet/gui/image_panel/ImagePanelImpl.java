@@ -111,10 +111,14 @@ public class ImagePanelImpl extends ImagePanel {
                 redrawEverything();
 
             } catch (UnsupportedFlavorException | IOException ex) {
+
                 LOGGER.log(java.util.logging.Level.SEVERE, "Could not load image from clipboard", ex);
+
             }
+
         } else {
-            System.out.println("No image found in clipboard");
+
+            LOGGER.log(java.util.logging.Level.SEVERE, "Clipboard does not contain an image");
         }
     }
 

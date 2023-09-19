@@ -6,8 +6,10 @@ import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.newcomment.left.generated.PanelLeft;
 import com.soeguet.gui.newcomment.util.QuotePanelImpl;
 import com.soeguet.gui.newcomment.util.WrapEditorKit;
-import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.PanelTypes;
+import com.soeguet.model.jackson.BaseModel;
+import com.soeguet.model.jackson.MessageModel;
+import com.soeguet.model.jackson.PictureModel;
 import com.soeguet.util.EmojiHandler;
 
 import javax.swing.*;
@@ -18,21 +20,38 @@ import java.util.logging.Logger;
 public class PanelLeftImpl extends PanelLeft implements CommentInterface {
 
     private final Logger logger = Logger.getLogger(PanelLeftImpl.class.getName());
-    private final MessageModel messageModel;
+    private final BaseModel baseModel;
     private final JFrame mainFrame;
-    private final PanelTypes panelTyp;
+    private PanelTypes panelTyp;
     private JPopupMenu jPopupMenu;
 
-    public PanelLeftImpl(JFrame mainFrame, MessageModel messageModel, PanelTypes panelTyp) {
+    public PanelLeftImpl(JFrame mainFrame, MessageModel baseModel, PanelTypes panelTyp) {
 
-        this.messageModel = messageModel;
+        this.baseModel = baseModel;
         this.mainFrame = mainFrame;
         this.panelTyp = panelTyp;
+    }
+
+    @Override
+    public void setupTextPanel() {
+
+        assert baseModel instanceof MessageModel;
 
         populateChatBubble();
         setPopupMenu();
 
         setupReplyPanels();
+    }
+
+    @Override
+    public void setupPicturePanel() {
+
+    }
+
+    public PanelLeftImpl(JFrame mainFrame, PictureModel baseModel) {
+
+        this.baseModel = baseModel;
+        this.mainFrame = mainFrame;
     }
 
     /**
@@ -68,16 +87,12 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
                 }
                 MainGuiElementsInterface gui = (MainGuiElementsInterface) mainFrame;
 
-                ReplyPanelImpl replyPanel = new ReplyPanelImpl(mainFrame, messageModel);
+                ReplyPanelImpl replyPanel = new ReplyPanelImpl(mainFrame, baseModel);
                 gui.getMainTextPanelLayeredPane().add(replyPanel, JLayeredPane.MODAL_LAYER);
             }
         });
 
         jPopupMenu.add(reply);
-
-        jPopupMenu.addSeparator();
-        jPopupMenu.add(new JMenuItem("edit"));
-        jPopupMenu.add(new JMenuItem("delete"));
     }
 
     /**
@@ -99,14 +114,16 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
      */
     private void checkForQuotes() {
 
-        String quotedText = messageModel.getQuotedMessageText();
+        assert baseModel instanceof MessageModel;
+
+        String quotedText = ((MessageModel) baseModel).getQuotedMessageText();
 
         if (quotedText == null) {
             return;
         }
 
-        String quotedChatParticipant = messageModel.getQuotedMessageSender();
-        String quotedTime = messageModel.getQuotedMessageTime();
+        String quotedChatParticipant = ((MessageModel) baseModel).getQuotedMessageSender();
+        String quotedTime = ((MessageModel) baseModel).getQuotedMessageTime();
 
         createQuotedSectionInChatBubble(quotedText, quotedChatParticipant, quotedTime);
     }
@@ -157,7 +174,7 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
         JScrollPane jsp = new JScrollPane(actualTextPane);
         jsp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
-        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(actualTextPane, messageModel.getMessage());
+        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(actualTextPane, baseModel.getMessage());
 
         this.getPanel1().add(actualTextPane, "cell 1 1, wrap");
     }
@@ -168,8 +185,8 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
      */
     private void setTimestampField(MainGuiElementsInterface mainFrame) {
 
-        String timeStamp = messageModel.getTime();
-        String sender = messageModel.getSender();
+        String timeStamp = baseModel.getTime();
+        String sender = baseModel.getSender();
 
         this.getTimeLabel().setText(timeStamp);
 
@@ -195,7 +212,7 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
      */
     private void setNameField(MainGuiElementsInterface mainFrame) {
 
-        String sender = messageModel.getSender();
+        String sender = baseModel.getSender();
         this.getNameLabel().setText(sender);
 
         if (panelTyp == PanelTypes.NORMAL && sender.equals(mainFrame.getLastMessageSenderName())) {
