@@ -250,7 +250,11 @@ public class ImagePanelImpl extends ImagePanel {
     protected void sendPictureButtonMouseClicked(MouseEvent e) {
 
         MainGuiElementsInterface gui = getMainFrame();
-        assert gui != null;
+
+        if (gui == null) {
+
+            return;
+        }
 
         PictureModel pictureModel = new PictureModel();
 
@@ -269,6 +273,9 @@ public class ImagePanelImpl extends ImagePanel {
             final String imageObjectJson = gui.getObjectMapper().writeValueAsString(pictureModel);
 
             gui.getWebsocketClient().send(imageObjectJson);
+
+            this.removeAll();
+            this.setVisible(false);
 
         } catch (IOException ex) {
 
