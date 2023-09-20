@@ -29,7 +29,7 @@ public abstract class PropertiesPanel extends JPanel {
 
 	protected abstract void thisFocusLost(FocusEvent e);
 
-	protected abstract void closeReplyPanelButtonMouseReleased(MouseEvent e);
+	protected abstract void closePropertiesPanelButtonMouseReleased(MouseEvent e);
 
 	protected abstract void replyTextPaneFocusLost(FocusEvent e);
 
@@ -43,8 +43,8 @@ public abstract class PropertiesPanel extends JPanel {
 		return form_label1;
 	}
 
-	public JButton getCloseReplyPanelButton() {
-		return form_closeReplyPanelButton;
+	public JButton getClosePropertiesPanelButton() {
+		return form_closePropertiesPanelButton;
 	}
 
 	public JPanel getFormerMessagePanel() {
@@ -268,7 +268,7 @@ public abstract class PropertiesPanel extends JPanel {
 		// Generated using JFormDesigner non-commercial license
 		form_panel4 = new JPanel();
 		form_label1 = new JLabel();
-		form_closeReplyPanelButton = new JButton();
+		form_closePropertiesPanelButton = new JButton();
 		form_formerMessagePanel = new JPanel();
 		form_hSpacer1 = new JPanel(null);
 		form_hSpacer2 = new JPanel(null);
@@ -363,16 +363,16 @@ public abstract class PropertiesPanel extends JPanel {
 			form_label1.setEnabled(false);
 			form_panel4.add(form_label1, BorderLayout.CENTER);
 
-			//---- form_closeReplyPanelButton ----
-			form_closeReplyPanelButton.setText("x");
-			form_closeReplyPanelButton.setBorder(UIManager.getBorder("TitledBorder.border"));
-			form_closeReplyPanelButton.addMouseListener(new MouseAdapter() {
+			//---- form_closePropertiesPanelButton ----
+			form_closePropertiesPanelButton.setText("x");
+			form_closePropertiesPanelButton.setBorder(UIManager.getBorder("TitledBorder.border"));
+			form_closePropertiesPanelButton.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseReleased(MouseEvent e) {
-					closeReplyPanelButtonMouseReleased(e);
+					closePropertiesPanelButtonMouseReleased(e);
 				}
 			});
-			form_panel4.add(form_closeReplyPanelButton, BorderLayout.EAST);
+			form_panel4.add(form_closePropertiesPanelButton, BorderLayout.EAST);
 		}
 		add(form_panel4, BorderLayout.PAGE_START);
 
@@ -593,7 +593,7 @@ public abstract class PropertiesPanel extends JPanel {
 	// Generated using JFormDesigner non-commercial license
 	protected JPanel form_panel4;
 	protected JLabel form_label1;
-	protected JButton form_closeReplyPanelButton;
+	protected JButton form_closePropertiesPanelButton;
 	protected JPanel form_formerMessagePanel;
 	protected JPanel form_hSpacer1;
 	protected JPanel form_hSpacer2;

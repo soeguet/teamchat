@@ -7,10 +7,10 @@ import com.soeguet.gui.main_frame.MainGuiElementsInterface;
 import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.newcomment.left.PanelLeftImpl;
 import com.soeguet.gui.newcomment.right.PanelRightImpl;
-import com.soeguet.model.jackson.BaseModel;
-import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.MessageTypes;
 import com.soeguet.model.PanelTypes;
+import com.soeguet.model.jackson.BaseModel;
+import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.properties.CustomUserProperties;
 
 import javax.swing.*;
@@ -32,10 +32,9 @@ import java.util.logging.Logger;
  */
 public class GuiFunctionality implements SocketToGuiInterface {
 
-    Logger logger = Logger.getLogger(GuiFunctionality.class.getName());
     private final JFrame mainFrame;
-
     private final ObjectMapper objectMapper = new ObjectMapper();
+    Logger logger = Logger.getLogger(GuiFunctionality.class.getName());
 
     /**
      Constructs a new GuiFunctionality object with the given main frame.
@@ -49,6 +48,53 @@ public class GuiFunctionality implements SocketToGuiInterface {
         fixScrollPaneScrollSpeed();
         addDocumentListenerToTextPane();
         overrideTransferHandlerOfTextPane();
+    }
+
+    /**
+     Fixes the scroll speed for the main text background scroll pane.
+     This method sets the unit increment of the vertical scrollbar of the main text background scroll pane to 20.
+     This ensures that the scrolling speed is faster.
+     */
+    private void fixScrollPaneScrollSpeed() {
+
+        MainGuiElementsInterface gui = getMainFrame();
+        assert gui != null;
+
+        gui.getMainTextBackgroundScrollPane().getVerticalScrollBar().setUnitIncrement(25);
+    }
+
+    private void addDocumentListenerToTextPane() {
+
+        MainGuiElementsInterface gui = getFrame();
+        assert gui != null;
+        gui.getTextEditorPane().getDocument().addDocumentListener(new DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+
+                int offset = e.getOffset();
+                int length = e.getLength();
+                Document doc = e.getDocument();
+
+                try {
+                    String insertedText = doc.getText(offset, length);
+                    System.out.println("Zuletzt eingefügt: " + insertedText);
+                } catch (BadLocationException ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+
+            }
+        });
+
     }
 
     /**
@@ -88,38 +134,18 @@ public class GuiFunctionality implements SocketToGuiInterface {
         });
     }
 
-    private void addDocumentListenerToTextPane() {
+    /**
+     Retrieves the main frame if it is an instance of {@link MainGuiElementsInterface}.
 
-        MainGuiElementsInterface gui = getFrame();
-        assert gui != null;
-        gui.getTextEditorPane().getDocument().addDocumentListener(new DocumentListener() {
+     @return The main frame if it is an instance of {@link MainGuiElementsInterface}, otherwise null.
+     */
+    private MainGuiElementsInterface getMainFrame() {
 
-            @Override
-            public void insertUpdate(DocumentEvent e) {
+        if (!(mainFrame instanceof MainGuiElementsInterface)) {
+            return null;
+        }
 
-                int offset = e.getOffset();
-                int length = e.getLength();
-                Document doc = e.getDocument();
-
-                try {
-                    String insertedText = doc.getText(offset, length);
-                    System.out.println("Zuletzt eingefügt: " + insertedText);
-                } catch (BadLocationException ex) {
-                    ex.printStackTrace();
-                }
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-
-            }
-        });
-
+        return getFrame();
     }
 
     /**
@@ -137,33 +163,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
         }
 
         return (MainGuiElementsInterface) mainFrame;
-    }
-
-    /**
-     Fixes the scroll speed for the main text background scroll pane.
-     This method sets the unit increment of the vertical scrollbar of the main text background scroll pane to 20.
-     This ensures that the scrolling speed is faster.
-     */
-    private void fixScrollPaneScrollSpeed() {
-
-        MainGuiElementsInterface gui = getMainFrame();
-        assert gui != null;
-
-        gui.getMainTextBackgroundScrollPane().getVerticalScrollBar().setUnitIncrement(25);
-    }
-
-    /**
-     Retrieves the main frame if it is an instance of {@link MainGuiElementsInterface}.
-
-     @return The main frame if it is an instance of {@link MainGuiElementsInterface}, otherwise null.
-     */
-    private MainGuiElementsInterface getMainFrame() {
-
-        if (!(mainFrame instanceof MainGuiElementsInterface)) {
-            return null;
-        }
-
-        return getFrame();
     }
 
     /**

@@ -30,10 +30,10 @@ new FormModel {
 					"value": "Center"
 				} )
 				add( new FormComponent( "javax.swing.JButton" ) {
-					name: "closeReplyPanelButton"
+					name: "closePropertiesPanelButton"
 					"text": "x"
 					"border": new com.jformdesigner.model.SwingBorder( "TitledBorder.border" )
-					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseReleased", "closeReplyPanelButtonMouseReleased", true ) )
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseReleased", "closePropertiesPanelButtonMouseReleased", true ) )
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "East"
 				} )

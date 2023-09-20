@@ -13,10 +13,6 @@ import com.soeguet.util.EmojiInitializer;
 import com.soeguet.util.EmojiPopUpMenuHandler;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
@@ -73,8 +69,6 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
         initWebSocketClient();
     }
 
-
-
     private void initGuiFunctionality() {
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -123,11 +117,6 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
     }
 
-    public AtomicBoolean getIsProcessingClientMessages() {
-
-        return isProcessingClientMessages;
-    }
-
     /**
      Method called when the component is resized.
 
@@ -142,11 +131,9 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
             this.revalidate();
             this.repaint();
         });
-    }
+    }    public AtomicBoolean getIsProcessingClientMessages() {
 
-    public void setIsProcessingClientMessages(AtomicBoolean isProcessingClientMessages) {
-
-        this.isProcessingClientMessages = isProcessingClientMessages;
+        return isProcessingClientMessages;
     }
 
     /**
@@ -168,6 +155,9 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
     protected void propertiesMenuItemMousePressed(MouseEvent e) {
 
         new PropertiesPanelImpl(this);
+    }    public void setIsProcessingClientMessages(AtomicBoolean isProcessingClientMessages) {
+
+        this.isProcessingClientMessages = isProcessingClientMessages;
     }
 
     /**
@@ -177,6 +167,10 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
      */
     @Override
     protected void resetConnectionMenuItemMousePressed(MouseEvent e) {
+
+        form_mainTextPanel.removeAll();
+        form_mainTextPanel.revalidate();
+        form_mainTextPanel.repaint();
 
         if (getWebsocketClient().isOpen()) {
 
@@ -494,5 +488,9 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
 
         guiFunctionality.clearTextPaneAndSendMessageToSocket();
     }
+
+
+
+
 
 }
