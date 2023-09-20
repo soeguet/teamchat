@@ -4,6 +4,7 @@
 
 package com.soeguet.gui.newcomment.right.generated;
 
+import java.awt.event.*;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -92,18 +93,6 @@ public abstract class PanelRight extends JPanel {
 		return this.form_panel1;
 	}
 
-	public JLayeredPane getLayeredPane2() {
-		return this.form_layeredPane2;
-	}
-
-	public JLabel getActionLabel() {
-		return this.form_actionLabel;
-	}
-
-	public JPanel getHSpacer1() {
-		return this.form_hSpacer1;
-	}
-
 	public JLabel getTimeLabel() {
 		return this.form_timeLabel;
 	}
@@ -116,6 +105,7 @@ public abstract class PanelRight extends JPanel {
 		return this.form_panel2;
 	}
 
+	protected abstract void thisComponentResized(ComponentEvent e);
 
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
@@ -135,6 +125,12 @@ public abstract class PanelRight extends JPanel {
 		setMinimumSize(null);
 		setMaximumSize(null);
 		setOpaque(false);
+		addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				thisComponentResized(e);
+			}
+		});
 		setLayout(new MigLayout(
 			"insets 0,align trailing bottom",
 			// columns

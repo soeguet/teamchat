@@ -11,6 +11,7 @@ import com.soeguet.model.MessageTypes;
 import com.soeguet.model.PanelTypes;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
+import com.soeguet.model.jackson.PictureModel;
 import com.soeguet.properties.CustomUserProperties;
 
 import javax.swing.*;
@@ -21,6 +22,8 @@ import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.logging.Logger;
@@ -34,7 +37,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
     private final JFrame mainFrame;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    Logger logger = Logger.getLogger(GuiFunctionality.class.getName());
+    Logger LOGGER = Logger.getLogger(GuiFunctionality.class.getName());
 
     /**
      Constructs a new GuiFunctionality object with the given main frame.
@@ -78,7 +81,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
                 try {
                     String insertedText = doc.getText(offset, length);
-                    System.out.println("Zuletzt eingefügt: " + insertedText);
+                    //TODO clickable links
                 } catch (BadLocationException ex) {
                     ex.printStackTrace();
                 }
@@ -109,7 +112,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
         MainGuiElementsInterface gui = getFrame();
         assert gui != null;
 
-        //preserve the original transfer handler
+        //preserve the original transfer handler, otherwise clucky behavior
         TransferHandler originalHandler = gui.getTextEditorPane().getTransferHandler();
 
         gui.getTextEditorPane().setTransferHandler(new TransferHandler() {
@@ -118,15 +121,31 @@ public class GuiFunctionality implements SocketToGuiInterface {
             public boolean importData(JComponent comp, Transferable t) {
 
                 if (t.isDataFlavorSupported(DataFlavor.imageFlavor)) {
-                    logger.info("Image dropped");
-                    // trigger if image is dropped
 
+                    // image to text pane -> activate image panel
                     new ImagePanelImpl(mainFrame).populateImagePanelFromClipboard();
 
                     return true;
                 } else if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-                    logger.info("Text dropped");
-                    // trigger if text is dropped
+
+                    try {
+                        String data = (String) t.getTransferData(DataFlavor.stringFlavor);
+
+                        //TODO maybe emoji detection?
+
+                        if (data.startsWith("http://") || data.startsWith("https://")) {
+                            //TODO maybe link detection?
+                            LOGGER.info("HTTP Link detected");
+                        } else {
+                            return originalHandler.importData(comp, t);
+                        }
+
+                    } catch (UnsupportedFlavorException | IOException e) {
+
+                        LOGGER.log(java.util.logging.Level.SEVERE, "Error importing data", e);
+                    }
+
+                    //TODO clickable links
                     return originalHandler.importData(comp, t);
                 }
                 return false;
@@ -291,14 +310,14 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         try {
 
-            final String jsonString = gui.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(messageModel);
-            System.out.println("jsonString = " + jsonString);
-            return jsonString;
+            return gui.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(messageModel);
 
         } catch (JsonProcessingException e) {
 
-            throw new RuntimeException(e);
+            LOGGER.log(java.util.logging.Level.SEVERE, "Error converting to JSON", e);
         }
+
+        return null;
     }
 
     /**
@@ -346,17 +365,17 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         BaseModel messageModel = getMessageModel(message);
 
+        checkIfMessageSenderAlreadyRegisteredInLocalCache(gui.getChatClientPropertiesHashMap(), messageModel.getSender());
+        String nickname = checkForNickname(gui, messageModel.getSender());
+
         if (messageModel instanceof MessageModel) {
-
-            checkIfMessageSenderAlreadyRegisteredInLocalCache(gui.getChatClientPropertiesHashMap(), messageModel.getSender());
-
-            String nickname = checkForNickname(gui, messageModel.getSender());
 
             if (messageModel.getSender().equals(gui.getUsername())) {
 
                 Color borderColor = determineBorderColor(gui, "own");
 
                 PanelRightImpl panelRight = new PanelRightImpl(mainFrame, (MessageModel) messageModel, PanelTypes.NORMAL);
+                panelRight.setupTextPanel();
                 panelRight.setBorderColor(borderColor);
                 displayNicknameInsteadOfUsername(nickname, panelRight);
                 addMessagePanelToMainChatPanel(gui, panelRight, "trailing");
@@ -366,17 +385,43 @@ public class GuiFunctionality implements SocketToGuiInterface {
                 Color borderColor = determineBorderColor(gui, messageModel.getSender());
 
                 PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, (MessageModel) messageModel, PanelTypes.NORMAL);
+                panelLeft.setupTextPanel();
                 panelLeft.setBorderColor(borderColor);
                 displayNicknameInsteadOfUsername(nickname, panelLeft);
                 addMessagePanelToMainChatPanel(gui, panelLeft, "leading");
             }
 
-            mainFrame.revalidate();
-            mainFrame.repaint();
-            scrollMainPanelDownToLastMessage(gui.getMainTextBackgroundScrollPane());
+        } else if (messageModel instanceof PictureModel) {
 
-            checkIfDequeIsEmptyOrStartOver(gui);
+            if (messageModel.getSender().equals(gui.getUsername())) {
+
+                Color borderColor = determineBorderColor(gui, "own");
+
+                PanelRightImpl panelRight = new PanelRightImpl(mainFrame, (PictureModel) messageModel);
+                panelRight.setupPicturePanel();
+                panelRight.setBorderColor(borderColor);
+                displayNicknameInsteadOfUsername(nickname, panelRight);
+                addMessagePanelToMainChatPanel(gui, panelRight, "trailing");
+
+            } else {
+
+                Color borderColor = determineBorderColor(gui, messageModel.getSender());
+
+                PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, (PictureModel) messageModel);
+                panelLeft.setupPicturePanel();
+                panelLeft.setBorderColor(borderColor);
+                displayNicknameInsteadOfUsername(nickname, panelLeft);
+                addMessagePanelToMainChatPanel(gui, panelLeft, "leading");
+            }
+        } else {
+
+            LOGGER.info("Unknown message type");
         }
+
+        mainFrame.revalidate();
+        mainFrame.repaint();
+        scrollMainPanelDownToLastMessage(gui.getMainTextBackgroundScrollPane());
+        checkIfDequeIsEmptyOrStartOver(gui);
     }
 
     private void checkIfDequeIsEmptyOrStartOver(MainGuiElementsInterface gui) {

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.soeguet.gui.interaction.generated.ReplyPanel;
 import com.soeguet.gui.main_frame.MainGuiElementsInterface;
 import com.soeguet.gui.newcomment.util.WrapEditorKit;
+import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.MessageTypes;
 import com.soeguet.util.EmojiHandler;
@@ -20,10 +21,10 @@ public class ReplyPanelImpl extends ReplyPanel {
 
     private final Point offset = new Point();
     private final JFrame mainFrame;
-    private final MessageModel messageModel;
+    private final BaseModel messageModel;
     private final Border border = this.getBorder();
 
-    public ReplyPanelImpl(JFrame mainFrame, MessageModel messageModel) {
+    public ReplyPanelImpl(JFrame mainFrame, BaseModel messageModel) {
 
         this.mainFrame = mainFrame;
         this.messageModel = messageModel;

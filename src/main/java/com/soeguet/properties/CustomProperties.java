@@ -139,14 +139,4 @@ public class CustomProperties extends Properties {
 
         return (MainGuiElementsInterface) mainFrame;
     }
-
-    private void random() {
-
-        // Versuchen, die Konfigurationsdatei zu laden
-        // Einstellungen verwenden
-        String username = getProperty("username");
-        String theme = getProperty("theme");
-        System.out.println("username = " + username);
-        System.out.println("theme = " + theme);
-    }
 }
