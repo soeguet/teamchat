@@ -1,6 +1,6 @@
 package com.soeguet.gui.popups;
 
-import com.soeguet.gui.main_frame.MainGuiElementsInterface;
+import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.popups.generated.PopupPanel;
 
 import javax.swing.*;
@@ -10,25 +10,12 @@ public class PopupPanelImpl extends PopupPanel {
 
     private static final int TIMER_PERIOD = 1;
     private static final int POPUP_MOVE_SPEED = 3;
-    private final JFrame mainFrame;
+    private final MainFrameInterface mainFrame;
 
-    public PopupPanelImpl(JFrame mainFrame, String message) {
+    public PopupPanelImpl(MainFrameInterface mainFrame, String message) {
 
         this.mainFrame = mainFrame;
         this.getMessageTextField().setText(message);
-    }
-
-    /**
-     Validates the main frame object and returns an instance of MainGuiElementsInterface.
-
-     @return An instance of MainGuiElementsInterface if the main frame is an instance of MainGuiElementsInterface, null otherwise.
-     */
-    private MainGuiElementsInterface validateMainFrame() {
-
-        if (!(mainFrame instanceof MainGuiElementsInterface)) {
-            return null;
-        }
-        return (MainGuiElementsInterface) mainFrame;
     }
 
     /**
@@ -38,22 +25,18 @@ public class PopupPanelImpl extends PopupPanel {
      */
     public void implementPopup(int delayMilliseconds) {
 
-        MainGuiElementsInterface gui = validateMainFrame();
+        configurePopupPanelPlacement(mainFrame);
 
-        assert gui != null;
-
-        configurePopupPanelPlacement(gui);
-
-        initiatePopupTimer(gui, delayMilliseconds);
+        initiatePopupTimer(mainFrame, delayMilliseconds);
     }
 
     /**
-     Initializes a timer for displaying a popup after a certain delay.
-
-     @param gui               The MainGuiElementsInterface object representing the main GUI.
-     @param delayMilliseconds The delay in milliseconds before the popup is displayed.
+     * Initializes a timer for displaying a popup after a certain delay.
+     *
+     * @param gui               The MainFrameInterface object representing the main GUI.
+     * @param delayMilliseconds The delay in milliseconds before the popup is displayed.
      */
-    private void initiatePopupTimer(MainGuiElementsInterface gui, int delayMilliseconds) {
+    private void initiatePopupTimer(MainFrameInterface gui, int delayMilliseconds) {
 
         Timer swingTimer = new Timer(TIMER_PERIOD, event -> performTimedActions(gui, event));
         swingTimer.setInitialDelay(delayMilliseconds);
@@ -61,12 +44,12 @@ public class PopupPanelImpl extends PopupPanel {
     }
 
     /**
-     Performs timed actions for the popup.
-
-     @param gui   The MainGuiElementsInterface object representing the main GUI elements.
-     @param event The ActionEvent object triggered by the timer.
+     * Performs timed actions for displaying popups on the main GUI.
+     *
+     * @param gui   The MainFrameInterface object representing the main GUI.
+     * @param event The ActionEvent object triggering the timed actions.
      */
-    private void performTimedActions(MainGuiElementsInterface gui, ActionEvent event) {
+    private void performTimedActions(MainFrameInterface gui, ActionEvent event) {
 
         relocatedPopup();
 
@@ -105,7 +88,7 @@ public class PopupPanelImpl extends PopupPanel {
 
      @param gui the main GUI elements interface.
      */
-    private void removeCurrentPopup(MainGuiElementsInterface gui) {
+    private void removeCurrentPopup(MainFrameInterface gui) {
 
         gui.getMainTextPanelLayeredPane().remove(PopupPanelImpl.this);
         setVisible(false);
@@ -119,7 +102,7 @@ public class PopupPanelImpl extends PopupPanel {
 
      @throws InterruptedException if the thread sleep is interrupted.
      */
-    private void recursivelyProcessStringsInQueue(MainGuiElementsInterface gui) throws InterruptedException {
+    private void recursivelyProcessStringsInQueue(MainFrameInterface gui) throws InterruptedException {
 
         Thread.sleep(500);
 
@@ -141,7 +124,7 @@ public class PopupPanelImpl extends PopupPanel {
 
      @param gui The interface that provides access to the main GUI elements.
      */
-    private void configurePopupPanelPlacement(MainGuiElementsInterface gui) {
+    private void configurePopupPanelPlacement(MainFrameInterface gui) {
 
         this.setBounds((gui.getMainTextPanelLayeredPane().getWidth() - 250) / 2, 100, 250, 100);
         gui.getMainTextPanelLayeredPane().add(this, JLayeredPane.POPUP_LAYER);

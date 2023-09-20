@@ -1,6 +1,6 @@
 package com.soeguet.util;
 
-import com.soeguet.gui.main_frame.ChatMainGuiElementsImpl;
+import com.soeguet.gui.main_frame.ChatMainFrameImpl;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -24,7 +24,7 @@ public class EmojiInitializer {
     public HashMap<String, ImageIcon> createEmojiList() {
 
         HashMap<String, ImageIcon> imageIcons = new HashMap<>();
-        CodeSource src = ChatMainGuiElementsImpl.class.getProtectionDomain().getCodeSource();
+        CodeSource src = ChatMainFrameImpl.class.getProtectionDomain().getCodeSource();
 
         if (src != null) {
 

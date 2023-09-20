@@ -1,6 +1,6 @@
 package com.soeguet.gui.newcomment.util;
 
-import com.soeguet.gui.main_frame.MainGuiElementsInterface;
+import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.newcomment.util.generated.QuotePanel;
 
 import javax.swing.*;
@@ -14,9 +14,9 @@ import java.util.logging.Logger;
 public class QuotePanelImpl extends QuotePanel {
 
     private final Logger logger = Logger.getLogger(QuotePanelImpl.class.getName());
-    private final JFrame mainFrame;
+    private final MainFrameInterface mainFrame;
 
-    public QuotePanelImpl(JFrame mainFrame, String text, String sender, String time) {
+    public QuotePanelImpl(MainFrameInterface mainFrame, String text, String sender, String time) {
 
         this.mainFrame = mainFrame;
 
@@ -29,17 +29,12 @@ public class QuotePanelImpl extends QuotePanel {
 
     private void createTextOnPane(JTextPane actualTextPane, String text) {
 
-        if (!(mainFrame instanceof MainGuiElementsInterface)) {
-            return;
-        }
-
-        MainGuiElementsInterface gui = (MainGuiElementsInterface) mainFrame;
         StyledDocument doc = actualTextPane.getStyledDocument();
 
-        processText(actualTextPane, gui, doc,text);
+        processText(actualTextPane, mainFrame, doc,text);
     }
 
-    private void processText(JTextPane actualTextPane, MainGuiElementsInterface gui, StyledDocument doc, String text) {
+    private void processText(JTextPane actualTextPane, MainFrameInterface gui, StyledDocument doc, String text) {
 
         try {
             for (String word : text.split(" ")) {
@@ -61,14 +56,14 @@ public class QuotePanelImpl extends QuotePanel {
     }
 
     /**
-     * Processes the insertion of an emoji in the given JTextPane.
+     * Processes and inserts an emoji image into a styled document.
      *
-     * @param actualTextPane the JTextPane in which the emoji should be inserted
-     * @param gui the MainGuiElementsInterface implementation providing GUI elements
-     * @param doc the StyledDocument to insert the emoji into
-     * @param word the emoji word to insert
+     * @param actualTextPane The JTextPane where the emoji image will be inserted.
+     * @param gui The MainFrameInterface that provides the necessary GUI functionalities.
+     * @param doc The StyledDocument where the emoji image will be inserted.
+     * @param word The word associated with the emoji image.
      */
-    private void processEmoji(JTextPane actualTextPane, MainGuiElementsInterface gui, StyledDocument doc, String word) {
+    private void processEmoji(JTextPane actualTextPane, MainFrameInterface gui, StyledDocument doc, String word) {
 
         Style style = createImageStyle(actualTextPane, gui, word);
 
@@ -83,14 +78,14 @@ public class QuotePanelImpl extends QuotePanel {
     }
 
     /**
-     * Creates a Style instance for displaying an image in a JTextPane.
+     * Creates a Style with an icon for inserting an image in a JTextPane.
      *
-     * @param actualTextPane the JTextPane instance where the image style will be applied
-     * @param gui the MainGuiElementsInterface instance that provides access to emoji images
-     * @param word the word associated with the desired image
-     * @return a Style instance with the image set as an icon
+     * @param actualTextPane the JTextPane in which the image should be inserted
+     * @param gui the MainFrameInterface implementation providing GUI elements
+     * @param word the word associated with the image to be inserted
+     * @return the Style with the icon set for the image
      */
-    private static Style createImageStyle(JTextPane actualTextPane, MainGuiElementsInterface gui, String word) {
+    private static Style createImageStyle(JTextPane actualTextPane, MainFrameInterface gui, String word) {
 
         Style style = actualTextPane.addStyle("Image", null);
 

@@ -1,6 +1,6 @@
 package com.soeguet.util;
 
-import com.soeguet.gui.main_frame.MainGuiElementsInterface;
+import com.soeguet.gui.main_frame.MainFrameInterface;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -9,10 +9,10 @@ import java.util.logging.Logger;
 
 public class EmojiHandler {
 
-    private final JFrame mainFrame;
+    private final MainFrameInterface mainFrame;
     private final Logger logger = Logger.getLogger(EmojiHandler.class.getName());
 
-    public EmojiHandler(JFrame mainFrame) {
+    public EmojiHandler(MainFrameInterface mainFrame) {
 
         this.mainFrame = mainFrame;
     }
@@ -66,19 +66,13 @@ public class EmojiHandler {
      */
     public void replaceEmojiDescriptionWithActualImageIcon(JTextPane actualTextPane, String text) {
 
-        if (!(mainFrame instanceof MainGuiElementsInterface)) {
-            return;
-        }
-
-        MainGuiElementsInterface gui = (MainGuiElementsInterface) mainFrame;
-
         StyledDocument doc = actualTextPane.getStyledDocument();
 
         try {
             for (String word : text.split(" ")) {
 
-                if (gui.getEmojiList().containsKey(word)) {
-                    processEmoji(actualTextPane, gui, doc, word);
+                if (mainFrame.getEmojiList().containsKey(word)) {
+                    processEmoji(actualTextPane, mainFrame, doc, word);
 
                 } else {
 
@@ -94,14 +88,9 @@ public class EmojiHandler {
     }
 
     /**
-     Processes the insertion of an emoji in the given JTextPane.
-
-     @param actualTextPane the JTextPane in which the emoji should be inserted
-     @param gui            the MainGuiElementsInterface implementation providing GUI elements
-     @param doc            the StyledDocument to insert the emoji into
-     @param word           the emoji word to insert
+     *
      */
-    private void processEmoji(JTextPane actualTextPane, MainGuiElementsInterface gui, StyledDocument doc, String word) {
+    private void processEmoji(JTextPane actualTextPane, MainFrameInterface gui, StyledDocument doc, String word) {
 
         Style style = createImageStyle(actualTextPane, gui, word);
 
@@ -116,15 +105,14 @@ public class EmojiHandler {
     }
 
     /**
-     Creates a Style instance for displaying an image in a JTextPane.
-
-     @param actualTextPane the JTextPane instance where the image style will be applied
-     @param gui            the MainGuiElementsInterface instance that provides access to emoji images
-     @param word           the word associated with the desired image
-
-     @return a Style instance with the image set as an icon
+     * Creates a style with an image icon for a given word.
+     *
+     * @param actualTextPane the JTextPane where the style will be applied
+     * @param gui the MainFrameInterface object for accessing the emoji list
+     * @param word the word for which the image style is created
+     * @return the created style with the image icon
      */
-    private static Style createImageStyle(JTextPane actualTextPane, MainGuiElementsInterface gui, String word) {
+    private static Style createImageStyle(JTextPane actualTextPane, MainFrameInterface gui, String word) {
 
         Style style = actualTextPane.addStyle("Image", null);
 

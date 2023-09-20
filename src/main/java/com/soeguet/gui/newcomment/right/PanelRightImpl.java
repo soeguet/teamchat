@@ -1,7 +1,7 @@
 package com.soeguet.gui.newcomment.right;
 
 import com.soeguet.gui.interaction.ReplyPanelImpl;
-import com.soeguet.gui.main_frame.MainGuiElementsInterface;
+import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.newcomment.right.generated.PanelRight;
 import com.soeguet.gui.newcomment.util.QuotePanelImpl;
@@ -31,21 +31,21 @@ import java.util.logging.Logger;
 public class PanelRightImpl extends PanelRight implements CommentInterface {
 
     private final Logger logger = Logger.getLogger(PanelRightImpl.class.getName());
-    private final JFrame mainFrame;
+    private final MainFrameInterface mainFrame;
     private final BaseModel baseModel;
     private PanelTypes panelTyp;
     private JPopupMenu jPopupMenu;
     private BufferedImage image;
     private JTextPane actualTextPane;
 
-    public PanelRightImpl(JFrame mainFrame, BaseModel baseModel, PanelTypes panelTyp) {
+    public PanelRightImpl(MainFrameInterface mainFrame, BaseModel baseModel, PanelTypes panelTyp) {
 
         this.mainFrame = mainFrame;
         this.baseModel = baseModel;
         this.panelTyp = panelTyp;
     }
 
-    public PanelRightImpl(JFrame mainFrame, BaseModel baseModel) {
+    public PanelRightImpl(MainFrameInterface mainFrame, BaseModel baseModel) {
 
         this.mainFrame = mainFrame;
         this.baseModel = baseModel;
@@ -69,11 +69,6 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     @Override
     public void setupPicturePanel() {
 
-        MainGuiElementsInterface gui = getMainFrame();
-        if (gui == null) {
-            return;
-        }
-
         setupEditorPopupMenu();
 
         extractImageFromMessage();
@@ -88,8 +83,8 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
 
         addRightClickOptionToPanel();
 
-        setNameField(gui);
-        setTimestampField(gui);
+        setNameField(mainFrame);
+        setTimestampField(mainFrame);
 
     }
 
@@ -230,17 +225,9 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
      */
     private void addActualMessage() {
 
-        MainGuiElementsInterface mainGui = getMainFrame();
-
-        if (mainGui == null) {
-
-            logger.log(java.util.logging.Level.SEVERE, "Main GUI is null");
-            return;
-        }
-
         setUserMessage();
-        setNameField(mainGui);
-        setTimestampField(mainGui);
+        setNameField(mainFrame);
+        setTimestampField(mainFrame);
     }
 
     /**
@@ -290,16 +277,6 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
         this.getButton1().setVisible(false);
     }
 
-    private MainGuiElementsInterface getMainFrame() {
-
-        if (!(mainFrame instanceof MainGuiElementsInterface)) {
-
-            return null;
-        }
-
-        return (MainGuiElementsInterface) mainFrame;
-    }
-
     /**
      Sets the user message in the GUI.
      <p>
@@ -322,7 +299,7 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
      This method retrieves the sender's name from the message model
      and displays it in the name label of the message.
      */
-    private void setNameField(MainGuiElementsInterface mainFrame) {
+    private void setNameField(MainFrameInterface mainFrame) {
 
         String sender = baseModel.getSender();
 
@@ -343,7 +320,7 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
      Sets timestamp field with the value from the message model.
      The timestamp value is set as the text of the time label.
      */
-    private void setTimestampField(MainGuiElementsInterface mainFrame) {
+    private void setTimestampField(MainFrameInterface mainFrame) {
 
         String timeStamp = baseModel.getTime();
 
@@ -384,13 +361,8 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
 
                 super.mouseReleased(e);
 
-                MainGuiElementsInterface gui = getMainFrame();
-                if (gui == null) {
-                    return;
-                }
-
                 ReplyPanelImpl replyPanel = new ReplyPanelImpl(mainFrame, baseModel);
-                gui.getMainTextPanelLayeredPane().add(replyPanel, JLayeredPane.MODAL_LAYER);
+                mainFrame.getMainTextPanelLayeredPane().add(replyPanel, JLayeredPane.MODAL_LAYER);
             }
         });
     }

@@ -1,6 +1,6 @@
 package com.soeguet.gui.properties;
 
-import com.soeguet.gui.main_frame.MainGuiElementsInterface;
+import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.popups.PopupPanelImpl;
 import com.soeguet.gui.properties.generated.PropertiesPanel;
 import com.soeguet.properties.CustomUserProperties;
@@ -14,11 +14,11 @@ import java.beans.PropertyChangeEvent;
 
 public class PropertiesPanelImpl extends PropertiesPanel {
 
-    private final JFrame mainFrame;
+    private final MainFrameInterface mainFrame;
     private final Point offset = new Point();
     private CustomUserProperties selectedClientInComboBox;
 
-    public PropertiesPanelImpl(JFrame mainFrame) {
+    public PropertiesPanelImpl(MainFrameInterface mainFrame) {
 
         this.mainFrame = mainFrame;
 
@@ -43,15 +43,12 @@ public class PropertiesPanelImpl extends PropertiesPanel {
      */
     private void setPosition() {
 
-        MainGuiElementsInterface gui = getMainFrame();
-        assert gui != null;
-
-        int textPaneWidth = gui.getMainTextPanelLayeredPane().getWidth();
-        int textPaneHeight = gui.getMainTextPanelLayeredPane().getHeight();
+        int textPaneWidth = mainFrame.getMainTextPanelLayeredPane().getWidth();
+        int textPaneHeight = mainFrame.getMainTextPanelLayeredPane().getHeight();
 
         this.setBounds(20, 20, textPaneWidth - 40, textPaneHeight - 40);
 
-        gui.getMainTextPanelLayeredPane().add(this, JLayeredPane.MODAL_LAYER);
+        mainFrame.getMainTextPanelLayeredPane().add(this, JLayeredPane.MODAL_LAYER);
     }
 
     /**
@@ -70,14 +67,7 @@ public class PropertiesPanelImpl extends PropertiesPanel {
      */
     private void setupOwnTabbedPane() {
 
-        MainGuiElementsInterface gui = getMainFrame();
-
-        if (gui == null) {
-
-            return;
-        }
-
-        CustomUserProperties ownClient = gui.getChatClientPropertiesHashMap().get("own");
+        CustomUserProperties ownClient = mainFrame.getChatClientPropertiesHashMap().get("own");
 
         if (ownClient == null) {
 
@@ -114,21 +104,6 @@ public class PropertiesPanelImpl extends PropertiesPanel {
     }
 
     /**
-     This method returns the main frame of the GUI, cast as a MainGuiElementsInterface object.
-     The main frame must implement the MainGuiElementsInterface for the method to return a valid instance.
-     If the main frame does not implement the MainGuiElementsInterface, null is returned.
-
-     @return the main frame of the GUI as a MainGuiElementsInterface object, or null if the main frame does not implement the MainGuiElementsInterface.
-     */
-    private MainGuiElementsInterface getMainFrame() {
-
-        if (!(mainFrame instanceof MainGuiElementsInterface)) {
-            return null;
-        }
-        return (MainGuiElementsInterface) mainFrame;
-    }
-
-    /**
      This method adds clients to the combo box.
      It retrieves the main frame from the GUI and asserts that it is not null.
      For each client in the chat client properties hash map, the client is added to the combo box.
@@ -145,10 +120,7 @@ public class PropertiesPanelImpl extends PropertiesPanel {
      */
     private void addClientsToComboBox() {
 
-        MainGuiElementsInterface gui = getMainFrame();
-        assert gui != null;
-
-        gui.getChatClientPropertiesHashMap().forEach((key, value) -> {
+        mainFrame.getChatClientPropertiesHashMap().forEach((key, value) -> {
 
             if (key.equals("own")) {
                 return;
@@ -158,7 +130,7 @@ public class PropertiesPanelImpl extends PropertiesPanel {
         });
 
         String selectedItem = (String) getClientSelectorComboBox().getSelectedItem();
-        selectedClientInComboBox = gui.getChatClientPropertiesHashMap().get(selectedItem);
+        selectedClientInComboBox = mainFrame.getChatClientPropertiesHashMap().get(selectedItem);
     }
 
     /**
@@ -236,9 +208,8 @@ public class PropertiesPanelImpl extends PropertiesPanel {
     @Override
     protected void nicknameTextFieldFocusLost(FocusEvent e) {
 
-        MainGuiElementsInterface gui = getMainFrame();
 
-        if (gui == null || form_clientSelectorComboBox.getItemCount() == 0) {
+        if (form_clientSelectorComboBox.getItemCount() == 0) {
 
             return;
         }
@@ -246,9 +217,9 @@ public class PropertiesPanelImpl extends PropertiesPanel {
         String nickname = getNicknameTextField().getText();
         String username = getUsernameTextField().getText();
 
-        gui.getChatClientPropertiesHashMap().get(username).setNickname(nickname);
+        mainFrame.getChatClientPropertiesHashMap().get(username).setNickname(nickname);
 
-        new PopupPanelImpl(gui.getMainFrame(), "nickname saved").implementPopup(1000);
+        new PopupPanelImpl(mainFrame,"nickname saved").implementPopup(1000);
     }
 
     @Override
@@ -259,14 +230,11 @@ public class PropertiesPanelImpl extends PropertiesPanel {
     @Override
     protected void clientSelectorComboBoxItemStateChanged(ItemEvent e) {
 
-        MainGuiElementsInterface gui = getMainFrame();
-        assert gui != null;
-
         String selectedItem = (String) e.getItem();
 
-        selectedClientInComboBox = gui.getChatClientPropertiesHashMap().get(selectedItem);
+        selectedClientInComboBox = mainFrame.getChatClientPropertiesHashMap().get(selectedItem);
 
-        gui.getCustomProperties().save();
+        mainFrame.getCustomProperties().save();
 
         setUpComponentsOnPropertiesPanel(selectedClientInComboBox);
     }
@@ -274,28 +242,18 @@ public class PropertiesPanelImpl extends PropertiesPanel {
     @Override
     protected void ownUserNameTextFieldFocusLost(FocusEvent e) {
 
-        MainGuiElementsInterface gui = getMainFrame();
-        assert gui != null;
-
         String username = getOwnUserNameTextField().getText();
 
-        gui.getChatClientPropertiesHashMap().get("own").setUsername(username);
-        gui.setUsername(username);
+        mainFrame.getChatClientPropertiesHashMap().get("own").setUsername(username);
+        mainFrame.setUsername(username);
 
-        gui.getCustomProperties().save();
+        mainFrame.getCustomProperties().save();
     }
 
     @Override
     protected void ownBorderColorPanelMouseClicked(MouseEvent e) {
 
-        MainGuiElementsInterface gui = getMainFrame();
-
-        if (gui == null) {
-
-            return;
-        }
-
-        CustomUserProperties ownProperties = gui.getChatClientPropertiesHashMap().get("own");
+        CustomUserProperties ownProperties = mainFrame.getChatClientPropertiesHashMap().get("own");
         Color borderColor = null;
 
         if (ownProperties != null) {
@@ -304,10 +262,10 @@ public class PropertiesPanelImpl extends PropertiesPanel {
 
         } else {
 
-            final String username = gui.getUsername() != null ? gui.getUsername() : "own";
-            gui.setUsername(username);
+            final String username = mainFrame.getUsername() != null ? mainFrame.getUsername() : "own";
+            mainFrame.setUsername(username);
             ownProperties = new CustomUserProperties(username);
-            gui.getChatClientPropertiesHashMap().put("own", ownProperties);
+            mainFrame.getChatClientPropertiesHashMap().put("own", ownProperties);
         }
 
         Color color = JColorChooser.showDialog(this, "Choose a color", (borderColor != null ? borderColor : Color.BLACK));
@@ -322,9 +280,8 @@ public class PropertiesPanelImpl extends PropertiesPanel {
     @Override
     protected void colorPickerPanelMouseClicked(MouseEvent e) {
 
-        MainGuiElementsInterface gui = getMainFrame();
 
-        if (gui == null || form_clientSelectorComboBox.getItemCount() == 0) {
+        if (form_clientSelectorComboBox.getItemCount() == 0) {
 
             return;
         }
@@ -332,14 +289,14 @@ public class PropertiesPanelImpl extends PropertiesPanel {
         //determin selected client from combobox
         String selectedItem = (String) getClientSelectorComboBox().getSelectedItem();
 
-        Color borderColor = new Color(gui.getChatClientPropertiesHashMap().get(selectedItem).getBorderColor());
+        Color borderColor = new Color(mainFrame.getChatClientPropertiesHashMap().get(selectedItem).getBorderColor());
 
         Color color = JColorChooser.showDialog(this, "Choose a color", borderColor);
 
         if (color != null) {
 
             getColorPickerPanel().setBackground(color);
-            gui.getChatClientPropertiesHashMap().get(selectedItem).setBorderColor(color.getRGB());
+            mainFrame.getChatClientPropertiesHashMap().get(selectedItem).setBorderColor(color.getRGB());
         }
     }
 }

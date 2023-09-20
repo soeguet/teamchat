@@ -7,7 +7,6 @@ import com.soeguet.properties.CustomUserProperties;
 import com.soeguet.socket_client.CustomWebsocketClient;
 
 import javax.swing.*;
-import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -15,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  This interface defines the main GUI elements and functionality that can be accessed and manipulated by other classes.
  */
-public interface MainGuiElementsInterface {
+public interface MainFrameInterface {
 
     /**
      Retrieves the JTextPane component of the text editor.

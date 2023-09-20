@@ -1,10 +1,9 @@
 package com.soeguet.properties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.soeguet.gui.main_frame.MainGuiElementsInterface;
+import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.popups.PopupPanelImpl;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -15,11 +14,11 @@ import java.util.logging.Logger;
 
 public class CustomProperties extends Properties {
 
-    private final JFrame mainFrame;
+    private final MainFrameInterface mainFrame;
     private final Logger logger = Logger.getLogger(CustomProperties.class.getName());
     private String configFilePath;
 
-    public CustomProperties(JFrame mainFrame) {
+    public CustomProperties(MainFrameInterface mainFrame) {
 
         this.mainFrame = mainFrame;
 
@@ -34,32 +33,6 @@ public class CustomProperties extends Properties {
 
             throw new RuntimeException(e);
         }
-
-    }
-
-    private void populateHashMapWithNewValues() {
-
-        MainGuiElementsInterface gui = getMainFrame();
-        assert gui != null;
-
-        stringPropertyNames().forEach(key -> {
-
-            String json = getProperty(key);
-
-            ObjectMapper mapper = gui.getObjectMapper();
-
-            try {
-
-                CustomUserProperties userProperties = mapper.readValue(json, CustomUserProperties.class);
-
-                gui.getChatClientPropertiesHashMap().remove(key);
-                gui.getChatClientPropertiesHashMap().put(key, userProperties);
-
-            } catch (IOException e) {
-
-                logger.log(java.util.logging.Level.SEVERE, "Could not load user " + key, e);
-            }
-        });
 
     }
 
@@ -87,6 +60,34 @@ public class CustomProperties extends Properties {
         }
     }
 
+    private void loadProperties() throws IOException {
+
+        load(Files.newInputStream(new File(configFilePath).toPath()));
+    }
+
+    private void populateHashMapWithNewValues() {
+
+        stringPropertyNames().forEach(key -> {
+
+            String json = getProperty(key);
+
+            ObjectMapper mapper = mainFrame.getObjectMapper();
+
+            try {
+
+                CustomUserProperties userProperties = mapper.readValue(json, CustomUserProperties.class);
+
+                mainFrame.getChatClientPropertiesHashMap().remove(key);
+                mainFrame.getChatClientPropertiesHashMap().put(key, userProperties);
+
+            } catch (IOException e) {
+
+                logger.log(java.util.logging.Level.SEVERE, "Could not load user " + key, e);
+            }
+        });
+
+    }
+
     private void createPropertiesFile(String configFilePath) {
 
         try (FileOutputStream output = new FileOutputStream(configFilePath)) {
@@ -99,19 +100,11 @@ public class CustomProperties extends Properties {
         }
     }
 
-    private void loadProperties() throws IOException {
-
-        load(Files.newInputStream(new File(configFilePath).toPath()));
-    }
-
     public void save() {
 
-        MainGuiElementsInterface gui = getMainFrame();
-        assert gui != null;
+        ObjectMapper mapper = mainFrame.getObjectMapper();
 
-        ObjectMapper mapper = gui.getObjectMapper();
-
-        gui.getChatClientPropertiesHashMap().forEach((key, value) -> {
+        mainFrame.getChatClientPropertiesHashMap().forEach((key, value) -> {
 
             String json = null;
             try {
@@ -128,15 +121,5 @@ public class CustomProperties extends Properties {
         new PopupPanelImpl(mainFrame, "properties saved").implementPopup(1000);
 
         createPropertiesFile(configFilePath);
-    }
-
-    private MainGuiElementsInterface getMainFrame() {
-
-        if (!(mainFrame instanceof MainGuiElementsInterface)) {
-
-            return null;
-        }
-
-        return (MainGuiElementsInterface) mainFrame;
     }
 }

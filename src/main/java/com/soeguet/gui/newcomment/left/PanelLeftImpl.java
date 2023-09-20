@@ -1,7 +1,7 @@
 package com.soeguet.gui.newcomment.left;
 
 import com.soeguet.gui.interaction.ReplyPanelImpl;
-import com.soeguet.gui.main_frame.MainGuiElementsInterface;
+import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.newcomment.left.generated.PanelLeft;
 import com.soeguet.gui.newcomment.util.QuotePanelImpl;
@@ -21,11 +21,11 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
 
     private final Logger logger = Logger.getLogger(PanelLeftImpl.class.getName());
     private final BaseModel baseModel;
-    private final JFrame mainFrame;
+    private final MainFrameInterface mainFrame;
     private PanelTypes panelTyp;
     private JPopupMenu jPopupMenu;
 
-    public PanelLeftImpl(JFrame mainFrame, MessageModel baseModel, PanelTypes panelTyp) {
+    public PanelLeftImpl(MainFrameInterface mainFrame, MessageModel baseModel, PanelTypes panelTyp) {
 
         this.baseModel = baseModel;
         this.mainFrame = mainFrame;
@@ -58,7 +58,7 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
 
     }
 
-    public PanelLeftImpl(JFrame mainFrame, PictureModel baseModel) {
+    public PanelLeftImpl(MainFrameInterface mainFrame, PictureModel baseModel) {
 
         this.baseModel = baseModel;
         this.mainFrame = mainFrame;
@@ -92,13 +92,8 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
 
                 super.mouseReleased(e);
 
-                if (!(mainFrame instanceof MainGuiElementsInterface)) {
-                    return;
-                }
-                MainGuiElementsInterface gui = (MainGuiElementsInterface) mainFrame;
-
                 ReplyPanelImpl replyPanel = new ReplyPanelImpl(mainFrame, baseModel);
-                gui.getMainTextPanelLayeredPane().add(replyPanel, JLayeredPane.MODAL_LAYER);
+                mainFrame.getMainTextPanelLayeredPane().add(replyPanel, JLayeredPane.MODAL_LAYER);
             }
         });
 
@@ -144,15 +139,11 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
      */
     private void addActualMessage() {
 
-        if (mainFrame instanceof MainGuiElementsInterface) {
-
-            MainGuiElementsInterface mainGui = (MainGuiElementsInterface) mainFrame;
             setUserMessage();
 
             //time before name, since name is also checked in time -> else time will not be displayed in certain cases
-            setTimestampField(mainGui);
-            setNameField(mainGui);
-        }
+            setTimestampField(mainFrame);
+            setNameField(mainFrame);
     }
 
     /**
@@ -193,7 +184,7 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
      Sets timestamp field with the value from the message model.
      The timestamp value is set as the text of the time label.
      */
-    private void setTimestampField(MainGuiElementsInterface mainFrame) {
+    private void setTimestampField(MainFrameInterface mainFrame) {
 
         String timeStamp = baseModel.getTime();
         String sender = baseModel.getSender();
@@ -220,7 +211,7 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
      This method retrieves the sender's name from the message model
      and displays it in the name label of the message.
      */
-    private void setNameField(MainGuiElementsInterface mainFrame) {
+    private void setNameField(MainFrameInterface mainFrame) {
 
         String sender = baseModel.getSender();
         this.getNameLabel().setText(sender);

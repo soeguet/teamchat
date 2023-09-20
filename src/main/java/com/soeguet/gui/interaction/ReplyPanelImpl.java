@@ -2,7 +2,7 @@ package com.soeguet.gui.interaction;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.soeguet.gui.interaction.generated.ReplyPanel;
-import com.soeguet.gui.main_frame.MainGuiElementsInterface;
+import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.newcomment.util.WrapEditorKit;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
@@ -20,11 +20,11 @@ import java.awt.event.MouseEvent;
 public class ReplyPanelImpl extends ReplyPanel {
 
     private final Point offset = new Point();
-    private final JFrame mainFrame;
+    private final MainFrameInterface mainFrame;
     private final BaseModel messageModel;
     private final Border border = this.getBorder();
 
-    public ReplyPanelImpl(JFrame mainFrame, BaseModel messageModel) {
+    public ReplyPanelImpl(MainFrameInterface mainFrame, BaseModel messageModel) {
 
         this.mainFrame = mainFrame;
         this.messageModel = messageModel;
@@ -46,14 +46,8 @@ public class ReplyPanelImpl extends ReplyPanel {
 
     private void setPosition() {
 
-        if (!(mainFrame instanceof MainGuiElementsInterface)) {
-            return;
-        }
-
-        MainGuiElementsInterface gui = (MainGuiElementsInterface) mainFrame;
-
-        int textPaneWidth = gui.getMainTextPanelLayeredPane().getWidth();
-        int textPaneHeight = gui.getMainTextPanelLayeredPane().getHeight();
+        int textPaneWidth = mainFrame.getMainTextPanelLayeredPane().getWidth();
+        int textPaneHeight = mainFrame.getMainTextPanelLayeredPane().getHeight();
 
         int height = (int) this.getPreferredSize().getHeight();
 
@@ -140,19 +134,14 @@ public class ReplyPanelImpl extends ReplyPanel {
     @Override
     protected void quotePanelSenButtonMouseReleased(MouseEvent e) {
 
-        if (!(mainFrame instanceof MainGuiElementsInterface)) {
-            return;
-        }
-
-        MainGuiElementsInterface gui = (MainGuiElementsInterface) mainFrame;
 
         new EmojiHandler(mainFrame).replaceImageIconWithEmojiDescription(this.getReplyTextPane());
 
-        MessageModel sendModel = new MessageModel((byte) MessageTypes.NORMAL, gui.getUsername(), this.getReplyTextPane().getText(), messageModel.getSender(), messageModel.getTime(), messageModel.getMessage());
+        MessageModel sendModel = new MessageModel((byte) MessageTypes.NORMAL, mainFrame.getUsername(), this.getReplyTextPane().getText(), messageModel.getSender(), messageModel.getTime(), messageModel.getMessage());
 
         try {
 
-            gui.getWebsocketClient().send(gui.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(sendModel));
+            mainFrame.getWebsocketClient().send(mainFrame.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(sendModel));
 
         } catch (JsonProcessingException ex) {
 

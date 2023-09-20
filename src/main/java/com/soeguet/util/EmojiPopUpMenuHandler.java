@@ -1,6 +1,6 @@
 package com.soeguet.util;
 
-import com.soeguet.gui.main_frame.MainGuiElementsInterface;
+import com.soeguet.gui.main_frame.MainFrameInterface;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -14,13 +14,13 @@ import java.util.logging.Logger;
 
 public class EmojiPopUpMenuHandler {
 
-    private final JFrame mainFrame;
+    private final MainFrameInterface mainFrame;
     private final JTextPane textPane;
     private final JButton emojiButton;
 
     private final Logger logger = Logger.getLogger(EmojiPopUpMenuHandler.class.getName());
 
-    public EmojiPopUpMenuHandler(JFrame mainFrame, JTextPane textPane, JButton emojiButton) {
+    public EmojiPopUpMenuHandler(MainFrameInterface mainFrame, JTextPane textPane, JButton emojiButton) {
 
         this.mainFrame = mainFrame;
         this.textPane = textPane;
@@ -37,16 +37,10 @@ public class EmojiPopUpMenuHandler {
      */
     private void createEmojiPopupMenu() {
 
-        if (!(mainFrame instanceof MainGuiElementsInterface)) {
-            return;
-        }
-
-        MainGuiElementsInterface gui = (MainGuiElementsInterface) mainFrame;
-
         JPopupMenu emojiPopupMenu = new JPopupMenu();
         JPanel emojiPanelWrapper = createEmojiPanel();
 
-        gui.getEmojiList().forEach((key, emoji) -> {
+        mainFrame.getEmojiList().forEach((key, emoji) -> {
             JPanel emojiPanelForOneEmoji = createEmojiPanelForOneEmoji(key, emoji);
             emojiPanelWrapper.add(emojiPanelForOneEmoji);
         });

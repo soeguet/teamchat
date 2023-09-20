@@ -1,7 +1,7 @@
 package com.soeguet.gui.image_panel;
 
 import com.soeguet.gui.image_panel.generated.ImagePanel;
-import com.soeguet.gui.main_frame.MainGuiElementsInterface;
+import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.model.jackson.PictureModel;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,12 +22,12 @@ import java.util.logging.Logger;
 public class ImagePanelImpl extends ImagePanel {
 
     private final Logger LOGGER = Logger.getLogger(ImagePanelImpl.class.getName());
-    private final JFrame mainFrame;
+    private final MainFrameInterface mainFrame;
     private final Point offset = new Point();
     private double zoomFactor = 1.0;
     private BufferedImage image;
 
-    public ImagePanelImpl(JFrame mainFrame) {
+    public ImagePanelImpl(MainFrameInterface mainFrame) {
 
         this.mainFrame = mainFrame;
 
@@ -43,21 +43,15 @@ public class ImagePanelImpl extends ImagePanel {
 
     private void setPosition() {
 
-        MainGuiElementsInterface gui = getMainFrame();
-        assert gui != null;
-
-        int textPaneWidth = gui.getMainTextPanelLayeredPane().getWidth();
-        int textPaneHeight = gui.getMainTextPanelLayeredPane().getHeight();
+        int textPaneWidth = mainFrame.getMainTextPanelLayeredPane().getWidth();
+        int textPaneHeight = mainFrame.getMainTextPanelLayeredPane().getHeight();
 
         this.setBounds(20, 20, textPaneWidth - 40, textPaneHeight - 40);
 
-        gui.getMainTextPanelLayeredPane().add(this, JLayeredPane.MODAL_LAYER);
+        mainFrame.getMainTextPanelLayeredPane().add(this, JLayeredPane.MODAL_LAYER);
     }
 
     private void setLayeredPaneLayerPositions() {
-
-        MainGuiElementsInterface gui = getMainFrame();
-        assert gui != null;
 
         final int width = form_pictureMainPanel.getWidth();
         final int height = form_pictureMainPanel.getHeight();
@@ -76,14 +70,6 @@ public class ImagePanelImpl extends ImagePanel {
         form_pictureScrollPane.getHorizontalScrollBar().setUnitIncrement(50);
     }
 
-    private MainGuiElementsInterface getMainFrame() {
-
-        if (!(mainFrame instanceof MainGuiElementsInterface)) {
-            return null;
-        }
-
-        return (MainGuiElementsInterface) mainFrame;
-    }
 
     /**
      Redraws everything by revalidating the component and repainting it.
@@ -249,13 +235,6 @@ public class ImagePanelImpl extends ImagePanel {
     @Override
     protected void sendPictureButtonMouseClicked(MouseEvent e) {
 
-        MainGuiElementsInterface gui = getMainFrame();
-
-        if (gui == null) {
-
-            return;
-        }
-
         PictureModel pictureModel = new PictureModel();
 
         //convert image to byte array
@@ -266,13 +245,13 @@ public class ImagePanelImpl extends ImagePanel {
             byte[] imageBytesArray = baos.toByteArray();
 
             pictureModel.setPicture(imageBytesArray);
-            pictureModel.setSender(gui.getUsername());
+            pictureModel.setSender(mainFrame.getUsername());
             pictureModel.setTime(LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm")));
             pictureModel.setMessage(form_pictureDescriptionTextField.getText());
 
-            final String imageObjectJson = gui.getObjectMapper().writeValueAsString(pictureModel);
+            final String imageObjectJson = mainFrame.getObjectMapper().writeValueAsString(pictureModel);
 
-            gui.getWebsocketClient().send(imageObjectJson);
+            mainFrame.getWebsocketClient().send(imageObjectJson);
 
             this.removeAll();
             this.setVisible(false);

@@ -1,6 +1,6 @@
 package com.soeguet.socket_client;
 
-import com.soeguet.gui.main_frame.MainGuiElementsInterface;
+import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.popups.PopupPanelImpl;
 import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
@@ -14,9 +14,9 @@ import java.util.logging.Logger;
 public class CustomWebsocketClient extends WebSocketClient {
 
     private final Logger logger = Logger.getLogger(CustomWebsocketClient.class.getName());
-    private final JFrame mainFrame;
+    private final MainFrameInterface mainFrame;
 
-    public CustomWebsocketClient(URI serverUri, JFrame mainFrame) {
+    public CustomWebsocketClient(URI serverUri, MainFrameInterface mainFrame) {
 
         super(serverUri);
         this.mainFrame = mainFrame;
@@ -38,51 +38,40 @@ public class CustomWebsocketClient extends WebSocketClient {
 
     private synchronized void createPopup(String message) {
 
-        if (!(mainFrame instanceof MainGuiElementsInterface)) {
-
-            return;
-        }
-
-        MainGuiElementsInterface gui = (MainGuiElementsInterface) mainFrame;
-
-        if (gui.getMessagePanel() == null) {
+        if (mainFrame.getMessagePanel() == null) {
 
             SwingUtilities.invokeLater(() -> {
 
-                JPanel messagePanel = gui.getMessagePanel();
+                JPanel messagePanel = mainFrame.getMessagePanel();
 
                 if (messagePanel != null) {
 
-                    gui.getMainTextPanelLayeredPane().remove(messagePanel);
+                    mainFrame.getMainTextPanelLayeredPane().remove(messagePanel);
                     messagePanel.setVisible(false);
                 }
 
                 PopupPanelImpl popupPanel = new PopupPanelImpl(mainFrame, message);
 
-                gui.setMessagePanel(popupPanel);
+                mainFrame.setMessagePanel(popupPanel);
                 popupPanel.implementPopup(2000);
 
             });
 
         } else {
 
-            gui.getMessageQueue().add(message);
+            mainFrame.getMessageQueue().add(message);
         }
     }
 
     @Override
     public void onMessage(String message) {
 
-
         if (!message.startsWith("{")) {
 
             return;
         }
 
-        if (mainFrame instanceof MainGuiElementsInterface) {
-
-            ((MainGuiElementsInterface) mainFrame).getGuiFunctionality().onMessage(message);
-        }
+        mainFrame.getGuiFunctionality().onMessage(message);
     }
 
     @Override

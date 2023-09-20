@@ -26,12 +26,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 /**
- This class represents a GUI implementation for a chat application. It extends the ChatPanel class
- and implements the MainGuiInterface.
+ * Represents the main frame for the chat application.
+ * Inherits from ChatPanel and implements MainFrameInterface.
  */
-public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElementsInterface {
+public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
-    private final Logger logger = Logger.getLogger(ChatMainGuiElementsImpl.class.getName());
+    private final Logger logger = Logger.getLogger(ChatMainFrameImpl.class.getName());
     private final LinkedBlockingDeque<String> messageQueue;
     private final HashMap<String, CustomUserProperties> chatClientPropertiesHashMap;
     private final LinkedBlockingDeque<String> clientMessageQueue;
@@ -55,7 +55,7 @@ public class ChatMainGuiElementsImpl extends ChatPanel implements MainGuiElement
      Sets up the GUI functionality, calculates the margins for the scroll pane,
      initializes the emoji handler and list, and establishes a WebSocket connection.
      */
-    public ChatMainGuiElementsImpl() {
+    public ChatMainFrameImpl() {
 
         clientMessageQueue = new LinkedBlockingDeque<>();
         messageQueue = new LinkedBlockingDeque<>();

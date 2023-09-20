@@ -4,13 +4,7 @@ import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.FlatLightLaf;
-import com.soeguet.gui.main_frame.ChatMainGuiElementsImpl;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Properties;
+import com.soeguet.gui.main_frame.ChatMainFrameImpl;
 
 import javax.swing.*;
 
@@ -21,7 +15,7 @@ public class Main {
         System. out. println("Your OS name -> " + System. getProperty("os.name"));
 //        setTheme('');
         FlatIntelliJLaf.setup();
-        SwingUtilities.invokeLater(ChatMainGuiElementsImpl::new);
+        SwingUtilities.invokeLater(ChatMainFrameImpl::new);
     }
 
 
