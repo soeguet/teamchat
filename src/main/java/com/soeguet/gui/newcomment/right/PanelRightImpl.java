@@ -126,7 +126,7 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
         return imageIcon;
     }
 
-    @Override
+
     public void addMaximizePictureOnClick(JLabel imageLabel) {
 
         imageLabel.addMouseListener(new MouseAdapter() {

@@ -3,6 +3,7 @@ package com.soeguet.gui.newcomment.left;
 import com.soeguet.gui.interaction.ReplyPanelImpl;
 import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.newcomment.helper.CommentInterface;
+import com.soeguet.gui.newcomment.images.CustomImagePanel;
 import com.soeguet.gui.newcomment.left.generated.PanelLeft;
 import com.soeguet.gui.newcomment.right.PanelRightImpl;
 import com.soeguet.gui.newcomment.util.QuotePanelImpl;
@@ -66,115 +67,19 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     @Override
     public void setupPicturePanel() {
 
+        CustomImagePanel customImagePanel = new CustomImagePanel(mainFrame, this, (PictureModel) baseModel);
+        customImagePanel.addImageLabelToPanel("cell 1 0, wrap");
+
+        actualTextPane = createImageCaptionTextPane();
+        getPanel1().add(actualTextPane, "cell 1 1, wrap");
+
         setupEditorPopupMenu();
-
-        extractImageFromMessage();
-
-        JLabel imageLabel = new JLabel(scaleImageIfTooBig(image));
-        form_panel1.add(imageLabel, "cell 1 0, wrap");
-
-        addMaximizePictureOnClick(imageLabel);
-
-        JTextPane imageCaptionTextPane = createImageCaptionTextPane();
-        form_panel1.add(imageCaptionTextPane, "cell 1 1, wrap");
 
         addRightClickOptionToPanel();
 
         setNameField(mainFrame);
         setTimestampField(mainFrame);
 
-    }
-
-    private void extractImageFromMessage() {
-
-        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(((PictureModel) baseModel).getPicture())) {
-
-            image = ImageIO.read(byteArrayInputStream);
-
-        } catch (IOException e) {
-
-            LOGGER.log(java.util.logging.Level.SEVERE, "Error reading image", e);
-        }
-    }
-
-    private ImageIcon scaleImageIfTooBig(BufferedImage bufferedImage) {
-
-        if (bufferedImage == null) {
-
-            LOGGER.log(java.util.logging.Level.SEVERE, "Buffered image is null");
-            return null;
-        }
-
-        ImageIcon imageIcon;
-
-        if (image.getWidth() > 500) {
-
-            imageIcon = new ImageIcon(image.getScaledInstance(500, -1, Image.SCALE_AREA_AVERAGING));
-
-        } else if (image.getHeight() > 350) {
-
-            imageIcon = new ImageIcon(image.getScaledInstance(-1, 350, Image.SCALE_AREA_AVERAGING));
-
-        } else {
-
-            imageIcon = new ImageIcon(image);
-        }
-
-        return imageIcon;
-    }
-    @Override
-    public void addMaximizePictureOnClick(JLabel imageLabel) {
-
-        imageLabel.addMouseListener(new MouseAdapter() {
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-
-                new Thread(() -> {
-
-                    File imgFile = new File("temp-image.jpg");
-
-                    try {
-
-                        ImageIO.write(image, "png", imgFile);
-
-                    } catch (IOException ex) {
-
-                        LOGGER.log(java.util.logging.Level.SEVERE, "Error writing image", ex);
-                    }
-
-                    if (Desktop.isDesktopSupported()) {
-
-                        try {
-
-                            if (imgFile.exists()) {
-
-                                Desktop.getDesktop().open(imgFile);
-
-                            } else {
-
-                                LOGGER.log(java.util.logging.Level.SEVERE, "Image file does not exist");
-                                throw new IOException();
-
-                            }
-
-                        } catch (IOException ex) {
-
-                            LOGGER.log(java.util.logging.Level.SEVERE, "Error opening image", ex);
-                        }
-
-                    } else {
-
-                        LOGGER.log(java.util.logging.Level.SEVERE, "Desktop not supported");
-                    }
-
-                    if (!imgFile.delete()) {
-
-                        LOGGER.log(java.util.logging.Level.SEVERE, "Error deleting temp image file");
-                    }
-                });
-            }
-        });
     }
 
     private JTextPane createImageCaptionTextPane() {
