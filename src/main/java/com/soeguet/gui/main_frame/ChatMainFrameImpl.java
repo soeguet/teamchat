@@ -26,8 +26,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 /**
- * Represents the main frame for the chat application.
- * Inherits from ChatPanel and implements MainFrameInterface.
+ Represents the main frame for the chat application.
+ Inherits from ChatPanel and implements MainFrameInterface.
  */
 public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
@@ -46,7 +46,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     private CustomWebsocketClient websocketClient;
     private String username = "yasman";
     private JPanel messagePanel;
-
 
     private AtomicBoolean isProcessingClientMessages = new AtomicBoolean(false);
 
@@ -132,9 +131,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             this.revalidate();
             this.repaint();
         });
-    }    public AtomicBoolean getIsProcessingClientMessages() {
-
-        return isProcessingClientMessages;
     }
 
     /**
@@ -156,9 +152,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     protected void propertiesMenuItemMousePressed(MouseEvent e) {
 
         new PropertiesPanelImpl(this);
-    }    public void setIsProcessingClientMessages(AtomicBoolean isProcessingClientMessages) {
+    }    public AtomicBoolean getIsProcessingClientMessages() {
 
-        this.isProcessingClientMessages = isProcessingClientMessages;
+        return isProcessingClientMessages;
     }
 
     /**
@@ -220,6 +216,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     public GuiFunctionality getGuiFunctionality() {
 
         return guiFunctionality;
+    }    public void setIsProcessingClientMessages(AtomicBoolean isProcessingClientMessages) {
+
+        this.isProcessingClientMessages = isProcessingClientMessages;
     }
 
     /**

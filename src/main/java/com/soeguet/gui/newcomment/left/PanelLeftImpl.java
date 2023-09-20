@@ -4,6 +4,7 @@ import com.soeguet.gui.interaction.ReplyPanelImpl;
 import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.newcomment.left.generated.PanelLeft;
+import com.soeguet.gui.newcomment.right.PanelRightImpl;
 import com.soeguet.gui.newcomment.util.QuotePanelImpl;
 import com.soeguet.gui.newcomment.util.WrapEditorKit;
 import com.soeguet.model.PanelTypes;
@@ -12,33 +13,52 @@ import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
 import com.soeguet.util.EmojiHandler;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.logging.Logger;
 
 public class PanelLeftImpl extends PanelLeft implements CommentInterface {
 
-    private final Logger logger = Logger.getLogger(PanelLeftImpl.class.getName());
-    private final BaseModel baseModel;
+    private final Logger LOGGER = Logger.getLogger(PanelLeftImpl.class.getName());
     private final MainFrameInterface mainFrame;
+    private final BaseModel baseModel;
     private PanelTypes panelTyp;
     private JPopupMenu jPopupMenu;
+    private BufferedImage image;
+    private JTextPane actualTextPane;
 
-    public PanelLeftImpl(MainFrameInterface mainFrame, MessageModel baseModel, PanelTypes panelTyp) {
+    public PanelLeftImpl(MainFrameInterface mainFrame, BaseModel baseModel, PanelTypes panelTyp) {
 
         this.baseModel = baseModel;
         this.mainFrame = mainFrame;
         this.panelTyp = panelTyp;
     }
 
+    public PanelLeftImpl(MainFrameInterface mainFrame, BaseModel baseModel) {
+
+        this.baseModel = baseModel;
+        this.mainFrame = mainFrame;
+    }
+
     @Override
     public void setupTextPanel() {
 
-        assert baseModel instanceof MessageModel;
+        if (!(baseModel instanceof MessageModel)) {
+            return;
+        }
 
-        populateChatBubble();
-        setPopupMenu();
+        checkForQuotesInMessage();
+        addActualMessage();
+        setupEditorPopupMenu();
+        addRightClickOptionToPanel();
 
         setupReplyPanels();
     }
@@ -46,44 +66,289 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     @Override
     public void setupPicturePanel() {
 
+        setupEditorPopupMenu();
+
+        extractImageFromMessage();
+
+        JLabel imageLabel = new JLabel(scaleImageIfTooBig(image));
+        form_panel1.add(imageLabel, "cell 1 0, wrap");
+
+        addMaximizePictureOnClick(imageLabel);
+
+        JTextPane imageCaptionTextPane = createImageCaptionTextPane();
+        form_panel1.add(imageCaptionTextPane, "cell 1 1, wrap");
+
+        addRightClickOptionToPanel();
+
+        setNameField(mainFrame);
+        setTimestampField(mainFrame);
+
     }
 
+    private void extractImageFromMessage() {
+
+        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(((PictureModel) baseModel).getPicture())) {
+
+            image = ImageIO.read(byteArrayInputStream);
+
+        } catch (IOException e) {
+
+            LOGGER.log(java.util.logging.Level.SEVERE, "Error reading image", e);
+        }
+    }
+
+    private ImageIcon scaleImageIfTooBig(BufferedImage bufferedImage) {
+
+        if (bufferedImage == null) {
+
+            LOGGER.log(java.util.logging.Level.SEVERE, "Buffered image is null");
+            return null;
+        }
+
+        ImageIcon imageIcon;
+
+        if (image.getWidth() > 500) {
+
+            imageIcon = new ImageIcon(image.getScaledInstance(500, -1, Image.SCALE_AREA_AVERAGING));
+
+        } else if (image.getHeight() > 350) {
+
+            imageIcon = new ImageIcon(image.getScaledInstance(-1, 350, Image.SCALE_AREA_AVERAGING));
+
+        } else {
+
+            imageIcon = new ImageIcon(image);
+        }
+
+        return imageIcon;
+    }
     @Override
     public void addMaximizePictureOnClick(JLabel imageLabel) {
 
+        imageLabel.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+                new Thread(() -> {
+
+                    File imgFile = new File("temp-image.jpg");
+
+                    try {
+
+                        ImageIO.write(image, "png", imgFile);
+
+                    } catch (IOException ex) {
+
+                        LOGGER.log(java.util.logging.Level.SEVERE, "Error writing image", ex);
+                    }
+
+                    if (Desktop.isDesktopSupported()) {
+
+                        try {
+
+                            if (imgFile.exists()) {
+
+                                Desktop.getDesktop().open(imgFile);
+
+                            } else {
+
+                                LOGGER.log(java.util.logging.Level.SEVERE, "Image file does not exist");
+                                throw new IOException();
+
+                            }
+
+                        } catch (IOException ex) {
+
+                            LOGGER.log(java.util.logging.Level.SEVERE, "Error opening image", ex);
+                        }
+
+                    } else {
+
+                        LOGGER.log(java.util.logging.Level.SEVERE, "Desktop not supported");
+                    }
+
+                    if (!imgFile.delete()) {
+
+                        LOGGER.log(java.util.logging.Level.SEVERE, "Error deleting temp image file");
+                    }
+                });
+            }
+        });
     }
 
-    @Override
-    public void addRightClickOptionToPanel() {
+    private JTextPane createImageCaptionTextPane() {
 
-    }
-
-    public PanelLeftImpl(MainFrameInterface mainFrame, PictureModel baseModel) {
-
-        this.baseModel = baseModel;
-        this.mainFrame = mainFrame;
+        actualTextPane = new JTextPane();
+        actualTextPane.setText(baseModel.getMessage());
+        actualTextPane.setEditable(false);
+        actualTextPane.setOpaque(false);
+        return actualTextPane;
     }
 
     /**
-     Populates the chat bubble by executing the steps of checking for quotes and adding the actual message.
-     This method does not return any value.
+     Checks if a message has a quoted text and creates a quoted section in the chat bubble.
+
+     If the message does not have a quoted text, the method will return without performing any action.
+     Otherwise, it will create a QuotePanelImpl and add it to the panel1.
+
+     @see MessageModel#getQuotedMessageText()
+     @see MessageModel#getQuotedMessageSender()
+     @see MessageModel#getQuotedMessageTime()
+     @see QuotePanelImpl
      */
-    private void populateChatBubble() {
+    private void checkForQuotesInMessage() {
 
-        checkForQuotes();
-        addActualMessage();
+        MessageModel messageModel = (MessageModel) baseModel;
+
+        String quotedText = messageModel.getQuotedMessageText();
+
+        if (quotedText == null) {
+            return;
+        }
+
+        String quotedChatParticipant = messageModel.getQuotedMessageSender();
+        String quotedTime = messageModel.getQuotedMessageTime();
+
+        QuotePanelImpl quotedSectionPanel = new QuotePanelImpl(mainFrame, quotedText, quotedChatParticipant, quotedTime);
+        this.getPanel1().add(quotedSectionPanel, "cell 1 0, wrap");
     }
 
     /**
-     Sets up the popup menu.
+     Adds the actual message to the chat bubble.
+
+     This method sets the user message, name field, and timestamp field in the main GUI elements.
+     */
+    private void addActualMessage() {
+
+        setUserMessage();
+        setNameField(mainFrame);
+        setTimestampField(mainFrame);
+    }
+
+    /**
+     Sets up the popup menu for the editor.
      The popup menu is a JPopupMenu that contains options for replying, editing, and deleting a message.
      When the "reply" option is selected, a ReplyPanelImpl is added to the main text panel's layered pane.
      This method does not return any value.
      */
-    private void setPopupMenu() {
+    private void setupEditorPopupMenu() {
 
         jPopupMenu = new JPopupMenu();
-        JMenuItem reply = new JMenuItem("reply");
+
+        JMenuItem reply = createAndAddMenuItem(jPopupMenu, "reply");
+        addMouseListenerToReplyMenuItem(reply);
+
+        jPopupMenu.addSeparator();
+        createAndAddMenuItem(jPopupMenu, "edit");
+        //TODO add action listener to edit menu item
+        createAndAddMenuItem(jPopupMenu, "delete");
+        //TODO add action listener to delete menu item
+    }
+
+    public void addRightClickOptionToPanel() {
+
+        JPopupMenu popupMenu = new JPopupMenu();
+
+        JMenuItem copyItem = createAndAddMenuItem(popupMenu, "copy");
+
+        addActionListenerToCopyJMenuItem(copyItem);
+        addMouseListenerToJTextPane(actualTextPane, popupMenu);
+
+        actualTextPane.setComponentPopupMenu(popupMenu);
+    }
+
+    /**
+     This method is used to set up the reply panels based on the panel type.
+     If the panel type is normal, the method will return without performing any action.
+     Otherwise, it will set the visibility of button1 to false.
+     */
+    private void setupReplyPanels() {
+
+        if (panelTyp == PanelTypes.NORMAL) {
+
+            return;
+        }
+
+        this.getButton1().setVisible(false);
+    }
+
+    /**
+     Sets the user message in the GUI.
+     <p>
+     This method creates a JTextPane and sets its text to the user message retrieved from the message model.
+     It then adds the JTextPane to the panel at the specified position.
+     */
+    private void setUserMessage() {
+
+        actualTextPane = createTextPane();
+
+        actualTextPane.setEditorKit(new WrapEditorKit());
+
+        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(actualTextPane, baseModel.getMessage());
+
+        this.getPanel1().add(actualTextPane, "cell 1 1, wrap");
+    }
+
+    /**
+     Sets the name field of the message label.
+     This method retrieves the sender's name from the message model
+     and displays it in the name label of the message.
+     */
+    private void setNameField(MainFrameInterface mainFrame) {
+
+        String sender = baseModel.getSender();
+
+        form_nameLabel.setText(sender);
+
+        if (panelTyp == PanelTypes.NORMAL && sender.equals(mainFrame.getLastMessageSenderName())) {
+
+            form_nameLabel.setVisible(false);
+        }
+
+        if (panelTyp == PanelTypes.NORMAL) {
+
+            mainFrame.setLastMessageSenderName(sender);
+        }
+    }
+
+    /**
+     Sets timestamp field with the value from the message model.
+     The timestamp value is set as the text of the time label.
+     */
+    private void setTimestampField(MainFrameInterface mainFrame) {
+
+        String timeStamp = baseModel.getTime();
+
+        form_timeLabel.setText(timeStamp);
+
+        if (panelTyp == PanelTypes.NORMAL && timeStamp.equals(mainFrame.getLastMessageTimeStamp())) {
+
+            form_timeLabel.setVisible(false);
+        }
+
+        if (panelTyp == PanelTypes.NORMAL) {
+
+            mainFrame.setLastMessageTimeStamp(timeStamp);
+        }
+    }
+
+    /**
+     Creates a menu item with the given name and adds it to the specified popup menu.
+
+     @param popupMenu    the popup menu to add the menu item to
+     @param menuItemName the name of the menu item to be created
+
+     @return the created menu item
+     */
+    private JMenuItem createAndAddMenuItem(JPopupMenu popupMenu, String menuItemName) {
+
+        JMenuItem copyItem = new JMenuItem(menuItemName);
+        popupMenu.add(copyItem);
+        return copyItem;
+    }
+
+    private void addMouseListenerToReplyMenuItem(JMenuItem reply) {
 
         reply.addMouseListener(new MouseAdapter() {
 
@@ -96,135 +361,31 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
                 mainFrame.getMainTextPanelLayeredPane().add(replyPanel, JLayeredPane.MODAL_LAYER);
             }
         });
-
-        jPopupMenu.add(reply);
     }
 
-    /**
-     This method is used to set up the reply panels based on the panel type.
-     If the panel type is normal, the method will return without performing any action.
-     Otherwise, it will set the visibility of button1 to false.
-     */
-    private void setupReplyPanels() {
+    private void addActionListenerToCopyJMenuItem(JMenuItem menuOption) {
 
-        if (panelTyp == PanelTypes.NORMAL) {
-            return;
-        }
-
-        this.getButton1().setVisible(false);
-    }
-
-    /**
-     Checks if a message has a quoted text and creates a quoted section in the chat bubble.
-     */
-    private void checkForQuotes() {
-
-        assert baseModel instanceof MessageModel;
-
-        String quotedText = ((MessageModel) baseModel).getQuotedMessageText();
-
-        if (quotedText == null) {
-            return;
-        }
-
-        String quotedChatParticipant = ((MessageModel) baseModel).getQuotedMessageSender();
-        String quotedTime = ((MessageModel) baseModel).getQuotedMessageTime();
-
-        createQuotedSectionInChatBubble(quotedText, quotedChatParticipant, quotedTime);
-    }
-
-    /**
-     This method adds the actual message by setting the user message,
-     name field, and timestamp field.
-     */
-    private void addActualMessage() {
-
-            setUserMessage();
-
-            //time before name, since name is also checked in time -> else time will not be displayed in certain cases
-            setTimestampField(mainFrame);
-            setNameField(mainFrame);
-    }
-
-    /**
-     Creates a quoted section in a chat bubble.
-
-     @param quotedText            the text to be quoted
-     @param quotedChatParticipant the participant whose text is being quoted
-     @param quotedTime            the time when the text was quoted
-     */
-    private void createQuotedSectionInChatBubble(String quotedText, String quotedChatParticipant, String quotedTime) {
-
-        QuotePanelImpl quotedTextPane = new QuotePanelImpl(mainFrame, quotedText, quotedChatParticipant, quotedTime);
-
-        this.getPanel1().add(quotedTextPane, "cell 1 0, wrap");
-    }
-
-    /**
-     Sets the user message in the GUI.
-     <p>
-     This method creates a JTextPane and sets its text to the user message retrieved from the message model.
-     It then adds the JTextPane to the panel at the specified position.
-     */
-    private void setUserMessage() {
-
-        JTextPane actualTextPane = createTextPane();
-
-        actualTextPane.setEditorKit(new WrapEditorKit());
-
-        JScrollPane jsp = new JScrollPane(actualTextPane);
-        jsp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-
-        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(actualTextPane, baseModel.getMessage());
-
-        this.getPanel1().add(actualTextPane, "cell 1 1, wrap");
-    }
-
-    /**
-     Sets timestamp field with the value from the message model.
-     The timestamp value is set as the text of the time label.
-     */
-    private void setTimestampField(MainFrameInterface mainFrame) {
-
-        String timeStamp = baseModel.getTime();
-        String sender = baseModel.getSender();
-
-        this.getTimeLabel().setText(timeStamp);
-
-        //also check for sender; if new sender, the time should always be visible
-        if (panelTyp == PanelTypes.NORMAL && timeStamp.equals(mainFrame.getLastMessageTimeStamp())) {
-
-            if (sender.equals(mainFrame.getLastMessageSenderName())) {
-
-                this.getTimeLabel().setVisible(false);
+        menuOption.addActionListener(e -> {
+            final String selectedText = actualTextPane.getSelectedText();
+            if (selectedText != null) {
+                StringSelection selection = new StringSelection(selectedText);
+                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, selection);
             }
-        }
-
-        if (panelTyp == PanelTypes.NORMAL) {
-
-            mainFrame.setLastMessageTimeStamp(timeStamp);
-        }
+        });
     }
 
-    /**
-     Sets the name field of the message label.
-     This method retrieves the sender's name from the message model
-     and displays it in the name label of the message.
-     */
-    private void setNameField(MainFrameInterface mainFrame) {
+    private void addMouseListenerToJTextPane(JTextPane textPane, JPopupMenu popupMenu) {
 
-        String sender = baseModel.getSender();
-        this.getNameLabel().setText(sender);
+        textPane.addMouseListener(new MouseAdapter() {
 
-        if (panelTyp == PanelTypes.NORMAL && sender.equals(mainFrame.getLastMessageSenderName())) {
+            @Override
+            public void mouseClicked(MouseEvent e) {
 
-            this.getNameLabel().setVisible(false);
-        }
-
-        if (panelTyp == PanelTypes.NORMAL) {
-
-            mainFrame.setLastMessageSenderName(sender);
-        }
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    popupMenu.show(PanelLeftImpl.this, e.getX(), e.getY());
+                }
+            }
+        });
     }
 
     /**
@@ -238,12 +399,15 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
 
         jTextPane.setEditable(false);
         jTextPane.setOpaque(false);
-        jTextPane.setEditorKit(new WrapEditorKit());
-
-        JScrollPane jsp = new JScrollPane(jTextPane);
-        jsp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        jTextPane.setMinimumSize(new Dimension(5, 5));
 
         return jTextPane;
+    }
+
+    @Override
+    protected void replyButtonClicked(MouseEvent e) {
+
+        jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
     }
 
     @Override
@@ -254,12 +418,6 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     @Override
     protected void actionLabelMouseExited(MouseEvent e) {
 
-    }
-
-    @Override
-    protected void replyButtonClicked(MouseEvent e) {
-
-        jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
     }
 
     @Override

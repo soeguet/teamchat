@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  */
 public class PanelRightImpl extends PanelRight implements CommentInterface {
 
-    private final Logger logger = Logger.getLogger(PanelRightImpl.class.getName());
+    private final Logger LOGGER = Logger.getLogger(PanelRightImpl.class.getName());
     private final MainFrameInterface mainFrame;
     private final BaseModel baseModel;
     private PanelTypes panelTyp;
@@ -96,7 +96,7 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
 
         } catch (IOException e) {
 
-            logger.log(java.util.logging.Level.SEVERE, "Error reading image", e);
+            LOGGER.log(java.util.logging.Level.SEVERE, "Error reading image", e);
         }
     }
 
@@ -104,7 +104,7 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
 
         if (bufferedImage == null) {
 
-            logger.log(java.util.logging.Level.SEVERE, "Buffered image is null");
+            LOGGER.log(java.util.logging.Level.SEVERE, "Buffered image is null");
             return null;
         }
 
@@ -144,7 +144,7 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
 
                     } catch (IOException ex) {
 
-                        logger.log(java.util.logging.Level.SEVERE, "Error writing image", ex);
+                        LOGGER.log(java.util.logging.Level.SEVERE, "Error writing image", ex);
                     }
 
                     if (Desktop.isDesktopSupported()) {
@@ -157,24 +157,24 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
 
                             } else {
 
-                                logger.log(java.util.logging.Level.SEVERE, "Image file does not exist");
+                                LOGGER.log(java.util.logging.Level.SEVERE, "Image file does not exist");
                                 throw new IOException();
 
                             }
 
                         } catch (IOException ex) {
 
-                            logger.log(java.util.logging.Level.SEVERE, "Error opening image", ex);
+                            LOGGER.log(java.util.logging.Level.SEVERE, "Error opening image", ex);
                         }
 
                     } else {
 
-                        logger.log(java.util.logging.Level.SEVERE, "Desktop not supported");
+                        LOGGER.log(java.util.logging.Level.SEVERE, "Desktop not supported");
                     }
 
                     if (!imgFile.delete()) {
 
-                        logger.log(java.util.logging.Level.SEVERE, "Error deleting temp image file");
+                        LOGGER.log(java.util.logging.Level.SEVERE, "Error deleting temp image file");
                     }
                 });
             }
