@@ -5,7 +5,6 @@ import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.newcomment.images.CustomImagePanel;
 import com.soeguet.gui.newcomment.left.generated.PanelLeft;
-import com.soeguet.gui.newcomment.right.PanelRightImpl;
 import com.soeguet.gui.newcomment.util.QuotePanelImpl;
 import com.soeguet.gui.newcomment.util.WrapEditorKit;
 import com.soeguet.model.PanelTypes;
@@ -14,26 +13,18 @@ import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
 import com.soeguet.util.EmojiHandler;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Logger;
 
 public class PanelLeftImpl extends PanelLeft implements CommentInterface {
 
-    private final Logger LOGGER = Logger.getLogger(PanelLeftImpl.class.getName());
     private final MainFrameInterface mainFrame;
     private final BaseModel baseModel;
     private PanelTypes panelTyp;
     private JPopupMenu jPopupMenu;
-    private BufferedImage image;
     private JTextPane actualTextPane;
 
     public PanelLeftImpl(MainFrameInterface mainFrame, BaseModel baseModel, PanelTypes panelTyp) {
@@ -43,6 +34,21 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
         this.panelTyp = panelTyp;
     }
 
+    /**
+     Ensures that the method is running on the Event Dispatch Thread (EDT).
+     If the method is not running on the EDT, an IllegalStateException is thrown.
+
+     This method does not return any value.
+
+     @throws IllegalStateException if the method is not running on the EDT
+     */
+    private void ensureEDT() {
+
+        if (!SwingUtilities.isEventDispatchThread()) {
+            throw new IllegalStateException("This should run on the EDT");
+        }
+    }
+
     public PanelLeftImpl(MainFrameInterface mainFrame, BaseModel baseModel) {
 
         this.baseModel = baseModel;
@@ -50,44 +56,85 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     }
 
     @Override
-    public void setupTextPanel() {
+    public void setupTextPanelWrapper() {
 
         if (!(baseModel instanceof MessageModel)) {
             return;
         }
 
-        checkForQuotesInMessage();
-        addActualMessage();
-        setupEditorPopupMenu();
-        addRightClickOptionToPanel();
+        SwingUtilities.invokeLater(() -> {
 
-        setupReplyPanels();
+            checkForQuotesInMessage();
+            addActualMessage();
+            setupEditorPopupMenu();
+            addRightClickOptionToPanel();
+
+            setupReplyPanels();
+        });
+
     }
 
     @Override
-    public void setupPicturePanel() {
+    public void setupPicturePanelWrapper() {
 
-        CustomImagePanel customImagePanel = new CustomImagePanel(mainFrame, this, (PictureModel) baseModel);
-        customImagePanel.addImageLabelToPanel("cell 1 0, wrap");
+        SwingUtilities.invokeLater(() -> {
 
-        actualTextPane = createImageCaptionTextPane();
-        getPanel1().add(actualTextPane, "cell 1 1, wrap");
+            CustomImagePanel customImagePanel = new CustomImagePanel(mainFrame, this, (PictureModel) baseModel);
+            customImagePanel.addImageLabelToPanel("cell 1 0, wrap");
 
-        setupEditorPopupMenu();
+            actualTextPane = createImageCaptionTextPane();
+            getPanel1().add(actualTextPane, "cell 1 1, wrap");
 
-        addRightClickOptionToPanel();
+            setupEditorPopupMenu();
 
-        setNameField(mainFrame);
-        setTimestampField(mainFrame);
+            addRightClickOptionToPanel();
 
+            setNameField(mainFrame);
+            setTimestampField(mainFrame);
+        });
     }
 
+    public void addRightClickOptionToPanel() {
+
+        // EDT check done!
+
+        if (actualTextPane == null) {
+
+            actualTextPane = createTextPane();
+        }
+
+        JPopupMenu popupMenu = new JPopupMenu();
+
+        JMenuItem copyItem = createAndAddMenuItem(popupMenu, "copy");
+
+        addActionListenerToCopyJMenuItem(copyItem);
+        addMouseListenerToJTextPane(actualTextPane, popupMenu);
+
+        actualTextPane.setComponentPopupMenu(popupMenu);
+    }
+
+    /**
+     * Creates a JTextPane for displaying image captions.
+     * If the actualTextPane is null, a new JTextPane is created using the createTextPane() method.
+     * The text content of the JTextPane is set to the message obtained from the baseModel.
+     * The JTextPane is set to non-editable and non-opaque.
+     * Returns the JTextPane.
+     *
+     * @return the created JTextPane
+     */
     private JTextPane createImageCaptionTextPane() {
 
-        actualTextPane = new JTextPane();
+        // EDT check done!
+
+        if (actualTextPane == null) {
+
+            actualTextPane = createTextPane();
+        }
+
         actualTextPane.setText(baseModel.getMessage());
         actualTextPane.setEditable(false);
         actualTextPane.setOpaque(false);
+
         return actualTextPane;
     }
 
@@ -104,7 +151,9 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
      */
     private void checkForQuotesInMessage() {
 
-        MessageModel messageModel = (MessageModel) baseModel;
+        // EDT check done!
+
+        MessageModel messageModel = getMessageModel();
 
         String quotedText = messageModel.getQuotedMessageText();
 
@@ -119,6 +168,11 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
         this.getPanel1().add(quotedSectionPanel, "cell 1 0, wrap");
     }
 
+    private MessageModel getMessageModel() {
+
+        return (MessageModel) baseModel;
+    }
+
     /**
      Adds the actual message to the chat bubble.
 
@@ -126,6 +180,7 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
      */
     private void addActualMessage() {
 
+        // EDT check done!
         setUserMessage();
         setNameField(mainFrame);
         setTimestampField(mainFrame);
@@ -139,6 +194,8 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
      */
     private void setupEditorPopupMenu() {
 
+        // EDT check done!
+
         jPopupMenu = new JPopupMenu();
 
         JMenuItem reply = createAndAddMenuItem(jPopupMenu, "reply");
@@ -151,24 +208,14 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
         //TODO add action listener to delete menu item
     }
 
-    public void addRightClickOptionToPanel() {
-
-        JPopupMenu popupMenu = new JPopupMenu();
-
-        JMenuItem copyItem = createAndAddMenuItem(popupMenu, "copy");
-
-        addActionListenerToCopyJMenuItem(copyItem);
-        addMouseListenerToJTextPane(actualTextPane, popupMenu);
-
-        actualTextPane.setComponentPopupMenu(popupMenu);
-    }
-
     /**
      This method is used to set up the reply panels based on the panel type.
      If the panel type is normal, the method will return without performing any action.
      Otherwise, it will set the visibility of button1 to false.
      */
     private void setupReplyPanels() {
+
+        // EDT check done!
 
         if (panelTyp == PanelTypes.NORMAL) {
 
@@ -186,6 +233,8 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
      */
     private void setUserMessage() {
 
+        ensureEDT();
+
         actualTextPane = createTextPane();
 
         actualTextPane.setEditorKit(new WrapEditorKit());
@@ -201,6 +250,8 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
      and displays it in the name label of the message.
      */
     private void setNameField(MainFrameInterface mainFrame) {
+
+        // EDT check done!
 
         String sender = baseModel.getSender();
 
@@ -222,6 +273,8 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
      The timestamp value is set as the text of the time label.
      */
     private void setTimestampField(MainFrameInterface mainFrame) {
+
+        // EDT check done!
 
         String timeStamp = baseModel.getTime();
 
@@ -248,12 +301,16 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
      */
     private JMenuItem createAndAddMenuItem(JPopupMenu popupMenu, String menuItemName) {
 
+        ensureEDT();
+
         JMenuItem copyItem = new JMenuItem(menuItemName);
         popupMenu.add(copyItem);
         return copyItem;
     }
 
     private void addMouseListenerToReplyMenuItem(JMenuItem reply) {
+
+        ensureEDT();
 
         reply.addMouseListener(new MouseAdapter() {
 
@@ -270,6 +327,8 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
 
     private void addActionListenerToCopyJMenuItem(JMenuItem menuOption) {
 
+        ensureEDT();
+
         menuOption.addActionListener(e -> {
             final String selectedText = actualTextPane.getSelectedText();
             if (selectedText != null) {
@@ -280,6 +339,8 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     }
 
     private void addMouseListenerToJTextPane(JTextPane textPane, JPopupMenu popupMenu) {
+
+        ensureEDT();
 
         textPane.addMouseListener(new MouseAdapter() {
 
@@ -300,6 +361,8 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
      */
     private JTextPane createTextPane() {
 
+        ensureEDT();
+
         JTextPane jTextPane = new JTextPane();
 
         jTextPane.setEditable(false);
@@ -310,12 +373,6 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     }
 
     @Override
-    protected void replyButtonClicked(MouseEvent e) {
-
-        jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-    }
-
-    @Override
     protected void actionLabelMouseEntered(MouseEvent e) {
 
     }
@@ -323,6 +380,14 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     @Override
     protected void actionLabelMouseExited(MouseEvent e) {
 
+    }
+
+    @Override
+    protected void replyButtonClicked(MouseEvent e) {
+
+        ensureEDT();
+
+        jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
     }
 
     @Override

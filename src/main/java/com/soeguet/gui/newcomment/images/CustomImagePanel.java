@@ -47,6 +47,8 @@ public class CustomImagePanel {
 
     public void addImageLabelToPanel(String instruction) {
 
+        // EDT check done!
+
         JLabel imageLabel = new JLabel(scaleImageIfTooBig(image));
         commentPanel.getPanel1().add(imageLabel, instruction);
 

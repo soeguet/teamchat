@@ -34,8 +34,21 @@ public class ReplyPanelImpl extends ReplyPanel {
 
         requestAllFocus();
     }
+    /**
+     * Ensures that the current code is running on the Event Dispatch Thread (EDT).
+     * If the current thread is not the EDT, an IllegalStateException is thrown with the message "This should run on the EDT".
+     *
+     * @throws IllegalStateException if the current thread is not the EDT
+     */
+    private void ensureEDT() {
+        if (!SwingUtilities.isEventDispatchThread()) {
+            throw new IllegalStateException("This should run on the EDT");
+        }
+    }
 
     private void populatePanel() {
+
+        ensureEDT();
 
         getMainQuoteTextField().setEditorKit(new WrapEditorKit());
 
@@ -45,6 +58,8 @@ public class ReplyPanelImpl extends ReplyPanel {
     }
 
     private void setPosition() {
+
+        ensureEDT();
 
         int textPaneWidth = mainFrame.getMainTextPanelLayeredPane().getWidth();
         int textPaneHeight = mainFrame.getMainTextPanelLayeredPane().getHeight();
@@ -69,6 +84,8 @@ public class ReplyPanelImpl extends ReplyPanel {
 
         SwingUtilities.invokeLater(() -> {
 
+            ensureEDT();
+
             this.setBorder(new LineBorder(Color.BLUE));
 
             this.getReplyTextPane().requestFocus();
@@ -79,11 +96,15 @@ public class ReplyPanelImpl extends ReplyPanel {
     @Override
     protected void thisMousePressed(MouseEvent e) {
 
+        ensureEDT();
+
         offset.setLocation(e.getX(), e.getY());
     }
 
     @Override
     protected void thisMouseDragged(MouseEvent e) {
+
+        ensureEDT();
 
         int x = e.getX() - offset.x + this.getX();
         int y = e.getY() - offset.y + this.getY();
@@ -93,6 +114,8 @@ public class ReplyPanelImpl extends ReplyPanel {
     @Override
     protected void closeReplyPanelButtonMouseReleased(MouseEvent e) {
 
+        ensureEDT();
+
         this.removeAll();
         this.setVisible(false);
     }
@@ -100,11 +123,15 @@ public class ReplyPanelImpl extends ReplyPanel {
     @Override
     protected void thisMouseEntered(MouseEvent e) {
 
+        ensureEDT();
+
         this.setBorder(new LineBorder(Color.BLUE));
     }
 
     @Override
     protected void thisMouseExited(MouseEvent e) {
+
+        ensureEDT();
 
         if (!getReplyTextPane().hasFocus()) {
 
@@ -128,12 +155,15 @@ public class ReplyPanelImpl extends ReplyPanel {
     @Override
     protected void quotePanelEmojiButtonMouseClicked(MouseEvent e) {
 
+        ensureEDT();
+
         new EmojiPopUpMenuHandler(mainFrame, this.getReplyTextPane(), this.form_quotePanelEmojiButton);
     }
 
     @Override
     protected void quotePanelSenButtonMouseReleased(MouseEvent e) {
 
+        ensureEDT();
 
         new EmojiHandler(mainFrame).replaceImageIconWithEmojiDescription(this.getReplyTextPane());
 

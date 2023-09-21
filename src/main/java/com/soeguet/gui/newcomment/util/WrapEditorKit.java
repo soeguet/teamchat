@@ -1,5 +1,6 @@
 package com.soeguet.gui.newcomment.util;
 
+import javax.swing.*;
 import javax.swing.text.*;
 import java.io.Serializable;
 
@@ -34,6 +35,7 @@ public class WrapEditorKit extends StyledEditorKit {
     class WrapColumnFactory implements ViewFactory {
 
         public View create(Element elem) {
+
             String kind = elem.getName();
             if (kind != null) {
                 if (kind.equals(AbstractDocument.ContentElementName)) {
@@ -65,6 +67,7 @@ public class WrapEditorKit extends StyledEditorKit {
         }
 
         public float getMinimumSpan(int axis) {
+
             switch (axis) {
                 case View.X_AXIS:
                     return 0;
@@ -76,4 +79,3 @@ public class WrapEditorKit extends StyledEditorKit {
         }
     }
 }
-

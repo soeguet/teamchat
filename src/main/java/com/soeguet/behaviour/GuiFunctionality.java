@@ -60,7 +60,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
      */
     private void fixScrollPaneScrollSpeed() {
 
-
         mainFrame.getMainTextBackgroundScrollPane().getVerticalScrollBar().setUnitIncrement(25);
     }
 
@@ -147,27 +146,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
     }
 
     /**
-     Displays the nickname instead of the username in a comment.
-
-     If the nickname parameter is not null and not empty after trimming,
-     it sets the text of the name label in the comment to the nickname.
-
-     @param nickname the nickname to be displayed
-     @param comment  the comment object containing the name label
-     */
-    private static void displayNicknameInsteadOfUsername(String nickname, CommentInterface comment) {
-
-        if (nickname != null && !nickname.trim().isEmpty()) {
-            comment.getNameLabel().setText(nickname);
-        }
-    }
-
-    private static void addMessagePanelToMainChatPanel(MainFrameInterface mainFrame, CommentInterface message, String alignment) {
-
-        SwingUtilities.invokeLater(() -> mainFrame.getMainTextPanel().add((JPanel) message, "w 70%, " + alignment + ", wrap"));
-    }
-
-    /**
      Generates a random RGB integer value.
 
      This method creates a new instance of the Random class to generate random values for the red, green,
@@ -183,6 +161,27 @@ public class GuiFunctionality implements SocketToGuiInterface {
         int g = rand.nextInt(256);
         int b = rand.nextInt(256);
         return new Color(r, g, b).getRGB();
+    }
+
+    /**
+     Displays the nickname instead of the username in a comment.
+
+     If the nickname parameter is not null and not empty after trimming,
+     it sets the text of the name label in the comment to the nickname.
+
+     @param nickname the nickname to be displayed
+     @param comment  the comment object containing the name label
+     */
+    private void displayNicknameInsteadOfUsername(String nickname, CommentInterface comment) {
+
+        if (nickname != null && !nickname.trim().isEmpty()) {
+            comment.getNameLabel().setText(nickname);
+        }
+    }
+
+    private void addMessagePanelToMainChatPanel(MainFrameInterface mainFrame, CommentInterface message, String alignment) {
+
+        mainFrame.getMainTextPanel().add((JPanel) message, "w 70%, " + alignment + ", wrap");
     }
 
     /**
@@ -256,12 +255,14 @@ public class GuiFunctionality implements SocketToGuiInterface {
     }
 
     /**
-     * Converts the given {@link BaseModel} object to a JSON string representation.
-     *
-     * @param messageModel The {@link BaseModel} object to be converted.
-     * @param gui          The {@link MainFrameInterface} object used to access the ObjectMapper for JSON conversion.
-     * @return The JSON string representation of the {@link BaseModel} object.
-     * @throws RuntimeException if there is an error during the JSON conversion process.
+     Converts the given {@link BaseModel} object to a JSON string representation.
+
+     @param messageModel The {@link BaseModel} object to be converted.
+     @param gui          The {@link MainFrameInterface} object used to access the ObjectMapper for JSON conversion.
+
+     @return The JSON string representation of the {@link BaseModel} object.
+
+     @throws RuntimeException if there is an error during the JSON conversion process.
      */
     private String convertToJSON(BaseModel messageModel, MainFrameInterface gui) {
 
@@ -316,14 +317,15 @@ public class GuiFunctionality implements SocketToGuiInterface {
         checkIfMessageSenderAlreadyRegisteredInLocalCache(mainFrame.getChatClientPropertiesHashMap(), messageModel.getSender());
         String nickname = checkForNickname(mainFrame, messageModel.getSender());
 
+        // Messages
         if (messageModel instanceof MessageModel) {
 
             if (messageModel.getSender().equals(mainFrame.getUsername())) {
 
                 Color borderColor = determineBorderColor(mainFrame, "own");
 
-                PanelRightImpl panelRight = new PanelRightImpl(mainFrame, (MessageModel) messageModel, PanelTypes.NORMAL);
-                panelRight.setupTextPanel();
+                PanelRightImpl panelRight = new PanelRightImpl(mainFrame, messageModel, PanelTypes.NORMAL);
+                panelRight.setupTextPanelWrapper();
                 panelRight.setBorderColor(borderColor);
                 displayNicknameInsteadOfUsername(nickname, panelRight);
                 addMessagePanelToMainChatPanel(mainFrame, panelRight, "trailing");
@@ -332,21 +334,24 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
                 Color borderColor = determineBorderColor(mainFrame, messageModel.getSender());
 
-                PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, (MessageModel) messageModel, PanelTypes.NORMAL);
-                panelLeft.setupTextPanel();
+                PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, messageModel, PanelTypes.NORMAL);
+                panelLeft.setupTextPanelWrapper();
                 panelLeft.setBorderColor(borderColor);
                 displayNicknameInsteadOfUsername(nickname, panelLeft);
                 addMessagePanelToMainChatPanel(mainFrame, panelLeft, "leading");
             }
 
-        } else if (messageModel instanceof PictureModel) {
+        }
+
+        // Pictures
+        else if (messageModel instanceof PictureModel) {
 
             if (messageModel.getSender().equals(mainFrame.getUsername())) {
 
                 Color borderColor = determineBorderColor(mainFrame, "own");
 
-                PanelRightImpl panelRight = new PanelRightImpl(mainFrame, (PictureModel) messageModel);
-                panelRight.setupPicturePanel();
+                PanelRightImpl panelRight = new PanelRightImpl(mainFrame, messageModel);
+                panelRight.setupPicturePanelWrapper();
                 panelRight.setBorderColor(borderColor);
                 displayNicknameInsteadOfUsername(nickname, panelRight);
                 addMessagePanelToMainChatPanel(mainFrame, panelRight, "trailing");
@@ -355,24 +360,33 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
                 Color borderColor = determineBorderColor(mainFrame, messageModel.getSender());
 
-                PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, (PictureModel) messageModel);
-                panelLeft.setupPicturePanel();
+                PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, messageModel);
+                panelLeft.setupPicturePanelWrapper();
                 panelLeft.setBorderColor(borderColor);
                 displayNicknameInsteadOfUsername(nickname, panelLeft);
                 addMessagePanelToMainChatPanel(mainFrame, panelLeft, "leading");
             }
-        } else {
+        }
+
+        // Unknown
+        else {
 
             LOGGER.info("Unknown message type");
         }
 
-        ((JFrame) mainFrame).revalidate();
-        ((JFrame) mainFrame).repaint();
-        scrollMainPanelDownToLastMessage(mainFrame.getMainTextBackgroundScrollPane());
         checkIfDequeIsEmptyOrStartOver(mainFrame);
+
+        scrollMainPanelDownToLastMessage(mainFrame.getMainTextBackgroundScrollPane());
     }
 
     private void checkIfDequeIsEmptyOrStartOver(MainFrameInterface gui) {
+
+        // ensure that the scrollpane can keep up with the additons!
+        try {
+            Thread.sleep(75);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         if (!gui.getClientMessageQueue().isEmpty()) {
 
@@ -381,7 +395,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
         } else {
 
             gui.getIsProcessingClientMessages().set(false);
-            scrollToMax(gui.getMainTextBackgroundScrollPane().getVerticalScrollBar());
         }
     }
 
@@ -485,11 +498,8 @@ public class GuiFunctionality implements SocketToGuiInterface {
      */
     public void scrollMainPanelDownToLastMessage(JScrollPane scrollPane) {
 
-        SwingUtilities.invokeLater(() -> {
-            ((JFrame) mainFrame).revalidate();
-            ((JFrame) mainFrame).repaint();
-            scrollToMax(scrollPane.getVerticalScrollBar());
-        });
+        //EDT check done!
+        scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
     }
 
     /**
@@ -504,15 +514,5 @@ public class GuiFunctionality implements SocketToGuiInterface {
     private BaseModel convertJsonToMessageModel(String jsonMessage) throws JsonProcessingException {
 
         return objectMapper.readValue(jsonMessage, BaseModel.class);
-    }
-
-    /**
-     Scrolls the given scroll bar to its maximum value.
-
-     @param scrollBar the scroll bar to be scrolled
-     */
-    private void scrollToMax(JScrollBar scrollBar) {
-
-        scrollBar.setValue(scrollBar.getMaximum());
     }
 }

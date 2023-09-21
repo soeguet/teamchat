@@ -6,7 +6,7 @@ public interface CommentInterface {
 
     JLabel getNameLabel();
     JPanel getPanel1();
-    void setupTextPanel();
-    void setupPicturePanel();
+    void setupTextPanelWrapper();
+    void setupPicturePanelWrapper();
     void addRightClickOptionToPanel();
 }

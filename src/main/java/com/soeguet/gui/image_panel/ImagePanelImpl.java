@@ -29,6 +29,8 @@ public class ImagePanelImpl extends ImagePanel {
 
     public ImagePanelImpl(MainFrameInterface mainFrame) {
 
+        ensureEDT();
+
         this.mainFrame = mainFrame;
 
         populateImagePanel();
@@ -43,6 +45,8 @@ public class ImagePanelImpl extends ImagePanel {
 
     private void setPosition() {
 
+        ensureEDT();
+
         int textPaneWidth = mainFrame.getMainTextPanelLayeredPane().getWidth();
         int textPaneHeight = mainFrame.getMainTextPanelLayeredPane().getHeight();
 
@@ -52,6 +56,8 @@ public class ImagePanelImpl extends ImagePanel {
     }
 
     private void setLayeredPaneLayerPositions() {
+
+        ensureEDT();
 
         final int width = form_pictureMainPanel.getWidth();
         final int height = form_pictureMainPanel.getHeight();
@@ -66,6 +72,8 @@ public class ImagePanelImpl extends ImagePanel {
 
     private void setupPictureScrollPaneScrollSpeed() {
 
+        ensureEDT();
+
         form_pictureScrollPane.getVerticalScrollBar().setUnitIncrement(50);
         form_pictureScrollPane.getHorizontalScrollBar().setUnitIncrement(50);
     }
@@ -76,11 +84,15 @@ public class ImagePanelImpl extends ImagePanel {
      */
     private void redrawEverything() {
 
+        ensureEDT();
+
         revalidate();
         repaint();
     }
 
     public void populateImagePanelFromClipboard() {
+
+        ensureEDT();
 
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         Transferable contents = clipboard.getContents(null);
@@ -119,6 +131,18 @@ public class ImagePanelImpl extends ImagePanel {
     private static JLabel createImageLabel(ImageIcon newImage) {
 
         return new JLabel(newImage);
+    }
+
+    /**
+     Ensures that the current code is running on the Event Dispatch Thread (EDT). If the current thread is not the EDT, an
+     IllegalStateException is thrown.
+
+     @throws IllegalStateException if the current code is not running on the EDT
+     */
+    private void ensureEDT() {
+        if (!SwingUtilities.isEventDispatchThread()) {
+            throw new IllegalStateException("This should run on the EDT");
+        }
     }
 
     /**
@@ -206,6 +230,8 @@ public class ImagePanelImpl extends ImagePanel {
      */
     private Image resizeImage(double zoomFactor) {
 
+        ensureEDT();
+
         int width = (int) (image.getWidth(null) * zoomFactor);
         if (width < 100) {
             width = 100;
@@ -227,6 +253,8 @@ public class ImagePanelImpl extends ImagePanel {
     @Override
     protected void zoomInButtonMouseClicked(MouseEvent e) {
 
+        ensureEDT();
+
         zoomFactor += 0.2;
 
         addImageToPanel(zoomFactor);
@@ -234,6 +262,8 @@ public class ImagePanelImpl extends ImagePanel {
 
     @Override
     protected void sendPictureButtonMouseClicked(MouseEvent e) {
+
+        ensureEDT();
 
         PictureModel pictureModel = new PictureModel();
 
@@ -264,6 +294,8 @@ public class ImagePanelImpl extends ImagePanel {
 
     @Override
     protected void selectPictureButtonMouseClicked(MouseEvent e) {
+
+        ensureEDT();
 
         JFileChooser jFileChooser = new JFileChooser(System.getProperty("user.home"));
         jFileChooser.setDialogTitle("Select a picture");
@@ -317,6 +349,8 @@ public class ImagePanelImpl extends ImagePanel {
      */
     @Override
     protected void zoomMotherPanelMouseWheelMoved(MouseWheelEvent e) {
+
+        ensureEDT();
 
         if (e.isControlDown()) {
 
