@@ -7,8 +7,8 @@ mainClassName = 'com.soeguet.Main'
 group 'com.soeguet'
 version ''
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+sourceCompatibility = '21'
+targetCompatibility = '21'
 
 compileJava.options.encoding = 'UTF-8'
 
@@ -26,22 +26,18 @@ application {
 
 dependencies {
 
-    implementation 'org.java-websocket:Java-WebSocket:1.5.3'
+    implementation 'org.java-websocket:Java-WebSocket:1.5.4'
     implementation 'com.formdev:flatlaf:3.1.1'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
 
     implementation 'com.miglayout:miglayout-swing:11.1'
 
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.14.2'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.14.2'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.15.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.2'
 
-    implementation 'org.json:json:20230227'
-
-    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
-
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
 }
 
 tasks.register('copyResources', Copy) {
@@ -59,24 +55,6 @@ jar {
     }
     duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 }
-
-installDist {
-
-    doLast {
-
-        File file = new File('./build/install/teamchat8/bin/conf/ips.txt')
-
-        if (!file.exists()) {
-
-            mkdir('./build/install/teamchat8/bin/conf')
-
-            def src = new File('src/main/resources/conf/ips.txt')
-            def dest = new File('build/install/teamchat8/bin/conf/ips.txt')
-            dest.write(src.text)
-        }
-    }
-}
-
 
 test {
     useJUnitPlatform()

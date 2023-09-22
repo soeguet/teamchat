@@ -3,7 +3,6 @@ package com.soeguet.gui.image_panel;
 import com.soeguet.gui.image_panel.generated.ImagePanel;
 import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.model.jackson.PictureModel;
-import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -37,6 +36,19 @@ public class ImagePanelImpl extends ImagePanel {
         setPosition();
         setLayeredPaneLayerPositions();
         setupPictureScrollPaneScrollSpeed();
+    }
+
+    /**
+     Ensures that the current code is running on the Event Dispatch Thread (EDT). If the current thread is not the EDT, an
+     IllegalStateException is thrown.
+
+     @throws IllegalStateException if the current code is not running on the EDT
+     */
+    private void ensureEDT() {
+
+        if (!SwingUtilities.isEventDispatchThread()) {
+            throw new IllegalStateException("This should run on the EDT");
+        }
     }
 
     private void populateImagePanel() {
@@ -77,7 +89,6 @@ public class ImagePanelImpl extends ImagePanel {
         form_pictureScrollPane.getVerticalScrollBar().setUnitIncrement(50);
         form_pictureScrollPane.getHorizontalScrollBar().setUnitIncrement(50);
     }
-
 
     /**
      Redraws everything by revalidating the component and repainting it.
@@ -127,22 +138,9 @@ public class ImagePanelImpl extends ImagePanel {
 
      @return a new JLabel with the specified image as its content
      */
-    @NotNull
     private static JLabel createImageLabel(ImageIcon newImage) {
 
         return new JLabel(newImage);
-    }
-
-    /**
-     Ensures that the current code is running on the Event Dispatch Thread (EDT). If the current thread is not the EDT, an
-     IllegalStateException is thrown.
-
-     @throws IllegalStateException if the current code is not running on the EDT
-     */
-    private void ensureEDT() {
-        if (!SwingUtilities.isEventDispatchThread()) {
-            throw new IllegalStateException("This should run on the EDT");
-        }
     }
 
     /**

@@ -1,7 +1,5 @@
 package com.soeguet.model;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.util.Objects;
 
 public class Clients {
@@ -40,13 +38,13 @@ public class Clients {
     }
 
     @Override
-    public String toString() {
+    public int hashCode() {
 
-        return "Clients{" + "localIpAddress='" + localIpAddress + '\'' + ", clientName='" + clientName + '\'' + '}';
+        return Objects.hash(localIpAddress, clientName);
     }
 
     @Override
-    public boolean equals(@Nullable Object o) {
+    public boolean equals(Object o) {
 
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -55,8 +53,8 @@ public class Clients {
     }
 
     @Override
-    public int hashCode() {
+    public String toString() {
 
-        return Objects.hash(localIpAddress, clientName);
+        return "Clients{" + "localIpAddress='" + localIpAddress + '\'' + ", clientName='" + clientName + '\'' + '}';
     }
 }
