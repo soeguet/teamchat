@@ -5,12 +5,14 @@ import com.soeguet.behaviour.GuiFunctionality;
 import com.soeguet.gui.image_panel.ImagePanelImpl;
 import com.soeguet.gui.main_frame.generated.ChatPanel;
 import com.soeguet.gui.properties.PropertiesPanelImpl;
+import com.soeguet.model.EnvVariables;
 import com.soeguet.properties.CustomProperties;
 import com.soeguet.properties.CustomUserProperties;
 import com.soeguet.socket_client.CustomWebsocketClient;
 import com.soeguet.util.EmojiHandler;
 import com.soeguet.util.EmojiInitializer;
 import com.soeguet.util.EmojiPopUpMenuHandler;
+import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -21,7 +23,9 @@ import java.beans.PropertyChangeEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
@@ -44,17 +48,18 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     private HashMap<String, ImageIcon> emojiList;
     private EmojiHandler emojiHandler;
     private CustomWebsocketClient websocketClient;
-    private String username = "yasman";
+    private String username;
     private JPanel messagePanel;
 
     private AtomicBoolean isProcessingClientMessages = new AtomicBoolean(false);
+    private EnvVariables envVariables;
 
-    /**
-     Initializes the main GUI elements for the chat application.
-     Sets up the GUI functionality, calculates the margins for the scroll pane,
-     initializes the emoji handler and list, and establishes a WebSocket connection.
-     */
-    public ChatMainFrameImpl() {
+    public ChatMainFrameImpl(final EnvVariables envVariables) {
+
+        this.envVariables = envVariables;
+        this.username = envVariables.getChatUsername();
+
+        setLocation(Integer.parseInt(System.getenv("chat_x_position")), 100);
 
         clientMessageQueue = new LinkedBlockingDeque<>();
         messageQueue = new LinkedBlockingDeque<>();
@@ -67,6 +72,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         setScrollPaneMargins();
         initEmojiHandlerAndList();
         initWebSocketClient();
+
     }
 
     private void initGuiFunctionality() {
@@ -83,7 +89,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             JSCROLLPANE_MARGIN_RIGHT_BORDER = 20;
         } else {
             JSCROLLPANE_MARGIN_BOTTOM_BORDER = 56;
-            JSCROLLPANE_MARGIN_RIGHT_BORDER = 3;
+            JSCROLLPANE_MARGIN_RIGHT_BORDER = 4;
         }
     }
 
@@ -93,15 +99,126 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         emojiList = new EmojiInitializer().createEmojiList();
     }
 
+    /**
+     Initializes the WebSocket client.
+
+     It retrieves the server IP and port from the environment variables and creates a URI for the WebSocket server.
+     If the server IP or port is missing or empty, it opens a server information option pane.
+     Otherwise, it initializes the server URI and connects to the WebSocket server.
+
+     @throws RuntimeException if there is an error creating the server URI
+     */
     private void initWebSocketClient() {
 
-        try {
-            serverUri = new URI("ws://127.0.0.1:8100");
-            websocketClient = new CustomWebsocketClient(serverUri, this);
-            websocketClient.connect();
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+        final String serverIp = envVariables.getChatIp();
+        final String serverPort = envVariables.getChatPort();
+
+        if (serverIp.isEmpty() || serverPort.isEmpty()) {
+
+            serverInformationOptionPane();
+
+        } else {
+
+            try {
+
+                serverUri = new URI("ws://" + serverIp + ":" + serverPort);
+
+            } catch (URISyntaxException e) {
+
+                throw new RuntimeException(e);
+            }
         }
+
+        connectToWebsocket();
+    }
+
+    /**
+     Displays a JOptionPane to gather server information from the user.
+     The user is prompted to enter the server IP address and port number.
+     If the user selects the OK option, the server IP address and port number
+     are stored in the envVariables object and a URI object representing the
+     server URI is created and stored in the serverUri variable.
+     */
+    private void serverInformationOptionPane() {
+
+        JTextField serverIpTextField = new JTextField(7);
+        JTextField serverPortTextField = new JTextField(7);
+
+        final JPanel serverInfoPanel = createServerInfoPanel(serverIpTextField, serverPortTextField);
+
+        int result = JOptionPane.showConfirmDialog(this, serverInfoPanel, "please enter ip and port values", JOptionPane.OK_CANCEL_OPTION);
+
+        if (result == JOptionPane.OK_OPTION) {
+
+            final String serverIp = serverIpTextField.getText();
+            final String serverPort = serverPortTextField.getText();
+
+            envVariables.setChatIp(serverIp);
+            envVariables.setChatPort(serverPort);
+
+            try {
+                serverUri = new URI("ws://" + serverIp + ":" + serverPort);
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     Establishes a connection to a WebSocket server.
+
+     This method creates a new virtual thread executor and submits a task to it. The task is responsible for creating a new instance of a CustomWebsocketClient and connecting to the WebSocket server specified by the serverUri. The connection process is asynchronously executed on a separate thread.
+     */
+    private void connectToWebsocket() {
+
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+
+            executor.submit(() -> {
+
+                websocketClient = new CustomWebsocketClient(serverUri, this);
+                websocketClient.connect();
+
+            });
+
+        } catch (Exception e) {
+
+            throw new RejectedExecutionException(e.getMessage());
+        }
+    }
+
+    /**
+     Creates a server information panel.
+
+     @param serverIpTextField   the text field for server IP
+     @param serverPortTextField the text field for server port
+
+     @return the created JPanel containing the server information panel
+     */
+    private JPanel createServerInfoPanel(final JTextField serverIpTextField, final JTextField serverPortTextField) {
+
+        JPanel myPanel = new JPanel(new MigLayout("wrap 2"));
+
+        myPanel.add(new JLabel("Port:"));
+        serverIpTextField.setText(envVariables.getChatIp().isBlank() ? "127.0.0.1" : envVariables.getChatIp());
+        myPanel.add(serverIpTextField);
+
+        myPanel.add(new JLabel("Ip:"));
+        serverPortTextField.setText(envVariables.getChatPort().isBlank() ? "8100" : envVariables.getChatPort());
+        myPanel.add(serverPortTextField);
+
+        serverIpTextField.requestFocus();
+
+        return myPanel;
+    }
+
+    public EnvVariables getEnvVariables() {
+
+        return envVariables;
+    }
+
+    public void setEnvVariables(final EnvVariables envVariables) {
+
+        this.envVariables = envVariables;
     }
 
     /**
@@ -152,9 +269,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     protected void propertiesMenuItemMousePressed(MouseEvent e) {
 
         new PropertiesPanelImpl(this);
-    }    public AtomicBoolean getIsProcessingClientMessages() {
-
-        return isProcessingClientMessages;
     }
 
     /**
@@ -175,17 +289,11 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             getWebsocketClient().close();
         }
 
-        new Timer(1000, event -> {
+        websocketClient = null;
 
-            if (getWebsocketClient().isClosed()) {
+        logger.info("Reconnecting websocket client");
 
-                logger.info("Reconnecting websocket client");
-
-                setWebsocketClient(new CustomWebsocketClient(serverUri, this));
-                getWebsocketClient().connect();
-            }
-
-        }).start();
+        connectToWebsocket();
     }
 
     /**
@@ -216,9 +324,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     public GuiFunctionality getGuiFunctionality() {
 
         return guiFunctionality;
-    }    public void setIsProcessingClientMessages(AtomicBoolean isProcessingClientMessages) {
-
-        this.isProcessingClientMessages = isProcessingClientMessages;
     }
 
     /**
@@ -494,8 +599,21 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         guiFunctionality.clearTextPaneAndSendMessageToSocket();
     }
 
+    @Override
+    protected void connectionDetailsButtonMousePressed(final MouseEvent e) {
 
+        System.out.println("connectionDetailsButtonMouseClicked");
+        serverInformationOptionPane();
+    }
 
+    public AtomicBoolean getIsProcessingClientMessages() {
 
+        return isProcessingClientMessages;
+    }
+
+    public void setIsProcessingClientMessages(AtomicBoolean isProcessingClientMessages) {
+
+        this.isProcessingClientMessages = isProcessingClientMessages;
+    }
 
 }

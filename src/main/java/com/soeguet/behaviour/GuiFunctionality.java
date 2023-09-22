@@ -26,6 +26,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 /**
@@ -298,9 +299,14 @@ public class GuiFunctionality implements SocketToGuiInterface {
     @Override
     public void onMessage(String message) {
 
-        mainFrame.getClientMessageQueue().add(message);
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+
+            executor.submit(() -> mainFrame.getClientMessageQueue().add(message));
+
+        }
 
         if (!mainFrame.getIsProcessingClientMessages().get()) {
+
             writeGuiMessageToChatPanel();
         }
     }
@@ -375,18 +381,23 @@ public class GuiFunctionality implements SocketToGuiInterface {
         }
 
         checkIfDequeIsEmptyOrStartOver(mainFrame);
-
-        scrollMainPanelDownToLastMessage(mainFrame.getMainTextBackgroundScrollPane());
     }
 
     private void checkIfDequeIsEmptyOrStartOver(MainFrameInterface gui) {
 
         // ensure that the scrollpane can keep up with the additons!
         try {
-            Thread.sleep(75);
+
+            Thread.sleep(300);
+
         } catch (InterruptedException e) {
+
             throw new RuntimeException(e);
         }
+
+        SwingUtilities.invokeLater(() -> {
+            scrollMainPanelDownToLastMessage(mainFrame.getMainTextBackgroundScrollPane());
+        });
 
         if (!gui.getClientMessageQueue().isEmpty()) {
 
@@ -395,7 +406,9 @@ public class GuiFunctionality implements SocketToGuiInterface {
         } else {
 
             gui.getIsProcessingClientMessages().set(false);
+
         }
+
     }
 
     /**
@@ -500,6 +513,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         //EDT check done!
         scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
+        ((JFrame) mainFrame).repaint();
     }
 
     /**

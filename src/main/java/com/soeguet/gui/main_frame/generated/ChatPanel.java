@@ -331,6 +331,12 @@ public abstract class ChatPanel extends JFrame {
         return this.form_hSpacer3;
     }
 
+	public JMenuItem getConnectionDetailsButton() {
+		return this.form_connectionDetailsButton;
+	}
+
+	protected abstract void connectionDetailsButtonMousePressed(MouseEvent e);
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
 		// Generated using JFormDesigner non-commercial license
@@ -338,6 +344,7 @@ public abstract class ChatPanel extends JFrame {
 		this.form_menuBar1 = new JMenuBar();
 		this.form_fileMenu = new JMenu();
 		this.form_propertiesMenuItem = new JMenuItem();
+		this.form_connectionDetailsButton = new JMenuItem();
 		this.form_resetConnectionMenuItem = new JMenuItem();
 		this.form_exitMenuItem = new JMenuItem();
 		this.form_extraMenu = new JMenu();
@@ -409,6 +416,16 @@ public abstract class ChatPanel extends JFrame {
 					});
 					this.form_fileMenu.add(this.form_propertiesMenuItem);
 					this.form_fileMenu.addSeparator();
+
+					//---- form_connectionDetailsButton ----
+					this.form_connectionDetailsButton.setText("connection details");
+					this.form_connectionDetailsButton.addMouseListener(new MouseAdapter() {
+						@Override
+						public void mousePressed(MouseEvent e) {
+							connectionDetailsButtonMousePressed(e);
+						}
+					});
+					this.form_fileMenu.add(this.form_connectionDetailsButton);
 
 					//---- form_resetConnectionMenuItem ----
 					this.form_resetConnectionMenuItem.setText("reset connection");
@@ -666,6 +683,7 @@ public abstract class ChatPanel extends JFrame {
 	protected JMenuBar form_menuBar1;
 	protected JMenu form_fileMenu;
 	protected JMenuItem form_propertiesMenuItem;
+	protected JMenuItem form_connectionDetailsButton;
 	protected JMenuItem form_resetConnectionMenuItem;
 	protected JMenuItem form_exitMenuItem;
 	protected JMenu form_extraMenu;

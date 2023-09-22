@@ -23,6 +23,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 /**
@@ -191,49 +192,54 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
             @Override
             public void mouseClicked(MouseEvent e) {
 
-                new Thread(() -> {
+                try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
 
-                    File imgFile = new File("temp-image.jpg");
+                    executor.submit(() -> {
 
-                    try {
-
-                        ImageIO.write(image, "png", imgFile);
-
-                    } catch (IOException ex) {
-
-                        LOGGER.log(java.util.logging.Level.SEVERE, "Error writing image", ex);
-                    }
-
-                    if (Desktop.isDesktopSupported()) {
+                        File imgFile = new File("temp-image.jpg");
 
                         try {
 
-                            if (imgFile.exists()) {
-
-                                Desktop.getDesktop().open(imgFile);
-
-                            } else {
-
-                                LOGGER.log(java.util.logging.Level.SEVERE, "Image file does not exist");
-                                throw new IOException();
-
-                            }
+                            ImageIO.write(image, "png", imgFile);
 
                         } catch (IOException ex) {
 
-                            LOGGER.log(java.util.logging.Level.SEVERE, "Error opening image", ex);
+                            LOGGER.log(java.util.logging.Level.SEVERE, "Error writing image", ex);
                         }
 
-                    } else {
+//                        if (Desktop.isDesktopSupported()) {
 
-                        LOGGER.log(java.util.logging.Level.SEVERE, "Desktop not supported");
-                    }
+                            try {
 
-                    if (!imgFile.delete()) {
+                                if (imgFile.exists()) {
 
-                        LOGGER.log(java.util.logging.Level.SEVERE, "Error deleting temp image file");
-                    }
-                });
+                                    Desktop.getDesktop().open(imgFile);
+
+                                } else {
+
+                                    LOGGER.log(java.util.logging.Level.SEVERE, "Image file does not exist");
+                                    throw new IOException();
+
+                                }
+
+                            } catch (IOException ex) {
+
+                                LOGGER.log(java.util.logging.Level.SEVERE, "Error opening image", ex);
+                                throw new RuntimeException(ex);
+                            }
+
+//                        } else {
+//
+//                            LOGGER.log(java.util.logging.Level.SEVERE, "Desktop not supported");
+//                        }
+
+                        if (!imgFile.delete()) {
+
+                            LOGGER.log(java.util.logging.Level.SEVERE, "Error deleting temp image file");
+                            throw new RuntimeException();
+                        }
+                    });
+                }
             }
         });
     }
