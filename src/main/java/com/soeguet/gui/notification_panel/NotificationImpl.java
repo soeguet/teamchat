@@ -14,29 +14,11 @@ public class NotificationImpl extends Notification {
 
     private final MainFrameInterface mainFrame;
     private final int MARGIN_TOP = 10;
-    private final int MARGIN_RIGHT = 10;
 
     public NotificationImpl(final MainFrameInterface mainFrame) {
 
         super(null);
         this.mainFrame = mainFrame;
-
-        form_notificationMainPanel.addMouseListener(new MouseAdapter() {
-
-            @Override
-            public void mouseClicked(final MouseEvent e) {
-
-                SwingUtilities.invokeLater(() -> {
-
-                    ((JFrame) mainFrame).setAlwaysOnTop(true);
-                    ((JFrame) mainFrame).toFront();
-                    ((JFrame) mainFrame).repaint();
-                    ((JFrame) mainFrame).setAlwaysOnTop(false);
-                });
-
-                System.out.println("Clicked on notification main panel");
-            }
-        });
     }
 
     @Override
@@ -65,9 +47,9 @@ public class NotificationImpl extends Notification {
         });
     }
 
-    public void relocateNotification(int positionY) {
+    public void relocateNotification(int moveUpByDeltaPixel) {
 
-        int locationY = getY() - positionY;
+        int locationY = getY() - moveUpByDeltaPixel;
 
         if (locationY < 0) {
 
@@ -80,49 +62,49 @@ public class NotificationImpl extends Notification {
 
     public void setNotificationText(String text) {
 
-        //TODO clean this mess up
-        final Label textLabel = new Label(text);
-        textLabel.addMouseMotionListener(new MouseAdapter() {
-
-            @Override
-            public void mouseClicked(final MouseEvent e) {
-
-                SwingUtilities.invokeLater(() -> {
-
-                    ((JFrame) mainFrame).setAlwaysOnTop(true);
-                    ((JFrame) mainFrame).toFront();
-                    ((JFrame) mainFrame).repaint();
-                    ((JFrame) mainFrame).setAlwaysOnTop(false);
-                });
-
-                System.out.println("Clicked on notification text label");
-
-            }
-        });
-
-        this.form_notificationMainPanel.add(textLabel, BorderLayout.CENTER);
+        addMessageToNotificationPanel(text);
 
         pack();
 
-        final Dimension primaryScreenSize = Toolkit.getDefaultToolkit().getScreenSize();
-
-        final int width = (int) primaryScreenSize.getWidth();
+        final int screenResolutionWidth = determineScreenWidth();
 
         int newYPosition = mainFrame.getNotificationPositionY();
 
-        if (newYPosition < 0) {
+        modifyNotificationPanel(screenResolutionWidth, newYPosition);
 
-            newYPosition = 0;
-        }
+        retainInformationAboutThisNotification(newYPosition);
 
-        setBounds(width - getWidth() - MARGIN_RIGHT, newYPosition + MARGIN_TOP, getWidth(), getHeight());
+        addNotificationTimer();
+    }
 
-        mainFrame.setNotificationPositionY(newYPosition + getHeight() - MARGIN_TOP);
+    private void addMessageToNotificationPanel(final String text) {
 
+        final Label textLabel = new Label(text);
+        this.form_notificationMainPanel.add(textLabel, BorderLayout.CENTER);
+    }
+
+    private static int determineScreenWidth() {
+
+        final Dimension primaryScreenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+        return (int) primaryScreenSize.getWidth();
+    }
+
+    private void modifyNotificationPanel(final int screenResolutionWidth, final int newYPosition) {
+
+        int MARGIN_RIGHT = 10;
+        setBounds(screenResolutionWidth - getWidth() - MARGIN_RIGHT, newYPosition + MARGIN_TOP, getWidth(), getHeight());
         setAlwaysOnTop(true);
         setVisible(true);
+    }
 
+    private void retainInformationAboutThisNotification(final int newYPosition) {
+
+        mainFrame.setNotificationPositionY(newYPosition + getHeight() - MARGIN_TOP);
         mainFrame.getNotificationList().add(this);
+    }
+
+    private void addNotificationTimer() {
 
         Timer timer = new Timer(7500, e -> {
 
