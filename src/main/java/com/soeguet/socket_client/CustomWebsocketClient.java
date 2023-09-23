@@ -68,11 +68,6 @@ public class CustomWebsocketClient extends WebSocketClient {
     @Override
     public void onMessage(String message) {
 
-        if (!message.startsWith("{")) {
-
-            return;
-        }
-
         mainFrame.getGuiFunctionality().onMessage(message);
     }
 

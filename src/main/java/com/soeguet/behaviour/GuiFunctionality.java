@@ -299,16 +299,46 @@ public class GuiFunctionality implements SocketToGuiInterface {
     @Override
     public void onMessage(String message) {
 
-        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
 
-            executor.submit(() -> mainFrame.getClientMessageQueue().add(message));
+        switch (message) {
+            case "execute" -> {
 
+                writeGuiMessageToChatPanel();
+            }
+            case "X" -> {
+                System.out.println("X");
+            }
+            case "welcome to the server!" -> {
+                System.out.println("welcome to the server!");
+            }
+            default -> {
+
+                try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+
+                    executor.submit(() -> mainFrame.getClientMessageQueue().add(message));
+                }
+            }
         }
 
-        if (!mainFrame.getIsProcessingClientMessages().get()) {
+//        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+//
+//            executor.submit(() -> mainFrame.getClientMessageQueue().add(message));
+//            executor.submit(() -> {
+//
+//                if (!mainFrame.getIsProcessingClientMessages().get()) {
+//
+//                    writeGuiMessageToChatPanel();
+//                }
+//            });
 
-            writeGuiMessageToChatPanel();
-        }
+//        }
+
+//        if (!mainFrame.getIsProcessingClientMessages().get()) {
+//
+//                writeGuiMessageToChatPanel();
+//        }
+
+        System.out.println("mainFrame.getClientMessageQueue().size() = " + mainFrame.getClientMessageQueue().size());
     }
 
     private void writeGuiMessageToChatPanel() {
