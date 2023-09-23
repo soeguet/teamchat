@@ -38,7 +38,7 @@ new FormModel {
 					"value": "East"
 				} )
 			}, new FormLayoutConstraints( class java.lang.String ) {
-				"value": "First"
+				"value": "North"
 			} )
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
 				name: "formerMessagePanel"
@@ -83,6 +83,8 @@ new FormModel {
 							name: "clientsPanel2"
 							add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
 								"rows": 5
+								"hgap": 5
+								"vgap": 5
 							} ) {
 								name: "panel10"
 								add( new FormComponent( "com.jformdesigner.designer.wrapper.VSpacer" ) {
@@ -102,7 +104,6 @@ new FormModel {
 									} )
 									add( new FormComponent( "javax.swing.JTextField" ) {
 										name: "ownUserNameTextField"
-										addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "ownUserNameTextFieldFocusLost", true ) )
 									} )
 									add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
 										name: "hSpacer21"
@@ -143,6 +144,8 @@ new FormModel {
 							name: "clientsPanel"
 							add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
 								"rows": 5
+								"hgap": 5
+								"vgap": 5
 							} ) {
 								name: "panel5"
 								add( new FormComponent( "com.jformdesigner.designer.wrapper.VSpacer" ) {
@@ -199,7 +202,6 @@ new FormModel {
 									} )
 									add( new FormComponent( "javax.swing.JTextField" ) {
 										name: "nicknameTextField"
-										addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "nicknameTextFieldFocusLost", true ) )
 									} )
 									add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
 										name: "hSpacer6"
@@ -246,6 +248,38 @@ new FormModel {
 				} )
 			}, new FormLayoutConstraints( class java.lang.String ) {
 				"value": "Center"
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "panel1"
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+					name: "panel11"
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
+						"$columnSpecs": "center:0:1.0"
+						"$rowSpecs": "center:0:1.0"
+						"$hGap": 5
+						"$vGap": 5
+						"$alignTop": true
+						"$alignLeft": true
+					} ) {
+						name: "panel12"
+						"minimumSize": new java.awt.Dimension( 100, 40 )
+						"preferredSize": new java.awt.Dimension( 100, 40 )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "propertiesOkButton"
+							"text": "ok"
+							"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+							"maximumSize": new java.awt.Dimension( 35, 35 )
+							"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+							addEvent( new FormEvent( "java.awt.event.MouseListener", "mousePressed", "propertiesOkButtonMousePressed", true ) )
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) )
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "Center"
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "East"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "South"
 			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )

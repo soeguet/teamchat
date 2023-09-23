@@ -208,6 +208,36 @@ public class PropertiesPanelImpl extends PropertiesPanel {
     @Override
     protected void nicknameTextFieldFocusLost(FocusEvent e) {
 
+    }
+
+    @Override
+    protected void clientSelectorComboBoxPropertyChange(PropertyChangeEvent e) {
+
+    }
+
+    @Override
+    protected void clientSelectorComboBoxItemStateChanged(ItemEvent e) {
+
+    }
+
+    @Override
+    protected void ownUserNameTextFieldFocusLost(FocusEvent e) {
+
+    }
+
+    @Override
+    protected void propertiesOkButtonMousePressed(final MouseEvent e) {
+
+        String ownName = getOwnUserNameTextField().getText();
+
+        mainFrame.getChatClientPropertiesHashMap().get("own").setUsername(ownName);
+        mainFrame.setUsername(ownName);
+
+///
+        final String selectedUsername = selectedClientInComboBox.getUsername();
+        selectedClientInComboBox = mainFrame.getChatClientPropertiesHashMap().get(selectedUsername);
+
+///
 
         if (form_clientSelectorComboBox.getItemCount() == 0) {
 
@@ -219,35 +249,14 @@ public class PropertiesPanelImpl extends PropertiesPanel {
 
         mainFrame.getChatClientPropertiesHashMap().get(username).setNickname(nickname);
 
+
+
+        ///
+
+        mainFrame.getCustomProperties().save();
+
         new PopupPanelImpl(mainFrame,"nickname saved").implementPopup(1000);
-    }
-
-    @Override
-    protected void clientSelectorComboBoxPropertyChange(PropertyChangeEvent e) {
-
-    }
-
-    @Override
-    protected void clientSelectorComboBoxItemStateChanged(ItemEvent e) {
-
-        String selectedItem = (String) e.getItem();
-
-        selectedClientInComboBox = mainFrame.getChatClientPropertiesHashMap().get(selectedItem);
-
-        mainFrame.getCustomProperties().save();
-
         setUpComponentsOnPropertiesPanel(selectedClientInComboBox);
-    }
-
-    @Override
-    protected void ownUserNameTextFieldFocusLost(FocusEvent e) {
-
-        String username = getOwnUserNameTextField().getText();
-
-        mainFrame.getChatClientPropertiesHashMap().get("own").setUsername(username);
-        mainFrame.setUsername(username);
-
-        mainFrame.getCustomProperties().save();
     }
 
     @Override

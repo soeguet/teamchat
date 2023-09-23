@@ -209,24 +209,24 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
 
 //                        if (Desktop.isDesktopSupported()) {
 
-                            try {
+                        try {
 
-                                if (imgFile.exists()) {
+                            if (imgFile.exists()) {
 
-                                    Desktop.getDesktop().open(imgFile);
+                                Desktop.getDesktop().open(imgFile);
 
-                                } else {
+                            } else {
 
-                                    LOGGER.log(java.util.logging.Level.SEVERE, "Image file does not exist");
-                                    throw new IOException();
+                                LOGGER.log(java.util.logging.Level.SEVERE, "Image file does not exist");
+                                throw new IOException();
 
-                                }
-
-                            } catch (IOException ex) {
-
-                                LOGGER.log(java.util.logging.Level.SEVERE, "Error opening image", ex);
-                                throw new RuntimeException(ex);
                             }
+
+                        } catch (IOException ex) {
+
+                            LOGGER.log(java.util.logging.Level.SEVERE, "Error opening image", ex);
+                            throw new RuntimeException(ex);
+                        }
 
 //                        } else {
 //

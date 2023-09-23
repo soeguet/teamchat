@@ -23,9 +23,7 @@ import java.beans.PropertyChangeEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
@@ -171,19 +169,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      */
     private void connectToWebsocket() {
 
-        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+        websocketClient = new CustomWebsocketClient(serverUri, this);
+        websocketClient.connect();
 
-            executor.submit(() -> {
-
-                websocketClient = new CustomWebsocketClient(serverUri, this);
-                websocketClient.connect();
-
-            });
-
-        } catch (Exception e) {
-
-            throw new RejectedExecutionException(e.getMessage());
-        }
     }
 
     /**

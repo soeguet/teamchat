@@ -261,6 +261,24 @@ public abstract class PropertiesPanel extends JPanel {
 
 	protected abstract void ownBorderColorPanelMouseClicked(MouseEvent e);
 
+	public JPanel getPanel1() {
+		return form_panel1;
+	}
+
+	public JPanel getPanel11() {
+		return form_panel11;
+	}
+
+	public JPanel getPanel12() {
+		return form_panel12;
+	}
+
+	public JButton getPropertiesOkButton() {
+		return form_propertiesOkButton;
+	}
+
+	protected abstract void propertiesOkButtonMousePressed(MouseEvent e);
+
 	protected abstract void colorPickerPanelMouseClicked(MouseEvent e);
 
 	private void initComponents() {
@@ -320,6 +338,10 @@ public abstract class PropertiesPanel extends JPanel {
 		form_hSpacer8 = new JPanel(null);
 		form_scrollPane1 = new JScrollPane();
 		form_panel2 = new JPanel();
+		form_panel1 = new JPanel();
+		form_panel11 = new JPanel();
+		form_panel12 = new JPanel();
+		form_propertiesOkButton = new JButton();
 
 		//======== this ========
 		setBorder(new LineBorder(Color.black, 2, true));
@@ -374,7 +396,7 @@ public abstract class PropertiesPanel extends JPanel {
 			});
 			form_panel4.add(form_closePropertiesPanelButton, BorderLayout.EAST);
 		}
-		add(form_panel4, BorderLayout.PAGE_START);
+		add(form_panel4, BorderLayout.NORTH);
 
 		//======== form_formerMessagePanel ========
 		{
@@ -418,7 +440,7 @@ public abstract class PropertiesPanel extends JPanel {
 
 						//======== form_panel10 ========
 						{
-							form_panel10.setLayout(new GridLayout(5, 0));
+							form_panel10.setLayout(new GridLayout(5, 0, 5, 5));
 							form_panel10.add(form_vSpacer4);
 
 							//======== form_panel13 ========
@@ -430,14 +452,6 @@ public abstract class PropertiesPanel extends JPanel {
 								form_label6.setText("username:");
 								form_panel13.add(form_label6);
 								form_panel13.add(form_hSpacer20);
-
-								//---- form_ownUserNameTextField ----
-								form_ownUserNameTextField.addFocusListener(new FocusAdapter() {
-									@Override
-									public void focusLost(FocusEvent e) {
-										ownUserNameTextFieldFocusLost(e);
-									}
-								});
 								form_panel13.add(form_ownUserNameTextField);
 								form_panel13.add(form_hSpacer21);
 							}
@@ -485,7 +499,7 @@ public abstract class PropertiesPanel extends JPanel {
 
 						//======== form_panel5 ========
 						{
-							form_panel5.setLayout(new GridLayout(5, 0));
+							form_panel5.setLayout(new GridLayout(5, 0, 5, 5));
 							form_panel5.add(form_vSpacer3);
 
 							//======== form_panel6 ========
@@ -527,14 +541,6 @@ public abstract class PropertiesPanel extends JPanel {
 								form_label3.setText("nickname:");
 								form_panel8.add(form_label3);
 								form_panel8.add(form_hSpacer10);
-
-								//---- form_nicknameTextField ----
-								form_nicknameTextField.addFocusListener(new FocusAdapter() {
-									@Override
-									public void focusLost(FocusEvent e) {
-										nicknameTextFieldFocusLost(e);
-									}
-								});
 								form_panel8.add(form_nicknameTextField);
 								form_panel8.add(form_hSpacer6);
 							}
@@ -586,6 +592,45 @@ public abstract class PropertiesPanel extends JPanel {
 			form_formerMessagePanel.add(form_tabbedPane, BorderLayout.CENTER);
 		}
 		add(form_formerMessagePanel, BorderLayout.CENTER);
+
+		//======== form_panel1 ========
+		{
+			form_panel1.setLayout(new BorderLayout());
+
+			//======== form_panel11 ========
+			{
+				form_panel11.setLayout(new BorderLayout());
+
+				//======== form_panel12 ========
+				{
+					form_panel12.setMinimumSize(new Dimension(100, 40));
+					form_panel12.setPreferredSize(new Dimension(100, 40));
+					form_panel12.setLayout(new GridBagLayout());
+					((GridBagLayout)form_panel12.getLayout()).columnWidths = new int[] {0, 0};
+					((GridBagLayout)form_panel12.getLayout()).rowHeights = new int[] {0, 0};
+					((GridBagLayout)form_panel12.getLayout()).columnWeights = new double[] {1.0, 1.0E-4};
+					((GridBagLayout)form_panel12.getLayout()).rowWeights = new double[] {1.0, 1.0E-4};
+
+					//---- form_propertiesOkButton ----
+					form_propertiesOkButton.setText("ok");
+					form_propertiesOkButton.setMinimumSize(null);
+					form_propertiesOkButton.setMaximumSize(new Dimension(35, 35));
+					form_propertiesOkButton.setPreferredSize(null);
+					form_propertiesOkButton.addMouseListener(new MouseAdapter() {
+						@Override
+						public void mousePressed(MouseEvent e) {
+							propertiesOkButtonMousePressed(e);
+						}
+					});
+					form_panel12.add(form_propertiesOkButton, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+						GridBagConstraints.CENTER, GridBagConstraints.NONE,
+						new Insets(0, 0, 0, 0), 0, 0));
+				}
+				form_panel11.add(form_panel12, BorderLayout.CENTER);
+			}
+			form_panel1.add(form_panel11, BorderLayout.EAST);
+		}
+		add(form_panel1, BorderLayout.SOUTH);
 		// JFormDesigner - End of component initialization  //GEN-END:initComponents  @formatter:on
 	}
 
@@ -645,5 +690,9 @@ public abstract class PropertiesPanel extends JPanel {
 	protected JPanel form_hSpacer8;
 	protected JScrollPane form_scrollPane1;
 	protected JPanel form_panel2;
+	protected JPanel form_panel1;
+	protected JPanel form_panel11;
+	protected JPanel form_panel12;
+	protected JButton form_propertiesOkButton;
 	// JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }

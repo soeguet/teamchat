@@ -22,8 +22,6 @@ public class CustomWebsocketClient extends WebSocketClient {
         this.mainFrame = mainFrame;
     }
 
-
-
     @Override
     public void onWebsocketPong(WebSocket conn, Framedata f) {
 

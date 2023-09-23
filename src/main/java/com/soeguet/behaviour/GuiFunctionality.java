@@ -26,7 +26,6 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Random;
-import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 /**
@@ -299,12 +298,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
     @Override
     public void onMessage(String message) {
 
-
         switch (message) {
-            case "execute" -> {
-
-                writeGuiMessageToChatPanel();
-            }
             case "X" -> {
                 System.out.println("X");
             }
@@ -313,32 +307,14 @@ public class GuiFunctionality implements SocketToGuiInterface {
             }
             default -> {
 
-                try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+                mainFrame.getClientMessageQueue().add(message);
 
-                    executor.submit(() -> mainFrame.getClientMessageQueue().add(message));
+                if (!mainFrame.getIsProcessingClientMessages().get()) {
+
+                    writeGuiMessageToChatPanel();
                 }
             }
         }
-
-//        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-//
-//            executor.submit(() -> mainFrame.getClientMessageQueue().add(message));
-//            executor.submit(() -> {
-//
-//                if (!mainFrame.getIsProcessingClientMessages().get()) {
-//
-//                    writeGuiMessageToChatPanel();
-//                }
-//            });
-
-//        }
-
-//        if (!mainFrame.getIsProcessingClientMessages().get()) {
-//
-//                writeGuiMessageToChatPanel();
-//        }
-
-        System.out.println("mainFrame.getClientMessageQueue().size() = " + mainFrame.getClientMessageQueue().size());
     }
 
     private void writeGuiMessageToChatPanel() {
@@ -418,7 +394,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
         // ensure that the scrollpane can keep up with the additons!
         try {
 
-            Thread.sleep(300);
+            Thread.sleep(100);
 
         } catch (InterruptedException e) {
 

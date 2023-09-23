@@ -50,8 +50,8 @@ public class Main {
 
         }
 
-        String chatIp = System.getenv("chat_ip2");
-        String chatPort = System.getenv("chat_port2");
+        String chatIp = System.getenv("chat_ip");
+        String chatPort = System.getenv("chat_port");
 
         return new EnvVariables(username, chatIp, chatPort);
     }
