@@ -177,4 +177,5 @@ public interface MainFrameInterface {
      * @return the flag indicating whether the chat client is currently processing client messages
      */
     AtomicBoolean getIsProcessingClientMessages();
+
 }

@@ -189,9 +189,6 @@ public abstract class PropertiesPanel extends JPanel {
 
 	protected abstract void nicknameTextFieldFocusLost(FocusEvent e);
 
-	protected abstract void clientSelectorComboBoxPropertyChange(PropertyChangeEvent e);
-
-	protected abstract void clientSelectorComboBoxItemStateChanged(ItemEvent e);
 
 	public JScrollPane getScrollPane2() {
 		return form_scrollPane2;
@@ -278,6 +275,8 @@ public abstract class PropertiesPanel extends JPanel {
 	}
 
 	protected abstract void propertiesOkButtonMousePressed(MouseEvent e);
+
+	protected abstract void clientSelectorComboBoxItemStateChanged(ItemEvent e);
 
 	protected abstract void colorPickerPanelMouseClicked(MouseEvent e);
 
@@ -508,7 +507,6 @@ public abstract class PropertiesPanel extends JPanel {
 								form_panel6.add(form_hSpacer12);
 
 								//---- form_clientSelectorComboBox ----
-								form_clientSelectorComboBox.addPropertyChangeListener(e -> clientSelectorComboBoxPropertyChange(e));
 								form_clientSelectorComboBox.addItemListener(e -> clientSelectorComboBoxItemStateChanged(e));
 								form_panel6.add(form_clientSelectorComboBox);
 								form_panel6.add(form_hSpacer13);

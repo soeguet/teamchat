@@ -51,6 +51,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
     private AtomicBoolean isProcessingClientMessages = new AtomicBoolean(false);
     private EnvVariables envVariables;
+    private int notification;
 
     public ChatMainFrameImpl(final EnvVariables envVariables) {
 
@@ -593,6 +594,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         System.out.println("connectionDetailsButtonMouseClicked");
         serverInformationOptionPane();
     }
+
+
 
     public AtomicBoolean getIsProcessingClientMessages() {
 

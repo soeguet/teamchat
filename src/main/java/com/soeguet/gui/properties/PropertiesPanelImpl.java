@@ -211,13 +211,16 @@ public class PropertiesPanelImpl extends PropertiesPanel {
     }
 
     @Override
-    protected void clientSelectorComboBoxPropertyChange(PropertyChangeEvent e) {
-
-    }
-
-    @Override
     protected void clientSelectorComboBoxItemStateChanged(ItemEvent e) {
 
+        System.out.println("clientSelectorComboBoxItemStateChanged");
+
+        if (e.getStateChange() == ItemEvent.SELECTED) {
+
+            String selectedItem = (String) getClientSelectorComboBox().getSelectedItem();
+            selectedClientInComboBox = mainFrame.getChatClientPropertiesHashMap().get(selectedItem);
+            setUpComponentsOnPropertiesPanel(selectedClientInComboBox);
+        }
     }
 
     @Override
@@ -228,6 +231,7 @@ public class PropertiesPanelImpl extends PropertiesPanel {
     @Override
     protected void propertiesOkButtonMousePressed(final MouseEvent e) {
 
+        //TODO clean up this part
         String ownName = getOwnUserNameTextField().getText();
 
         mainFrame.getChatClientPropertiesHashMap().get("own").setUsername(ownName);

@@ -35,6 +35,29 @@ new FormModel {
 							addEvent( new FormEvent( "java.awt.event.MouseListener", "mousePressed", "propertiesMenuItemMousePressed", true ) )
 						} )
 						add( new FormComponent( "javax.swing.JPopupMenu$Separator" ) {
+							name: "separator3"
+						} )
+						add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
+							name: "menu1"
+							"text": "text"
+							add( new FormComponent( "javax.swing.JCheckBoxMenuItem" ) {
+								name: "allNotificationsMenuItem"
+								"text": "ALL NOTIFICATIONS OFF"
+							} )
+							add( new FormComponent( "javax.swing.JPopupMenu$Separator" ) {
+								name: "separator4"
+							} )
+							add( new FormComponent( "javax.swing.JCheckBoxMenuItem" ) {
+								name: "internalNotificationsMenuItem"
+								"text": "internal - on"
+								"selected": true
+							} )
+							add( new FormComponent( "javax.swing.JCheckBoxMenuItem" ) {
+								name: "externalNotificationsMenuItem"
+								"text": "external - on"
+							} )
+						} )
+						add( new FormComponent( "javax.swing.JPopupMenu$Separator" ) {
 							name: "separator1"
 						} )
 						add( new FormComponent( "javax.swing.JMenuItem" ) {

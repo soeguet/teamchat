@@ -1,0 +1,66 @@
+JFDML JFormDesigner: "8.1.1.0.298" Java: "17.0.3" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		auxiliary() {
+			"JavaCodeGenerator.defaultHandlerModifiers": 1028
+			"JavaCodeGenerator.memberVariablePrefix": "form_"
+			"JavaCodeGenerator.defaultVariableGetter": true
+			"JavaCodeGenerator.defaultVariableModifiers": 4
+			"JavaCodeGenerator.memberVariableThis": true
+		}
+		add( new FormWindow( "javax.swing.JDialog", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			"defaultCloseOperation": 2
+			"alwaysOnTop": true
+			"autoRequestFocus": false
+			"background": sfield com.jformdesigner.model.FormObject NULL_VALUE
+			"type": enum java.awt.Window$Type POPUP
+			addEvent( new FormEvent( "java.awt.event.WindowFocusListener", "windowGainedFocus", "thisWindowGainedFocus", true ) )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) {
+				"hgap": 5
+				"vgap": 5
+			} ) {
+				name: "panel1"
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) {
+					"hgap": 5
+					"vgap": 5
+				} ) {
+					name: "notificationMainPanel"
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+					name: "panel4"
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+						"$columnConstraints": "[center]"
+						"$rowConstraints": "[center]"
+						"$layoutConstraints": "fill,insets 0,hidemode 3"
+					} ) {
+						name: "panel5"
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "notificationReplySendButton"
+							"text": ">"
+							"preferredSize": new java.awt.Dimension( 40, 40 )
+							"minimumSize": new java.awt.Dimension( 40, 40 )
+							"maximumSize": new java.awt.Dimension( 40, 40 )
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "notificationReplySendActionPerformed", true ) )
+						}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+							"value": "cell 0 0,align center center,grow 0 0"
+						} )
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "Center"
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "East"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 110 )
+		} )
+	}
+}

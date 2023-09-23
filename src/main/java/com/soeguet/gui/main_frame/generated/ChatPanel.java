@@ -335,6 +335,22 @@ public abstract class ChatPanel extends JFrame {
 		return this.form_connectionDetailsButton;
 	}
 
+	public JMenu getMenu1() {
+		return this.form_menu1;
+	}
+
+	public JCheckBoxMenuItem getAllNotificationsMenuItem() {
+		return this.form_allNotificationsMenuItem;
+	}
+
+	public JCheckBoxMenuItem getInternalNotificationsMenuItem() {
+		return this.form_internalNotificationsMenuItem;
+	}
+
+	public JCheckBoxMenuItem getExternalNotificationsMenuItem() {
+		return this.form_externalNotificationsMenuItem;
+	}
+
 	protected abstract void connectionDetailsButtonMousePressed(MouseEvent e);
 
     private void initComponents() {
@@ -344,6 +360,10 @@ public abstract class ChatPanel extends JFrame {
 		this.form_menuBar1 = new JMenuBar();
 		this.form_fileMenu = new JMenu();
 		this.form_propertiesMenuItem = new JMenuItem();
+		this.form_menu1 = new JMenu();
+		this.form_allNotificationsMenuItem = new JCheckBoxMenuItem();
+		this.form_internalNotificationsMenuItem = new JCheckBoxMenuItem();
+		this.form_externalNotificationsMenuItem = new JCheckBoxMenuItem();
 		this.form_connectionDetailsButton = new JMenuItem();
 		this.form_resetConnectionMenuItem = new JMenuItem();
 		this.form_exitMenuItem = new JMenuItem();
@@ -415,6 +435,27 @@ public abstract class ChatPanel extends JFrame {
 						}
 					});
 					this.form_fileMenu.add(this.form_propertiesMenuItem);
+					this.form_fileMenu.addSeparator();
+
+					//======== form_menu1 ========
+					{
+						this.form_menu1.setText("text");
+
+						//---- form_allNotificationsMenuItem ----
+						this.form_allNotificationsMenuItem.setText("ALL NOTIFICATIONS OFF");
+						this.form_menu1.add(this.form_allNotificationsMenuItem);
+						this.form_menu1.addSeparator();
+
+						//---- form_internalNotificationsMenuItem ----
+						this.form_internalNotificationsMenuItem.setText("internal - on");
+						this.form_internalNotificationsMenuItem.setSelected(true);
+						this.form_menu1.add(this.form_internalNotificationsMenuItem);
+
+						//---- form_externalNotificationsMenuItem ----
+						this.form_externalNotificationsMenuItem.setText("external - on");
+						this.form_menu1.add(this.form_externalNotificationsMenuItem);
+					}
+					this.form_fileMenu.add(this.form_menu1);
 					this.form_fileMenu.addSeparator();
 
 					//---- form_connectionDetailsButton ----
@@ -683,6 +724,10 @@ public abstract class ChatPanel extends JFrame {
 	protected JMenuBar form_menuBar1;
 	protected JMenu form_fileMenu;
 	protected JMenuItem form_propertiesMenuItem;
+	protected JMenu form_menu1;
+	protected JCheckBoxMenuItem form_allNotificationsMenuItem;
+	protected JCheckBoxMenuItem form_internalNotificationsMenuItem;
+	protected JCheckBoxMenuItem form_externalNotificationsMenuItem;
 	protected JMenuItem form_connectionDetailsButton;
 	protected JMenuItem form_resetConnectionMenuItem;
 	protected JMenuItem form_exitMenuItem;

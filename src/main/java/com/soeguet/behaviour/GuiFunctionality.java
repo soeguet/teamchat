@@ -7,6 +7,7 @@ import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.newcomment.left.PanelLeftImpl;
 import com.soeguet.gui.newcomment.right.PanelRightImpl;
+import com.soeguet.gui.notification_panel.NotificationImpl;
 import com.soeguet.model.MessageTypes;
 import com.soeguet.model.PanelTypes;
 import com.soeguet.model.jackson.BaseModel;
@@ -351,6 +352,8 @@ public class GuiFunctionality implements SocketToGuiInterface {
                 panelLeft.setBorderColor(borderColor);
                 displayNicknameInsteadOfUsername(nickname, panelLeft);
                 addMessagePanelToMainChatPanel(mainFrame, panelLeft, "leading");
+
+                new NotificationImpl(mainFrame).setNotificationText(messageModel.getSender() + " sent a message");
             }
 
         }
@@ -377,6 +380,9 @@ public class GuiFunctionality implements SocketToGuiInterface {
                 panelLeft.setBorderColor(borderColor);
                 displayNicknameInsteadOfUsername(nickname, panelLeft);
                 addMessagePanelToMainChatPanel(mainFrame, panelLeft, "leading");
+
+                new NotificationImpl( mainFrame).setNotificationText(messageModel.getSender() + " sent a message");
+
             }
         }
 
