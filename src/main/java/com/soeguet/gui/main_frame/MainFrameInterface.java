@@ -2,12 +2,14 @@ package com.soeguet.gui.main_frame;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.behaviour.GuiFunctionality;
+import com.soeguet.gui.notification_panel.NotificationImpl;
 import com.soeguet.properties.CustomProperties;
 import com.soeguet.properties.CustomUserProperties;
 import com.soeguet.socket_client.CustomWebsocketClient;
 
 import javax.swing.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -177,5 +179,10 @@ public interface MainFrameInterface {
      * @return the flag indicating whether the chat client is currently processing client messages
      */
     AtomicBoolean getIsProcessingClientMessages();
+    void setNotificationPositionY(int notificationPositionY);
+    int getNotificationPositionY();
 
+    List<NotificationImpl> getNotificationList();
+
+    void triggerRelocationActiveNotification(int moveUpY);
 }

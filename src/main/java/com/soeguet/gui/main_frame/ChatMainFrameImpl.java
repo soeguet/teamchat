@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.behaviour.GuiFunctionality;
 import com.soeguet.gui.image_panel.ImagePanelImpl;
 import com.soeguet.gui.main_frame.generated.ChatPanel;
+import com.soeguet.gui.notification_panel.NotificationImpl;
 import com.soeguet.gui.properties.PropertiesPanelImpl;
 import com.soeguet.model.EnvVariables;
 import com.soeguet.properties.CustomProperties;
@@ -22,7 +23,9 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
@@ -51,7 +54,36 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
     private AtomicBoolean isProcessingClientMessages = new AtomicBoolean(false);
     private EnvVariables envVariables;
-    private int notification;
+    private int notificationPositionY = 0;
+
+    private final List<NotificationImpl> notificationList = new ArrayList<>();
+
+    public List<NotificationImpl> getNotificationList() {
+
+        return notificationList;
+    }
+
+    public void triggerRelocationActiveNotification(int moveUpY) {
+
+        System.out.println("triggerRelocationActiveNotification");
+
+        notificationList.forEach(notification -> {
+
+            System.out.println("notification: asdsadsadsad" );
+
+            notification.relocateNotification(moveUpY);
+        });
+    }
+
+    public int getNotificationPositionY() {
+
+        return notificationPositionY;
+    }
+
+    public void setNotificationPositionY(int notificationPositionY) {
+
+        this.notificationPositionY = notificationPositionY;
+    }
 
     public ChatMainFrameImpl(final EnvVariables envVariables) {
 
