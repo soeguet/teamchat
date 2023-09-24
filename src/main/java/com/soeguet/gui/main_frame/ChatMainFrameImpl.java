@@ -43,6 +43,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     private final LinkedBlockingDeque<String> clientMessageQueue;
     private final ObjectMapper objectMapper;
     private final CustomProperties customProperties;
+    private final List<NotificationImpl> notificationList = new ArrayList<>();
     private GuiFunctionality guiFunctionality;
     private URI serverUri;
     private int JSCROLLPANE_MARGIN_RIGHT_BORDER;
@@ -52,39 +53,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     private CustomWebsocketClient websocketClient;
     private String username;
     private JPanel messagePanel;
-
     private AtomicBoolean isProcessingClientMessages = new AtomicBoolean(false);
     private EnvVariables envVariables;
-    private int notificationPositionY = 0;
-
-    private final List<NotificationImpl> notificationList = new ArrayList<>();
-
-    public List<NotificationImpl> getNotificationList() {
-
-        return notificationList;
-    }
-
-    public void triggerRelocationActiveNotification(int moveUpY) {
-
-        final AtomicInteger position = new AtomicInteger();
-
-        notificationList.forEach(notification -> {
-
-            position.set(notification.relocateNotification(moveUpY));
-        });
-
-        setNotificationPositionY(position.get());
-    }
-
-    public int getNotificationPositionY() {
-
-        return notificationPositionY;
-    }
-
-    public void setNotificationPositionY(int notificationPositionY) {
-
-        this.notificationPositionY = notificationPositionY;
-    }
+    private volatile int notificationPositionY = 0;
 
     public ChatMainFrameImpl(final EnvVariables envVariables) {
 
@@ -123,6 +94,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             JSCROLLPANE_MARGIN_BOTTOM_BORDER = 56;
             JSCROLLPANE_MARGIN_RIGHT_BORDER = 4;
         }
+    }    public List<NotificationImpl> getNotificationList() {
+
+        return notificationList;
     }
 
     private void initEmojiHandlerAndList() {
@@ -194,6 +168,16 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
                 throw new RuntimeException(e);
             }
         }
+    }    public void triggerRelocationActiveNotification(int moveUpY) {
+
+        final AtomicInteger position = new AtomicInteger();
+
+        notificationList.forEach(notification -> {
+
+            position.set(notification.relocateNotification(moveUpY));
+        });
+
+        setNotificationPositionY(position.get());
     }
 
     /**
@@ -236,6 +220,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     public EnvVariables getEnvVariables() {
 
         return envVariables;
+    }    public synchronized int getNotificationPositionY() {
+
+        return notificationPositionY;
     }
 
     public void setEnvVariables(final EnvVariables envVariables) {
@@ -270,6 +257,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             this.revalidate();
             this.repaint();
         });
+    }    public synchronized void setNotificationPositionY(int notificationPositionY) {
+
+        this.notificationPositionY = notificationPositionY;
     }
 
     /**
@@ -627,6 +617,12 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         System.out.println("connectionDetailsButtonMouseClicked");
         serverInformationOptionPane();
     }
+
+
+
+
+
+
 
 
 

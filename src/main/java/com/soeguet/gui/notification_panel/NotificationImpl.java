@@ -5,6 +5,7 @@ import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.notification_panel.generated.Notification;
 import com.soeguet.model.jackson.BaseModel;
+import com.soeguet.util.EmojiHandler;
 
 import javax.swing.*;
 import java.awt.*;
@@ -91,9 +92,9 @@ public class NotificationImpl extends Notification {
         return locationY + MARGIN_TOP + getHeight();
     }
 
-    public void setNotificationText(String text, String message) {
+    public void setNotificationText() {
 
-        addMessageToNotificationPanel(text, message);
+        addMessageToNotificationPanel();
         final int screenResolutionWidth = determineScreenWidth();
 
         int newYPosition = mainFrame.getNotificationPositionY();
@@ -105,12 +106,13 @@ public class NotificationImpl extends Notification {
         addNotificationTimer();
     }
 
-    private void addMessageToNotificationPanel(String sender, String message) {
+    private void addMessageToNotificationPanel() {
 
-        form_nameLabel.setText(sender);
-        form_notificationMainMessage.setText(message);
+        form_nameLabel.setText(baseModel.getSender() + "sent a message");
 
-        final int messageLength = message.length();
+        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(form_notificationMainMessage, baseModel.getMessage());
+
+        final int messageLength = baseModel.getMessage().length();
 
         if (messageLength < 30) {
 
@@ -135,8 +137,16 @@ public class NotificationImpl extends Notification {
 
     private void modifyNotificationPanel(final int screenResolutionWidth, final int newYPosition) {
 
+        //prevent notifications from spamming the whole screen height
+        if (newYPosition > 500) {
+
+            SwingUtilities.invokeLater(()->mainFrame.getNotificationList().getFirst().removeDialogAndReorderMessages());
+
+        }
+
         int MARGIN_RIGHT = 10;
         setBounds(screenResolutionWidth - getWidth() - MARGIN_RIGHT, newYPosition + MARGIN_TOP, getWidth(), getHeight());
+
         setAlwaysOnTop(true);
         setVisible(true);
     }
@@ -151,22 +161,32 @@ public class NotificationImpl extends Notification {
 
         timer = new Timer(5000, e -> {
 
-            mainFrame.getNotificationList().remove(this);
-            final int notificationTextHeight = getHeight();
-            setVisible(false);
-            dispose();
-
-            if (mainFrame.getNotificationList().isEmpty()) {
-
-                mainFrame.setNotificationPositionY(0);
-                return;
-            }
-
-            mainFrame.triggerRelocationActiveNotification(notificationTextHeight);
+            removeDialogAndReorderMessages();
         });
         timer.setRepeats(false);
         timer.start();
 
+    }
+
+    private void removeDialogAndReorderMessages() {
+
+        if (timer != null && timer.isRunning()) {
+
+            timer.stop();
+        }
+
+        mainFrame.getNotificationList().remove(this);
+        final int notificationTextHeight = getHeight();
+        setVisible(false);
+        dispose();
+
+        if (mainFrame.getNotificationList().isEmpty()) {
+
+            mainFrame.setNotificationPositionY(0);
+            return;
+        }
+
+        mainFrame.triggerRelocationActiveNotification(notificationTextHeight);
     }
 
     private void adjustNotificationPanelHeight(final int factor) {

@@ -343,8 +343,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
                 displayNicknameInsteadOfUsername(nickname, panelRight);
                 addMessagePanelToMainChatPanel(mainFrame, panelRight, "trailing");
 
-                new NotificationImpl(mainFrame, messageModel).setNotificationText(messageModel.getSender() + " sent a message", messageModel.getMessage());
-
             } else {
 
                 Color borderColor = determineBorderColor(mainFrame, messageModel.getSender());
@@ -355,7 +353,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
                 displayNicknameInsteadOfUsername(nickname, panelLeft);
                 addMessagePanelToMainChatPanel(mainFrame, panelLeft, "leading");
 
-//                new NotificationImpl(mainFrame).setNotificationText(messageModel.getSender() + " sent a message", messageModel.getMessage());
+                new NotificationImpl(mainFrame, messageModel).setNotificationText();
             }
 
         }
@@ -383,7 +381,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
                 displayNicknameInsteadOfUsername(nickname, panelLeft);
                 addMessagePanelToMainChatPanel(mainFrame, panelLeft, "leading");
 
-//                new NotificationImpl(mainFrame).setNotificationText(messageModel.getSender() + " sent a message", messageModel.getMessage());
+                new NotificationImpl(mainFrame, messageModel).setNotificationText();
 
             }
         }
@@ -402,7 +400,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
         // ensure that the scrollpane can keep up with the additons!
         try {
 
-            Thread.sleep(100);
+            Thread.sleep(200);
 
         } catch (InterruptedException e) {
 
