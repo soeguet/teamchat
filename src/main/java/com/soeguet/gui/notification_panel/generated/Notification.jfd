@@ -17,51 +17,141 @@ new FormModel {
 			"autoRequestFocus": false
 			"background": sfield com.jformdesigner.model.FormObject NULL_VALUE
 			"type": enum java.awt.Window$Type POPUP
+			"minimumSize": new java.awt.Dimension( 400, 170 )
+			"preferredSize": new java.awt.Dimension( 400, 170 )
 			addEvent( new FormEvent( "java.awt.event.WindowFocusListener", "windowGainedFocus", "thisWindowGainedFocus", true ) )
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) {
 				"hgap": 5
 				"vgap": 5
 			} ) {
 				name: "notificationAllPanel"
+				"preferredSize": new java.awt.Dimension( 400, 170 )
+				"minimumSize": new java.awt.Dimension( 400, 170 )
 				addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "notificationAllPanelMouseClicked", true ) )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) {
 					"hgap": 5
 					"vgap": 5
 				} ) {
-					name: "notificationMainPanel"
+					name: "panel9"
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "nameLabel"
+						"text": "sender"
+						"focusable": false
+						"requestFocusEnabled": false
+						"verifyInputWhenFocusTarget": false
+						"foreground": new java.awt.Color( 0, 0, 0, 255 )
+						"horizontalAlignment": 0
+						"alignmentX": 0.5f
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "Center"
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "closeAllNotificationsButton"
+						"text": "x"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "closeAllNotificationsActionPerformed", true ) )
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "East"
+					} )
 				}, new FormLayoutConstraints( class java.lang.String ) {
-					"value": "Center"
+					"value": "North"
 				} )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
-					name: "panel4"
-					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
-						"$columnConstraints": "[center]"
-						"$rowConstraints": "[center]"
-						"$layoutConstraints": "fill,insets 0,hidemode 3"
+					name: "notificationMainPanel"
+					"minimumSize": new java.awt.Dimension( 400, 170 )
+					"preferredSize": new java.awt.Dimension( 400, 170 )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) {
+						"hgap": 5
+						"vgap": 5
 					} ) {
-						name: "panel5"
-						add( new FormComponent( "javax.swing.JButton" ) {
-							name: "notificationReplySendButton"
-							"text": ">"
-							"preferredSize": new java.awt.Dimension( 40, 40 )
-							"minimumSize": new java.awt.Dimension( 40, 40 )
-							"maximumSize": new java.awt.Dimension( 40, 40 )
-							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "notificationReplySendActionPerformed", true ) )
-						}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-							"value": "cell 0 0,align center center,grow 0 0"
+						name: "panel7"
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+							name: "panel10"
+							add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+								name: "scrollPane1"
+								"horizontalScrollBarPolicy": 31
+								"verticalScrollBarPolicy": 22
+								"preferredSize": new java.awt.Dimension( 74, 72 )
+								"minimumSize": new java.awt.Dimension( 16, 72 )
+								add( new FormComponent( "javax.swing.JTextPane" ) {
+									name: "notificationMainMessage"
+									"text": "text"
+									"minimumSize": new java.awt.Dimension( 62, 72 )
+									"preferredSize": new java.awt.Dimension( 62, 72 )
+								} )
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "Center"
+							} )
+							add( new FormComponent( "com.jformdesigner.designer.wrapper.VSpacer" ) {
+								name: "vSpacer1"
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "South"
+							} )
+							add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
+								name: "hSpacer1"
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "West"
+							} )
+							add( new FormComponent( "com.jformdesigner.designer.wrapper.VSpacer" ) {
+								name: "vSpacer2"
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "North"
+							} )
+							add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
+								name: "hSpacer2"
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "East"
+							} )
+						}, new FormLayoutConstraints( class java.lang.String ) {
+							"value": "Center"
+						} )
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+							name: "panel8"
+							add( new FormComponent( "javax.swing.JButton" ) {
+								name: "notificationReplySendButton"
+								"text": ">"
+								"preferredSize": new java.awt.Dimension( 30, 30 )
+								"minimumSize": new java.awt.Dimension( 30, 30 )
+								"maximumSize": new java.awt.Dimension( 30, 30 )
+								"toolTipText": "reply"
+								addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "notificationReplySendActionPerformed", true ) )
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "Center"
+							} )
+							add( new FormComponent( "com.jformdesigner.designer.wrapper.VSpacer" ) {
+								name: "vSpacer3"
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "First"
+							} )
+							add( new FormComponent( "com.jformdesigner.designer.wrapper.VSpacer" ) {
+								name: "vSpacer4"
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "Last"
+							} )
+							add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
+								name: "hSpacer3"
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "After"
+							} )
+							add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
+								name: "hSpacer4"
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "Before"
+							} )
+						}, new FormLayoutConstraints( class java.lang.String ) {
+							"value": "East"
 						} )
 					}, new FormLayoutConstraints( class java.lang.String ) {
 						"value": "Center"
 					} )
 				}, new FormLayoutConstraints( class java.lang.String ) {
-					"value": "East"
+					"value": "Center"
 				} )
 			}, new FormLayoutConstraints( class java.lang.String ) {
 				"value": "Center"
 			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )
-			"size": new java.awt.Dimension( 400, 110 )
+			"size": new java.awt.Dimension( 400, 170 )
 		} )
 	}
 }

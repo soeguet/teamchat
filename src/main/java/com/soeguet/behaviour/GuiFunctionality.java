@@ -343,6 +343,8 @@ public class GuiFunctionality implements SocketToGuiInterface {
                 displayNicknameInsteadOfUsername(nickname, panelRight);
                 addMessagePanelToMainChatPanel(mainFrame, panelRight, "trailing");
 
+                new NotificationImpl(mainFrame, messageModel).setNotificationText(messageModel.getSender() + " sent a message", messageModel.getMessage());
+
             } else {
 
                 Color borderColor = determineBorderColor(mainFrame, messageModel.getSender());
@@ -353,7 +355,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
                 displayNicknameInsteadOfUsername(nickname, panelLeft);
                 addMessagePanelToMainChatPanel(mainFrame, panelLeft, "leading");
 
-                new NotificationImpl(mainFrame).setNotificationText(messageModel.getSender() + " sent a message");
+//                new NotificationImpl(mainFrame).setNotificationText(messageModel.getSender() + " sent a message", messageModel.getMessage());
             }
 
         }
@@ -381,7 +383,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
                 displayNicknameInsteadOfUsername(nickname, panelLeft);
                 addMessagePanelToMainChatPanel(mainFrame, panelLeft, "leading");
 
-                new NotificationImpl( mainFrame).setNotificationText(messageModel.getSender() + " sent a message");
+//                new NotificationImpl(mainFrame).setNotificationText(messageModel.getSender() + " sent a message", messageModel.getMessage());
 
             }
         }

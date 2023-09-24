@@ -213,8 +213,6 @@ public class PropertiesPanelImpl extends PropertiesPanel {
     @Override
     protected void clientSelectorComboBoxItemStateChanged(ItemEvent e) {
 
-        System.out.println("clientSelectorComboBoxItemStateChanged");
-
         if (e.getStateChange() == ItemEvent.SELECTED) {
 
             String selectedItem = (String) getClientSelectorComboBox().getSelectedItem();

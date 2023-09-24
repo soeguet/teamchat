@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
 /**
@@ -65,14 +66,14 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
     public void triggerRelocationActiveNotification(int moveUpY) {
 
-        System.out.println("triggerRelocationActiveNotification");
+        final AtomicInteger position = new AtomicInteger();
 
         notificationList.forEach(notification -> {
 
-            System.out.println("notification: asdsadsadsad" );
-
-            notification.relocateNotification(moveUpY);
+            position.set(notification.relocateNotification(moveUpY));
         });
+
+        setNotificationPositionY(position.get());
     }
 
     public int getNotificationPositionY() {
