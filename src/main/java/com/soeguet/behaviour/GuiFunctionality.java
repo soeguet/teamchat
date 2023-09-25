@@ -62,12 +62,12 @@ public class GuiFunctionality implements SocketToGuiInterface {
      */
     private void fixScrollPaneScrollSpeed() {
 
-        mainFrame.getMainTextBackgroundScrollPane().getVerticalScrollBar().setUnitIncrement(25);
+        this.mainFrame.getMainTextBackgroundScrollPane().getVerticalScrollBar().setUnitIncrement(25);
     }
 
     private void addDocumentListenerToTextPane() {
 
-        mainFrame.getTextEditorPane().getDocument().addDocumentListener(new DocumentListener() {
+        this.mainFrame.getTextEditorPane().getDocument().addDocumentListener(new DocumentListener() {
 
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -77,10 +77,13 @@ public class GuiFunctionality implements SocketToGuiInterface {
                 Document doc = e.getDocument();
 
                 try {
+
                     String insertedText = doc.getText(offset, length);
                     //TODO clickable links
+
                 } catch (BadLocationException ex) {
-                    ex.printStackTrace();
+
+                    LOGGER.log(java.util.logging.Level.SEVERE, "Error inserting text", ex);
                 }
             }
 
@@ -107,9 +110,9 @@ public class GuiFunctionality implements SocketToGuiInterface {
     private void overrideTransferHandlerOfTextPane() {
 
         //preserve the original transfer handler, otherwise clucky behavior
-        TransferHandler originalHandler = mainFrame.getTextEditorPane().getTransferHandler();
+        TransferHandler originalHandler = this.mainFrame.getTextEditorPane().getTransferHandler();
 
-        mainFrame.getTextEditorPane().setTransferHandler(new TransferHandler() {
+        this.mainFrame.getTextEditorPane().setTransferHandler(new TransferHandler() {
 
             @Override
             public boolean importData(JComponent comp, Transferable t) {
@@ -181,96 +184,47 @@ public class GuiFunctionality implements SocketToGuiInterface {
         }
     }
 
-    private void addMessagePanelToMainChatPanel(MainFrameInterface mainFrame, CommentInterface message, String alignment) {
+    private void addMessagePanelToMainChatPanel(CommentInterface message, String alignment) {
 
-        mainFrame.getMainTextPanel().add((JPanel) message, "w 70%, " + alignment + ", wrap");
+        this.mainFrame.getMainTextPanel().add((JPanel) message, "w 70%, " + alignment + ", wrap");
     }
 
-    /**
-     Clear the text pane and send the message to the socket.
-
-     This method retrieves the main frame instance and performs the following steps:
-     1. Retrieves the text input from the GUI using the {@link #getTextFromInput(MainFrameInterface)} method.
-     2. Clears the text pane using the {@link #clearTextPane(MainFrameInterface)} method.
-     3. Converts the user text input to JSON format using the {@link #convertUserTextToJSON(String, MainFrameInterface)} method.
-     4. Sends the message to the socket using the {@link #sendMessageToSocket(String, MainFrameInterface)} method.
-
-     @throws AssertionError if the main frame instance is null
-     @see #getTextFromInput(MainFrameInterface)
-     @see #clearTextPane(MainFrameInterface)
-     @see #convertUserTextToJSON(String, MainFrameInterface)
-     @see #sendMessageToSocket(String, MainFrameInterface)
-     */
     public void clearTextPaneAndSendMessageToSocket() {
 
-        String userTextInput = getTextFromInput(mainFrame);
-        clearTextPane(mainFrame);
-        String messageString = convertUserTextToJSON(userTextInput, mainFrame);
-        sendMessageToSocket(messageString, mainFrame);
+        String userTextInput = getTextFromInput();
+        clearTextPane();
+        String messageString = convertUserTextToJSON(userTextInput);
+        sendMessageToSocket(messageString);
 
     }
 
-    /**
-     Retrieves the text from the input in the graphical user interface.
+    private String getTextFromInput() {
 
-     @param gui The instance of {@link MainFrameInterface} representing the graphical user interface.
-
-     @return The text from the input in the graphical user interface.
-     */
-    private String getTextFromInput(MainFrameInterface gui) {
-
-        return gui.getTextEditorPane().getText();
+        return this.mainFrame.getTextEditorPane().getText();
     }
 
-    /**
-     Retrieves the text from the input in the graphical user interface.
 
-     @param gui The instance of {@link MainFrameInterface} representing the graphical user interface.
-     */
-    private void clearTextPane(MainFrameInterface gui) {
+    private void clearTextPane() {
 
-        gui.getTextEditorPane().setText("");
+        this.mainFrame.getTextEditorPane().setText("");
     }
 
-    /**
-     Converts user input text to JSON format.
 
-     @param userTextInput the text input provided by the user
-     @param gui           The instance of {@link MainFrameInterface} representing the graphical user interface.
+    private String convertUserTextToJSON(String userTextInput) {
 
-     @return The converted JSON string.
-     */
-    private String convertUserTextToJSON(String userTextInput, MainFrameInterface gui) {
-
-        return convertToJSON(textToMessageModel(userTextInput), gui);
+        return convertToJSON(textToMessageModel(userTextInput));
     }
 
-    /**
-     Sends a message to the socket.
+    private void sendMessageToSocket(String messageString) {
 
-     @param messageString The message to be sent.
-     @param gui           The interface for accessing the main GUI elements.
-     */
-    private void sendMessageToSocket(String messageString, MainFrameInterface gui) {
-
-        gui.getWebsocketClient().send(messageString);
+        this.mainFrame.getWebsocketClient().send(messageString);
     }
 
-    /**
-     Converts the given {@link BaseModel} object to a JSON string representation.
-
-     @param messageModel The {@link BaseModel} object to be converted.
-     @param gui          The {@link MainFrameInterface} object used to access the ObjectMapper for JSON conversion.
-
-     @return The JSON string representation of the {@link BaseModel} object.
-
-     @throws RuntimeException if there is an error during the JSON conversion process.
-     */
-    private String convertToJSON(BaseModel messageModel, MainFrameInterface gui) {
+    private String convertToJSON(BaseModel messageModel) {
 
         try {
 
-            return gui.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(messageModel);
+            return this.mainFrame.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(messageModel);
 
         } catch (JsonProcessingException e) {
 
@@ -301,15 +255,9 @@ public class GuiFunctionality implements SocketToGuiInterface {
     public void onMessage(String message) {
 
         switch (message) {
-            case "X" -> {
-                System.out.println("X");
-            }
-            case "__startup__end__" -> {
-                mainFrame.setStartUp(false);
-            }
-            case "welcome to the server!" -> {
-                System.out.println("welcome to the server!");
-            }
+            case "X" -> System.out.println("X");
+            case "__startup__end__" -> mainFrame.setStartUp(false);
+            case "welcome to the server!" -> System.out.println("welcome to the server!");
             default -> {
 
                 mainFrame.getClientMessageQueue().add(message);
@@ -333,13 +281,13 @@ public class GuiFunctionality implements SocketToGuiInterface {
         BaseModel messageModel = getMessageModel(message);
 
         checkIfMessageSenderAlreadyRegisteredInLocalCache(mainFrame.getChatClientPropertiesHashMap(), messageModel.getSender());
-        String nickname = checkForNickname(mainFrame, messageModel.getSender());
+        String nickname = checkForNickname(messageModel.getSender());
 
         final String username = mainFrame.getUsername();
 
         processAndDisplayMessage(messageModel, username, nickname);
 
-        checkIfDequeIsEmptyOrStartOver(mainFrame);
+        checkIfDequeIsEmptyOrStartOver();
     }
 
     private void processAndDisplayMessage(final BaseModel messageModel, final String username, final String nickname) {
@@ -371,61 +319,59 @@ public class GuiFunctionality implements SocketToGuiInterface {
                 }
             }
 
-            default -> {
-                LOGGER.info("Unknown message type");
-            }
+            default -> LOGGER.info("Unknown message type");
         }
     }
 
     private void setupPicturesLeftSide(final BaseModel messageModel, final String nickname) {
 
-        Color borderColor = determineBorderColor(mainFrame, messageModel.getSender());
+        Color borderColor = determineBorderColor( messageModel.getSender());
 
-        PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, messageModel);
+        PanelLeftImpl panelLeft = new PanelLeftImpl(this.mainFrame, messageModel);
         panelLeft.setupPicturePanelWrapper();
         panelLeft.setBorderColor(borderColor);
         displayNicknameInsteadOfUsername(nickname, panelLeft);
-        addMessagePanelToMainChatPanel(mainFrame, panelLeft, "leading");
+        addMessagePanelToMainChatPanel(panelLeft, "leading");
 
-        new NotificationImpl(mainFrame, messageModel).setNotificationText();
+        new NotificationImpl(this.mainFrame, messageModel).setNotificationText();
     }
 
     private void setupPicturesRightSide(final BaseModel messageModel, final String nickname) {
 
-        Color borderColor = determineBorderColor(mainFrame, "own");
+        Color borderColor = determineBorderColor( "own");
 
-        PanelRightImpl panelRight = new PanelRightImpl(mainFrame, messageModel);
+        PanelRightImpl panelRight = new PanelRightImpl(this.mainFrame, messageModel);
         panelRight.setupPicturePanelWrapper();
         panelRight.setBorderColor(borderColor);
         displayNicknameInsteadOfUsername(nickname, panelRight);
-        addMessagePanelToMainChatPanel(mainFrame, panelRight, "trailing");
+        addMessagePanelToMainChatPanel( panelRight, "trailing");
     }
 
     private void setupMessagesLeftSide(final BaseModel messageModel, final String nickname) {
 
-        Color borderColor = determineBorderColor(mainFrame, messageModel.getSender());
+        Color borderColor = determineBorderColor( messageModel.getSender());
 
-        PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, messageModel, PanelTypes.NORMAL);
+        PanelLeftImpl panelLeft = new PanelLeftImpl(this.mainFrame, messageModel, PanelTypes.NORMAL);
         panelLeft.setupTextPanelWrapper();
         panelLeft.setBorderColor(borderColor);
         displayNicknameInsteadOfUsername(nickname, panelLeft);
-        addMessagePanelToMainChatPanel(mainFrame, panelLeft, "leading");
+        addMessagePanelToMainChatPanel( panelLeft, "leading");
 
-        new NotificationImpl(mainFrame, messageModel).setNotificationText();
+        new NotificationImpl(this.mainFrame, messageModel).setNotificationText();
     }
 
     private void setupMessagesRightSide(final BaseModel messageModel, final String nickname) {
 
-        Color borderColor = determineBorderColor(mainFrame, "own");
+        Color borderColor = determineBorderColor("own");
 
-        PanelRightImpl panelRight = new PanelRightImpl(mainFrame, messageModel, PanelTypes.NORMAL);
+        PanelRightImpl panelRight = new PanelRightImpl(this.mainFrame, messageModel, PanelTypes.NORMAL);
         panelRight.setupTextPanelWrapper();
         panelRight.setBorderColor(borderColor);
         displayNicknameInsteadOfUsername(nickname, panelRight);
-        addMessagePanelToMainChatPanel(mainFrame, panelRight, "trailing");
+        addMessagePanelToMainChatPanel( panelRight, "trailing");
     }
 
-    private void checkIfDequeIsEmptyOrStartOver(MainFrameInterface gui) {
+    private void checkIfDequeIsEmptyOrStartOver() {
 
         // ensure that the scrollpane can keep up with the additons!
         try {
@@ -437,11 +383,9 @@ public class GuiFunctionality implements SocketToGuiInterface {
             throw new RuntimeException(e);
         }
 
-        SwingUtilities.invokeLater(() -> {
-            scrollMainPanelDownToLastMessage(mainFrame.getMainTextBackgroundScrollPane());
-        });
+        SwingUtilities.invokeLater(() -> scrollMainPanelDownToLastMessage(this.mainFrame.getMainTextBackgroundScrollPane()));
 
-        if (!gui.getClientMessageQueue().isEmpty()) {
+        if (!this.mainFrame.getClientMessageQueue().isEmpty()) {
 
             writeGuiMessageToChatPanel();
 
@@ -479,12 +423,12 @@ public class GuiFunctionality implements SocketToGuiInterface {
      */
     private void checkIfMessageSenderAlreadyRegisteredInLocalCache(HashMap<String, CustomUserProperties> clientMap, String sender) {
 
-        if (sender.equals(mainFrame.getUsername())) {
+        if (sender.equals(this.mainFrame.getUsername())) {
 
-            if (!mainFrame.getChatClientPropertiesHashMap().containsKey("own")) {
+            if (!this.mainFrame.getChatClientPropertiesHashMap().containsKey("own")) {
 
                 CustomUserProperties customUserProperties = new CustomUserProperties();
-                customUserProperties.setUsername(mainFrame.getUsername());
+                customUserProperties.setUsername(this.mainFrame.getUsername());
                 customUserProperties.setBorderColor(getRandomRgbIntValue());
                 clientMap.put("own", customUserProperties);
             }
@@ -500,40 +444,23 @@ public class GuiFunctionality implements SocketToGuiInterface {
         }
     }
 
-    /**
-     Determines the border color for a given sender.
 
-     @param gui    the interface to access the chat client properties hashmap
-     @param sender the sender to determine the border color for
+    private Color determineBorderColor(String sender) {
 
-     @return the determined border color for the given sender
-     */
-    private Color determineBorderColor(MainFrameInterface gui, String sender) {
+        if (this.mainFrame.getChatClientPropertiesHashMap().containsKey(sender)) {
 
-        if (gui.getChatClientPropertiesHashMap().containsKey(sender)) {
-
-            return new Color(gui.getChatClientPropertiesHashMap().get(sender).getBorderColor());
+            return new Color(this.mainFrame.getChatClientPropertiesHashMap().get(sender).getBorderColor());
         }
 
         return new Color(getRandomRgbIntValue());
     }
 
-    /**
-     Checks if a nickname is defined for a given sender in the GUI.
 
-     If the sender is present in the chat client properties map and has a valid nickname defined,
-     the method returns the nickname as a String. Otherwise, it returns null.
+    private String checkForNickname( String sender) {
 
-     @param gui    the main GUI elements interface containing the chat client properties map
-     @param sender the sender for which the nickname is to be checked
+        if (this.mainFrame.getChatClientPropertiesHashMap().containsKey(sender) && this.mainFrame.getChatClientPropertiesHashMap().get(sender).getNickname() != null && !this.mainFrame.getChatClientPropertiesHashMap().get(sender).getNickname().isEmpty()) {
 
-     @return the nickname for the sender as a String, or null if not found
-     */
-    private String checkForNickname(MainFrameInterface gui, String sender) {
-
-        if (gui.getChatClientPropertiesHashMap().containsKey(sender) && gui.getChatClientPropertiesHashMap().get(sender).getNickname() != null && !gui.getChatClientPropertiesHashMap().get(sender).getNickname().isEmpty()) {
-
-            return gui.getChatClientPropertiesHashMap().get(sender).getNickname();
+            return this.mainFrame.getChatClientPropertiesHashMap().get(sender).getNickname();
         }
 
         return null;
@@ -551,7 +478,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         //EDT check done!
         scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
-        ((JFrame) mainFrame).repaint();
+        ((JFrame) this.mainFrame).repaint();
     }
 
     /**
@@ -565,6 +492,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
      */
     private BaseModel convertJsonToMessageModel(String jsonMessage) throws JsonProcessingException {
 
-        return objectMapper.readValue(jsonMessage, BaseModel.class);
+        return this.objectMapper.readValue(jsonMessage, BaseModel.class);
     }
 }

@@ -2,7 +2,6 @@ package com.soeguet.gui.notification_panel;
 
 import com.soeguet.gui.interaction.ReplyPanelImpl;
 import com.soeguet.gui.main_frame.MainFrameInterface;
-import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.notification_panel.generated.Notification;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.util.EmojiHandler;
@@ -34,10 +33,10 @@ public class NotificationImpl extends Notification {
 
         SwingUtilities.invokeLater(() -> {
 
-            ((JFrame) mainFrame).setAlwaysOnTop(true);
-            ((JFrame) mainFrame).toFront();
-            ((JFrame) mainFrame).repaint();
-            ((JFrame) mainFrame).setAlwaysOnTop(false);
+            ((JFrame) this.mainFrame).setAlwaysOnTop(true);
+            ((JFrame) this.mainFrame).toFront();
+            ((JFrame) this.mainFrame).repaint();
+            ((JFrame) this.mainFrame).setAlwaysOnTop(false);
         });
     }
 
@@ -52,20 +51,20 @@ public class NotificationImpl extends Notification {
 
         SwingUtilities.invokeLater(() -> {
 
-            ((JFrame) mainFrame).setAlwaysOnTop(true);
-            ((JFrame) mainFrame).toFront();
-            ((JFrame) mainFrame).repaint();
-            ((JFrame) mainFrame).setAlwaysOnTop(false);
+            ((JFrame) this.mainFrame).setAlwaysOnTop(true);
+            ((JFrame) this.mainFrame).toFront();
+            ((JFrame) this.mainFrame).repaint();
+            ((JFrame) this.mainFrame).setAlwaysOnTop(false);
 
-            ReplyPanelImpl replyPanel = new ReplyPanelImpl(mainFrame, baseModel);
-            mainFrame.getMainTextPanelLayeredPane().add(replyPanel, JLayeredPane.MODAL_LAYER);
+            ReplyPanelImpl replyPanel = new ReplyPanelImpl(this.mainFrame, this.baseModel);
+            this.mainFrame.getMainTextPanelLayeredPane().add(replyPanel, JLayeredPane.MODAL_LAYER);
         });
     }
 
     @Override
     protected void closeAllNotificationsActionPerformed(final ActionEvent e) {
 
-        mainFrame.getNotificationList().forEach(notification -> {
+        this.mainFrame.getNotificationList().forEach(notification -> {
 
             if (notification.getTimer() != null && notification.getTimer().isRunning()) {
 
@@ -97,7 +96,7 @@ public class NotificationImpl extends Notification {
         addMessageToNotificationPanel();
         final int screenResolutionWidth = determineScreenWidth();
 
-        int newYPosition = mainFrame.getNotificationPositionY();
+        int newYPosition = this.mainFrame.getNotificationPositionY();
 
         modifyNotificationPanel(screenResolutionWidth, newYPosition);
 
@@ -108,11 +107,11 @@ public class NotificationImpl extends Notification {
 
     private void addMessageToNotificationPanel() {
 
-        form_nameLabel.setText(baseModel.getSender() + "sent a message");
+        this.form_nameLabel.setText(this.baseModel.getSender() + "sent a message");
 
-        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(form_notificationMainMessage, baseModel.getMessage());
+        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(this.form_notificationMainMessage, this.baseModel.getMessage());
 
-        final int messageLength = baseModel.getMessage().length();
+        final int messageLength = this.baseModel.getMessage().length();
 
         if (messageLength < 30) {
 
@@ -140,7 +139,7 @@ public class NotificationImpl extends Notification {
         //prevent notifications from spamming the whole screen height
         if (newYPosition > 500) {
 
-            SwingUtilities.invokeLater(()->mainFrame.getNotificationList().getFirst().removeDialogAndReorderMessages());
+            SwingUtilities.invokeLater(() -> this.mainFrame.getNotificationList().getFirst().removeDialogAndReorderMessages());
 
         }
 
@@ -153,40 +152,40 @@ public class NotificationImpl extends Notification {
 
     private void retainInformationAboutThisNotification(final int newYPosition) {
 
-        mainFrame.setNotificationPositionY(newYPosition + getHeight() - MARGIN_TOP);
-        mainFrame.getNotificationList().add(this);
+        this.mainFrame.setNotificationPositionY(newYPosition + getHeight() - MARGIN_TOP);
+        this.mainFrame.getNotificationList().add(this);
     }
 
     private void addNotificationTimer() {
 
-        timer = new Timer(5000, e -> {
+        this.timer = new Timer(5000, e -> {
 
             removeDialogAndReorderMessages();
         });
-        timer.setRepeats(false);
-        timer.start();
+        this.timer.setRepeats(false);
+        this.timer.start();
 
     }
 
     private void removeDialogAndReorderMessages() {
 
-        if (timer != null && timer.isRunning()) {
+        if (this.timer != null && this.timer.isRunning()) {
 
-            timer.stop();
+            this.timer.stop();
         }
 
-        mainFrame.getNotificationList().remove(this);
+        this.mainFrame.getNotificationList().remove(this);
         final int notificationTextHeight = getHeight();
         setVisible(false);
         dispose();
 
-        if (mainFrame.getNotificationList().isEmpty()) {
+        if (this.mainFrame.getNotificationList().isEmpty()) {
 
-            mainFrame.setNotificationPositionY(0);
+            this.mainFrame.setNotificationPositionY(0);
             return;
         }
 
-        mainFrame.triggerRelocationActiveNotification(notificationTextHeight);
+        this.mainFrame.triggerRelocationActiveNotification(notificationTextHeight);
     }
 
     private void adjustNotificationPanelHeight(final int factor) {
@@ -195,60 +194,52 @@ public class NotificationImpl extends Notification {
         final int notificationTextHeight = 25 * factor;
 
         //components related stuff
-        final Dimension notificationPanelSize = new Dimension(form_notificationMainPanel.getWidth(), notificationTextHeight - 50);
-        form_notificationMainPanel.setPreferredSize(notificationPanelSize);
-        form_notificationMainPanel.setSize(notificationPanelSize);
-        form_notificationMainPanel.setMinimumSize(notificationPanelSize);
-        form_notificationMainPanel.setMaximumSize(notificationPanelSize);
+        final Dimension notificationPanelSize = new Dimension(this.form_notificationMainPanel.getWidth(), notificationTextHeight - 50);
+        this.form_notificationMainPanel.setPreferredSize(notificationPanelSize);
+        this.form_notificationMainPanel.setSize(notificationPanelSize);
+        this.form_notificationMainPanel.setMinimumSize(notificationPanelSize);
+        this.form_notificationMainPanel.setMaximumSize(notificationPanelSize);
 
-        final Dimension scrollPaneSize = new Dimension(form_scrollPane1.getWidth(), notificationTextHeight + 5);
-        form_scrollPane1.setPreferredSize(scrollPaneSize);
-        form_scrollPane1.setSize(scrollPaneSize);
-        form_scrollPane1.setMinimumSize(scrollPaneSize);
-        form_scrollPane1.setMaximumSize(scrollPaneSize);
+        final Dimension scrollPaneSize = new Dimension(this.form_scrollPane1.getWidth(), notificationTextHeight + 5);
+        this.form_scrollPane1.setPreferredSize(scrollPaneSize);
+        this.form_scrollPane1.setSize(scrollPaneSize);
+        this.form_scrollPane1.setMinimumSize(scrollPaneSize);
+        this.form_scrollPane1.setMaximumSize(scrollPaneSize);
 
-        final Dimension notificationTextSize = new Dimension(form_notificationMainMessage.getWidth(), notificationTextHeight + 5);
-        form_notificationMainMessage.setPreferredSize(notificationTextSize);
-        form_notificationMainMessage.setSize(notificationTextSize);
-        form_notificationMainMessage.setMinimumSize(notificationTextSize);
-        form_notificationMainMessage.setMaximumSize(notificationTextSize);
+        final Dimension notificationTextSize = new Dimension(this.form_notificationMainMessage.getWidth(), notificationTextHeight + 5);
+        this.form_notificationMainMessage.setPreferredSize(notificationTextSize);
+        this.form_notificationMainMessage.setSize(notificationTextSize);
+        this.form_notificationMainMessage.setMinimumSize(notificationTextSize);
+        this.form_notificationMainMessage.setMaximumSize(notificationTextSize);
 
         //panel related stuff
         final int adjustmentInHeight = 80;
 
-        final Dimension thisSize = new Dimension(getWidth(), adjustmentInHeight + notificationTextHeight);
+        final Dimension thisSize = new Dimension(this.getWidth(), adjustmentInHeight + notificationTextHeight);
         this.setPreferredSize(thisSize);
         this.setSize(thisSize);
         this.setMinimumSize(thisSize);
         this.setMaximumSize(thisSize);
 
-        final Dimension panelSize = new Dimension(form_notificationAllPanel.getWidth(), adjustmentInHeight + notificationTextHeight);
-        form_notificationAllPanel.setPreferredSize(panelSize);
-        form_notificationAllPanel.setSize(panelSize);
-        form_notificationAllPanel.setMinimumSize(panelSize);
-        form_notificationAllPanel.setMaximumSize(panelSize);
+        final Dimension panelSize = new Dimension(this.form_notificationAllPanel.getWidth(), adjustmentInHeight + notificationTextHeight);
+        this.form_notificationAllPanel.setPreferredSize(panelSize);
+        this.form_notificationAllPanel.setSize(panelSize);
+        this.form_notificationAllPanel.setMinimumSize(panelSize);
+        this.form_notificationAllPanel.setMaximumSize(panelSize);
 
-        final Dimension mainPanelSize = new Dimension(form_notificationMainPanel.getWidth(), adjustmentInHeight + notificationTextHeight);
-        form_notificationMainPanel.setPreferredSize(mainPanelSize);
-        form_notificationMainPanel.setSize(mainPanelSize);
-        form_notificationMainPanel.setMinimumSize(mainPanelSize);
-        form_notificationMainPanel.setMaximumSize(mainPanelSize);
+        final Dimension mainPanelSize = new Dimension(this.form_notificationMainPanel.getWidth(), adjustmentInHeight + notificationTextHeight);
+        this.form_notificationMainPanel.setPreferredSize(mainPanelSize);
+        this.form_notificationMainPanel.setSize(mainPanelSize);
+        this.form_notificationMainPanel.setMinimumSize(mainPanelSize);
+        this.form_notificationMainPanel.setMaximumSize(mainPanelSize);
 
-        pack();
-        revalidate();
-        repaint();
+        this.pack();
+        this.revalidate();
+        this.repaint();
     }
 
     public Timer getTimer() {
 
-        return timer;
-    }
-
-    public void addBubble(CommentInterface commentInterface) {
-
-        form_notificationMainPanel.add((JPanel) commentInterface, "cell 0 1, wrap");
-        setVisible(true);
-        revalidate();
-        repaint();
+        return this.timer;
     }
 }

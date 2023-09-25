@@ -110,12 +110,6 @@ public interface MainFrameInterface {
      */
     void setUsername(String username);
 
-    /**
-     Retrieves the main JFrame of the application.
-
-     @return the main JFrame of the application
-     */
-    JFrame getMainFrame();
 
     /**
      Retrieves the message panel of the application.
@@ -165,13 +159,6 @@ public interface MainFrameInterface {
      * @return the client message queue containing the messages to be sent
      */
     LinkedBlockingDeque<String> getClientMessageQueue();
-
-    /**
-     * Sets the flag indicating whether the chat client is currently processing client messages.
-     *
-     * @param isProcessingClientMessages the flag indicating whether the chat client is currently processing client messages
-     */
-    void setIsProcessingClientMessages(AtomicBoolean isProcessingClientMessages);
 
     /**
      * Gets the flag indicating whether the chat client is currently processing client messages.

@@ -54,8 +54,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     private CustomWebsocketClient websocketClient;
     private String username;
     private JPanel messagePanel;
-    private AtomicBoolean isProcessingClientMessages = new AtomicBoolean(false);
-    private EnvVariables envVariables;
+    private final AtomicBoolean isProcessingClientMessages = new AtomicBoolean(false);
+    private final EnvVariables envVariables;
     private volatile int notificationPositionY = 0;
     private boolean startUp = true;
 
@@ -78,9 +78,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         //TODO remove for merge in master
         final String chatXPosition = System.getenv("chat_x_position");
         if (chatXPosition != null) {
-            SwingUtilities.invokeLater(() -> {
-                setLocation(Integer.parseInt(chatXPosition), 100);
-            });
+            SwingUtilities.invokeLater(() -> setLocation(Integer.parseInt(chatXPosition), 100));
         }
 
         clientMessageQueue = new LinkedBlockingDeque<>();
@@ -218,10 +216,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         final AtomicInteger position = new AtomicInteger();
 
-        notificationList.forEach(notification -> {
-
-            position.set(notification.relocateNotification(moveUpY));
-        });
+        notificationList.forEach(notification -> position.set(notification.relocateNotification(moveUpY)));
 
         setNotificationPositionY(position.get());
     }
@@ -263,20 +258,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         return myPanel;
     }
 
-    public EnvVariables getEnvVariables() {
-
-        return envVariables;
-    }
-
     @Override
     public synchronized int getNotificationPositionY() {
 
         return notificationPositionY;
-    }
-
-    public void setEnvVariables(final EnvVariables envVariables) {
-
-        this.envVariables = envVariables;
     }
 
     /**
@@ -416,17 +401,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     Retrieves the main JFrame of the application.
-
-     @return the main JFrame object.
-     */
-    @Override
-    public JFrame getMainFrame() {
-
-        return this;
-    }
-
-    /**
      Retrieves the message panel.
 
      @return the JPanel object representing the message panel.
@@ -499,11 +473,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     public LinkedBlockingDeque<String> getClientMessageQueue() {
 
         return clientMessageQueue;
-    }
-
-    public void setWebsocketClient(CustomWebsocketClient websocketClient) {
-
-        this.websocketClient = websocketClient;
     }
 
     /**
@@ -689,11 +658,4 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         return isProcessingClientMessages;
     }
-
-    @Override
-    public void setIsProcessingClientMessages(AtomicBoolean isProcessingClientMessages) {
-
-        this.isProcessingClientMessages = isProcessingClientMessages;
-    }
-
 }
