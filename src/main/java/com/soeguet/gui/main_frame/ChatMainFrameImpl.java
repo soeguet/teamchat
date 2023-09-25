@@ -5,6 +5,7 @@ import com.soeguet.behaviour.GuiFunctionality;
 import com.soeguet.gui.image_panel.ImagePanelImpl;
 import com.soeguet.gui.main_frame.generated.ChatPanel;
 import com.soeguet.gui.notification_panel.NotificationImpl;
+import com.soeguet.gui.popups.PopupPanelImpl;
 import com.soeguet.gui.properties.PropertiesPanelImpl;
 import com.soeguet.model.EnvVariables;
 import com.soeguet.properties.CustomProperties;
@@ -56,13 +57,31 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     private AtomicBoolean isProcessingClientMessages = new AtomicBoolean(false);
     private EnvVariables envVariables;
     private volatile int notificationPositionY = 0;
+    private boolean startUp = true;
+
+    public boolean isStartUp() {
+
+        return startUp;
+    }
+
+    @Override
+    public void setStartUp(final boolean startUp) {
+
+        this.startUp = startUp;
+    }
 
     public ChatMainFrameImpl(final EnvVariables envVariables) {
 
         this.envVariables = envVariables;
         this.username = envVariables.getChatUsername();
 
-        setLocation(Integer.parseInt(System.getenv("chat_x_position")), 100);
+        //TODO remove for merge in master
+        final String chatXPosition = System.getenv("chat_x_position");
+        if (chatXPosition != null) {
+            SwingUtilities.invokeLater(() -> {
+                setLocation(Integer.parseInt(chatXPosition), 100);
+            });
+        }
 
         clientMessageQueue = new LinkedBlockingDeque<>();
         messageQueue = new LinkedBlockingDeque<>();
@@ -76,11 +95,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         initEmojiHandlerAndList();
         initWebSocketClient();
 
+        setVisible(true);
     }
 
     private void initGuiFunctionality() {
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         guiFunctionality = new GuiFunctionality(this);
     }
@@ -94,7 +112,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             JSCROLLPANE_MARGIN_BOTTOM_BORDER = 56;
             JSCROLLPANE_MARGIN_RIGHT_BORDER = 4;
         }
-    }    public List<NotificationImpl> getNotificationList() {
+    }
+
+    @Override
+    public List<NotificationImpl> getNotificationList() {
 
         return notificationList;
     }
@@ -131,6 +152,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
             } catch (URISyntaxException e) {
 
+                new PopupPanelImpl(this, "Error creating server URI: " + e.getMessage());
+                logger.log(java.util.logging.Level.SEVERE, "Error creating server URI", e);
                 throw new RuntimeException(e);
             }
         }
@@ -154,6 +177,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         int result = JOptionPane.showConfirmDialog(this, serverInfoPanel, "please enter ip and port values", JOptionPane.OK_CANCEL_OPTION);
 
+        validateServerInformationInputByUser(serverIpTextField.getText(), serverPortTextField.getText());
+
         if (result == JOptionPane.OK_OPTION) {
 
             final String serverIp = serverIpTextField.getText();
@@ -168,7 +193,28 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
                 throw new RuntimeException(e);
             }
         }
-    }    public void triggerRelocationActiveNotification(int moveUpY) {
+    }
+
+    private void validateServerInformationInputByUser(final String serverIpText, final String serverPortText) {
+
+        if (serverIpText.isEmpty() || serverPortText.isEmpty()) {
+
+            JOptionPane.showMessageDialog(this, "Server IP or port is empty", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        if (!serverIpText.matches("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$")) {
+
+            JOptionPane.showMessageDialog(this, "Server IP is invalid", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        if (!serverPortText.matches("^[0-9]+$")) {
+
+            JOptionPane.showMessageDialog(this, "Server port is invalid", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    @Override
+    public synchronized void triggerRelocationActiveNotification(int moveUpY) {
 
         final AtomicInteger position = new AtomicInteger();
 
@@ -220,7 +266,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     public EnvVariables getEnvVariables() {
 
         return envVariables;
-    }    public synchronized int getNotificationPositionY() {
+    }
+
+    @Override
+    public synchronized int getNotificationPositionY() {
 
         return notificationPositionY;
     }
@@ -251,13 +300,13 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void thisComponentResized(ComponentEvent e) {
 
-        SwingUtilities.invokeLater(() -> {
+        this.form_mainTextBackgroundScrollPane.setBounds(1, 1, e.getComponent().getWidth() - JSCROLLPANE_MARGIN_RIGHT_BORDER, e.getComponent().getHeight() - form_interactionAreaPanel.getHeight() - JSCROLLPANE_MARGIN_BOTTOM_BORDER);
+        this.revalidate();
+        this.repaint();
+    }
 
-            this.getMainTextBackgroundScrollPane().setBounds(1, 1, e.getComponent().getWidth() - JSCROLLPANE_MARGIN_RIGHT_BORDER, e.getComponent().getHeight() - this.getInteractionAreaPanel().getHeight() - JSCROLLPANE_MARGIN_BOTTOM_BORDER);
-            this.revalidate();
-            this.repaint();
-        });
-    }    public synchronized void setNotificationPositionY(int notificationPositionY) {
+    @Override
+    public synchronized void setNotificationPositionY(int notificationPositionY) {
 
         this.notificationPositionY = notificationPositionY;
     }
@@ -291,14 +340,17 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void resetConnectionMenuItemMousePressed(MouseEvent e) {
 
-        form_mainTextPanel.removeAll();
-        form_mainTextPanel.revalidate();
-        form_mainTextPanel.repaint();
+        SwingUtilities.invokeLater(() -> {
 
-        if (getWebsocketClient().isOpen()) {
+            form_mainTextPanel.removeAll();
+            form_mainTextPanel.revalidate();
+            form_mainTextPanel.repaint();
+        });
+
+        if (websocketClient.isOpen()) {
 
             logger.info("Closing websocket client");
-            getWebsocketClient().close();
+            websocketClient.close();
         }
 
         websocketClient = null;
@@ -313,6 +365,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
      @return The WebSocket client.
      */
+    @Override
     public CustomWebsocketClient getWebsocketClient() {
 
         return websocketClient;
@@ -323,6 +376,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
      @return the ObjectMapper instance
      */
+    @Override
     public ObjectMapper getObjectMapper() {
 
         return objectMapper;
@@ -333,6 +387,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
      @return the GuiFunctionality object.
      */
+    @Override
     public GuiFunctionality getGuiFunctionality() {
 
         return guiFunctionality;
@@ -343,6 +398,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
      @return the username as a String.
      */
+    @Override
     public String getUsername() {
 
         return username;
@@ -353,6 +409,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
      @param username the username to set.
      */
+    @Override
     public void setUsername(String username) {
 
         this.username = username;
@@ -374,6 +431,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
      @return the JPanel object representing the message panel.
      */
+    @Override
     public JPanel getMessagePanel() {
 
         return messagePanel;
@@ -384,6 +442,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
      @param messagePanel the JPanel to set as the message panel.
      */
+    @Override
     public void setMessagePanel(JPanel messagePanel) {
 
         this.messagePanel = messagePanel;
@@ -394,6 +453,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
      @return the LinkedBlockingDeque<String> representing the message queue.
      */
+    @Override
     public LinkedBlockingDeque<String> getMessageQueue() {
 
         return messageQueue;
@@ -407,11 +467,13 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
      @return the HashMap containing the list of emojis and their corresponding image icons
      */
+    @Override
     public HashMap<String, ImageIcon> getEmojiList() {
 
         return emojiList;
     }
 
+    @Override
     public HashMap<String, CustomUserProperties> getChatClientPropertiesHashMap() {
 
         return chatClientPropertiesHashMap;
@@ -422,6 +484,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
      @return the custom properties object.
      */
+    @Override
     public CustomProperties getCustomProperties() {
 
         return customProperties;
@@ -432,6 +495,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
      @return A LinkedBlockingDeque object representing the client message queue.
      */
+    @Override
     public LinkedBlockingDeque<String> getClientMessageQueue() {
 
         return clientMessageQueue;
@@ -451,10 +515,12 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void exitMenuItemMousePressed(MouseEvent e) {
 
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.dispose();
+        SwingUtilities.invokeLater(() -> {
 
-        System.exit(0);
+            this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            this.dispose();
+            System.exit(0);
+        });
     }
 
     /**
@@ -525,8 +591,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      */
     private void appendNewLineToTextEditorPane() {
 
-        String currentText = getTextEditorPane().getText();
-        getTextEditorPane().setText(currentText + "\n");
+        String currentText = form_textEditorPane.getText();
+        form_textEditorPane.setText(currentText + "\n");
     }
 
     /**
@@ -539,11 +605,11 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      */
     private void handleNonShiftEnterKeyPress() {
 
-        String textPaneContent = getTextEditorPane().getText().trim();
+        String textPaneContent = form_textEditorPane.getText().trim();
 
         if (textPaneContent.isEmpty()) {
 
-            getTextEditorPane().setText("");
+            form_textEditorPane.setText("");
 
         } else {
 
@@ -588,7 +654,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void emojiButton(ActionEvent e) {
 
-        new EmojiPopUpMenuHandler(this, this.getTextEditorPane(), this.getEmojiButton());
+        new EmojiPopUpMenuHandler(this, form_textEditorPane, form_emojiButton);
     }
 
     /**
@@ -603,7 +669,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         emojiHandler.replaceImageIconWithEmojiDescription(getTextEditorPane());
 
-        if (getTextEditorPane().getText().trim().isEmpty()) {
+        if (form_textEditorPane.getText().trim().isEmpty()) {
 
             return;
         }
@@ -618,19 +684,13 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         serverInformationOptionPane();
     }
 
-
-
-
-
-
-
-
-
+    @Override
     public AtomicBoolean getIsProcessingClientMessages() {
 
         return isProcessingClientMessages;
     }
 
+    @Override
     public void setIsProcessingClientMessages(AtomicBoolean isProcessingClientMessages) {
 
         this.isProcessingClientMessages = isProcessingClientMessages;

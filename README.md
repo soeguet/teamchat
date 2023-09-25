@@ -4,8 +4,8 @@ TeamChat is a chat client built with Java for local network usage. This project 
 
 ## Requirements
 
-- Java 8
-- Gradle 8
+- Java 21
+- Maven 3.9.4
 - [Websocket Backend](https://github.com/soeguet/teamsocket)
 
 ## Foundation
@@ -36,9 +36,20 @@ git clone https://github.com/soeguet/teamchat
 ```
 2. Navigate to the folder and type 
 ```bash
-./gradlew run
+./mvnw clean install
 ``` 
 in the terminal.
+
+3. Run the application by typing 
+```bash
+java -jar target/teamchat-1.0-SNAPSHOT.jar
+```
+
+## Environment Variables
+Environment variables the chat client uses are listed below:
+- chat_username
+- chat_ip
+- chat_port
 
 ## License
 

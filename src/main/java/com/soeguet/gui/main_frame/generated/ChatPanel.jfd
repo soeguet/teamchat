@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "8.1.1.0.298" Java: "17.0.3" encoding: "UTF-8"
+JFDML JFormDesigner: "8.1.1.0.298" Java: "17.0.8" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
@@ -15,7 +15,6 @@ new FormModel {
 			"focusable": false
 			"minimumSize": new java.awt.Dimension( 250, 250 )
 			"preferredSize": new java.awt.Dimension( 700, 700 )
-			"visible": true
 			addEvent( new FormEvent( "java.beans.PropertyChangeListener", "propertyChange", "thisPropertyChange", true, "FrameChange" ) )
 			addEvent( new FormEvent( "java.awt.event.ComponentListener", "componentResized", "thisComponentResized", true ) )
 			addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "thisMouseClicked", true ) )
@@ -172,6 +171,7 @@ new FormModel {
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
 					name: "interactionAreaPanel"
 					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					"minimumSize": new java.awt.Dimension( 222, 89 )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
 						name: "panel3"
 						add( new FormComponent( "javax.swing.JLabel" ) {

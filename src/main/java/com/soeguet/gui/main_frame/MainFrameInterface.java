@@ -185,4 +185,6 @@ public interface MainFrameInterface {
     List<NotificationImpl> getNotificationList();
 
     void triggerRelocationActiveNotification(int moveUpY);
+
+    void setStartUp(boolean b);
 }

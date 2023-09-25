@@ -49,6 +49,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
     public GuiFunctionality(MainFrameInterface mainFrame) {
 
         this.mainFrame = mainFrame;
+        ((JFrame) mainFrame).setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         fixScrollPaneScrollSpeed();
         addDocumentListenerToTextPane();
         overrideTransferHandlerOfTextPane();
@@ -303,6 +304,9 @@ public class GuiFunctionality implements SocketToGuiInterface {
             case "X" -> {
                 System.out.println("X");
             }
+            case "__startup__end__" -> {
+                mainFrame.setStartUp(false);
+            }
             case "welcome to the server!" -> {
                 System.out.println("welcome to the server!");
             }
@@ -318,81 +322,107 @@ public class GuiFunctionality implements SocketToGuiInterface {
         }
     }
 
-    private void writeGuiMessageToChatPanel() {
-
-        mainFrame.getIsProcessingClientMessages().set(true);
+    private synchronized void writeGuiMessageToChatPanel() {
 
         String message = mainFrame.getClientMessageQueue().poll();
-        assert message != null;
+
+        if (message == null) {
+            return;
+        }
 
         BaseModel messageModel = getMessageModel(message);
 
         checkIfMessageSenderAlreadyRegisteredInLocalCache(mainFrame.getChatClientPropertiesHashMap(), messageModel.getSender());
         String nickname = checkForNickname(mainFrame, messageModel.getSender());
 
-        // Messages
-        if (messageModel instanceof MessageModel) {
+        final String username = mainFrame.getUsername();
 
-            if (messageModel.getSender().equals(mainFrame.getUsername())) {
-
-                Color borderColor = determineBorderColor(mainFrame, "own");
-
-                PanelRightImpl panelRight = new PanelRightImpl(mainFrame, messageModel, PanelTypes.NORMAL);
-                panelRight.setupTextPanelWrapper();
-                panelRight.setBorderColor(borderColor);
-                displayNicknameInsteadOfUsername(nickname, panelRight);
-                addMessagePanelToMainChatPanel(mainFrame, panelRight, "trailing");
-
-            } else {
-
-                Color borderColor = determineBorderColor(mainFrame, messageModel.getSender());
-
-                PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, messageModel, PanelTypes.NORMAL);
-                panelLeft.setupTextPanelWrapper();
-                panelLeft.setBorderColor(borderColor);
-                displayNicknameInsteadOfUsername(nickname, panelLeft);
-                addMessagePanelToMainChatPanel(mainFrame, panelLeft, "leading");
-
-                new NotificationImpl(mainFrame, messageModel).setNotificationText();
-            }
-
-        }
-
-        // Pictures
-        else if (messageModel instanceof PictureModel) {
-
-            if (messageModel.getSender().equals(mainFrame.getUsername())) {
-
-                Color borderColor = determineBorderColor(mainFrame, "own");
-
-                PanelRightImpl panelRight = new PanelRightImpl(mainFrame, messageModel);
-                panelRight.setupPicturePanelWrapper();
-                panelRight.setBorderColor(borderColor);
-                displayNicknameInsteadOfUsername(nickname, panelRight);
-                addMessagePanelToMainChatPanel(mainFrame, panelRight, "trailing");
-
-            } else {
-
-                Color borderColor = determineBorderColor(mainFrame, messageModel.getSender());
-
-                PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, messageModel);
-                panelLeft.setupPicturePanelWrapper();
-                panelLeft.setBorderColor(borderColor);
-                displayNicknameInsteadOfUsername(nickname, panelLeft);
-                addMessagePanelToMainChatPanel(mainFrame, panelLeft, "leading");
-
-                new NotificationImpl(mainFrame, messageModel).setNotificationText();
-
-            }
-        }
-
-        // Unknown
-        else {
-
-            LOGGER.info("Unknown message type");
-        }
+        processAndDisplayMessage(messageModel, username, nickname);
 
         checkIfDequeIsEmptyOrStartOver(mainFrame);
+    }
+
+    private void processAndDisplayMessage(final BaseModel messageModel, final String username, final String nickname) {
+
+        switch (messageModel) {
+
+            case MessageModel text -> {
+
+                if (text.getSender().equals(username)) {
+
+                    setupMessagesRightSide(text, nickname);
+
+                } else {
+
+                    setupMessagesLeftSide(text, nickname);
+                }
+
+            }
+
+            case PictureModel picture -> {
+
+                if (messageModel.getSender().equals(username)) {
+
+                    setupPicturesRightSide(picture, nickname);
+
+                } else {
+
+                    setupPicturesLeftSide(picture, nickname);
+                }
+            }
+
+            default -> {
+                LOGGER.info("Unknown message type");
+            }
+        }
+    }
+
+    private void setupPicturesLeftSide(final BaseModel messageModel, final String nickname) {
+
+        Color borderColor = determineBorderColor(mainFrame, messageModel.getSender());
+
+        PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, messageModel);
+        panelLeft.setupPicturePanelWrapper();
+        panelLeft.setBorderColor(borderColor);
+        displayNicknameInsteadOfUsername(nickname, panelLeft);
+        addMessagePanelToMainChatPanel(mainFrame, panelLeft, "leading");
+
+        new NotificationImpl(mainFrame, messageModel).setNotificationText();
+    }
+
+    private void setupPicturesRightSide(final BaseModel messageModel, final String nickname) {
+
+        Color borderColor = determineBorderColor(mainFrame, "own");
+
+        PanelRightImpl panelRight = new PanelRightImpl(mainFrame, messageModel);
+        panelRight.setupPicturePanelWrapper();
+        panelRight.setBorderColor(borderColor);
+        displayNicknameInsteadOfUsername(nickname, panelRight);
+        addMessagePanelToMainChatPanel(mainFrame, panelRight, "trailing");
+    }
+
+    private void setupMessagesLeftSide(final BaseModel messageModel, final String nickname) {
+
+        Color borderColor = determineBorderColor(mainFrame, messageModel.getSender());
+
+        PanelLeftImpl panelLeft = new PanelLeftImpl(mainFrame, messageModel, PanelTypes.NORMAL);
+        panelLeft.setupTextPanelWrapper();
+        panelLeft.setBorderColor(borderColor);
+        displayNicknameInsteadOfUsername(nickname, panelLeft);
+        addMessagePanelToMainChatPanel(mainFrame, panelLeft, "leading");
+
+        new NotificationImpl(mainFrame, messageModel).setNotificationText();
+    }
+
+    private void setupMessagesRightSide(final BaseModel messageModel, final String nickname) {
+
+        Color borderColor = determineBorderColor(mainFrame, "own");
+
+        PanelRightImpl panelRight = new PanelRightImpl(mainFrame, messageModel, PanelTypes.NORMAL);
+        panelRight.setupTextPanelWrapper();
+        panelRight.setBorderColor(borderColor);
+        displayNicknameInsteadOfUsername(nickname, panelRight);
+        addMessagePanelToMainChatPanel(mainFrame, panelRight, "trailing");
     }
 
     private void checkIfDequeIsEmptyOrStartOver(MainFrameInterface gui) {
@@ -414,10 +444,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
         if (!gui.getClientMessageQueue().isEmpty()) {
 
             writeGuiMessageToChatPanel();
-
-        } else {
-
-            gui.getIsProcessingClientMessages().set(false);
 
         }
 

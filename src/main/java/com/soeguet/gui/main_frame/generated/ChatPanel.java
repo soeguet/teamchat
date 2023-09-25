@@ -395,7 +395,6 @@ public abstract class ChatPanel extends JFrame {
 		setFocusable(false);
 		setMinimumSize(new Dimension(250, 250));
 		setPreferredSize(new Dimension(700, 700));
-		setVisible(true);
 		addPropertyChangeListener("FrameChange", e -> thisPropertyChange(e));
 		addComponentListener(new ComponentAdapter() {
 			@Override
@@ -596,6 +595,7 @@ public abstract class ChatPanel extends JFrame {
 			//======== form_interactionAreaPanel ========
 			{
 				this.form_interactionAreaPanel.setBorder(null);
+				this.form_interactionAreaPanel.setMinimumSize(new Dimension(222, 89));
 				this.form_interactionAreaPanel.setLayout(new BorderLayout());
 
 				//======== form_panel3 ========
