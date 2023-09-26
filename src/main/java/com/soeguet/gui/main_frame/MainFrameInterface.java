@@ -174,4 +174,8 @@ public interface MainFrameInterface {
     void triggerRelocationActiveNotification(int moveUpY);
 
     void setStartUp(boolean b);
+
+    int getPossibleNotifications();
+
+    void setPossibleNotifications(int possibleNotifications);
 }

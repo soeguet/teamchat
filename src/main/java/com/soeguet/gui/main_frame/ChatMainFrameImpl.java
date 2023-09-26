@@ -211,12 +211,29 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         }
     }
 
+    private volatile int possibleNotifications = 3;
+
+    @Override
+    public synchronized int getPossibleNotifications() {
+
+        return possibleNotifications;
+    }
+
+    @Override
+    public synchronized void setPossibleNotifications(final int possibleNotifications) {
+
+        this.possibleNotifications = possibleNotifications;
+    }
+
     @Override
     public synchronized void triggerRelocationActiveNotification(int moveUpY) {
 
         final AtomicInteger position = new AtomicInteger();
 
-        notificationList.forEach(notification -> position.set(notification.relocateNotification(moveUpY)));
+        notificationList.forEach(notification -> {
+            final int relocatedY = notification.relocateNotification(moveUpY);
+            position.set(relocatedY);
+        });
 
         setNotificationPositionY(position.get());
     }
@@ -470,7 +487,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      @return A LinkedBlockingDeque object representing the client message queue.
      */
     @Override
-    public LinkedBlockingDeque<String> getClientMessageQueue() {
+    public synchronized LinkedBlockingDeque<String> getClientMessageQueue() {
 
         return clientMessageQueue;
     }

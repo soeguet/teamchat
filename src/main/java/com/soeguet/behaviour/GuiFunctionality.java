@@ -203,12 +203,10 @@ public class GuiFunctionality implements SocketToGuiInterface {
         return this.mainFrame.getTextEditorPane().getText();
     }
 
-
     private void clearTextPane() {
 
         this.mainFrame.getTextEditorPane().setText("");
     }
-
 
     private String convertUserTextToJSON(String userTextInput) {
 
@@ -261,18 +259,15 @@ public class GuiFunctionality implements SocketToGuiInterface {
             default -> {
 
                 mainFrame.getClientMessageQueue().add(message);
-
-                if (!mainFrame.getIsProcessingClientMessages().get()) {
-
-                    writeGuiMessageToChatPanel();
-                }
+                writeGuiMessageToChatPanel();
             }
         }
     }
 
     private synchronized void writeGuiMessageToChatPanel() {
 
-        String message = mainFrame.getClientMessageQueue().poll();
+
+        String message = mainFrame.getClientMessageQueue().pollFirst();
 
         if (message == null) {
             return;
@@ -325,7 +320,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
     private void setupPicturesLeftSide(final BaseModel messageModel, final String nickname) {
 
-        Color borderColor = determineBorderColor( messageModel.getSender());
+        Color borderColor = determineBorderColor(messageModel.getSender());
 
         PanelLeftImpl panelLeft = new PanelLeftImpl(this.mainFrame, messageModel);
         panelLeft.setupPicturePanelWrapper();
@@ -338,24 +333,24 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
     private void setupPicturesRightSide(final BaseModel messageModel, final String nickname) {
 
-        Color borderColor = determineBorderColor( "own");
+        Color borderColor = determineBorderColor("own");
 
         PanelRightImpl panelRight = new PanelRightImpl(this.mainFrame, messageModel);
         panelRight.setupPicturePanelWrapper();
         panelRight.setBorderColor(borderColor);
         displayNicknameInsteadOfUsername(nickname, panelRight);
-        addMessagePanelToMainChatPanel( panelRight, "trailing");
+        addMessagePanelToMainChatPanel(panelRight, "trailing");
     }
 
     private void setupMessagesLeftSide(final BaseModel messageModel, final String nickname) {
 
-        Color borderColor = determineBorderColor( messageModel.getSender());
+        Color borderColor = determineBorderColor(messageModel.getSender());
 
         PanelLeftImpl panelLeft = new PanelLeftImpl(this.mainFrame, messageModel, PanelTypes.NORMAL);
         panelLeft.setupTextPanelWrapper();
         panelLeft.setBorderColor(borderColor);
         displayNicknameInsteadOfUsername(nickname, panelLeft);
-        addMessagePanelToMainChatPanel( panelLeft, "leading");
+        addMessagePanelToMainChatPanel(panelLeft, "leading");
 
         new NotificationImpl(this.mainFrame, messageModel).setNotificationText();
     }
@@ -368,7 +363,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
         panelRight.setupTextPanelWrapper();
         panelRight.setBorderColor(borderColor);
         displayNicknameInsteadOfUsername(nickname, panelRight);
-        addMessagePanelToMainChatPanel( panelRight, "trailing");
+        addMessagePanelToMainChatPanel(panelRight, "trailing");
     }
 
     private void checkIfDequeIsEmptyOrStartOver() {
@@ -385,7 +380,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         SwingUtilities.invokeLater(() -> scrollMainPanelDownToLastMessage(this.mainFrame.getMainTextBackgroundScrollPane()));
 
-        if (!this.mainFrame.getClientMessageQueue().isEmpty()) {
+        if (!this.mainFrame.getClientMessageQueue().isEmpty() && this.mainFrame.getPossibleNotifications() > 0) {
 
             writeGuiMessageToChatPanel();
 
@@ -444,7 +439,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
         }
     }
 
-
     private Color determineBorderColor(String sender) {
 
         if (this.mainFrame.getChatClientPropertiesHashMap().containsKey(sender)) {
@@ -455,8 +449,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
         return new Color(getRandomRgbIntValue());
     }
 
-
-    private String checkForNickname( String sender) {
+    private String checkForNickname(String sender) {
 
         if (this.mainFrame.getChatClientPropertiesHashMap().containsKey(sender) && this.mainFrame.getChatClientPropertiesHashMap().get(sender).getNickname() != null && !this.mainFrame.getChatClientPropertiesHashMap().get(sender).getNickname().isEmpty()) {
 
@@ -493,5 +486,20 @@ public class GuiFunctionality implements SocketToGuiInterface {
     private BaseModel convertJsonToMessageModel(String jsonMessage) throws JsonProcessingException {
 
         return this.objectMapper.readValue(jsonMessage, BaseModel.class);
+    }
+
+    public void displayRemainingNotifications() {
+
+
+        final int possibleNotifications = this.mainFrame.getPossibleNotifications();
+
+        System.out.println("1) possibleNotifications: " + possibleNotifications);
+
+        if (possibleNotifications < 1) {
+            return;
+        }
+        this.mainFrame.setPossibleNotifications(possibleNotifications - 1);
+
+        //TODO implement showing the remaining notifications (if sent by someone else!)
     }
 }

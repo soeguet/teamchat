@@ -137,11 +137,12 @@ public class NotificationImpl extends Notification {
     private void modifyNotificationPanel(final int screenResolutionWidth, final int newYPosition) {
 
         //prevent notifications from spamming the whole screen height
-        if (newYPosition > 500) {
-
-            SwingUtilities.invokeLater(() -> this.mainFrame.getNotificationList().getFirst().removeDialogAndReorderMessages());
-
-        }
+        //TODO might be a good idea to remove this if only 3 concurrent notifications are allowed
+//        if (newYPosition > 500) {
+//
+//            SwingUtilities.invokeLater(() -> this.mainFrame.getNotificationList().getFirst().removeDialogAndReorderMessages());
+//
+//        }
 
         int MARGIN_RIGHT = 10;
         setBounds(screenResolutionWidth - getWidth() - MARGIN_RIGHT, newYPosition + MARGIN_TOP, getWidth(), getHeight());
@@ -169,11 +170,6 @@ public class NotificationImpl extends Notification {
 
     private void removeDialogAndReorderMessages() {
 
-        if (this.timer != null && this.timer.isRunning()) {
-
-            this.timer.stop();
-        }
-
         this.mainFrame.getNotificationList().remove(this);
         final int notificationTextHeight = getHeight();
         setVisible(false);
@@ -185,7 +181,18 @@ public class NotificationImpl extends Notification {
             return;
         }
 
-        this.mainFrame.triggerRelocationActiveNotification(notificationTextHeight);
+        //TODO reimplement relocation
+//        this.mainFrame.triggerRelocationActiveNotification(notificationTextHeight);
+
+        final int possibleNotifications = this.mainFrame.getPossibleNotifications();
+
+        System.out.println("Possible notifications: " + possibleNotifications);
+        this.mainFrame.setPossibleNotifications(possibleNotifications + 1);
+
+        if (possibleNotifications > 0) {
+
+            this.mainFrame.getGuiFunctionality().displayRemainingNotifications();
+        }
     }
 
     private void adjustNotificationPanelHeight(final int factor) {
