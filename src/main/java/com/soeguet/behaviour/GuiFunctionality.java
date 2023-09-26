@@ -297,22 +297,12 @@ public class GuiFunctionality implements SocketToGuiInterface {
         final BaseModel baseModel = getMessageModel(message);
         this.mainFrame.getNotificationActiveQueue().add(baseModel);
 
-        if (baseModel instanceof MessageModel) {
+        createNotification(baseModel);
 
-            Timer timer = new Timer(500, e -> {
-                new NotificationImpl(this.mainFrame, baseModel).setNotificationText();
-            });
-            timer.setRepeats(false);
-            timer.start();
+        handleRemainingCapacityInQueue();
+    }
 
-        } else if (baseModel instanceof PictureModel) {
-
-            Timer timer = new Timer(500, e -> {
-                new NotificationImpl(this.mainFrame, baseModel).setNotificationText();
-            });
-            timer.setRepeats(false);
-            timer.start();
-        }
+    private void handleRemainingCapacityInQueue() {
 
         if (this.mainFrame.getNotificationActiveQueue().remainingCapacity() > 0) {
 
@@ -321,6 +311,32 @@ public class GuiFunctionality implements SocketToGuiInterface {
             Timer timer = new Timer(750, e -> notificationActiveQueueHandling(first));
             timer.setRepeats(false);
             timer.start();
+        }
+    }
+
+    private void createNotification(final BaseModel baseModel) {
+
+        switch (baseModel) {
+            case MessageModel text -> {
+
+                Timer timer = new Timer(500, e -> {
+                    new NotificationImpl(this.mainFrame, text).setNotificationText();
+                });
+                timer.setRepeats(false);
+                timer.start();
+
+            }
+
+            case PictureModel picture -> {
+
+                Timer timer = new Timer(500, e -> {
+                    new NotificationImpl(this.mainFrame, picture).setNotificationText();
+                });
+                timer.setRepeats(false);
+                timer.start();
+            }
+
+            default -> LOGGER.info("Unknown message type");
         }
     }
 
@@ -381,7 +397,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         Color borderColor = determineBorderColor(messageModel.getSender());
 
-        PanelLeftImpl panelLeft = new PanelLeftImpl(this.mainFrame, messageModel);
+        CommentInterface panelLeft = new PanelLeftImpl(this.mainFrame, messageModel);
         panelLeft.setupPicturePanelWrapper();
         panelLeft.setBorderColor(borderColor);
         displayNicknameInsteadOfUsername(nickname, panelLeft);
@@ -392,7 +408,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         Color borderColor = determineBorderColor("own");
 
-        PanelRightImpl panelRight = new PanelRightImpl(this.mainFrame, messageModel);
+        CommentInterface panelRight = new PanelRightImpl(this.mainFrame, messageModel);
         panelRight.setupPicturePanelWrapper();
         panelRight.setBorderColor(borderColor);
         displayNicknameInsteadOfUsername(nickname, panelRight);
@@ -403,7 +419,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         Color borderColor = determineBorderColor(messageModel.getSender());
 
-        PanelLeftImpl panelLeft = new PanelLeftImpl(this.mainFrame, messageModel, PanelTypes.NORMAL);
+        CommentInterface panelLeft = new PanelLeftImpl(this.mainFrame, messageModel, PanelTypes.NORMAL);
         panelLeft.setupTextPanelWrapper();
         panelLeft.setBorderColor(borderColor);
         displayNicknameInsteadOfUsername(nickname, panelLeft);
@@ -415,7 +431,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         Color borderColor = determineBorderColor("own");
 
-        PanelRightImpl panelRight = new PanelRightImpl(this.mainFrame, messageModel, PanelTypes.NORMAL);
+        CommentInterface panelRight = new PanelRightImpl(this.mainFrame, messageModel, PanelTypes.NORMAL);
         panelRight.setupTextPanelWrapper();
         panelRight.setBorderColor(borderColor);
         displayNicknameInsteadOfUsername(nickname, panelRight);
@@ -431,7 +447,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         if (!this.mainFrame.getClientMessageQueue().isEmpty()) {
 
-            System.out.println("Deque not empty, starting over");
             Timer timer = new Timer(300, e -> {
 
                 writeGuiMessageToChatPanel();
@@ -525,8 +540,9 @@ public class GuiFunctionality implements SocketToGuiInterface {
     public void scrollMainPanelDownToLastMessage(JScrollPane scrollPane) {
 
         //EDT check done!
-        scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
+        ((JFrame) this.mainFrame).revalidate();
         ((JFrame) this.mainFrame).repaint();
+        scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
     }
 
     /**
@@ -541,19 +557,5 @@ public class GuiFunctionality implements SocketToGuiInterface {
     private BaseModel convertJsonToMessageModel(String jsonMessage) throws JsonProcessingException {
 
         return this.objectMapper.readValue(jsonMessage, BaseModel.class);
-    }
-
-    public void displayRemainingNotifications() {
-
-        final int possibleNotifications = this.mainFrame.getPossibleNotifications();
-
-        System.out.println("1) possibleNotifications: " + possibleNotifications);
-
-        if (possibleNotifications < 1) {
-            return;
-        }
-        this.mainFrame.setPossibleNotifications(possibleNotifications - 1);
-
-        //TODO implement showing the remaining notifications (if sent by someone else!)
     }
 }

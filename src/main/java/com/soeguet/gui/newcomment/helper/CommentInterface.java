@@ -1,6 +1,7 @@
 package com.soeguet.gui.newcomment.helper;
 
 import javax.swing.*;
+import java.awt.*;
 
 public interface CommentInterface {
 
@@ -9,4 +10,5 @@ public interface CommentInterface {
     void setupTextPanelWrapper();
     void setupPicturePanelWrapper();
     void addRightClickOptionToPanel();
+    void setBorderColor(Color borderColor);
 }

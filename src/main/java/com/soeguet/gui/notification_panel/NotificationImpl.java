@@ -107,7 +107,7 @@ public class NotificationImpl extends Notification {
 
     private void addMessageToNotificationPanel() {
 
-        this.form_nameLabel.setText(this.baseModel.getSender() + "sent a message");
+        this.form_nameLabel.setText(this.baseModel.getSender() + " sent a message");
 
         new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(this.form_notificationMainMessage, this.baseModel.getMessage());
 
@@ -136,14 +136,6 @@ public class NotificationImpl extends Notification {
 
     private void modifyNotificationPanel(final int screenResolutionWidth, final int newYPosition) {
 
-        //prevent notifications from spamming the whole screen height
-        //TODO might be a good idea to remove this if only 3 concurrent notifications are allowed
-//        if (newYPosition > 500) {
-//
-//            SwingUtilities.invokeLater(() -> this.mainFrame.getNotificationList().getFirst().removeDialogAndReorderMessages());
-//
-//        }
-
         int MARGIN_RIGHT = 10;
         setBounds(screenResolutionWidth - getWidth() - MARGIN_RIGHT, newYPosition + MARGIN_TOP, getWidth(), getHeight());
 
@@ -160,13 +152,10 @@ public class NotificationImpl extends Notification {
     private void addNotificationTimer() {
 
         this.timer = new Timer(5000, e -> {
-
-//            removeDialogAndReorderMessages();
             processNotificationQueue();
         });
         this.timer.setRepeats(false);
         this.timer.start();
-
     }
 
     private void processNotificationQueue() {
@@ -180,33 +169,6 @@ public class NotificationImpl extends Notification {
             this.mainFrame.setNotificationPositionY(0);
             final String first = this.mainFrame.getNotificationWaitingQueue().pollFirst();
             this.mainFrame.getGuiFunctionality().notificationActiveQueueHandling(first);
-        }
-    }
-
-    private void removeDialogAndReorderMessages() {
-
-        this.mainFrame.getNotificationList().remove(this);
-        final int notificationTextHeight = getHeight();
-        setVisible(false);
-        dispose();
-
-        if (this.mainFrame.getNotificationList().isEmpty()) {
-
-            this.mainFrame.setNotificationPositionY(0);
-            return;
-        }
-
-        //TODO reimplement relocation
-//        this.mainFrame.triggerRelocationActiveNotification(notificationTextHeight);
-
-        final int possibleNotifications = this.mainFrame.getPossibleNotifications();
-
-        System.out.println("Possible notifications: " + possibleNotifications);
-        this.mainFrame.setPossibleNotifications(possibleNotifications + 1);
-
-        if (possibleNotifications > 0) {
-
-            this.mainFrame.getGuiFunctionality().displayRemainingNotifications();
         }
     }
 
