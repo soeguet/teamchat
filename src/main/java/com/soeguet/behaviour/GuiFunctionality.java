@@ -39,6 +39,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
     private final MainFrameInterface mainFrame;
     private final ObjectMapper objectMapper = new ObjectMapper();
     Logger LOGGER = Logger.getLogger(GuiFunctionality.class.getName());
+    private Timer messageToPanelTimer;
 
     /**
      Constructs a new GuiFunctionality object with the given main frame.
@@ -260,7 +261,15 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
                 mainFrame.getClientMessageQueue().add(message);
                 createDesktopNotification(message);
-                writeGuiMessageToChatPanel();
+
+                //using time to prevent spamming the GUI and making use of the cached messages
+                if (messageToPanelTimer != null) {
+                    messageToPanelTimer.stop();
+                }
+
+                messageToPanelTimer = new Timer(500, e -> writeGuiMessageToChatPanel());
+                messageToPanelTimer.setRepeats(false);
+                messageToPanelTimer.start();
             }
         }
     }
@@ -290,17 +299,28 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         if (baseModel instanceof MessageModel) {
 
-            SwingUtilities.invokeLater(() -> new NotificationImpl(this.mainFrame, baseModel).setNotificationText());
+            Timer timer = new Timer(500, e -> {
+                new NotificationImpl(this.mainFrame, baseModel).setNotificationText();
+            });
+            timer.setRepeats(false);
+            timer.start();
 
         } else if (baseModel instanceof PictureModel) {
 
-            SwingUtilities.invokeLater(() -> new NotificationImpl(this.mainFrame, baseModel).setNotificationText());
+            Timer timer = new Timer(500, e -> {
+                new NotificationImpl(this.mainFrame, baseModel).setNotificationText();
+            });
+            timer.setRepeats(false);
+            timer.start();
         }
 
         if (this.mainFrame.getNotificationActiveQueue().remainingCapacity() > 0) {
 
             final String first = this.mainFrame.getNotificationWaitingQueue().pollFirst();
-            this.notificationActiveQueueHandling(first);
+
+            Timer timer = new Timer(750, e -> notificationActiveQueueHandling(first));
+            timer.setRepeats(false);
+            timer.start();
         }
     }
 
@@ -366,8 +386,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
         panelLeft.setBorderColor(borderColor);
         displayNicknameInsteadOfUsername(nickname, panelLeft);
         addMessagePanelToMainChatPanel(panelLeft, "leading");
-
-//        new NotificationImpl(this.mainFrame, messageModel).setNotificationText();
     }
 
     private void setupPicturesRightSide(final BaseModel messageModel, final String nickname) {
@@ -391,7 +409,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
         displayNicknameInsteadOfUsername(nickname, panelLeft);
         addMessagePanelToMainChatPanel(panelLeft, "leading");
 
-//        new NotificationImpl(this.mainFrame, messageModel).setNotificationText();
     }
 
     private void setupMessagesRightSide(final BaseModel messageModel, final String nickname) {
@@ -407,22 +424,21 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
     private void checkIfDequeIsEmptyOrStartOver() {
 
-        // ensure that the scrollpane can keep up with the additons!
-        try {
-
-            Thread.sleep(200);
-
-        } catch (InterruptedException e) {
-
-            throw new RuntimeException(e);
-        }
+        ((JFrame) this.mainFrame).revalidate();
+        ((JFrame) this.mainFrame).repaint();
 
         SwingUtilities.invokeLater(() -> scrollMainPanelDownToLastMessage(this.mainFrame.getMainTextBackgroundScrollPane()));
 
-        if (!this.mainFrame.getClientMessageQueue().isEmpty() && this.mainFrame.getPossibleNotifications() > 0) {
+        if (!this.mainFrame.getClientMessageQueue().isEmpty()) {
 
-            writeGuiMessageToChatPanel();
+            System.out.println("Deque not empty, starting over");
+            Timer timer = new Timer(300, e -> {
 
+                writeGuiMessageToChatPanel();
+                scrollMainPanelDownToLastMessage(this.mainFrame.getMainTextBackgroundScrollPane());
+            });
+            timer.setRepeats(false);
+            timer.start();
         }
 
     }

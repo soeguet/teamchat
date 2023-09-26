@@ -63,6 +63,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     private volatile int notificationPositionY = 0;
     private boolean startUp = true;
     private volatile int possibleNotifications = 3;
+
     public ChatMainFrameImpl(final EnvVariables envVariables) {
 
         this.envVariables = envVariables;
@@ -105,10 +106,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             JSCROLLPANE_MARGIN_BOTTOM_BORDER = 56;
             JSCROLLPANE_MARGIN_RIGHT_BORDER = 4;
         }
-    }    @Override
-    public void setStartUp(final boolean startUp) {
-
-        this.startUp = startUp;
     }
 
     private void initEmojiHandlerAndList() {
@@ -196,10 +193,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         websocketClient = new CustomWebsocketClient(serverUri, this);
         websocketClient.connect();
 
-    }    @Override
-    public List<NotificationImpl> getNotificationList() {
-
-        return notificationList;
     }
 
     /**
@@ -245,21 +238,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         }
     }
 
-    public LinkedBlockingDeque<BaseModel> getNotificationActiveQueue() {
-
-        return notificationActiveQueue;
-    }
-
-    public LinkedBlockingDeque<String> getNotificationWaitingQueue() {
-
-        return notificationWaitingQueue;
-    }
-
-    public boolean isStartUp() {
-
-        return startUp;
-    }
-
     /**
      {@inheritDoc}
 
@@ -272,9 +250,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     protected void thisPropertyChange(PropertyChangeEvent e) {
 
     }    @Override
-    public synchronized int getPossibleNotifications() {
+    public void setStartUp(final boolean startUp) {
 
-        return possibleNotifications;
+        this.startUp = startUp;
     }
 
     /**
@@ -288,10 +266,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         this.form_mainTextBackgroundScrollPane.setBounds(1, 1, e.getComponent().getWidth() - JSCROLLPANE_MARGIN_RIGHT_BORDER, e.getComponent().getHeight() - form_interactionAreaPanel.getHeight() - JSCROLLPANE_MARGIN_BOTTOM_BORDER);
         this.revalidate();
         this.repaint();
-    }    @Override
-    public synchronized void setPossibleNotifications(final int possibleNotifications) {
-
-        this.possibleNotifications = possibleNotifications;
     }
 
     /**
@@ -302,17 +276,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void thisMouseClicked(MouseEvent e) {
 
-    }    @Override
-    public synchronized void triggerRelocationActiveNotification(int moveUpY) {
-
-        final AtomicInteger position = new AtomicInteger();
-
-        notificationList.forEach(notification -> {
-            final int relocatedY = notification.relocateNotification(moveUpY);
-            position.set(relocatedY);
-        });
-
-        setNotificationPositionY(position.get());
     }
 
     /**
@@ -369,10 +332,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             this.dispose();
             System.exit(0);
         });
-    }    @Override
-    public synchronized int getNotificationPositionY() {
-
-        return notificationPositionY;
     }
 
     /**
@@ -406,10 +365,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void textEditorPaneMouseClicked(MouseEvent e) {
 
-    }    @Override
-    public synchronized void setNotificationPositionY(int notificationPositionY) {
-
-        this.notificationPositionY = notificationPositionY;
     }
 
     /**
@@ -473,6 +428,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         }
 
+    }    @Override
+    public List<NotificationImpl> getNotificationList() {
+
+        return notificationList;
     }
 
     /**
@@ -582,6 +541,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     public String getUsername() {
 
         return username;
+    }    public LinkedBlockingDeque<BaseModel> getNotificationActiveQueue() {
+
+        return notificationActiveQueue;
     }
 
     /**
@@ -657,6 +619,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     public CustomProperties getCustomProperties() {
 
         return customProperties;
+    }    public LinkedBlockingDeque<String> getNotificationWaitingQueue() {
+
+        return notificationWaitingQueue;
     }
 
     /**
@@ -676,17 +641,45 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         return isProcessingClientMessages;
     }
 
+    @Override
+    public synchronized int getNotificationPositionY() {
 
+        return this.notificationPositionY;
+    }
+    public boolean isStartUp() {
 
+        return startUp;
+    }
 
+    @Override
+    public synchronized int getPossibleNotifications() {
 
+        return possibleNotifications;
+    }
 
+    @Override
+    public synchronized void setPossibleNotifications(final int possibleNotifications) {
 
+        this.possibleNotifications = possibleNotifications;
+    }
 
+    @Override
+    public synchronized void triggerRelocationActiveNotification(int moveUpY) {
 
+        final AtomicInteger position = new AtomicInteger();
 
+        notificationList.forEach(notification -> {
+            final int relocatedY = notification.relocateNotification(moveUpY);
+            position.set(relocatedY);
+        });
 
+        setNotificationPositionY(position.get());
+    }
 
+    @Override
+    public synchronized void setNotificationPositionY(int notificationPositionY) {
 
+        this.notificationPositionY = notificationPositionY;
+    }
 
 }
