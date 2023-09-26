@@ -96,7 +96,7 @@ public class NotificationImpl extends Notification {
         addMessageToNotificationPanel();
         final int screenResolutionWidth = determineScreenWidth();
 
-        int newYPosition = this.mainFrame.getNotificationPositionY();
+        int newYPosition = this.mainFrame.getNotificationPositionY()+25;
 
         modifyNotificationPanel(screenResolutionWidth, newYPosition);
 
@@ -161,11 +161,26 @@ public class NotificationImpl extends Notification {
 
         this.timer = new Timer(5000, e -> {
 
-            removeDialogAndReorderMessages();
+//            removeDialogAndReorderMessages();
+            processNotificationQueue();
         });
         this.timer.setRepeats(false);
         this.timer.start();
 
+    }
+
+    private void processNotificationQueue() {
+
+        setVisible(false);
+        dispose();
+
+        final boolean remove = this.mainFrame.getNotificationActiveQueue().remove(this.baseModel);
+
+        if (remove && this.mainFrame.getNotificationActiveQueue().isEmpty()) {
+            this.mainFrame.setNotificationPositionY(0);
+            final String first = this.mainFrame.getNotificationWaitingQueue().pollFirst();
+            this.mainFrame.getGuiFunctionality().notificationActiveQueueHandling(first);
+        }
     }
 
     private void removeDialogAndReorderMessages() {

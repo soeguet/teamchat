@@ -259,13 +259,52 @@ public class GuiFunctionality implements SocketToGuiInterface {
             default -> {
 
                 mainFrame.getClientMessageQueue().add(message);
+                createDesktopNotification(message);
                 writeGuiMessageToChatPanel();
             }
         }
     }
 
-    private synchronized void writeGuiMessageToChatPanel() {
+    private void createDesktopNotification(final String message) {
 
+        final int remainingCapacity = this.mainFrame.getNotificationActiveQueue().remainingCapacity();
+
+        if (remainingCapacity < 1) {
+
+            this.mainFrame.getNotificationWaitingQueue().add(message);
+
+        } else {
+
+            notificationActiveQueueHandling(message);
+        }
+    }
+
+    public synchronized void notificationActiveQueueHandling(String message) {
+
+        if (message == null) {
+            return;
+        }
+
+        final BaseModel baseModel = getMessageModel(message);
+        this.mainFrame.getNotificationActiveQueue().add(baseModel);
+
+        if (baseModel instanceof MessageModel) {
+
+            SwingUtilities.invokeLater(() -> new NotificationImpl(this.mainFrame, baseModel).setNotificationText());
+
+        } else if (baseModel instanceof PictureModel) {
+
+            SwingUtilities.invokeLater(() -> new NotificationImpl(this.mainFrame, baseModel).setNotificationText());
+        }
+
+        if (this.mainFrame.getNotificationActiveQueue().remainingCapacity() > 0) {
+
+            final String first = this.mainFrame.getNotificationWaitingQueue().pollFirst();
+            this.notificationActiveQueueHandling(first);
+        }
+    }
+
+    private synchronized void writeGuiMessageToChatPanel() {
 
         String message = mainFrame.getClientMessageQueue().pollFirst();
 
@@ -328,7 +367,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
         displayNicknameInsteadOfUsername(nickname, panelLeft);
         addMessagePanelToMainChatPanel(panelLeft, "leading");
 
-        new NotificationImpl(this.mainFrame, messageModel).setNotificationText();
+//        new NotificationImpl(this.mainFrame, messageModel).setNotificationText();
     }
 
     private void setupPicturesRightSide(final BaseModel messageModel, final String nickname) {
@@ -352,7 +391,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
         displayNicknameInsteadOfUsername(nickname, panelLeft);
         addMessagePanelToMainChatPanel(panelLeft, "leading");
 
-        new NotificationImpl(this.mainFrame, messageModel).setNotificationText();
+//        new NotificationImpl(this.mainFrame, messageModel).setNotificationText();
     }
 
     private void setupMessagesRightSide(final BaseModel messageModel, final String nickname) {
@@ -489,7 +528,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
     }
 
     public void displayRemainingNotifications() {
-
 
         final int possibleNotifications = this.mainFrame.getPossibleNotifications();
 

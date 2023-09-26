@@ -8,6 +8,7 @@ import com.soeguet.gui.notification_panel.NotificationImpl;
 import com.soeguet.gui.popups.PopupPanelImpl;
 import com.soeguet.gui.properties.PropertiesPanelImpl;
 import com.soeguet.model.EnvVariables;
+import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.properties.CustomProperties;
 import com.soeguet.properties.CustomUserProperties;
 import com.soeguet.socket_client.CustomWebsocketClient;
@@ -39,12 +40,17 @@ import java.util.logging.Logger;
 public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
     private final Logger logger = Logger.getLogger(ChatMainFrameImpl.class.getName());
-    private final LinkedBlockingDeque<String> messageQueue;
     private final HashMap<String, CustomUserProperties> chatClientPropertiesHashMap;
-    private final LinkedBlockingDeque<String> clientMessageQueue;
+    private final LinkedBlockingDeque<String> socketMessageQueue;
+
+    private final LinkedBlockingDeque<String> messageQueue;
+    private final LinkedBlockingDeque<BaseModel> notificationActiveQueue;
+    private final LinkedBlockingDeque<String> notificationWaitingQueue;
     private final ObjectMapper objectMapper;
     private final CustomProperties customProperties;
     private final List<NotificationImpl> notificationList = new ArrayList<>();
+    private final AtomicBoolean isProcessingClientMessages = new AtomicBoolean(false);
+    private final EnvVariables envVariables;
     private GuiFunctionality guiFunctionality;
     private URI serverUri;
     private int JSCROLLPANE_MARGIN_RIGHT_BORDER;
@@ -54,22 +60,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     private CustomWebsocketClient websocketClient;
     private String username;
     private JPanel messagePanel;
-    private final AtomicBoolean isProcessingClientMessages = new AtomicBoolean(false);
-    private final EnvVariables envVariables;
     private volatile int notificationPositionY = 0;
     private boolean startUp = true;
-
-    public boolean isStartUp() {
-
-        return startUp;
-    }
-
-    @Override
-    public void setStartUp(final boolean startUp) {
-
-        this.startUp = startUp;
-    }
-
+    private volatile int possibleNotifications = 3;
     public ChatMainFrameImpl(final EnvVariables envVariables) {
 
         this.envVariables = envVariables;
@@ -81,8 +74,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             SwingUtilities.invokeLater(() -> setLocation(Integer.parseInt(chatXPosition), 100));
         }
 
-        clientMessageQueue = new LinkedBlockingDeque<>();
+        socketMessageQueue = new LinkedBlockingDeque<>();
         messageQueue = new LinkedBlockingDeque<>();
+        notificationActiveQueue = new LinkedBlockingDeque<>(3);
+        notificationWaitingQueue = new LinkedBlockingDeque<>();
         chatClientPropertiesHashMap = new HashMap<>();
         objectMapper = new ObjectMapper();
         customProperties = new CustomProperties(this);
@@ -110,12 +105,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             JSCROLLPANE_MARGIN_BOTTOM_BORDER = 56;
             JSCROLLPANE_MARGIN_RIGHT_BORDER = 4;
         }
-    }
+    }    @Override
+    public void setStartUp(final boolean startUp) {
 
-    @Override
-    public List<NotificationImpl> getNotificationList() {
-
-        return notificationList;
+        this.startUp = startUp;
     }
 
     private void initEmojiHandlerAndList() {
@@ -193,51 +186,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         }
     }
 
-    private void validateServerInformationInputByUser(final String serverIpText, final String serverPortText) {
-
-        if (serverIpText.isEmpty() || serverPortText.isEmpty()) {
-
-            JOptionPane.showMessageDialog(this, "Server IP or port is empty", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-
-        if (!serverIpText.matches("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$")) {
-
-            JOptionPane.showMessageDialog(this, "Server IP is invalid", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-
-        if (!serverPortText.matches("^[0-9]+$")) {
-
-            JOptionPane.showMessageDialog(this, "Server port is invalid", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private volatile int possibleNotifications = 3;
-
-    @Override
-    public synchronized int getPossibleNotifications() {
-
-        return possibleNotifications;
-    }
-
-    @Override
-    public synchronized void setPossibleNotifications(final int possibleNotifications) {
-
-        this.possibleNotifications = possibleNotifications;
-    }
-
-    @Override
-    public synchronized void triggerRelocationActiveNotification(int moveUpY) {
-
-        final AtomicInteger position = new AtomicInteger();
-
-        notificationList.forEach(notification -> {
-            final int relocatedY = notification.relocateNotification(moveUpY);
-            position.set(relocatedY);
-        });
-
-        setNotificationPositionY(position.get());
-    }
-
     /**
      Establishes a connection to a WebSocket server.
 
@@ -248,6 +196,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         websocketClient = new CustomWebsocketClient(serverUri, this);
         websocketClient.connect();
 
+    }    @Override
+    public List<NotificationImpl> getNotificationList() {
+
+        return notificationList;
     }
 
     /**
@@ -275,10 +227,37 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         return myPanel;
     }
 
-    @Override
-    public synchronized int getNotificationPositionY() {
+    private void validateServerInformationInputByUser(final String serverIpText, final String serverPortText) {
 
-        return notificationPositionY;
+        if (serverIpText.isEmpty() || serverPortText.isEmpty()) {
+
+            JOptionPane.showMessageDialog(this, "Server IP or port is empty", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        if (!serverIpText.matches("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$")) {
+
+            JOptionPane.showMessageDialog(this, "Server IP is invalid", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        if (!serverPortText.matches("^[0-9]+$")) {
+
+            JOptionPane.showMessageDialog(this, "Server port is invalid", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public LinkedBlockingDeque<BaseModel> getNotificationActiveQueue() {
+
+        return notificationActiveQueue;
+    }
+
+    public LinkedBlockingDeque<String> getNotificationWaitingQueue() {
+
+        return notificationWaitingQueue;
+    }
+
+    public boolean isStartUp() {
+
+        return startUp;
     }
 
     /**
@@ -292,6 +271,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void thisPropertyChange(PropertyChangeEvent e) {
 
+    }    @Override
+    public synchronized int getPossibleNotifications() {
+
+        return possibleNotifications;
     }
 
     /**
@@ -305,12 +288,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         this.form_mainTextBackgroundScrollPane.setBounds(1, 1, e.getComponent().getWidth() - JSCROLLPANE_MARGIN_RIGHT_BORDER, e.getComponent().getHeight() - form_interactionAreaPanel.getHeight() - JSCROLLPANE_MARGIN_BOTTOM_BORDER);
         this.revalidate();
         this.repaint();
-    }
+    }    @Override
+    public synchronized void setPossibleNotifications(final int possibleNotifications) {
 
-    @Override
-    public synchronized void setNotificationPositionY(int notificationPositionY) {
-
-        this.notificationPositionY = notificationPositionY;
+        this.possibleNotifications = possibleNotifications;
     }
 
     /**
@@ -321,6 +302,17 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void thisMouseClicked(MouseEvent e) {
 
+    }    @Override
+    public synchronized void triggerRelocationActiveNotification(int moveUpY) {
+
+        final AtomicInteger position = new AtomicInteger();
+
+        notificationList.forEach(notification -> {
+            final int relocatedY = notification.relocateNotification(moveUpY);
+            position.set(relocatedY);
+        });
+
+        setNotificationPositionY(position.get());
     }
 
     /**
@@ -363,136 +355,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     Retrieves the WebSocket client.
-
-     @return The WebSocket client.
-     */
-    @Override
-    public CustomWebsocketClient getWebsocketClient() {
-
-        return websocketClient;
-    }
-
-    /**
-     Gets the ObjectMapper instance used for converting JSON to Java objects and vice versa.
-
-     @return the ObjectMapper instance
-     */
-    @Override
-    public ObjectMapper getObjectMapper() {
-
-        return objectMapper;
-    }
-
-    /**
-     Retrieves the GuiFunctionality.
-
-     @return the GuiFunctionality object.
-     */
-    @Override
-    public GuiFunctionality getGuiFunctionality() {
-
-        return guiFunctionality;
-    }
-
-    /**
-     Retrieves the username.
-
-     @return the username as a String.
-     */
-    @Override
-    public String getUsername() {
-
-        return username;
-    }
-
-    /**
-     Sets the username.
-
-     @param username the username to set.
-     */
-    @Override
-    public void setUsername(String username) {
-
-        this.username = username;
-    }
-
-    /**
-     Retrieves the message panel.
-
-     @return the JPanel object representing the message panel.
-     */
-    @Override
-    public JPanel getMessagePanel() {
-
-        return messagePanel;
-    }
-
-    /**
-     Sets the message panel for displaying messages.
-
-     @param messagePanel the JPanel to set as the message panel.
-     */
-    @Override
-    public void setMessagePanel(JPanel messagePanel) {
-
-        this.messagePanel = messagePanel;
-    }
-
-    /**
-     Retrieves the message queue containing the messages.
-
-     @return the LinkedBlockingDeque<String> representing the message queue.
-     */
-    @Override
-    public LinkedBlockingDeque<String> getMessageQueue() {
-
-        return messageQueue;
-    }
-
-    /**
-     Returns a HashMap containing the list of emojis and their corresponding image icons.
-
-     <p>This method returns the emojiList HashMap, which contains the emojis and their corresponding image icons.
-     The key in the HashMap represents the emoji text, and the value represents the corresponding image icon.
-
-     @return the HashMap containing the list of emojis and their corresponding image icons
-     */
-    @Override
-    public HashMap<String, ImageIcon> getEmojiList() {
-
-        return emojiList;
-    }
-
-    @Override
-    public HashMap<String, CustomUserProperties> getChatClientPropertiesHashMap() {
-
-        return chatClientPropertiesHashMap;
-    }
-
-    /**
-     Returns the custom properties object.
-
-     @return the custom properties object.
-     */
-    @Override
-    public CustomProperties getCustomProperties() {
-
-        return customProperties;
-    }
-
-    /**
-     Retrieves the client message queue.
-
-     @return A LinkedBlockingDeque object representing the client message queue.
-     */
-    @Override
-    public synchronized LinkedBlockingDeque<String> getClientMessageQueue() {
-
-        return clientMessageQueue;
-    }
-
-    /**
      Handles the event when the mouse presses the exit menu item. Sets the default close operation
      for the current JFrame to EXIT_ON_CLOSE and disposes the current JFrame.
 
@@ -507,6 +369,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             this.dispose();
             System.exit(0);
         });
+    }    @Override
+    public synchronized int getNotificationPositionY() {
+
+        return notificationPositionY;
     }
 
     /**
@@ -540,6 +406,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void textEditorPaneMouseClicked(MouseEvent e) {
 
+    }    @Override
+    public synchronized void setNotificationPositionY(int notificationPositionY) {
+
+        this.notificationPositionY = notificationPositionY;
     }
 
     /**
@@ -670,9 +540,153 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         serverInformationOptionPane();
     }
 
+    /**
+     Retrieves the WebSocket client.
+
+     @return The WebSocket client.
+     */
+    @Override
+    public CustomWebsocketClient getWebsocketClient() {
+
+        return websocketClient;
+    }
+
+    /**
+     Gets the ObjectMapper instance used for converting JSON to Java objects and vice versa.
+
+     @return the ObjectMapper instance
+     */
+    @Override
+    public ObjectMapper getObjectMapper() {
+
+        return objectMapper;
+    }
+
+    /**
+     Retrieves the GuiFunctionality.
+
+     @return the GuiFunctionality object.
+     */
+    @Override
+    public GuiFunctionality getGuiFunctionality() {
+
+        return guiFunctionality;
+    }
+
+    /**
+     Retrieves the username.
+
+     @return the username as a String.
+     */
+    @Override
+    public String getUsername() {
+
+        return username;
+    }
+
+    /**
+     Sets the username.
+
+     @param username the username to set.
+     */
+    @Override
+    public void setUsername(String username) {
+
+        this.username = username;
+    }
+
+    /**
+     Retrieves the message panel.
+
+     @return the JPanel object representing the message panel.
+     */
+    @Override
+    public JPanel getMessagePanel() {
+
+        return messagePanel;
+    }
+
+    /**
+     Sets the message panel for displaying messages.
+
+     @param messagePanel the JPanel to set as the message panel.
+     */
+    @Override
+    public void setMessagePanel(JPanel messagePanel) {
+
+        this.messagePanel = messagePanel;
+    }
+
+    /**
+     Retrieves the message queue containing the messages.
+
+     @return the LinkedBlockingDeque<String> representing the message queue.
+     */
+    @Override
+    public LinkedBlockingDeque<String> getMessageQueue() {
+
+        return messageQueue;
+    }
+
+    /**
+     Returns a HashMap containing the list of emojis and their corresponding image icons.
+
+     <p>This method returns the emojiList HashMap, which contains the emojis and their corresponding image icons.
+     The key in the HashMap represents the emoji text, and the value represents the corresponding image icon.
+
+     @return the HashMap containing the list of emojis and their corresponding image icons
+     */
+    @Override
+    public HashMap<String, ImageIcon> getEmojiList() {
+
+        return emojiList;
+    }
+
+    @Override
+    public HashMap<String, CustomUserProperties> getChatClientPropertiesHashMap() {
+
+        return chatClientPropertiesHashMap;
+    }
+
+    /**
+     Returns the custom properties object.
+
+     @return the custom properties object.
+     */
+    @Override
+    public CustomProperties getCustomProperties() {
+
+        return customProperties;
+    }
+
+    /**
+     Retrieves the client message queue.
+
+     @return A LinkedBlockingDeque object representing the client message queue.
+     */
+    @Override
+    public synchronized LinkedBlockingDeque<String> getClientMessageQueue() {
+
+        return socketMessageQueue;
+    }
+
     @Override
     public AtomicBoolean getIsProcessingClientMessages() {
 
         return isProcessingClientMessages;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

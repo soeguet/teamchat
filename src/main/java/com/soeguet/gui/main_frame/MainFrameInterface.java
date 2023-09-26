@@ -3,6 +3,7 @@ package com.soeguet.gui.main_frame;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.behaviour.GuiFunctionality;
 import com.soeguet.gui.notification_panel.NotificationImpl;
+import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.properties.CustomProperties;
 import com.soeguet.properties.CustomUserProperties;
 import com.soeguet.socket_client.CustomWebsocketClient;
@@ -110,7 +111,6 @@ public interface MainFrameInterface {
      */
     void setUsername(String username);
 
-
     /**
      Retrieves the message panel of the application.
 
@@ -154,28 +154,37 @@ public interface MainFrameInterface {
     CustomProperties getCustomProperties();
 
     /**
-     * Returns the client message queue containing the messages to be sent by the chat client.
-     *
-     * @return the client message queue containing the messages to be sent
+     Returns the client message queue containing the messages to be sent by the chat client.
+
+     @return the client message queue containing the messages to be sent
      */
     LinkedBlockingDeque<String> getClientMessageQueue();
 
     /**
-     * Gets the flag indicating whether the chat client is currently processing client messages.
-     *
-     * @return the flag indicating whether the chat client is currently processing client messages
+     Gets the flag indicating whether the chat client is currently processing client messages.
+
+     @return the flag indicating whether the chat client is currently processing client messages
      */
     AtomicBoolean getIsProcessingClientMessages();
-    void setNotificationPositionY(int notificationPositionY);
+
     int getNotificationPositionY();
+
+    void setNotificationPositionY(int notificationPositionY);
 
     List<NotificationImpl> getNotificationList();
 
     void triggerRelocationActiveNotification(int moveUpY);
 
-    void setStartUp(boolean b);
-
     int getPossibleNotifications();
 
     void setPossibleNotifications(int possibleNotifications);
+
+    LinkedBlockingDeque<BaseModel> getNotificationActiveQueue();
+
+    LinkedBlockingDeque<String> getNotificationWaitingQueue();
+
+    boolean isStartUp();
+
+    void setStartUp(boolean b);
+
 }
