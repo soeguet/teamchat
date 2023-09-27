@@ -173,8 +173,6 @@ public interface MainFrameInterface {
 
     List<NotificationImpl> getNotificationList();
 
-    void triggerRelocationActiveNotification(int moveUpY);
-
     int getPossibleNotifications();
 
     void setPossibleNotifications(int possibleNotifications);
@@ -186,5 +184,7 @@ public interface MainFrameInterface {
     boolean isStartUp();
 
     void setStartUp(boolean b);
+
+    JCheckBoxMenuItem getInternalNotificationsMenuItem();
 
 }

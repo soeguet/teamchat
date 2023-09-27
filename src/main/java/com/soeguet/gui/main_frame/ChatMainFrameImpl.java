@@ -18,10 +18,8 @@ import com.soeguet.util.EmojiPopUpMenuHandler;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
+import javax.swing.event.ChangeEvent;
+import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -30,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
 /**
@@ -249,10 +246,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void thisPropertyChange(PropertyChangeEvent e) {
 
-    }    @Override
-    public void setStartUp(final boolean startUp) {
-
-        this.startUp = startUp;
     }
 
     /**
@@ -287,6 +280,23 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     protected void propertiesMenuItemMousePressed(MouseEvent e) {
 
         new PropertiesPanelImpl(this);
+    }
+
+    @Override
+    protected void internalNotificationsMenuItemItemStateChanged(final ItemEvent e) {
+
+        if (e.getStateChange() == ItemEvent.DESELECTED) {
+
+            this.getNotificationWaitingQueue().removeAll(this.getNotificationWaitingQueue());
+
+        }
+    }
+
+    @Override
+    protected void connectionDetailsButtonMousePressed(final MouseEvent e) {
+
+        System.out.println("connectionDetailsButtonMouseClicked");
+        serverInformationOptionPane();
     }
 
     /**
@@ -428,10 +438,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         }
 
-    }    @Override
-    public List<NotificationImpl> getNotificationList() {
-
-        return notificationList;
     }
 
     /**
@@ -492,13 +498,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         guiFunctionality.clearTextPaneAndSendMessageToSocket();
     }
 
-    @Override
-    protected void connectionDetailsButtonMousePressed(final MouseEvent e) {
-
-        System.out.println("connectionDetailsButtonMouseClicked");
-        serverInformationOptionPane();
-    }
-
     /**
      Retrieves the WebSocket client.
 
@@ -532,6 +531,29 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         return guiFunctionality;
     }
 
+    @Override
+    public String getLastMessageSenderName() {
+
+        //TODO
+        return null;
+    }
+
+    @Override
+    public void setLastMessageSenderName(final String lastMessageSenderName) {
+        //TODO
+    }
+
+    @Override
+    public String getLastMessageTimeStamp() {
+        //TODO
+        return null;
+    }
+
+    @Override
+    public void setLastMessageTimeStamp(final String lastMessageTimeStamp) {
+        //TODO
+    }
+
     /**
      Retrieves the username.
 
@@ -541,9 +563,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     public String getUsername() {
 
         return username;
-    }    public LinkedBlockingDeque<BaseModel> getNotificationActiveQueue() {
-
-        return notificationActiveQueue;
     }
 
     /**
@@ -619,9 +638,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     public CustomProperties getCustomProperties() {
 
         return customProperties;
-    }    public LinkedBlockingDeque<String> getNotificationWaitingQueue() {
-
-        return notificationWaitingQueue;
     }
 
     /**
@@ -646,9 +662,17 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         return this.notificationPositionY;
     }
-    public boolean isStartUp() {
 
-        return startUp;
+    @Override
+    public synchronized void setNotificationPositionY(int notificationPositionY) {
+
+        this.notificationPositionY = notificationPositionY;
+    }
+
+    @Override
+    public List<NotificationImpl> getNotificationList() {
+
+        return notificationList;
     }
 
     @Override
@@ -663,23 +687,25 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         this.possibleNotifications = possibleNotifications;
     }
 
-    @Override
-    public synchronized void triggerRelocationActiveNotification(int moveUpY) {
+    public LinkedBlockingDeque<BaseModel> getNotificationActiveQueue() {
 
-        final AtomicInteger position = new AtomicInteger();
+        return notificationActiveQueue;
+    }
 
-        notificationList.forEach(notification -> {
-            final int relocatedY = notification.relocateNotification(moveUpY);
-            position.set(relocatedY);
-        });
+    public LinkedBlockingDeque<String> getNotificationWaitingQueue() {
 
-        setNotificationPositionY(position.get());
+        return notificationWaitingQueue;
+    }
+
+    public boolean isStartUp() {
+
+        return startUp;
     }
 
     @Override
-    public synchronized void setNotificationPositionY(int notificationPositionY) {
+    public void setStartUp(final boolean startUp) {
 
-        this.notificationPositionY = notificationPositionY;
+        this.startUp = startUp;
     }
 
 }

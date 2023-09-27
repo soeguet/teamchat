@@ -4,6 +4,8 @@ import com.soeguet.gui.interaction.ReplyPanelImpl;
 import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.notification_panel.generated.Notification;
 import com.soeguet.model.jackson.BaseModel;
+import com.soeguet.model.jackson.MessageModel;
+import com.soeguet.model.jackson.PictureModel;
 import com.soeguet.util.EmojiHandler;
 
 import javax.swing.*;
@@ -16,9 +18,8 @@ public class NotificationImpl extends Notification {
 
     private final MainFrameInterface mainFrame;
     private final int MARGIN_TOP = 10;
-    private Timer timer;
-
     private final BaseModel baseModel;
+    private Timer timer;
 
     public NotificationImpl(final MainFrameInterface mainFrame, final BaseModel baseModel) {
 
@@ -76,19 +77,9 @@ public class NotificationImpl extends Notification {
         });
     }
 
-    public int relocateNotification(int moveUpByDeltaPixel) {
+    public Timer getTimer() {
 
-        int locationY = getY() - moveUpByDeltaPixel;
-
-        if (locationY < 0) {
-
-            locationY = 0;
-        }
-
-        setBounds(getX(), locationY + MARGIN_TOP, getWidth(), getHeight());
-        repaint();
-
-        return locationY + MARGIN_TOP + getHeight();
+        return this.timer;
     }
 
     public void setNotificationText() {
@@ -96,7 +87,7 @@ public class NotificationImpl extends Notification {
         addMessageToNotificationPanel();
         final int screenResolutionWidth = determineScreenWidth();
 
-        int newYPosition = this.mainFrame.getNotificationPositionY()+25;
+        int newYPosition = this.mainFrame.getNotificationPositionY() + 25;
 
         modifyNotificationPanel(screenResolutionWidth, newYPosition);
 
@@ -107,11 +98,39 @@ public class NotificationImpl extends Notification {
 
     private void addMessageToNotificationPanel() {
 
-        this.form_nameLabel.setText(this.baseModel.getSender() + " sent a message");
+        MessageModel messageModel = (MessageModel) this.baseModel;
 
-        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(this.form_notificationMainMessage, this.baseModel.getMessage());
+        this.form_nameLabel.setText(messageModel.getSender() + " sent a message");
 
-        final int messageLength = this.baseModel.getMessage().length();
+        form_notificationMainMessage.setText("");
+        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(this.form_notificationMainMessage, messageModel.getMessage());
+
+        final int messageLength = messageModel.getMessage().length();
+
+        if (messageLength < 30) {
+
+            adjustNotificationPanelHeight(1);
+
+        } else if (messageLength > 90) {
+
+            adjustNotificationPanelHeight(2);
+
+        } else if (messageLength > 60) {
+
+            adjustNotificationPanelHeight(3);
+        }
+    }
+
+    private void addPictureToNotificationPanel() {
+
+        PictureModel messageModel = (PictureModel) this.baseModel;
+
+        this.form_nameLabel.setText(messageModel.getSender() + " sent a message");
+
+        form_notificationMainMessage.setText("[picture]\n");
+        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(this.form_notificationMainMessage, messageModel.getMessage());
+
+        final int messageLength = messageModel.getMessage().length();
 
         if (messageLength < 30) {
 
@@ -156,20 +175,6 @@ public class NotificationImpl extends Notification {
         });
         this.timer.setRepeats(false);
         this.timer.start();
-    }
-
-    private void processNotificationQueue() {
-
-        setVisible(false);
-        dispose();
-
-        final boolean remove = this.mainFrame.getNotificationActiveQueue().remove(this.baseModel);
-
-        if (remove && this.mainFrame.getNotificationActiveQueue().isEmpty()) {
-            this.mainFrame.setNotificationPositionY(0);
-            final String first = this.mainFrame.getNotificationWaitingQueue().pollFirst();
-            this.mainFrame.getGuiFunctionality().notificationActiveQueueHandling(first);
-        }
     }
 
     private void adjustNotificationPanelHeight(final int factor) {
@@ -222,8 +227,31 @@ public class NotificationImpl extends Notification {
         this.repaint();
     }
 
-    public Timer getTimer() {
+    private void processNotificationQueue() {
 
-        return this.timer;
+        setVisible(false);
+        dispose();
+
+        final boolean remove = this.mainFrame.getNotificationActiveQueue().remove(this.baseModel);
+
+        if (remove && this.mainFrame.getNotificationActiveQueue().isEmpty()) {
+            this.mainFrame.setNotificationPositionY(0);
+            final String first = this.mainFrame.getNotificationWaitingQueue().pollFirst();
+            this.mainFrame.getGuiFunctionality().notificationActiveQueueHandling(first);
+        }
+    }
+
+    public void setNotificationPicture() {
+
+        addPictureToNotificationPanel();
+        final int screenResolutionWidth = determineScreenWidth();
+
+        int newYPosition = this.mainFrame.getNotificationPositionY() + 25;
+
+        modifyNotificationPanel(screenResolutionWidth, newYPosition);
+
+        retainInformationAboutThisNotification(newYPosition);
+
+        addNotificationTimer();
     }
 }

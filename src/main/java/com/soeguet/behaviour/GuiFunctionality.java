@@ -276,6 +276,10 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
     private void createDesktopNotification(final String message) {
 
+        if (!this.mainFrame.getInternalNotificationsMenuItem().isSelected()) {
+            return;
+        }
+
         final int remainingCapacity = this.mainFrame.getNotificationActiveQueue().remainingCapacity();
 
         if (remainingCapacity < 1) {
@@ -314,9 +318,11 @@ public class GuiFunctionality implements SocketToGuiInterface {
         }
     }
 
+
     private void createNotification(final BaseModel baseModel) {
 
         switch (baseModel) {
+
             case MessageModel text -> {
 
                 Timer timer = new Timer(500, e -> {
@@ -324,13 +330,12 @@ public class GuiFunctionality implements SocketToGuiInterface {
                 });
                 timer.setRepeats(false);
                 timer.start();
-
             }
 
             case PictureModel picture -> {
 
                 Timer timer = new Timer(500, e -> {
-                    new NotificationImpl(this.mainFrame, picture).setNotificationText();
+                    new NotificationImpl(this.mainFrame, picture).setNotificationPicture();
                 });
                 timer.setRepeats(false);
                 timer.start();
