@@ -143,7 +143,14 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             }
         }
 
-        connectToWebsocket();
+        //connect after 1 second
+        Timer connectTimer = new Timer(1000, e -> {
+            new PopupPanelImpl(this, "Connecting to server");
+            logger.info("connecting websocket client");
+                connectToWebsocket();
+        });
+        connectTimer.setRepeats(false);
+        connectTimer.start();
     }
 
     /**
@@ -285,6 +292,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void internalNotificationsMenuItemItemStateChanged(final ItemEvent e) {
 
+        //remove all remaining and queued notifications
         if (e.getStateChange() == ItemEvent.DESELECTED) {
 
             this.getNotificationWaitingQueue().removeAll(this.getNotificationWaitingQueue());
@@ -307,6 +315,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void resetConnectionMenuItemMousePressed(MouseEvent e) {
 
+        //clear the main text panel first
         SwingUtilities.invokeLater(() -> {
 
             form_mainTextPanel.removeAll();
@@ -314,14 +323,15 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             form_mainTextPanel.repaint();
         });
 
+        //close the websocket client
         if (websocketClient.isOpen()) {
 
             logger.info("Closing websocket client");
             websocketClient.close();
         }
 
+        //set null to be sure
         websocketClient = null;
-
         logger.info("Reconnecting websocket client");
 
         connectToWebsocket();
@@ -498,6 +508,11 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         guiFunctionality.clearTextPaneAndSendMessageToSocket();
     }
 
+    @Override
+    protected void allNotificationsMenuItemItemStateChanged(final ItemEvent e) {
+        //TODO block all notifications for 5 minutes
+    }
+
     /**
      Retrieves the WebSocket client.
 
@@ -509,6 +524,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         return websocketClient;
     }
 
+    private boolean blockMessages(){
+        //TODO handle message blocking
+        return false;
+    }
     /**
      Gets the ObjectMapper instance used for converting JSON to Java objects and vice versa.
 

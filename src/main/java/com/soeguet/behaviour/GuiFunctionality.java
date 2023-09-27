@@ -299,9 +299,16 @@ public class GuiFunctionality implements SocketToGuiInterface {
         }
 
         final BaseModel baseModel = getMessageModel(message);
-        this.mainFrame.getNotificationActiveQueue().add(baseModel);
 
-        createNotification(baseModel);
+        if (this.mainFrame.getNotificationActiveQueue().remainingCapacity() < 1) {
+
+            this.mainFrame.getNotificationWaitingQueue().add(message);
+
+        } else {
+
+            this.mainFrame.getNotificationActiveQueue().add(baseModel);
+            createNotification(baseModel);
+        }
 
         handleRemainingCapacityInQueue();
     }
@@ -317,7 +324,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
             timer.start();
         }
     }
-
 
     private void createNotification(final BaseModel baseModel) {
 

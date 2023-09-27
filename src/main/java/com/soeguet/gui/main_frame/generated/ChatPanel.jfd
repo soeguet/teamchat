@@ -42,6 +42,7 @@ new FormModel {
 							add( new FormComponent( "javax.swing.JCheckBoxMenuItem" ) {
 								name: "allNotificationsMenuItem"
 								"text": "ALL NOTIFICATIONS OFF"
+								addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "allNotificationsMenuItemItemStateChanged", true ) )
 							} )
 							add( new FormComponent( "javax.swing.JPopupMenu$Separator" ) {
 								name: "separator4"

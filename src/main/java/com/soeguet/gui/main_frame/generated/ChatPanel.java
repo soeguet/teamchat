@@ -190,6 +190,8 @@ public abstract class ChatPanel extends JFrame {
 		return this.form_hSpacer1;
 	}
 
+	protected abstract void allNotificationsMenuItemItemStateChanged(ItemEvent e);
+
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
 		// Generated using JFormDesigner non-commercial license
@@ -279,6 +281,7 @@ public abstract class ChatPanel extends JFrame {
 
 						//---- form_allNotificationsMenuItem ----
 						this.form_allNotificationsMenuItem.setText("ALL NOTIFICATIONS OFF");
+						this.form_allNotificationsMenuItem.addItemListener(e -> allNotificationsMenuItemItemStateChanged(e));
 						this.form_menu1.add(this.form_allNotificationsMenuItem);
 						this.form_menu1.addSeparator();
 
