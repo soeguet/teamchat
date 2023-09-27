@@ -22,13 +22,13 @@ public class Main {
 
     private static EnvVariables checkForUsername() {
 
-        final String chatUsername = System.getenv("chat_username");
+        final String chatUsername = System.getenv("chat.username");
 
         String username;
 
         if (chatUsername != null && !chatUsername.isEmpty()) {
 
-            username = System.getenv("chat_username");
+            username = System.getenv("chat.username");
 
         } else {
 
@@ -50,8 +50,8 @@ public class Main {
 
         }
 
-        String chatIp = System.getenv("chat_ip");
-        String chatPort = System.getenv("chat_port");
+        String chatIp = System.getenv("chat.ip");
+        String chatPort = System.getenv("chat.port");
 
         return new EnvVariables(username, chatIp, chatPort);
     }

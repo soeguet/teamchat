@@ -8,12 +8,12 @@ import java.awt.event.ActionEvent;
 
 public class PopupPanelImpl extends PopupPanel {
 
-    private static final int TIMER_PERIOD = 1;
     private final MainFrameInterface mainFrame;
 
     public PopupPanelImpl(MainFrameInterface mainFrame, String message) {
 
         this.mainFrame = mainFrame;
+        //TODO linebreaks are not working
         this.getMessageTextField().setText(message);
     }
 

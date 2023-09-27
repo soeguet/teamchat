@@ -313,8 +313,35 @@ public class GuiFunctionality implements SocketToGuiInterface {
     }
 
     private void externalNotificationHandling(final String message) {
-        //TODO external notification handling
-        System.out.println("external notification handling");
+
+        try {
+            final BaseModel baseModel = convertJsonToMessageModel(message);
+
+            switch (baseModel) {
+
+                case MessageModel text -> {
+
+                    try {
+                        Runtime.getRuntime().exec(new String[]{"notify-send", "text message", text.getMessage()});
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                case PictureModel picture -> {
+
+                    try {
+                        Runtime.getRuntime().exec(new String[]{"notify-send", "picture message", "[picture]" + System.lineSeparator() + picture.getMessage()});
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     private void internalNotificationHandling(final String message) {

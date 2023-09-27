@@ -8,7 +8,7 @@ import java.util.List;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "messageType")
 @JsonSubTypes({@JsonSubTypes.Type(value = MessageModel.class, name = "text"), @JsonSubTypes.Type(value = PictureModel.class, name = "image")})
-public abstract class BaseModel {
+public abstract sealed class BaseModel permits MessageModel, PictureModel{
 
     Long id;
     List<UserInteraction> userInteractions;

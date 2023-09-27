@@ -62,9 +62,11 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     private volatile int possibleNotifications = 3;
     private String lastMessageSenderName;
     private String lastMessageTimeStamp;
-    private boolean blockAllNotifications = false;
-    private boolean blockInternalNotifications = false;
-    private boolean blockExternalNotifications = false;
+
+    //TODO maybe remove and use menuitem directly
+    private boolean blockAllNotifications = form_allNotificationsMenuItem.isSelected();
+    private boolean blockInternalNotifications = !form_internalNotificationsMenuItem.isSelected();
+    private boolean blockExternalNotifications = !form_externalNotificationsMenuItem.isSelected();
     private Timer blockTimer;
 
     public ChatMainFrameImpl(final EnvVariables envVariables) {
@@ -73,7 +75,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         this.username = envVariables.getChatUsername();
 
         //TODO remove for merge in master
-        final String chatXPosition = System.getenv("chat_x_position");
+        final String chatXPosition = System.getenv("chat.x.position");
         if (chatXPosition != null) {
             SwingUtilities.invokeLater(() -> setLocation(Integer.parseInt(chatXPosition), 100));
         }
@@ -103,10 +105,22 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     private void setScrollPaneMargins() {
 
         if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+
             JSCROLLPANE_MARGIN_BOTTOM_BORDER = 63;
             JSCROLLPANE_MARGIN_RIGHT_BORDER = 20;
+
         } else {
-            JSCROLLPANE_MARGIN_BOTTOM_BORDER = 56;
+
+            if (System.getenv("linux.desktop.env").toLowerCase().contains("gnome")) {
+
+                JSCROLLPANE_MARGIN_BOTTOM_BORDER = 27;
+
+            } else {
+
+                //e.g. KDE Plasma
+                JSCROLLPANE_MARGIN_BOTTOM_BORDER = 56;
+            }
+
             JSCROLLPANE_MARGIN_RIGHT_BORDER = 4;
         }
     }
@@ -302,7 +316,15 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         if (e.getStateChange() == ItemEvent.DESELECTED) {
 
             this.getNotificationWaitingQueue().removeAll(this.getNotificationWaitingQueue());
+            blockInternalNotifications = true;
 
+            new PopupPanelImpl(this, "Internal notifications disabled").implementPopup(2000);
+
+        } else {
+
+            blockInternalNotifications = false;
+
+            new PopupPanelImpl(this, "Internal notifications enabled").implementPopup(2000);
         }
     }
 
@@ -515,6 +537,23 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     @Override
+    protected void externalNotificationsMenuItemItemStateChanged(final ItemEvent e) {
+
+        if (e.getStateChange() == ItemEvent.SELECTED) {
+
+            blockExternalNotifications = false;
+
+            new PopupPanelImpl(this, "External notifications enabled").implementPopup(2000);
+
+        } else if (e.getStateChange() == ItemEvent.DESELECTED) {
+
+            blockExternalNotifications = true;
+
+            new PopupPanelImpl(this, "External notifications disabled").implementPopup(2000);
+        }
+    }
+
+    @Override
     protected void allNotificationsMenuItemItemStateChanged(final ItemEvent e) {
 
         //any kind of change needs to get rid of an existing timer
@@ -532,9 +571,13 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             blockTimer = new Timer(300000, e1 -> {
 
                 blockAllNotifications = false;
+
+                new PopupPanelImpl(this, "Notifications status" + System.lineSeparator() + "reverted").implementPopup(2000);
             });
             blockTimer.setRepeats(false);
             blockTimer.start();
+
+            new PopupPanelImpl(this, "All notifications disabled" + System.lineSeparator() + "for 5 minutes").implementPopup(2000);
         }
 
     }

@@ -2,7 +2,7 @@ package com.soeguet.model.jackson;
 
 import java.util.Arrays;
 
-public class PictureModel extends BaseModel {
+public non-sealed class PictureModel extends BaseModel {
 
     private byte[] picture;
 
