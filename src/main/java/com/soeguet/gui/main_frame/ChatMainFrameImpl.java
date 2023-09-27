@@ -315,6 +315,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         //remove all remaining and queued notifications
         if (e.getStateChange() == ItemEvent.DESELECTED) {
 
+            //getter call since this one is synchronized
             this.getNotificationWaitingQueue().removeAll(this.getNotificationWaitingQueue());
             blockInternalNotifications = true;
 
@@ -566,7 +567,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         //block all notifications for 5 minutes
         if (e.getStateChange() == ItemEvent.SELECTED) {
 
-            blockAllNotifications = true;
+            this.blockAllNotifications = true;
+
+            //getter call since this one is synchronized
+            this.getNotificationWaitingQueue().removeAll(this.getNotificationWaitingQueue());
 
             blockTimer = new Timer(300000, e1 -> {
 
@@ -582,7 +586,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
     }
 
-    public LinkedBlockingDeque<String> getNotificationWaitingQueue() {
+    public synchronized LinkedBlockingDeque<String> getNotificationWaitingQueue() {
 
         return notificationWaitingQueue;
     }
@@ -600,24 +604,20 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
     public NotificationStatus getNotificationStatus() {
 
-        if (blockAllNotifications) {
+        if (blockAllNotifications || startUp) {
 
-            System.out.println("block all notifications");
             return NotificationStatus.ALL_DENIED;
 
         } else if (!blockInternalNotifications && !blockExternalNotifications) {
 
-            System.out.println("allow all notifications");
             return NotificationStatus.ALL_ALLOWED;
 
         } else if (!blockExternalNotifications) {
 
-            System.out.println("allow external notifications");
             return NotificationStatus.INTERNAL_ONLY;
 
         } else if (!blockInternalNotifications) {
 
-            System.out.println("allow internal notifications");
             return NotificationStatus.EXTERNAL_ONLY;
         }
 
@@ -818,10 +818,4 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         return notificationActiveQueue;
     }
-
-    private boolean blockMessages() {
-        //TODO handle message blocking
-        return false;
-    }
-
 }

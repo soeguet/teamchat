@@ -141,6 +141,7 @@ new FormModel {
 							name: "replyTextPane"
 							"componentOrientation": sfield java.awt.ComponentOrientation LEFT_TO_RIGHT
 							addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "replyTextPaneFocusLost", true ) )
+							addEvent( new FormEvent( "java.awt.event.KeyListener", "keyPressed", "replyTextPaneKeyPressed", true ) )
 						} )
 					}, new FormLayoutConstraints( class java.lang.String ) {
 						"value": "Center"

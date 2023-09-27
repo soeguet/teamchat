@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.swing.event.*;
 import net.miginfocom.swing.*;
 /*
  * Created by JFormDesigner on Sun Sep 10 12:09:03 CEST 2023
@@ -137,7 +138,7 @@ public abstract class ReplyPanel extends JPanel {
 		return form_panel8;
 	}
 
-	protected abstract void quotePanelEmojiButtonMouseClicked(MouseEvent e);
+	protected abstract void replyTextPaneKeyPressed(KeyEvent e);
 
 	protected abstract void quotePanelSenButtonMouseReleased(MouseEvent e);
 
@@ -315,6 +316,12 @@ public abstract class ReplyPanel extends JPanel {
 							replyTextPaneFocusLost(e);
 						}
 					});
+					form_replyTextPane.addKeyListener(new KeyAdapter() {
+						@Override
+						public void keyPressed(KeyEvent e) {
+							replyTextPaneKeyPressed(e);
+						}
+					});
 					form_scrollPane1.setViewportView(form_replyTextPane);
 				}
 				form_panel8.add(form_scrollPane1, BorderLayout.CENTER);
@@ -335,12 +342,6 @@ public abstract class ReplyPanel extends JPanel {
 					form_quotePanelEmojiButton.setPreferredSize(new Dimension(35, 35));
 					form_quotePanelEmojiButton.setMaximumSize(new Dimension(35, 35));
 					form_quotePanelEmojiButton.setMinimumSize(new Dimension(35, 35));
-					form_quotePanelEmojiButton.addMouseListener(new MouseAdapter() {
-						@Override
-						public void mouseClicked(MouseEvent e) {
-							quotePanelEmojiButtonMouseClicked(e);
-						}
-					});
 					form_panel3.add(form_quotePanelEmojiButton);
 
 					//---- form_quotePanelSenButton ----

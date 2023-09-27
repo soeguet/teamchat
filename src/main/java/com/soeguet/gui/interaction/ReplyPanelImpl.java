@@ -4,17 +4,19 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.soeguet.gui.interaction.generated.ReplyPanel;
 import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.newcomment.util.WrapEditorKit;
+import com.soeguet.model.MessageTypes;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
-import com.soeguet.model.MessageTypes;
 import com.soeguet.util.EmojiHandler;
 import com.soeguet.util.EmojiPopUpMenuHandler;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
+import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
 import java.awt.event.FocusEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 public class ReplyPanelImpl extends ReplyPanel {
@@ -129,6 +131,28 @@ public class ReplyPanelImpl extends ReplyPanel {
     protected void quotePanelEmojiButtonMouseClicked(MouseEvent e) {
 
         new EmojiPopUpMenuHandler(mainFrame, this.getReplyTextPane(), this.form_quotePanelEmojiButton);
+    }
+
+    @Override
+    protected void replyTextPaneHyperlinkUpdate(final HyperlinkEvent e) {
+
+        System.out.println("Hyperlink clicked: " + e.getURL().toString());
+    }
+
+    @Override
+    protected void replyTextPaneKeyPressed(final KeyEvent e) {
+
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+
+            if (e.isShiftDown()) {
+
+                this.getReplyTextPane().setText(this.getReplyTextPane().getText() + System.lineSeparator());
+
+            } else {
+
+                quotePanelSenButtonMouseReleased(null);
+            }
+        }
     }
 
     @Override

@@ -258,7 +258,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
             case "X" -> System.out.println("X");
 
-            //TODO did I not remove this? maybe use NotificationStatus Interface instead
             case "__startup__end__" -> mainFrame.setStartUp(false);
 
             case "welcome to the server!" -> new PopupPanelImpl(mainFrame, "Welcome to the server!").implementPopup(1000);
@@ -298,17 +297,26 @@ public class GuiFunctionality implements SocketToGuiInterface {
         //check if notifications are even wanted
         switch (this.mainFrame.getNotificationStatus()) {
 
-            case INTERNAL_ONLY -> internalNotificationHandling(message);
+            case INTERNAL_ONLY -> {
+                internalNotificationHandling(message);
+                Toolkit.getDefaultToolkit().beep();
+            }
 
-            case EXTERNAL_ONLY -> externalNotificationHandling(message);
+            case EXTERNAL_ONLY -> {
+                externalNotificationHandling(message);
+                Toolkit.getDefaultToolkit().beep();
+            }
 
             case ALL_ALLOWED -> {
 
                 internalNotificationHandling(message);
                 externalNotificationHandling(message);
+                Toolkit.getDefaultToolkit().beep();
             }
 
-            case ALL_DENIED -> LOGGER.info("Notifications disabled");
+            case ALL_DENIED, STARTUP -> {
+                //do nothing
+            }
         }
     }
 
