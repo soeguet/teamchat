@@ -15,10 +15,10 @@ import com.soeguet.socket_client.CustomWebsocketClient;
 import com.soeguet.util.EmojiHandler;
 import com.soeguet.util.EmojiInitializer;
 import com.soeguet.util.EmojiPopUpMenuHandler;
+import com.soeguet.util.NotificationStatus;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.net.URI;
@@ -60,6 +60,12 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     private volatile int notificationPositionY = 0;
     private boolean startUp = true;
     private volatile int possibleNotifications = 3;
+    private String lastMessageSenderName;
+    private String lastMessageTimeStamp;
+    private boolean blockAllNotifications = false;
+    private boolean blockInternalNotifications = false;
+    private boolean blockExternalNotifications = false;
+    private Timer blockTimer;
 
     public ChatMainFrameImpl(final EnvVariables envVariables) {
 
@@ -147,7 +153,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         Timer connectTimer = new Timer(1000, e -> {
             new PopupPanelImpl(this, "Connecting to server");
             logger.info("connecting websocket client");
-                connectToWebsocket();
+            connectToWebsocket();
         });
         connectTimer.setRepeats(false);
         connectTimer.start();
@@ -510,7 +516,69 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
     @Override
     protected void allNotificationsMenuItemItemStateChanged(final ItemEvent e) {
-        //TODO block all notifications for 5 minutes
+
+        //any kind of change needs to get rid of an existing timer
+        if (blockTimer != null) {
+
+            blockTimer.stop();
+            blockTimer = null;
+        }
+
+        //block all notifications for 5 minutes
+        if (e.getStateChange() == ItemEvent.SELECTED) {
+
+            blockAllNotifications = true;
+
+            blockTimer = new Timer(300000, e1 -> {
+
+                blockAllNotifications = false;
+            });
+            blockTimer.setRepeats(false);
+            blockTimer.start();
+        }
+
+    }
+
+    public LinkedBlockingDeque<String> getNotificationWaitingQueue() {
+
+        return notificationWaitingQueue;
+    }
+
+    public boolean isStartUp() {
+
+        return startUp;
+    }
+
+    @Override
+    public void setStartUp(final boolean startUp) {
+
+        this.startUp = startUp;
+    }
+
+    public NotificationStatus getNotificationStatus() {
+
+        if (blockAllNotifications) {
+
+            System.out.println("block all notifications");
+            return NotificationStatus.ALL_DENIED;
+
+        } else if (!blockInternalNotifications && !blockExternalNotifications) {
+
+            System.out.println("allow all notifications");
+            return NotificationStatus.ALL_ALLOWED;
+
+        } else if (!blockExternalNotifications) {
+
+            System.out.println("allow external notifications");
+            return NotificationStatus.INTERNAL_ONLY;
+
+        } else if (!blockInternalNotifications) {
+
+            System.out.println("allow internal notifications");
+            return NotificationStatus.EXTERNAL_ONLY;
+        }
+
+        return NotificationStatus.ALL_DENIED;
     }
 
     /**
@@ -524,10 +592,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         return websocketClient;
     }
 
-    private boolean blockMessages(){
-        //TODO handle message blocking
-        return false;
-    }
     /**
      Gets the ObjectMapper instance used for converting JSON to Java objects and vice versa.
 
@@ -553,24 +617,25 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     public String getLastMessageSenderName() {
 
-        //TODO
-        return null;
+        return lastMessageSenderName;
     }
 
     @Override
     public void setLastMessageSenderName(final String lastMessageSenderName) {
-        //TODO
+
+        this.lastMessageSenderName = lastMessageSenderName;
     }
 
     @Override
     public String getLastMessageTimeStamp() {
-        //TODO
-        return null;
+
+        return lastMessageTimeStamp;
     }
 
     @Override
     public void setLastMessageTimeStamp(final String lastMessageTimeStamp) {
-        //TODO
+
+        this.lastMessageTimeStamp = lastMessageTimeStamp;
     }
 
     /**
@@ -711,20 +776,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         return notificationActiveQueue;
     }
 
-    public LinkedBlockingDeque<String> getNotificationWaitingQueue() {
-
-        return notificationWaitingQueue;
-    }
-
-    public boolean isStartUp() {
-
-        return startUp;
-    }
-
-    @Override
-    public void setStartUp(final boolean startUp) {
-
-        this.startUp = startUp;
+    private boolean blockMessages() {
+        //TODO handle message blocking
+        return false;
     }
 
 }

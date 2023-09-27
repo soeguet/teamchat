@@ -8,6 +8,7 @@ import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.newcomment.left.PanelLeftImpl;
 import com.soeguet.gui.newcomment.right.PanelRightImpl;
 import com.soeguet.gui.notification_panel.NotificationImpl;
+import com.soeguet.gui.popups.PopupPanelImpl;
 import com.soeguet.model.MessageTypes;
 import com.soeguet.model.PanelTypes;
 import com.soeguet.model.jackson.BaseModel;
@@ -254,42 +255,71 @@ public class GuiFunctionality implements SocketToGuiInterface {
     public void onMessage(String message) {
 
         switch (message) {
+
             case "X" -> System.out.println("X");
+
+            //TODO did I not remove this? maybe use NotificationStatus Interface instead
             case "__startup__end__" -> mainFrame.setStartUp(false);
-            case "welcome to the server!" -> System.out.println("welcome to the server!");
+
+            case "welcome to the server!" -> new PopupPanelImpl(mainFrame, "Welcome to the server!").implementPopup(1000);
+
             default -> {
 
                 mainFrame.getClientMessageQueue().add(message);
                 createDesktopNotification(message);
 
-                //using time to prevent spamming the GUI and making use of the cached messages
-                if (messageToPanelTimer != null) {
-                    messageToPanelTimer.stop();
-                }
-
-                messageToPanelTimer = new Timer(500, e -> writeGuiMessageToChatPanel());
-                messageToPanelTimer.setRepeats(false);
-                messageToPanelTimer.start();
+                spamBuffer();
             }
         }
     }
 
-    private void createDesktopNotification(final String message) {
-
-        if (!this.mainFrame.getInternalNotificationsMenuItem().isSelected()) {
-            return;
+    private void spamBuffer() {
+        //using time to prevent spamming the GUI and making use of the cached messages
+        if (messageToPanelTimer != null) {
+            messageToPanelTimer.stop();
         }
+
+        messageToPanelTimer = new Timer(500, e -> writeGuiMessageToChatPanel());
+        messageToPanelTimer.setRepeats(false);
+        messageToPanelTimer.start();
+    }
+
+    private void createDesktopNotification(final String message) {
 
         final int remainingCapacity = this.mainFrame.getNotificationActiveQueue().remainingCapacity();
 
         if (remainingCapacity < 1) {
 
+            //max 3 notification at a time, cache message and bail out
             this.mainFrame.getNotificationWaitingQueue().add(message);
-
-        } else {
-
-            notificationActiveQueueHandling(message);
+            return;
         }
+
+        //check if notifications are even wanted
+        switch (this.mainFrame.getNotificationStatus()) {
+
+            case INTERNAL_ONLY -> internalNotificationHandling(message);
+
+            case EXTERNAL_ONLY -> externalNotificationHandling(message);
+
+            case ALL_ALLOWED -> {
+
+                internalNotificationHandling(message);
+                externalNotificationHandling(message);
+            }
+
+            case ALL_DENIED -> LOGGER.info("Notifications disabled");
+        }
+    }
+
+    private void externalNotificationHandling(final String message) {
+        //TODO external notification handling
+        System.out.println("external notification handling");
+    }
+
+    private void internalNotificationHandling(final String message) {
+
+        notificationActiveQueueHandling(message);
     }
 
     public synchronized void notificationActiveQueueHandling(String message) {

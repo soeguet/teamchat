@@ -7,6 +7,7 @@ import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.properties.CustomProperties;
 import com.soeguet.properties.CustomUserProperties;
 import com.soeguet.socket_client.CustomWebsocketClient;
+import com.soeguet.util.NotificationStatus;
 
 import javax.swing.*;
 import java.util.HashMap;
@@ -186,5 +187,7 @@ public interface MainFrameInterface {
     void setStartUp(boolean b);
 
     JCheckBoxMenuItem getInternalNotificationsMenuItem();
+
+    NotificationStatus getNotificationStatus();
 
 }
