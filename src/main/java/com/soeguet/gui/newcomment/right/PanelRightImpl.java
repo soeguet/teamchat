@@ -11,6 +11,7 @@ import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
 import com.soeguet.util.EmojiHandler;
+import net.miginfocom.swing.MigLayout;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -122,7 +123,10 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
             addMaximizePictureOnClick(imageLabel);
 
             JTextPane imageCaptionTextPane = createImageCaptionTextPane();
-            form_panel1.add(imageCaptionTextPane, "cell 0 1, wrap");
+            //if null -> there is no message
+            if (imageCaptionTextPane != null) {
+                form_panel1.add(imageCaptionTextPane, "cell 0 1, wrap");
+            }
 
             addRightClickOptionToPanel();
 
@@ -252,15 +256,22 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     private JTextPane createImageCaptionTextPane() {
 
         // EDT check done!
-
         if (actualTextPane == null) {
 
             actualTextPane = new JTextPane();
         }
 
-        actualTextPane.setText(baseModel.getMessage());
-        actualTextPane.setEditable(false);
-        actualTextPane.setOpaque(false);
+        if (baseModel.getMessage().isBlank()) {
+
+            //remove spacing if the message is black, which was reserved for the message
+            return null;
+
+        } else {
+
+            actualTextPane.setText(baseModel.getMessage());
+            actualTextPane.setEditable(false);
+            actualTextPane.setOpaque(false);
+        }
 
         return actualTextPane;
     }

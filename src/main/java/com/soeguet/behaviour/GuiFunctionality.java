@@ -464,8 +464,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
                     setupPicturesLeftSide(picture, nickname);
                 }
             }
-
-            default -> LOGGER.info("Unknown message type");
         }
     }
 
@@ -474,6 +472,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
         Color borderColor = determineBorderColor(messageModel.getSender());
 
         CommentInterface panelLeft = new PanelLeftImpl(this.mainFrame, messageModel);
+        this.mainFrame.getCommentsHashMap().put(messageModel.getId(), panelLeft);
         panelLeft.setupPicturePanelWrapper();
         panelLeft.setBorderColor(borderColor);
         displayNicknameInsteadOfUsername(nickname, panelLeft);
@@ -485,6 +484,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
         Color borderColor = determineBorderColor("own");
 
         CommentInterface panelRight = new PanelRightImpl(this.mainFrame, messageModel);
+        this.mainFrame.getCommentsHashMap().put(messageModel.getId(), panelRight);
         panelRight.setupPicturePanelWrapper();
         panelRight.setBorderColor(borderColor);
         displayNicknameInsteadOfUsername(nickname, panelRight);
@@ -496,6 +496,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
         Color borderColor = determineBorderColor(messageModel.getSender());
 
         CommentInterface panelLeft = new PanelLeftImpl(this.mainFrame, messageModel, PanelTypes.NORMAL);
+        this.mainFrame.getCommentsHashMap().put(messageModel.getId(), panelLeft);
         panelLeft.setupTextPanelWrapper();
         panelLeft.setBorderColor(borderColor);
         displayNicknameInsteadOfUsername(nickname, panelLeft);
@@ -508,6 +509,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
         Color borderColor = determineBorderColor("own");
 
         CommentInterface panelRight = new PanelRightImpl(this.mainFrame, messageModel, PanelTypes.NORMAL);
+        this.mainFrame.getCommentsHashMap().put(messageModel.getId(), panelRight);
         panelRight.setupTextPanelWrapper();
         panelRight.setBorderColor(borderColor);
         displayNicknameInsteadOfUsername(nickname, panelRight);

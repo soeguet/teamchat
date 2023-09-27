@@ -105,6 +105,18 @@ public abstract class PanelRight extends JPanel {
 		return this.form_panel2;
 	}
 
+	public JLayeredPane getLayeredPane2() {
+		return this.form_layeredPane2;
+	}
+
+	public JLabel getActionLabel() {
+		return this.form_actionLabel;
+	}
+
+	public JPanel getHSpacer1() {
+		return this.form_hSpacer1;
+	}
+
 	protected abstract void thisComponentResized(ComponentEvent e);
 
 	private void initComponents() {
@@ -160,7 +172,7 @@ public abstract class PanelRight extends JPanel {
 			this.form_panel1.setPreferredSize(null);
 			this.form_panel1.setMaximumSize(null);
 			this.form_panel1.setLayout(new MigLayout(
-				null,
+				"hidemode 3",
 				// columns
 				"[grow,fill]" +
 				"[7!]",
@@ -168,7 +180,7 @@ public abstract class PanelRight extends JPanel {
 				"[]" +
 				"[]"));
 		}
-		add(this.form_panel1, "pad 0,cell 2 0 1 2");
+		add(this.form_panel1, "pad 0,cell 2 0 1 2,aligny bottom,growy 0");
 
 		//======== form_layeredPane2 ========
 		{

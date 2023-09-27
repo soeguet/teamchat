@@ -127,16 +127,10 @@ public class ReplyPanelImpl extends ReplyPanel {
 
     }
 
-    @Override
+
     protected void quotePanelEmojiButtonMouseClicked(MouseEvent e) {
 
         new EmojiPopUpMenuHandler(mainFrame, this.getReplyTextPane(), this.form_quotePanelEmojiButton);
-    }
-
-    @Override
-    protected void replyTextPaneHyperlinkUpdate(final HyperlinkEvent e) {
-
-        System.out.println("Hyperlink clicked: " + e.getURL().toString());
     }
 
     @Override

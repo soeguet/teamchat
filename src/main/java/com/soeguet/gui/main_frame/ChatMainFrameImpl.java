@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.behaviour.GuiFunctionality;
 import com.soeguet.gui.image_panel.ImagePanelImpl;
 import com.soeguet.gui.main_frame.generated.ChatPanel;
+import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.notification_panel.NotificationImpl;
 import com.soeguet.gui.popups.PopupPanelImpl;
 import com.soeguet.gui.properties.PropertiesPanelImpl;
@@ -25,6 +26,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -40,6 +42,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     private final HashMap<String, CustomUserProperties> chatClientPropertiesHashMap;
     private final LinkedBlockingDeque<String> socketMessageQueue;
 
+    //TODO cache comments on pane for hot replacements as HashSet
+    private final LinkedHashMap<Long, CommentInterface> commentsHashMap = new LinkedHashMap<>();
     private final LinkedBlockingDeque<String> messageQueue;
     private final LinkedBlockingDeque<BaseModel> notificationActiveQueue;
     private final LinkedBlockingDeque<String> notificationWaitingQueue;
@@ -62,7 +66,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     private volatile int possibleNotifications = 3;
     private String lastMessageSenderName;
     private String lastMessageTimeStamp;
-
     //TODO maybe remove and use menuitem directly
     private boolean blockAllNotifications = form_allNotificationsMenuItem.isSelected();
     private boolean blockInternalNotifications = !form_internalNotificationsMenuItem.isSelected();
@@ -260,6 +263,11 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
             JOptionPane.showMessageDialog(this, "Server port is invalid", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    public LinkedHashMap<Long, CommentInterface> getCommentsHashMap() {
+
+        return commentsHashMap;
     }
 
     /**

@@ -2,6 +2,7 @@ package com.soeguet.gui.main_frame;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.behaviour.GuiFunctionality;
+import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.notification_panel.NotificationImpl;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.properties.CustomProperties;
@@ -11,6 +12,7 @@ import com.soeguet.util.NotificationStatus;
 
 import javax.swing.*;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -189,5 +191,6 @@ public interface MainFrameInterface {
     JCheckBoxMenuItem getInternalNotificationsMenuItem();
 
     NotificationStatus getNotificationStatus();
+    LinkedHashMap<Long, CommentInterface> getCommentsHashMap();
 
 }
