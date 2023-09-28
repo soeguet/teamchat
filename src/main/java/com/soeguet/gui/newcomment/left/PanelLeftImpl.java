@@ -338,7 +338,7 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
         });
     }
 
-    private void addMouseListenerToJTextPane(JTextPane textPane, JPopupMenu popupMenu) {
+    protected void addMouseListenerToJTextPane(JTextPane textPane, JPopupMenu popupMenu) {
 
         ensureEDT();
 

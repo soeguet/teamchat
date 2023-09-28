@@ -2,7 +2,6 @@ package com.soeguet.gui.newcomment.custom_origin;
 
 import com.soeguet.gui.interaction.ReplyPanelImpl;
 import com.soeguet.gui.main_frame.MainFrameInterface;
-import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.newcomment.util.QuotePanelImpl;
 import com.soeguet.gui.newcomment.util.WrapEditorKit;
 import com.soeguet.model.PanelTypes;
@@ -28,15 +27,7 @@ public class CustomOriginPanel extends JPanel {
 
     protected Logger LOGGER = Logger.getLogger(CustomOriginPanel.class.getName());
 
-    /**
-     Sets up the reply panel based on the specified panel type.
-     If the panel type is NORMAL, no action is taken.
-     Otherwise, the specified form_panel1 is set to be invisible.
-
-     @param panelTyp    the PanelTypes enum specifying the type of panel
-     @param form_panel1 the JPanel to be set to invisible if the panel type is not NORMAL
-     */
-    protected void setupReplyPanels(PanelTypes panelTyp, JPanel form_panel1) {
+    protected void modifyPanelIfMessageIsAReply(PanelTypes panelTyp, JPanel form_panel1) {
 
         // EDT check done!
         if (panelTyp == PanelTypes.NORMAL) {
@@ -136,22 +127,20 @@ public class CustomOriginPanel extends JPanel {
         });
     }
 
-    protected void checkForQuotesInMessage(MainFrameInterface mainFrame, BaseModel baseModel, JPanel panel1) {
+    protected QuotePanelImpl checkForQuotesInMessage(MainFrameInterface mainFrame, MessageModel messageModel) {
 
         // EDT check done!
-        MessageModel messageModel = (MessageModel) baseModel;
 
         String quotedText = messageModel.getQuotedMessageText();
 
         if (quotedText == null) {
-            return;
+            return null;
         }
 
         String quotedChatParticipant = messageModel.getQuotedMessageSender();
         String quotedTime = messageModel.getQuotedMessageTime();
 
-        QuotePanelImpl quotedSectionPanel = new QuotePanelImpl(mainFrame, quotedText, quotedChatParticipant, quotedTime);
-        panel1.add(quotedSectionPanel, "cell 0 0, wrap");
+        return new QuotePanelImpl(mainFrame, quotedText, quotedChatParticipant, quotedTime);
     }
 
     protected void setNameField(MainFrameInterface mainFrame, BaseModel baseModel, JLabel form_nameLabel, PanelTypes panelTyp) {
@@ -189,16 +178,15 @@ public class CustomOriginPanel extends JPanel {
         }
     }
 
-    protected JTextPane setUserMessage(MainFrameInterface mainFrame, BaseModel baseModel, JPanel panel1) {
+    protected JTextPane setUserMessage(MainFrameInterface mainFrame, BaseModel baseModel) {
 
         // EDT check done!
         JTextPane actualTextPane = createTextPane();
-
         actualTextPane.setEditorKit(new WrapEditorKit());
 
-        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(actualTextPane, baseModel.getMessage());
+        addRightClickOptionToPanel(actualTextPane);
 
-        panel1.add(actualTextPane, "cell 0 1, wrap");
+        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(actualTextPane, baseModel.getMessage());
 
         return actualTextPane;
     }
@@ -214,7 +202,7 @@ public class CustomOriginPanel extends JPanel {
         return jTextPane;
     }
 
-    protected void addRightClickOptionToPanel(CommentInterface commentInterface, final JTextPane actualTextPane) {
+    protected void addRightClickOptionToPanel(final JTextPane actualTextPane) {
 
         // EDT check done!
         //return if no text is present
@@ -227,7 +215,7 @@ public class CustomOriginPanel extends JPanel {
         JMenuItem copyItem = createAndAddMenuItem(popupMenu, "copy");
 
         addActionListenerToCopyJMenuItem(actualTextPane, copyItem);
-        addMouseListenerToJTextPane(actualTextPane, popupMenu, commentInterface);
+        addMouseListenerToJTextPane(actualTextPane, popupMenu);
 
         actualTextPane.setComponentPopupMenu(popupMenu);
     }
@@ -250,7 +238,7 @@ public class CustomOriginPanel extends JPanel {
         });
     }
 
-    protected void addMouseListenerToJTextPane(JTextPane textPane, JPopupMenu popupMenu, CommentInterface commentInterface) {
+    protected void addMouseListenerToJTextPane(JTextPane textPane, JPopupMenu popupMenu) {
 
         textPane.addMouseListener(new MouseAdapter() {
 
@@ -258,7 +246,7 @@ public class CustomOriginPanel extends JPanel {
             public void mouseClicked(MouseEvent e) {
 
                 if (SwingUtilities.isRightMouseButton(e)) {
-                    popupMenu.show((Component) commentInterface, e.getX(), e.getY());
+                    popupMenu.show(CustomOriginPanel.super.getComponent(0), e.getX(), e.getY());
                 }
             }
         });

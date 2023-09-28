@@ -3,9 +3,11 @@ package com.soeguet.gui.newcomment.right;
 import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.newcomment.right.generated.PanelRight;
+import com.soeguet.gui.newcomment.util.QuotePanelImpl;
 import com.soeguet.model.PanelTypes;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
+import com.soeguet.model.jackson.PictureModel;
 
 import javax.swing.*;
 import java.awt.event.ComponentEvent;
@@ -67,22 +69,30 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     @Override
     public void setupTextPanelWrapper() {
 
-        if (!(baseModel instanceof MessageModel)) {
-            return;
+        if (baseModel instanceof MessageModel messageModel) {
+
+            SwingUtilities.invokeLater(() -> {
+
+                //TODO is this even needed? NORMAL and REPLY PanelTypes.. reply is not used as it seems
+                modifyPanelIfMessageIsAReply(panelTyp, form_panel1);
+
+                //handle message containing quotes
+                QuotePanelImpl quotedSectionPanel = checkForQuotesInMessage(mainFrame, messageModel);
+                if (quotedSectionPanel != null) {
+                    form_panel1.add(quotedSectionPanel, "cell 0 0, wrap");
+                }
+
+                //handle the actual message and add a right click option to textpane
+                JTextPane actualTextPane = setUserMessage(mainFrame, messageModel);
+                addRightClickOptionToPanel(actualTextPane);
+                form_panel1.add(actualTextPane, "cell 0 1, wrap");
+
+                //set up the remaining needed fields
+                setNameField(mainFrame, messageModel, form_nameLabel, panelTyp);
+                setTimestampField(mainFrame, messageModel, form_nameLabel, panelTyp);
+                jPopupMenu = setupEditorPopupMenu(mainFrame, messageModel);
+            });
         }
-
-        SwingUtilities.invokeLater(() -> {
-
-            checkForQuotesInMessage(mainFrame, baseModel, form_panel1);
-
-            JTextPane actualTextPane = setUserMessage(mainFrame, baseModel, form_panel1);
-            setNameField(mainFrame, baseModel, form_nameLabel, panelTyp);
-            setTimestampField(mainFrame, baseModel, form_nameLabel, panelTyp);
-            jPopupMenu = setupEditorPopupMenu(mainFrame,baseModel);
-            addRightClickOptionToPanel( this,actualTextPane);
-
-            setupReplyPanels(panelTyp, form_panel1);
-        });
     }
 
     /**
@@ -93,37 +103,37 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     @Override
     public void setupPicturePanelWrapper() {
 
-        SwingUtilities.invokeLater(() -> {
+        if (baseModel instanceof PictureModel pictureModel) {
 
-            jPopupMenu = setupEditorPopupMenu(mainFrame, baseModel);
+            SwingUtilities.invokeLater(() -> {
 
-            this.image = extractImageFromMessage(baseModel);
+                //handle image extraction
+                this.image = extractImageFromMessage(pictureModel);
+                if (image == null) {
+                    LOGGER.log(java.util.logging.Level.SEVERE, "Buffered image is null");
+                    return;
+                }
 
-            if (image == null) {
+                //handle image and max sizing of image on the main panel
+                JLabel imageLabel = new JLabel(scaleImageIfTooBig(image));
+                form_panel1.add(imageLabel, "cell 0 0, wrap");
+                addMaximizePictureOnClick(imageLabel, image);
 
-                LOGGER.log(java.util.logging.Level.SEVERE, "Buffered image is null");
-                return;
-            }
 
-            JLabel imageLabel = new JLabel(scaleImageIfTooBig(image));
-            form_panel1.add(imageLabel, "cell 0 0, wrap");
+                //handle image caption and right click ability on the text pane
+                JTextPane imageCaptionTextPane = createImageCaptionTextPane(pictureModel);
+                if (imageCaptionTextPane != null) {
+                    addRightClickOptionToPanel(imageCaptionTextPane);
+                    form_panel1.add(imageCaptionTextPane, "cell 0 1, wrap");
+                }
 
-            addMaximizePictureOnClick(imageLabel, image);
-
-            JTextPane imageCaptionTextPane = createImageCaptionTextPane( baseModel);
-            //if null -> there is no message
-            if (imageCaptionTextPane != null) {
-                form_panel1.add(imageCaptionTextPane, "cell 0 1, wrap");
-            }
-
-            addRightClickOptionToPanel(null, imageCaptionTextPane);
-
-            setNameField(mainFrame, baseModel, form_nameLabel, panelTyp);
-            setTimestampField(mainFrame, baseModel, form_timeLabel, panelTyp);
-        });
+                //set up the remaining needed fields
+                setNameField(mainFrame, pictureModel, form_nameLabel, panelTyp);
+                setTimestampField(mainFrame, pictureModel, form_timeLabel, panelTyp);
+                jPopupMenu = setupEditorPopupMenu(mainFrame, pictureModel);
+            });
+        }
     }
-
-
 
     /**
      Overrides the replyButtonClicked method from the parent class.
