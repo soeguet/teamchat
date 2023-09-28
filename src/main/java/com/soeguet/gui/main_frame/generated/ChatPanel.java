@@ -279,7 +279,7 @@ public abstract class ChatPanel extends JFrame {
 
 					//======== form_menu1 ========
 					{
-						this.form_menu1.setText("text");
+						this.form_menu1.setText("notifications");
 
 						//---- form_allNotificationsMenuItem ----
 						this.form_allNotificationsMenuItem.setText("ALL NOTIFICATIONS OFF");

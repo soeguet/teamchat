@@ -294,6 +294,8 @@ public class GuiFunctionality implements SocketToGuiInterface {
             return;
         }
 
+        System.out.println("this.mainFrame.getNotificationStatus() = " + this.mainFrame.getNotificationStatus());
+
         //check if notifications are even wanted
         switch (this.mainFrame.getNotificationStatus()) {
 
@@ -316,6 +318,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
             case ALL_DENIED, STARTUP -> {
                 //do nothing
+                System.out.println("Notification denied");
             }
         }
     }

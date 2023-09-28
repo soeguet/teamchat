@@ -341,7 +341,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     protected void connectionDetailsButtonMousePressed(final MouseEvent e) {
 
         System.out.println("connectionDetailsButtonMouseClicked");
-        serverInformationOptionPane();
+        this.serverInformationOptionPane();
     }
 
     /**
@@ -355,23 +355,24 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         //clear the main text panel first
         SwingUtilities.invokeLater(() -> {
 
-            form_mainTextPanel.removeAll();
-            form_mainTextPanel.revalidate();
-            form_mainTextPanel.repaint();
+            this.form_mainTextPanel.removeAll();
+            this.form_mainTextPanel.revalidate();
+            this.form_mainTextPanel.repaint();
         });
 
         //close the websocket client
-        if (websocketClient.isOpen()) {
+        if (this.websocketClient.isOpen()) {
 
-            logger.info("Closing websocket client");
-            websocketClient.close();
+            this.logger.info("Closing websocket client");
+            this.websocketClient.close();
         }
 
         //set null to be sure
-        websocketClient = null;
-        logger.info("Reconnecting websocket client");
+        this.websocketClient = null;
+        this.startUp = true;
+        this.logger.info("Reconnecting websocket client");
 
-        connectToWebsocket();
+        this.connectToWebsocket();
     }
 
     /**
