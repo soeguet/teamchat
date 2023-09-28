@@ -9,6 +9,5 @@ public interface CommentInterface {
     JPanel getPanel1();
     void setupTextPanelWrapper();
     void setupPicturePanelWrapper();
-    void addRightClickOptionToPanel();
     void setBorderColor(Color borderColor);
 }

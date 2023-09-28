@@ -5,6 +5,8 @@
 package com.soeguet.gui.newcomment.right.generated;
 
 import java.awt.event.*;
+
+import com.soeguet.gui.newcomment.custom_origin.CustomOriginPanel;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -12,7 +14,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public abstract class PanelRight extends JPanel {
+public abstract class PanelRight extends CustomOriginPanel {
 
 	protected Color borderColor;
 

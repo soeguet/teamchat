@@ -66,7 +66,7 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
 
             checkForQuotesInMessage();
             addActualMessage();
-            setupEditorPopupMenu();
+            setupEditorPopupMenu(mainFrame, baseModel, jPopupMenu);
             addRightClickOptionToPanel();
 
             setupReplyPanels();
@@ -85,9 +85,9 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
             actualTextPane = createImageCaptionTextPane();
             getPanel1().add(actualTextPane, "cell 1 1, wrap");
 
-            setupEditorPopupMenu();
+            setupEditorPopupMenu(mainFrame, baseModel, jPopupMenu);
 
-            addRightClickOptionToPanel();
+            this.addRightClickOptionToPanel();
 
             setNameField(mainFrame);
             setTimestampField(mainFrame);
@@ -192,19 +192,19 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
      When the "reply" option is selected, a ReplyPanelImpl is added to the main text panel's layered pane.
      This method does not return any value.
      */
-    private void setupEditorPopupMenu() {
+    protected void setupEditorPopupMenu(final MainFrameInterface mainFrame, final BaseModel baseModel, final JPopupMenu jPopupMenu) {
 
         // EDT check done!
 
-        jPopupMenu = new JPopupMenu();
+        this.jPopupMenu = new JPopupMenu();
 
-        JMenuItem reply = createAndAddMenuItem(jPopupMenu, "reply");
+        JMenuItem reply = createAndAddMenuItem(this.jPopupMenu, "reply");
         addMouseListenerToReplyMenuItem(reply);
 
-        jPopupMenu.addSeparator();
-        createAndAddMenuItem(jPopupMenu, "edit");
+        this.jPopupMenu.addSeparator();
+        createAndAddMenuItem(this.jPopupMenu, "edit");
         //TODO add action listener to edit menu item
-        createAndAddMenuItem(jPopupMenu, "delete");
+        createAndAddMenuItem(this.jPopupMenu, "delete");
         //TODO add action listener to delete menu item
     }
 
@@ -299,7 +299,7 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
 
      @return the created menu item
      */
-    private JMenuItem createAndAddMenuItem(JPopupMenu popupMenu, String menuItemName) {
+    protected JMenuItem createAndAddMenuItem(JPopupMenu popupMenu, String menuItemName) {
 
         ensureEDT();
 
@@ -359,7 +359,7 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
 
      @return a JTextPane instance with set properties.
      */
-    private JTextPane createTextPane() {
+    protected JTextPane createTextPane() {
 
         ensureEDT();
 
