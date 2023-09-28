@@ -163,33 +163,14 @@ public interface MainFrameInterface {
      */
     LinkedBlockingDeque<String> getClientMessageQueue();
 
-    /**
-     Gets the flag indicating whether the chat client is currently processing client messages.
-
-     @return the flag indicating whether the chat client is currently processing client messages
-     */
-    AtomicBoolean getIsProcessingClientMessages();
-
     int getNotificationPositionY();
 
     void setNotificationPositionY(int notificationPositionY);
 
     List<NotificationImpl> getNotificationList();
 
-    int getPossibleNotifications();
-
-    void setPossibleNotifications(int possibleNotifications);
-
-    LinkedBlockingDeque<BaseModel> getNotificationActiveQueue();
-
-    LinkedBlockingDeque<String> getNotificationWaitingQueue();
-
-    boolean isStartUp();
-
     void setStartUp(boolean b);
-
-    JCheckBoxMenuItem getInternalNotificationsMenuItem();
-
+    
     NotificationStatus getNotificationStatus();
     LinkedHashMap<Long, CommentInterface> getCommentsHashMap();
 

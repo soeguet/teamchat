@@ -2,6 +2,11 @@ package com.soeguet.behaviour;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.soeguet.cache.CustomCache;
+import com.soeguet.cache.factory.CacheManagerFactory;
+import com.soeguet.cache.implementations.ActiveNotificationQueue;
+import com.soeguet.cache.implementations.WaitingNotificationQueue;
+import com.soeguet.cache.manager.CacheManager;
 import com.soeguet.gui.image_panel.ImagePanelImpl;
 import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.newcomment.helper.CommentInterface;
@@ -40,6 +45,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
     private final MainFrameInterface mainFrame;
     private final ObjectMapper objectMapper = new ObjectMapper();
     Logger LOGGER = Logger.getLogger(GuiFunctionality.class.getName());
+    CacheManager cacheManager = CacheManagerFactory.getCacheManager();
     private Timer messageToPanelTimer;
 
     /**
@@ -285,16 +291,17 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
     private void createDesktopNotification(final String message) {
 
-        final int remainingCapacity = this.mainFrame.getNotificationActiveQueue().remainingCapacity();
+        if (cacheManager.getCache("ActiveNotificationQueue") instanceof ActiveNotificationQueue activeNotificationQueue) {
 
-        if (remainingCapacity < 1) {
+            if (activeNotificationQueue.getRemainingCapacity() < 1) {
 
-            //max 3 notification at a time, cache message and bail out
-            this.mainFrame.getNotificationWaitingQueue().add(message);
-            return;
+                //max 3 notification at a time, cache message and bail out
+                if (cacheManager.getCache("WaitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
+                    waitingNotificationQueue.addLast(message);
+                    return;
+                }
+            }
         }
-
-        System.out.println("this.mainFrame.getNotificationStatus() = " + this.mainFrame.getNotificationStatus());
 
         //check if notifications are even wanted
         switch (this.mainFrame.getNotificationStatus()) {
@@ -368,24 +375,27 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         final BaseModel baseModel = getMessageModel(message);
 
-        if (this.mainFrame.getNotificationActiveQueue().remainingCapacity() < 1) {
+        ActiveNotificationQueue activeNotificationsCache = (ActiveNotificationQueue) cacheManager.getCache("ActiveNotificationQueue");
+        WaitingNotificationQueue waitingNotificationsCache = (WaitingNotificationQueue) cacheManager.getCache("WaitingNotificationQueue");
 
-            this.mainFrame.getNotificationWaitingQueue().add(message);
+        if (activeNotificationsCache.getRemainingCapacity() < 1) {
+
+            waitingNotificationsCache.addLast(message);
 
         } else {
 
-            this.mainFrame.getNotificationActiveQueue().add(baseModel);
+            activeNotificationsCache.addLast(baseModel);
             createNotification(baseModel);
         }
 
-        handleRemainingCapacityInQueue();
+        handleRemainingCapacityInQueue(activeNotificationsCache,waitingNotificationsCache);
     }
 
-    private void handleRemainingCapacityInQueue() {
+    private void handleRemainingCapacityInQueue(ActiveNotificationQueue activeNotificationsCache, WaitingNotificationQueue waitingNotificationsCache) {
 
-        if (this.mainFrame.getNotificationActiveQueue().remainingCapacity() > 0) {
+        if (activeNotificationsCache.getRemainingCapacity() > 0) {
 
-            final String first = this.mainFrame.getNotificationWaitingQueue().pollFirst();
+            final String first = waitingNotificationsCache.pollFirst();
 
             Timer timer = new Timer(750, e -> notificationActiveQueueHandling(first));
             timer.setRepeats(false);

@@ -1,11 +1,9 @@
-package com.soeguet.gui.interaction.generated;
+package com.soeguet.gui.reply.generated;
 
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
-import javax.swing.event.*;
-import net.miginfocom.swing.*;
 /*
  * Created by JFormDesigner on Sun Sep 10 12:09:03 CEST 2023
  */
@@ -48,8 +46,8 @@ public abstract class ReplyPanel extends JPanel {
 		return form_quotePanelEmojiButton;
 	}
 
-	public JButton getQuotePanelSenButton() {
-		return form_quotePanelSenButton;
+	public JButton getQuotePanelSendButton() {
+		return form_quotePanelSendButton;
 	}
 
 	protected abstract void thisMousePressed(MouseEvent e);
@@ -140,7 +138,11 @@ public abstract class ReplyPanel extends JPanel {
 
 	protected abstract void replyTextPaneKeyPressed(KeyEvent e);
 
-	protected abstract void quotePanelSenButtonMouseReleased(MouseEvent e);
+	protected abstract void quotePanelPictureButtonMouseClicked(MouseEvent e);
+
+	protected abstract void quotePanelEmojiButtonMouseClicked(MouseEvent e);
+
+	protected abstract void quotePanelSendButtonMouseClicked(MouseEvent e);
 
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
@@ -170,7 +172,7 @@ public abstract class ReplyPanel extends JPanel {
 		form_panel3 = new JPanel();
 		form_quotePanelPictureButton = new JButton();
 		form_quotePanelEmojiButton = new JButton();
-		form_quotePanelSenButton = new JButton();
+		form_quotePanelSendButton = new JButton();
 
 		//======== this ========
 		setBorder(new EtchedBorder());
@@ -335,6 +337,12 @@ public abstract class ReplyPanel extends JPanel {
 					form_quotePanelPictureButton.setPreferredSize(new Dimension(35, 35));
 					form_quotePanelPictureButton.setMaximumSize(new Dimension(35, 35));
 					form_quotePanelPictureButton.setMinimumSize(new Dimension(35, 35));
+					form_quotePanelPictureButton.addMouseListener(new MouseAdapter() {
+						@Override
+						public void mouseClicked(MouseEvent e) {
+							quotePanelPictureButtonMouseClicked(e);
+						}
+					});
 					form_panel3.add(form_quotePanelPictureButton);
 
 					//---- form_quotePanelEmojiButton ----
@@ -342,20 +350,26 @@ public abstract class ReplyPanel extends JPanel {
 					form_quotePanelEmojiButton.setPreferredSize(new Dimension(35, 35));
 					form_quotePanelEmojiButton.setMaximumSize(new Dimension(35, 35));
 					form_quotePanelEmojiButton.setMinimumSize(new Dimension(35, 35));
-					form_panel3.add(form_quotePanelEmojiButton);
-
-					//---- form_quotePanelSenButton ----
-					form_quotePanelSenButton.setText("\u2192");
-					form_quotePanelSenButton.setMinimumSize(new Dimension(35, 35));
-					form_quotePanelSenButton.setPreferredSize(new Dimension(35, 35));
-					form_quotePanelSenButton.setMaximumSize(new Dimension(35, 35));
-					form_quotePanelSenButton.addMouseListener(new MouseAdapter() {
+					form_quotePanelEmojiButton.addMouseListener(new MouseAdapter() {
 						@Override
-						public void mouseReleased(MouseEvent e) {
-							quotePanelSenButtonMouseReleased(e);
+						public void mouseClicked(MouseEvent e) {
+							quotePanelEmojiButtonMouseClicked(e);
 						}
 					});
-					form_panel3.add(form_quotePanelSenButton);
+					form_panel3.add(form_quotePanelEmojiButton);
+
+					//---- form_quotePanelSendButton ----
+					form_quotePanelSendButton.setText("\u2192");
+					form_quotePanelSendButton.setMinimumSize(new Dimension(35, 35));
+					form_quotePanelSendButton.setPreferredSize(new Dimension(35, 35));
+					form_quotePanelSendButton.setMaximumSize(new Dimension(35, 35));
+					form_quotePanelSendButton.addMouseListener(new MouseAdapter() {
+						@Override
+						public void mouseClicked(MouseEvent e) {
+							quotePanelSendButtonMouseClicked(e);
+						}
+					});
+					form_panel3.add(form_quotePanelSendButton);
 				}
 				form_panel8.add(form_panel3, BorderLayout.LINE_END);
 			}
@@ -392,6 +406,6 @@ public abstract class ReplyPanel extends JPanel {
 	protected JPanel form_panel3;
 	protected JButton form_quotePanelPictureButton;
 	protected JButton form_quotePanelEmojiButton;
-	protected JButton form_quotePanelSenButton;
+	protected JButton form_quotePanelSendButton;
 	// JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }

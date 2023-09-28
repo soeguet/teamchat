@@ -1,6 +1,10 @@
 package com.soeguet.gui.notification_panel;
 
-import com.soeguet.gui.interaction.ReplyPanelImpl;
+import com.soeguet.cache.factory.CacheManagerFactory;
+import com.soeguet.cache.implementations.ActiveNotificationQueue;
+import com.soeguet.cache.implementations.WaitingNotificationQueue;
+import com.soeguet.cache.manager.CacheManager;
+import com.soeguet.gui.reply.ReplyPanelImpl;
 import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.notification_panel.generated.Notification;
 import com.soeguet.model.jackson.BaseModel;
@@ -227,16 +231,21 @@ public class NotificationImpl extends Notification {
         this.repaint();
     }
 
+    private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
+
     private void processNotificationQueue() {
 
         setVisible(false);
         dispose();
 
-        final boolean remove = this.mainFrame.getNotificationActiveQueue().remove(this.baseModel);
+        ActiveNotificationQueue activeNotificationsCache = (ActiveNotificationQueue) cacheManager.getCache("ActiveNotificationQueue");
+        WaitingNotificationQueue waitingNotificationsCache = (WaitingNotificationQueue) cacheManager.getCache("WaitingNotificationQueue");
 
-        if (remove && this.mainFrame.getNotificationActiveQueue().isEmpty()) {
+        final boolean remove = activeNotificationsCache.remove(this.baseModel);
+
+        if (remove && activeNotificationsCache.isEmpty()) {
             this.mainFrame.setNotificationPositionY(0);
-            final String first = this.mainFrame.getNotificationWaitingQueue().pollFirst();
+            final String first = waitingNotificationsCache.pollFirst();
             this.mainFrame.getGuiFunctionality().notificationActiveQueueHandling(first);
         }
     }

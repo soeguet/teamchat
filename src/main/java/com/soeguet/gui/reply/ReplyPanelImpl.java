@@ -1,7 +1,7 @@
-package com.soeguet.gui.interaction;
+package com.soeguet.gui.reply;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.soeguet.gui.interaction.generated.ReplyPanel;
+import com.soeguet.gui.reply.generated.ReplyPanel;
 import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.newcomment.util.WrapEditorKit;
 import com.soeguet.model.MessageTypes;
@@ -13,7 +13,6 @@ import com.soeguet.util.EmojiPopUpMenuHandler;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
-import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
@@ -128,6 +127,7 @@ public class ReplyPanelImpl extends ReplyPanel {
     }
 
 
+    @Override
     protected void quotePanelEmojiButtonMouseClicked(MouseEvent e) {
 
         new EmojiPopUpMenuHandler(mainFrame, this.getReplyTextPane(), this.form_quotePanelEmojiButton);
@@ -144,13 +144,19 @@ public class ReplyPanelImpl extends ReplyPanel {
 
             } else {
 
-                quotePanelSenButtonMouseReleased(null);
+                quotePanelSendButtonMouseClicked(null);
             }
         }
     }
 
     @Override
-    protected void quotePanelSenButtonMouseReleased(MouseEvent e) {
+    protected void quotePanelPictureButtonMouseClicked(final MouseEvent e) {
+
+        //TODO: implement picture sending as reply
+    }
+
+    @Override
+    protected void quotePanelSendButtonMouseClicked(MouseEvent e) {
 
         new EmojiHandler(mainFrame).replaceImageIconWithEmojiDescription(this.getReplyTextPane());
 

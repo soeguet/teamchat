@@ -2,6 +2,9 @@ package com.soeguet.gui.main_frame;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.behaviour.GuiFunctionality;
+import com.soeguet.cache.factory.CacheManagerFactory;
+import com.soeguet.cache.implementations.WaitingNotificationQueue;
+import com.soeguet.cache.manager.CacheManager;
 import com.soeguet.gui.image_panel.ImagePanelImpl;
 import com.soeguet.gui.main_frame.generated.ChatPanel;
 import com.soeguet.gui.newcomment.helper.CommentInterface;
@@ -9,7 +12,6 @@ import com.soeguet.gui.notification_panel.NotificationImpl;
 import com.soeguet.gui.popups.PopupPanelImpl;
 import com.soeguet.gui.properties.PropertiesPanelImpl;
 import com.soeguet.model.EnvVariables;
-import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.properties.CustomProperties;
 import com.soeguet.properties.CustomUserProperties;
 import com.soeguet.socket_client.CustomWebsocketClient;
@@ -42,16 +44,14 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     private final HashMap<String, CustomUserProperties> chatClientPropertiesHashMap;
     private final LinkedBlockingDeque<String> socketMessageQueue;
 
-    //TODO cache comments on pane for hot replacements as HashSet
+    //TODO cache comments on pane for hot replacements as HashSet -> data structure ready, implementation missing
     private final LinkedHashMap<Long, CommentInterface> commentsHashMap = new LinkedHashMap<>();
     private final LinkedBlockingDeque<String> messageQueue;
-    private final LinkedBlockingDeque<BaseModel> notificationActiveQueue;
-    private final LinkedBlockingDeque<String> notificationWaitingQueue;
     private final ObjectMapper objectMapper;
     private final CustomProperties customProperties;
     private final List<NotificationImpl> notificationList = new ArrayList<>();
-    private final AtomicBoolean isProcessingClientMessages = new AtomicBoolean(false);
     private final EnvVariables envVariables;
+    private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
     private GuiFunctionality guiFunctionality;
     private URI serverUri;
     private int JSCROLLPANE_MARGIN_RIGHT_BORDER;
@@ -63,10 +63,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     private JPanel messagePanel;
     private volatile int notificationPositionY = 0;
     private boolean startUp = true;
-    private volatile int possibleNotifications = 3;
     private String lastMessageSenderName;
     private String lastMessageTimeStamp;
-    //TODO maybe remove and use menuitem directly
     private boolean blockAllNotifications = form_allNotificationsMenuItem.isSelected();
     private boolean blockInternalNotifications = !form_internalNotificationsMenuItem.isSelected();
     private boolean blockExternalNotifications = !form_externalNotificationsMenuItem.isSelected();
@@ -85,8 +83,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         socketMessageQueue = new LinkedBlockingDeque<>();
         messageQueue = new LinkedBlockingDeque<>();
-        notificationActiveQueue = new LinkedBlockingDeque<>(3);
-        notificationWaitingQueue = new LinkedBlockingDeque<>();
         chatClientPropertiesHashMap = new HashMap<>();
         objectMapper = new ObjectMapper();
         customProperties = new CustomProperties(this);
@@ -265,11 +261,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         }
     }
 
-    public LinkedHashMap<Long, CommentInterface> getCommentsHashMap() {
-
-        return commentsHashMap;
-    }
-
     /**
      {@inheritDoc}
 
@@ -320,11 +311,13 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void internalNotificationsMenuItemItemStateChanged(final ItemEvent e) {
 
+        WaitingNotificationQueue waitingNotificationQueue = (WaitingNotificationQueue) cacheManager.getCache("waitingNotificationQueue");
+
         //remove all remaining and queued notifications
         if (e.getStateChange() == ItemEvent.DESELECTED) {
 
             //getter call since this one is synchronized
-            this.getNotificationWaitingQueue().removeAll(this.getNotificationWaitingQueue());
+            waitingNotificationQueue.removeAll();
             blockInternalNotifications = true;
 
             new PopupPanelImpl(this, "Internal notifications disabled").implementPopup(2000);
@@ -566,6 +559,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void allNotificationsMenuItemItemStateChanged(final ItemEvent e) {
 
+        WaitingNotificationQueue waitingNotificationQueue = (WaitingNotificationQueue) cacheManager.getCache("waitingNotificationQueue");
+
         //any kind of change needs to get rid of an existing timer
         if (blockTimer != null) {
 
@@ -579,7 +574,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             this.blockAllNotifications = true;
 
             //getter call since this one is synchronized
-            this.getNotificationWaitingQueue().removeAll(this.getNotificationWaitingQueue());
+            waitingNotificationQueue.removeAll();
 
             blockTimer = new Timer(300000, e1 -> {
 
@@ -595,42 +590,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
     }
 
-    public synchronized LinkedBlockingDeque<String> getNotificationWaitingQueue() {
-
-        return notificationWaitingQueue;
-    }
-
     public boolean isStartUp() {
 
         return startUp;
-    }
-
-    @Override
-    public void setStartUp(final boolean startUp) {
-
-        this.startUp = startUp;
-    }
-
-    public NotificationStatus getNotificationStatus() {
-
-        if (blockAllNotifications || startUp) {
-
-            return NotificationStatus.ALL_DENIED;
-
-        } else if (!blockInternalNotifications && !blockExternalNotifications) {
-
-            return NotificationStatus.ALL_ALLOWED;
-
-        } else if (!blockExternalNotifications) {
-
-            return NotificationStatus.INTERNAL_ONLY;
-
-        } else if (!blockInternalNotifications) {
-
-            return NotificationStatus.EXTERNAL_ONLY;
-        }
-
-        return NotificationStatus.ALL_DENIED;
     }
 
     /**
@@ -788,12 +750,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     @Override
-    public AtomicBoolean getIsProcessingClientMessages() {
-
-        return isProcessingClientMessages;
-    }
-
-    @Override
     public synchronized int getNotificationPositionY() {
 
         return this.notificationPositionY;
@@ -812,19 +768,35 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     @Override
-    public synchronized int getPossibleNotifications() {
+    public void setStartUp(final boolean startUp) {
 
-        return possibleNotifications;
+        this.startUp = startUp;
     }
 
-    @Override
-    public synchronized void setPossibleNotifications(final int possibleNotifications) {
+    public NotificationStatus getNotificationStatus() {
 
-        this.possibleNotifications = possibleNotifications;
+        if (blockAllNotifications || startUp) {
+
+            return NotificationStatus.ALL_DENIED;
+
+        } else if (!blockInternalNotifications && !blockExternalNotifications) {
+
+            return NotificationStatus.ALL_ALLOWED;
+
+        } else if (!blockExternalNotifications) {
+
+            return NotificationStatus.INTERNAL_ONLY;
+
+        } else if (!blockInternalNotifications) {
+
+            return NotificationStatus.EXTERNAL_ONLY;
+        }
+
+        return NotificationStatus.ALL_DENIED;
     }
 
-    public LinkedBlockingDeque<BaseModel> getNotificationActiveQueue() {
+    public LinkedHashMap<Long, CommentInterface> getCommentsHashMap() {
 
-        return notificationActiveQueue;
+        return commentsHashMap;
     }
 }

@@ -1,6 +1,6 @@
 package com.soeguet.gui.newcomment.custom_origin;
 
-import com.soeguet.gui.interaction.ReplyPanelImpl;
+import com.soeguet.gui.reply.ReplyPanelImpl;
 import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.newcomment.util.QuotePanelImpl;
 import com.soeguet.gui.newcomment.util.WrapEditorKit;
@@ -187,6 +187,7 @@ public class CustomOriginPanel extends JPanel {
      */
     protected void setTimestampField(MainFrameInterface mainFrame, BaseModel baseModel, JLabel form_timeLabel, PanelTypes panelTyp) {
 
+        //TODO what is this mess
         // EDT check done!
         String timeStamp = baseModel.getTime();
         form_timeLabel.setText(timeStamp);

@@ -47,9 +47,10 @@ java -jar target/teamchat-1.0-SNAPSHOT.jar
 
 ## Environment Variables
 Environment variables the chat client uses are listed below:
-- chat_username
-- chat_ip
-- chat_port
+- chat.username e.g. "John Doe"
+- chat.ip e.g. "127.0.0.1"
+- chat.port e.g. "8100"
+- linux.desktop.env e.g. "gnome"
 
 ## License
 
