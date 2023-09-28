@@ -1,395 +1,254 @@
 package com.soeguet.gui.newcomment.left;
 
-import com.soeguet.gui.interaction.ReplyPanelImpl;
 import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.newcomment.helper.CommentInterface;
-import com.soeguet.gui.newcomment.images.CustomImagePanel;
 import com.soeguet.gui.newcomment.left.generated.PanelLeft;
 import com.soeguet.gui.newcomment.util.QuotePanelImpl;
-import com.soeguet.gui.newcomment.util.WrapEditorKit;
 import com.soeguet.model.PanelTypes;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
-import com.soeguet.util.EmojiHandler;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.datatransfer.StringSelection;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.util.logging.Logger;
 
+/**
+ This class represents an implementation of the PanelLeft interface and implements the CommentInterface.
+ It provides methods for setting up a left panel in a graphical user interface.
+ */
 public class PanelLeftImpl extends PanelLeft implements CommentInterface {
 
+    private final Logger LOGGER = Logger.getLogger(PanelLeftImpl.class.getName());
     private final MainFrameInterface mainFrame;
     private final BaseModel baseModel;
     private PanelTypes panelTyp;
     private JPopupMenu jPopupMenu;
-    private JTextPane actualTextPane;
+    private BufferedImage image;
 
+    /**
+     Constructs a new PanelLeftImpl object.
+
+     @param mainFrame the MainFrameInterface object to associate with the panel
+     @param baseModel the BaseModel object to use for data access
+     @param panelTyp  the PanelTypes object to determine the type of panel
+     */
     public PanelLeftImpl(MainFrameInterface mainFrame, BaseModel baseModel, PanelTypes panelTyp) {
 
-        this.baseModel = baseModel;
         this.mainFrame = mainFrame;
+        this.baseModel = baseModel;
         this.panelTyp = panelTyp;
     }
 
     /**
-     Ensures that the method is running on the Event Dispatch Thread (EDT).
-     If the method is not running on the EDT, an IllegalStateException is thrown.
+     Constructs a new PanelLeftImpl object.
 
-     This method does not return any value.
-
-     @throws IllegalStateException if the method is not running on the EDT
+     @param mainFrame the MainFrameInterface object to associate with the panel
+     @param baseModel the BaseModel object to use for data access
      */
-    private void ensureEDT() {
-
-        if (!SwingUtilities.isEventDispatchThread()) {
-            throw new IllegalStateException("This should run on the EDT");
-        }
-    }
-
     public PanelLeftImpl(MainFrameInterface mainFrame, BaseModel baseModel) {
 
-        this.baseModel = baseModel;
         this.mainFrame = mainFrame;
+        this.baseModel = baseModel;
     }
 
+    /**
+     Set up the text panel wrapper for displaying messages.
+     This method is called to initialize the text panel with the necessary components and settings.
+
+     If the baseModel is an instance of MessageModel, the following actions are taken:
+     1. Invoke the setupTextPanelWrapper method on the Swing event dispatch thread.
+     2. Handle the extraction of messages containing quotes.
+     3. Set the text message on the chat panel and add a right-click option to the text pane.
+     4. Set up the remaining needed fields, such as name, time, and popup menu.
+     */
     @Override
     public void setupTextPanelWrapper() {
 
-        if (!(baseModel instanceof MessageModel)) {
-            return;
+        if (baseModel instanceof MessageModel messageModel) {
+
+            SwingUtilities.invokeLater(() -> {
+
+                //handle message containing quotes
+                handleTextMessageExtraction(messageModel);
+
+                //handle the actual message and add a right click option to text pane
+                setTextMessageOnChatPanel(messageModel);
+
+                //set up the remaining needed fields, e.g. name, time, popup menu
+                setupCommentEssentials(messageModel);
+            });
         }
-
-        SwingUtilities.invokeLater(() -> {
-
-            checkForQuotesInMessage();
-            addActualMessage();
-            setupEditorPopupMenu(mainFrame, baseModel, jPopupMenu);
-            addRightClickOptionToPanel();
-
-            setupReplyPanels();
-        });
-
     }
 
+    /**
+     Handle the extraction of messages containing quotes.
+     If the given message model contains quotes, a quote panel is created and added to the form panel.
+
+     @param messageModel the message model containing the message to handle
+     */
+    private void handleTextMessageExtraction(final MessageModel messageModel) {
+
+        QuotePanelImpl quotedSectionPanel = checkForQuotesInMessage(mainFrame, messageModel);
+        if (quotedSectionPanel != null) {
+            form_panel1.add(quotedSectionPanel, "cell 1 0, wrap");
+        }
+    }
+
+    /**
+     Sets the text message on the chat panel.
+
+     @param messageModel the message model containing the message to be set
+     */
+    private void setTextMessageOnChatPanel(final MessageModel messageModel) {
+
+        JTextPane actualTextPane = setUserMessage(mainFrame, messageModel);
+        addRightClickOptionToPanel(actualTextPane);
+        form_panel1.add(actualTextPane, "cell 1 1, wrap");
+    }
+
+    /**
+     Sets up the essentials for comments.
+
+     @param messageModel the message model containing the comment information
+     */
+    private void setupCommentEssentials(final MessageModel messageModel) {
+
+        setNameField(mainFrame, messageModel, form_nameLabel, panelTyp);
+        setTimestampField(mainFrame, messageModel, form_nameLabel, panelTyp);
+        jPopupMenu = setupEditorPopupMenu(mainFrame, messageModel);
+    }
+
+    /**
+     Sets up the picture panel wrapper.
+     This method is responsible for setting up the necessary components and behavior for displaying a picture in the chat panel.
+     It handles image extraction, resizing, caption, and right-click functionality.
+     After setting up the picture, it also calls the setupCommentEssentials method to set up the remaining needed fields.
+     */
     @Override
     public void setupPicturePanelWrapper() {
 
-        SwingUtilities.invokeLater(() -> {
+        if (baseModel instanceof PictureModel pictureModel) {
 
-            CustomImagePanel customImagePanel = new CustomImagePanel(mainFrame, this, (PictureModel) baseModel);
-            customImagePanel.addImageLabelToPanel("cell 1 0, wrap");
+            SwingUtilities.invokeLater(() -> {
 
-            actualTextPane = createImageCaptionTextPane();
-            getPanel1().add(actualTextPane, "cell 1 1, wrap");
+                //handle image extraction and return, if null
+                if (handleImageExtraction(pictureModel)) return;
 
-            setupEditorPopupMenu(mainFrame, baseModel, jPopupMenu);
+                //handle image and max sizing of image on the main panel
+                setImageOnChatPanel();
 
-            this.addRightClickOptionToPanel();
+                //handle image caption and right click ability on the text pane
+                handleImageCaption(pictureModel);
 
-            setNameField(mainFrame);
-            setTimestampField(mainFrame);
-        });
-    }
-
-    public void addRightClickOptionToPanel() {
-
-        // EDT check done!
-
-        if (actualTextPane == null) {
-
-            actualTextPane = createTextPane();
-        }
-
-        JPopupMenu popupMenu = new JPopupMenu();
-
-        JMenuItem copyItem = createAndAddMenuItem(popupMenu, "copy");
-
-        addActionListenerToCopyJMenuItem(copyItem);
-        addMouseListenerToJTextPane(actualTextPane, popupMenu);
-
-        actualTextPane.setComponentPopupMenu(popupMenu);
-    }
-
-    /**
-     * Creates a JTextPane for displaying image captions.
-     * If the actualTextPane is null, a new JTextPane is created using the createTextPane() method.
-     * The text content of the JTextPane is set to the message obtained from the baseModel.
-     * The JTextPane is set to non-editable and non-opaque.
-     * Returns the JTextPane.
-     *
-     * @return the created JTextPane
-     */
-    private JTextPane createImageCaptionTextPane() {
-
-        // EDT check done!
-
-        if (actualTextPane == null) {
-
-            actualTextPane = createTextPane();
-        }
-
-        actualTextPane.setText(baseModel.getMessage());
-        actualTextPane.setEditable(false);
-        actualTextPane.setOpaque(false);
-
-        return actualTextPane;
-    }
-
-    /**
-     Checks if a message has a quoted text and creates a quoted section in the chat bubble.
-
-     If the message does not have a quoted text, the method will return without performing any action.
-     Otherwise, it will create a QuotePanelImpl and add it to the panel1.
-
-     @see MessageModel#getQuotedMessageText()
-     @see MessageModel#getQuotedMessageSender()
-     @see MessageModel#getQuotedMessageTime()
-     @see QuotePanelImpl
-     */
-    private void checkForQuotesInMessage() {
-
-        // EDT check done!
-
-        MessageModel messageModel = getMessageModel();
-
-        String quotedText = messageModel.getQuotedMessageText();
-
-        if (quotedText == null) {
-            return;
-        }
-
-        String quotedChatParticipant = messageModel.getQuotedMessageSender();
-        String quotedTime = messageModel.getQuotedMessageTime();
-
-        QuotePanelImpl quotedSectionPanel = new QuotePanelImpl(mainFrame, quotedText, quotedChatParticipant, quotedTime);
-        this.getPanel1().add(quotedSectionPanel, "cell 1 0, wrap");
-    }
-
-    private MessageModel getMessageModel() {
-
-        return (MessageModel) baseModel;
-    }
-
-    /**
-     Adds the actual message to the chat bubble.
-
-     This method sets the user message, name field, and timestamp field in the main GUI elements.
-     */
-    private void addActualMessage() {
-
-        // EDT check done!
-        setUserMessage();
-        setNameField(mainFrame);
-        setTimestampField(mainFrame);
-    }
-
-    /**
-     Sets up the popup menu for the editor.
-     The popup menu is a JPopupMenu that contains options for replying, editing, and deleting a message.
-     When the "reply" option is selected, a ReplyPanelImpl is added to the main text panel's layered pane.
-     This method does not return any value.
-     */
-    protected void setupEditorPopupMenu(final MainFrameInterface mainFrame, final BaseModel baseModel, final JPopupMenu jPopupMenu) {
-
-        // EDT check done!
-
-        this.jPopupMenu = new JPopupMenu();
-
-        JMenuItem reply = createAndAddMenuItem(this.jPopupMenu, "reply");
-        addMouseListenerToReplyMenuItem(reply);
-
-        this.jPopupMenu.addSeparator();
-        createAndAddMenuItem(this.jPopupMenu, "edit");
-        //TODO add action listener to edit menu item
-        createAndAddMenuItem(this.jPopupMenu, "delete");
-        //TODO add action listener to delete menu item
-    }
-
-    /**
-     This method is used to set up the reply panels based on the panel type.
-     If the panel type is normal, the method will return without performing any action.
-     Otherwise, it will set the visibility of button1 to false.
-     */
-    private void setupReplyPanels() {
-
-        // EDT check done!
-
-        if (panelTyp == PanelTypes.NORMAL) {
-
-            return;
-        }
-
-        this.getButton1().setVisible(false);
-    }
-
-    /**
-     Sets the user message in the GUI.
-     <p>
-     This method creates a JTextPane and sets its text to the user message retrieved from the message model.
-     It then adds the JTextPane to the panel at the specified position.
-     */
-    private void setUserMessage() {
-
-        ensureEDT();
-
-        actualTextPane = createTextPane();
-
-        actualTextPane.setEditorKit(new WrapEditorKit());
-
-        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(actualTextPane, baseModel.getMessage());
-
-        this.getPanel1().add(actualTextPane, "cell 1 1, wrap");
-    }
-
-    /**
-     Sets the name field of the message label.
-     This method retrieves the sender's name from the message model
-     and displays it in the name label of the message.
-     */
-    private void setNameField(MainFrameInterface mainFrame) {
-
-        // EDT check done!
-
-        String sender = baseModel.getSender();
-
-        form_nameLabel.setText(sender);
-
-        if (panelTyp == PanelTypes.NORMAL && sender.equals(mainFrame.getLastMessageSenderName())) {
-
-            form_nameLabel.setVisible(false);
-        }
-
-        if (panelTyp == PanelTypes.NORMAL) {
-
-            mainFrame.setLastMessageSenderName(sender);
+                //set up the remaining needed fields, e.g. name, time, popup menu
+                setupCommentEssentials(pictureModel);
+            });
         }
     }
 
     /**
-     Sets timestamp field with the value from the message model.
-     The timestamp value is set as the text of the time label.
+     Handles image extraction from the given PictureModel.
+     It extracts the image from the message and sets the extracted image to the instance variable 'image'.
+     If the extracted image is null, it logs a severe level message and returns true.
+     Otherwise, it returns false.
+
+     @param pictureModel The PictureModel containing the image message.
+
+     @return True if the extracted image is null, false otherwise.
      */
-    private void setTimestampField(MainFrameInterface mainFrame) {
+    private boolean handleImageExtraction(final PictureModel pictureModel) {
 
-        // EDT check done!
-
-        String timeStamp = baseModel.getTime();
-
-        form_timeLabel.setText(timeStamp);
-
-        if (panelTyp == PanelTypes.NORMAL && timeStamp.equals(mainFrame.getLastMessageTimeStamp())) {
-
-            form_timeLabel.setVisible(false);
+        this.image = extractImageFromMessage(pictureModel);
+        if (image == null) {
+            LOGGER.log(java.util.logging.Level.SEVERE, "Buffered image is null");
+            return true;
         }
+        return false;
+    }
 
-        if (panelTyp == PanelTypes.NORMAL) {
+    /**
+     Sets the image on the chat panel.
+     It creates a JLabel with the scaled image and adds it to the form_panel1.
+     It also adds a click listener to the image label to support maximizing the image.
 
-            mainFrame.setLastMessageTimeStamp(timeStamp);
+     @see #scaleImageIfTooBig(BufferedImage)
+     @see #addMaximizePictureOnClick(JLabel, BufferedImage)
+     */
+    private void setImageOnChatPanel() {
+
+        JLabel imageLabel = new JLabel(scaleImageIfTooBig(image));
+        form_panel1.add(imageLabel, "cell 1 0, wrap");
+        addMaximizePictureOnClick(imageLabel, image);
+    }
+
+    /**
+     Handles the image caption for the given PictureModel.
+     It creates a JTextPane with the caption text and adds it to the form_panel1 if the imageCaptionTextPane is not null.
+     It also adds a right-click option to the image caption to support additional functionalities.
+
+     @param pictureModel The PictureModel object containing the image caption.
+     */
+    private void handleImageCaption(final PictureModel pictureModel) {
+
+        JTextPane imageCaptionTextPane = createImageCaptionTextPane(pictureModel);
+        if (imageCaptionTextPane != null) {
+            addRightClickOptionToPanel(imageCaptionTextPane);
+            form_panel1.add(imageCaptionTextPane, "cell 1 1, wrap");
         }
     }
 
     /**
-     Creates a menu item with the given name and adds it to the specified popup menu.
+     Sets up the essential comment fields for the given PictureModel.
+     It sets the name field, timestamp field, and the editor popup menu.
 
-     @param popupMenu    the popup menu to add the menu item to
-     @param menuItemName the name of the menu item to be created
-
-     @return the created menu item
+     @param pictureModel The PictureModel object for which to set up the comment essentials.
      */
-    protected JMenuItem createAndAddMenuItem(JPopupMenu popupMenu, String menuItemName) {
+    private void setupCommentEssentials(final PictureModel pictureModel) {
 
-        ensureEDT();
-
-        JMenuItem copyItem = new JMenuItem(menuItemName);
-        popupMenu.add(copyItem);
-        return copyItem;
-    }
-
-    private void addMouseListenerToReplyMenuItem(JMenuItem reply) {
-
-        ensureEDT();
-
-        reply.addMouseListener(new MouseAdapter() {
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-
-                super.mouseReleased(e);
-
-                ReplyPanelImpl replyPanel = new ReplyPanelImpl(mainFrame, baseModel);
-                mainFrame.getMainTextPanelLayeredPane().add(replyPanel, JLayeredPane.MODAL_LAYER);
-            }
-        });
-    }
-
-    private void addActionListenerToCopyJMenuItem(JMenuItem menuOption) {
-
-        ensureEDT();
-
-        menuOption.addActionListener(e -> {
-            final String selectedText = actualTextPane.getSelectedText();
-            if (selectedText != null) {
-                StringSelection selection = new StringSelection(selectedText);
-                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, selection);
-            }
-        });
-    }
-
-    protected void addMouseListenerToJTextPane(JTextPane textPane, JPopupMenu popupMenu) {
-
-        ensureEDT();
-
-        textPane.addMouseListener(new MouseAdapter() {
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-
-                if (SwingUtilities.isRightMouseButton(e)) {
-                    popupMenu.show(PanelLeftImpl.this, e.getX(), e.getY());
-                }
-            }
-        });
+        setNameField(mainFrame, pictureModel, form_nameLabel, panelTyp);
+        setTimestampField(mainFrame, pictureModel, form_timeLabel, panelTyp);
+        jPopupMenu = setupEditorPopupMenu(mainFrame, pictureModel);
     }
 
     /**
-     Creates a JTextPane instance.
+     Handler for when the action label is mouse entered.
 
-     @return a JTextPane instance with set properties.
+     @param e The MouseEvent object representing the mouse enter event.
      */
-    protected JTextPane createTextPane() {
-
-        ensureEDT();
-
-        JTextPane jTextPane = new JTextPane();
-
-        jTextPane.setEditable(false);
-        jTextPane.setOpaque(false);
-        jTextPane.setMinimumSize(new Dimension(5, 5));
-
-        return jTextPane;
-    }
-
     @Override
     protected void actionLabelMouseEntered(MouseEvent e) {
 
     }
 
+    /**
+     Handler for when the mouse pointer exits the action label.
+
+     @param e The MouseEvent object representing the mouse exit event.
+     */
     @Override
     protected void actionLabelMouseExited(MouseEvent e) {
 
     }
 
+    /**
+     Handler for when the reply button is clicked.
+     Displays the editor popup menu at the position of the mouse click.
+
+     @param e The MouseEvent object representing the mouse click event.
+     */
     @Override
     protected void replyButtonClicked(MouseEvent e) {
-
-        ensureEDT();
 
         jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
     }
 
+    /**
+     Handler for when the action label is clicked.
+
+     @param e The MouseEvent object representing the mouse click event.
+     */
     @Override
     protected void actionLabelMouseClicked(MouseEvent e) {
 

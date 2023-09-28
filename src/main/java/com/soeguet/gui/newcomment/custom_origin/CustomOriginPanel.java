@@ -27,17 +27,13 @@ public class CustomOriginPanel extends JPanel {
 
     protected Logger LOGGER = Logger.getLogger(CustomOriginPanel.class.getName());
 
-    protected void modifyPanelIfMessageIsAReply(PanelTypes panelTyp, JPanel form_panel1) {
+    /**
+     Extracts an image from a message.
 
-        // EDT check done!
-        if (panelTyp == PanelTypes.NORMAL) {
+     @param baseModel The base model containing the image data.
 
-            return;
-        }
-
-        form_panel1.setVisible(false);
-    }
-
+     @return The extracted image as a BufferedImage. Returns null if an error occurs.
+     */
     protected BufferedImage extractImageFromMessage(BaseModel baseModel) {
 
         try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(((PictureModel) baseModel).getPicture())) {
@@ -52,6 +48,13 @@ public class CustomOriginPanel extends JPanel {
         return null;
     }
 
+    /**
+     Scales an image if it is too big.
+
+     @param bufferedImage The image to be scaled.
+
+     @return The scaled image as an ImageIcon.
+     */
     protected ImageIcon scaleImageIfTooBig(BufferedImage bufferedImage) {
 
         if (bufferedImage.getWidth() > 500) {
@@ -90,31 +93,31 @@ public class CustomOriginPanel extends JPanel {
                             LOGGER.log(java.util.logging.Level.SEVERE, "Error writing image", ex);
                         }
 
-//                        if (Desktop.isDesktopSupported()) {
+                        if (Desktop.isDesktopSupported()) {
 
-                        try {
+                            try {
 
-                            if (imgFile.exists()) {
+                                if (imgFile.exists()) {
 
-                                Desktop.getDesktop().open(imgFile);
+                                    Desktop.getDesktop().open(imgFile);
 
-                            } else {
+                                } else {
 
-                                LOGGER.log(java.util.logging.Level.SEVERE, "Image file does not exist");
-                                throw new IOException();
+                                    LOGGER.log(java.util.logging.Level.SEVERE, "Image file does not exist");
+                                    throw new IOException();
 
+                                }
+
+                            } catch (IOException ex) {
+
+                                LOGGER.log(java.util.logging.Level.SEVERE, "Error opening image", ex);
+                                throw new RuntimeException(ex);
                             }
 
-                        } catch (IOException ex) {
+                        } else {
 
-                            LOGGER.log(java.util.logging.Level.SEVERE, "Error opening image", ex);
-                            throw new RuntimeException(ex);
+                            LOGGER.log(java.util.logging.Level.SEVERE, "Desktop not supported");
                         }
-
-//                        } else {
-//
-//                            LOGGER.log(java.util.logging.Level.SEVERE, "Desktop not supported");
-//                        }
 
                         if (!imgFile.delete()) {
 
@@ -127,10 +130,16 @@ public class CustomOriginPanel extends JPanel {
         });
     }
 
+    /**
+     * Checks if a message contains a quote and creates a QuotePanel with the quote information.
+     *
+     * @param mainFrame     The main frame object.
+     * @param messageModel  The message model object.
+     * @return The created QuotePanel, or null if the message does not contain a quote.
+     */
     protected QuotePanelImpl checkForQuotesInMessage(MainFrameInterface mainFrame, MessageModel messageModel) {
 
         // EDT check done!
-
         String quotedText = messageModel.getQuotedMessageText();
 
         if (quotedText == null) {
@@ -143,6 +152,14 @@ public class CustomOriginPanel extends JPanel {
         return new QuotePanelImpl(mainFrame, quotedText, quotedChatParticipant, quotedTime);
     }
 
+    /**
+     * Sets the name field in a form with the sender's name from a BaseModel object.
+     *
+     * @param mainFrame       The main frame object.
+     * @param baseModel       The base model object.
+     * @param form_nameLabel  The label to display the sender's name.
+     * @param panelTyp        The type of panel.
+     */
     protected void setNameField(MainFrameInterface mainFrame, BaseModel baseModel, JLabel form_nameLabel, PanelTypes panelTyp) {
 
         // EDT check done!
@@ -160,6 +177,14 @@ public class CustomOriginPanel extends JPanel {
         }
     }
 
+    /**
+     * Sets the timestamp field in a form with the timestamp from a BaseModel object.
+     *
+     * @param mainFrame       The main frame object.
+     * @param baseModel       The base model object.
+     * @param form_timeLabel  The label to display the timestamp.
+     * @param panelTyp        The type of panel.
+     */
     protected void setTimestampField(MainFrameInterface mainFrame, BaseModel baseModel, JLabel form_timeLabel, PanelTypes panelTyp) {
 
         // EDT check done!
@@ -178,6 +203,13 @@ public class CustomOriginPanel extends JPanel {
         }
     }
 
+    /**
+     * Sets the user message in a text pane, replacing emoji descriptions with actual image icons.
+     *
+     * @param mainFrame  The main frame object.
+     * @param baseModel  The base model object.
+     * @return The text pane containing the user message.
+     */
     protected JTextPane setUserMessage(MainFrameInterface mainFrame, BaseModel baseModel) {
 
         // EDT check done!
@@ -191,6 +223,11 @@ public class CustomOriginPanel extends JPanel {
         return actualTextPane;
     }
 
+    /**
+     * Creates a JTextPane with specific settings.
+     *
+     * @return The JTextPane object.
+     */
     protected JTextPane createTextPane() {
 
         JTextPane jTextPane = new JTextPane();
@@ -202,6 +239,11 @@ public class CustomOriginPanel extends JPanel {
         return jTextPane;
     }
 
+    /**
+     * Adds a right-click option to the panel.
+     *
+     * @param actualTextPane The JTextPane to add the right-click option to.
+     */
     protected void addRightClickOptionToPanel(final JTextPane actualTextPane) {
 
         // EDT check done!
@@ -220,6 +262,13 @@ public class CustomOriginPanel extends JPanel {
         actualTextPane.setComponentPopupMenu(popupMenu);
     }
 
+    /**
+     * Creates and adds a menu item to the given popup menu.
+     *
+     * @param popupMenu The JPopupMenu to add the menu item to.
+     * @param menuItemName The name of the menu item to create.
+     * @return The created JMenuItem object.
+     */
     protected JMenuItem createAndAddMenuItem(JPopupMenu popupMenu, String menuItemName) {
 
         JMenuItem copyItem = new JMenuItem(menuItemName);
@@ -227,6 +276,13 @@ public class CustomOriginPanel extends JPanel {
         return copyItem;
     }
 
+    /**
+     * Adds an action listener to the given JMenuItem to copy the selected text from the given JTextPane
+     * to the system clipboard.
+     *
+     * @param actualTextPane The JTextPane containing the text to be copied.
+     * @param menuOption The JMenuItem to add the action listener to.
+     */
     private void addActionListenerToCopyJMenuItem(JTextPane actualTextPane, JMenuItem menuOption) {
 
         menuOption.addActionListener(e -> {
@@ -238,6 +294,12 @@ public class CustomOriginPanel extends JPanel {
         });
     }
 
+    /**
+     * Adds a mouse listener to the given JTextPane to show a popup menu when the right mouse button is clicked.
+     *
+     * @param textPane The JTextPane to add the mouse listener to.
+     * @param popupMenu The JPopupMenu to be shown when the right mouse button is clicked.
+     */
     protected void addMouseListenerToJTextPane(JTextPane textPane, JPopupMenu popupMenu) {
 
         textPane.addMouseListener(new MouseAdapter() {
@@ -252,6 +314,13 @@ public class CustomOriginPanel extends JPanel {
         });
     }
 
+    /**
+     * Creates a JTextPane with the provided message as its text. The JTextPane is set to be non-editable
+     * and has a transparent background.
+     *
+     * @param baseModel The BaseModel object containing the message to be displayed.
+     * @return The created JTextPane with the message as its text, or null if the message is blank.
+     */
     protected JTextPane createImageCaptionTextPane(BaseModel baseModel) {
 
         // EDT check done!
@@ -273,6 +342,13 @@ public class CustomOriginPanel extends JPanel {
         return actualTextPane;
     }
 
+    /**
+     * Sets up the editor's popup menu with various menu items, such as "Reply", "Edit", and "Delete".
+     *
+     * @param mainFrame The MainFrameInterface object representing the main frame of the application.
+     * @param baseModel The BaseModel object to which the popup menu is being set up.
+     * @return The JPopupMenu object containing the setup menu items.
+     */
     protected JPopupMenu setupEditorPopupMenu(final MainFrameInterface mainFrame, final BaseModel baseModel) {
 
         // EDT check done!
@@ -291,13 +367,14 @@ public class CustomOriginPanel extends JPanel {
         return jPopupMenu;
     }
 
-    /**
-     Adds a MouseListener to the given JMenuItem to handle the mouseReleased event.
-     When the mouseReleased event occurs, a ReplyPanelImpl object is created and added to the MainTextPanelLayeredPane of the specified MainFrameInterface.
 
-     @param mainFrame the MainFrameInterface object to access the MainTextPanelLayeredPane
-     @param baseModel the BaseModel object for creating the ReplyPanelImpl
-     @param reply     the JMenuItem to which the MouseListener will be added
+    /**
+     * Adds a mouse listener to the specified "Reply" menu item.
+     * When the menu item is clicked, it displays a reply panel in the main frame's layered pane.
+     *
+     * @param mainFrame The MainFrameInterface object representing the main frame of the application.
+     * @param baseModel The BaseModel object associated with the menu item.
+     * @param reply The JMenuItem object representing the "Reply" menu item.
      */
     protected void addMouseListenerToReplyMenuItem(MainFrameInterface mainFrame, BaseModel baseModel, JMenuItem reply) {
 
