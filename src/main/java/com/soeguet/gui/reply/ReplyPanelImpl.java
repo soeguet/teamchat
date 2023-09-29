@@ -158,6 +158,8 @@ public class ReplyPanelImpl extends ReplyPanel {
     @Override
     protected void quotePanelSendButtonMouseClicked(MouseEvent e) {
 
+        if (isTextPaneBlank()) return;
+
         new EmojiHandler(mainFrame).replaceImageIconWithEmojiDescription(this.getReplyTextPane());
 
         MessageModel sendModel = new MessageModel((byte) MessageTypes.NORMAL, mainFrame.getUsername(), this.getReplyTextPane().getText(), messageModel.getSender(), messageModel.getTime(), messageModel.getMessage());
@@ -173,5 +175,13 @@ public class ReplyPanelImpl extends ReplyPanel {
 
         this.removeAll();
         this.setVisible(false);
+    }
+
+    private boolean isTextPaneBlank() {
+
+        if (this.form_replyTextPane.getText().isBlank()) {
+            return true;
+        }
+        return false;
     }
 }

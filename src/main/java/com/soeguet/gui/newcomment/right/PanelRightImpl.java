@@ -127,7 +127,7 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     private void setupCommentEssentials(final MessageModel messageModel) {
 
         setNameField(mainFrame, messageModel, form_nameLabel, panelTyp);
-        setTimestampField(mainFrame, messageModel, form_nameLabel, panelTyp);
+        setTimestampField(mainFrame, messageModel, form_timeLabel, panelTyp);
         jPopupMenu = setupEditorPopupMenu(mainFrame, messageModel);
     }
 
