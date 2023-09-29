@@ -234,7 +234,7 @@ public abstract class ChatPanel extends JFrame {
 
 		//======== this ========
 		setFocusable(false);
-		setMinimumSize(new Dimension(250, 250));
+		setMinimumSize(new Dimension(700, 700));
 		setPreferredSize(new Dimension(700, 700));
 		addPropertyChangeListener("FrameChange", e -> thisPropertyChange(e));
 		addComponentListener(new ComponentAdapter() {

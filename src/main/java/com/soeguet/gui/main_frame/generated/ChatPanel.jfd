@@ -13,7 +13,7 @@ new FormModel {
 		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class java.awt.BorderLayout ) ) {
 			name: "this"
 			"focusable": false
-			"minimumSize": new java.awt.Dimension( 250, 250 )
+			"minimumSize": new java.awt.Dimension( 700, 700 )
 			"preferredSize": new java.awt.Dimension( 700, 700 )
 			addEvent( new FormEvent( "java.beans.PropertyChangeListener", "propertyChange", "thisPropertyChange", true, "FrameChange" ) )
 			addEvent( new FormEvent( "java.awt.event.ComponentListener", "componentResized", "thisComponentResized", true ) )

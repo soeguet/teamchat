@@ -170,6 +170,22 @@ public class CustomOriginPanel extends JPanel {
         return sender;
     }
 
+    protected boolean setNameFieldInvisible(MainFrameInterface mainFrame, BaseModel baseModel) {
+
+        // EDT check done!
+        String sender = baseModel.getSender();
+
+        final String previousMessageSenderName = mainFrame.getLastMessageSenderName();
+
+        // return no name and don't set a "new" sender
+        if (previousMessageSenderName != null && previousMessageSenderName.equals(sender)) {
+            return true;
+        }
+
+        mainFrame.setLastMessageSenderName(sender);
+        return false;
+    }
+
 
     /**
      Sets the timestamp field based on the provided base model and main frame object.
@@ -209,6 +225,52 @@ public class CustomOriginPanel extends JPanel {
         //just in case
         mainFrame.setLastMessageTimeStamp(timeStamp);
         return timeStamp;
+    }
+
+    protected boolean setTimestampFieldInvisible(MainFrameInterface mainFrame, BaseModel baseModel) {
+
+        // EDT check done!
+        String timeStamp = baseModel.getTime();
+
+        final String lastMessageTimestamp = mainFrame.getLastMessageTimeStamp();
+        final String previousMessageSenderName = mainFrame.getLastMessageSenderName();
+
+        // null value -> time
+        if (previousMessageSenderName == null || lastMessageTimestamp == null) {
+            mainFrame.setLastMessageTimeStamp(timeStamp);
+            return true;
+        }
+
+        // different sender -> time
+        if (!previousMessageSenderName.equals(baseModel.getSender())) {
+            mainFrame.setLastMessageTimeStamp(timeStamp);
+            return true;
+        }
+
+        // same sender, same time -> no time
+        if (lastMessageTimestamp.equals(timeStamp)) {
+            return false;
+        }
+
+        //just in case
+        mainFrame.setLastMessageTimeStamp(timeStamp);
+        return true;
+    }
+
+    protected void setupTimeField(MainFrameInterface mainFrame, BaseModel baseModel, JLabel timeLabel) {
+
+        if (setTimestampFieldInvisible(mainFrame, baseModel)) {
+            timeLabel.setVisible(false);
+        }
+        timeLabel.setText(baseModel.getTime());
+    }
+
+    protected void setupNameField(MainFrameInterface mainFrame, BaseModel baseModel,JLabel nameLabel) {
+
+        if (setNameFieldInvisible(mainFrame, baseModel)) {
+            nameLabel.setVisible(false);
+        }
+        nameLabel.setText(baseModel.getSender());
     }
 
     /**

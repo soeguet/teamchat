@@ -98,25 +98,23 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     }
 
     /**
-     * Sets up the essentials for handling comments based on the given {@link MessageModel}.
-     *
-     * This method sets the name field and timestamp field on the main frame based on the values obtained from the
-     * {@code messageModel} parameter. The labels {@code form_nameLabel} and {@code panelTyp} are used for displaying
-     * the name and timestamp respectively.
-     *
-     * Additionally, the editor popup menu is also set up using the {@code mainFrame} and {@code messageModel}.
-     *
-     * @param messageModel the message model containing the comment essentials
+     Sets up the essentials for handling comments based on the given {@link MessageModel}.
+
+     This method sets the name field and timestamp field on the main frame based on the values obtained from the
+     {@code messageModel} parameter. The labels {@code form_nameLabel} and {@code panelTyp} are used for displaying
+     the name and timestamp respectively.
+
+     Additionally, the editor popup menu is also set up using the {@code mainFrame} and {@code messageModel}.
+
+     @param messageModel the message model containing the comment essentials
      */
     private void setupCommentEssentials(final MessageModel messageModel) {
 
-        //setup time
-        String time = setTimestampField(mainFrame, messageModel);
-        form_timeLabel.setText(time);
-
         //setup name
-        String sender = setNameField(mainFrame, messageModel);
-        form_nameLabel.setText(sender);
+        setupNameField(this.mainFrame, messageModel, form_nameLabel);
+
+        //setup time
+        setupTimeField(this.mainFrame, messageModel, form_timeLabel);
 
         //setup popup menu
         jPopupMenu = setupEditorPopupMenu(mainFrame, messageModel);
@@ -206,12 +204,10 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     private void setupCommentEssentials(final PictureModel pictureModel) {
 
         //setup name
-        String sender = setNameField(mainFrame, pictureModel);
-        form_nameLabel.setText(sender);
+        setupNameField(this.mainFrame, pictureModel, form_nameLabel);
 
         //setup time
-        String time = setTimestampField(mainFrame, pictureModel);
-        form_timeLabel.setText(time);
+        setupTimeField(this.mainFrame, pictureModel, form_timeLabel);
 
         //setup popup menu
         jPopupMenu = setupEditorPopupMenu(mainFrame, pictureModel);

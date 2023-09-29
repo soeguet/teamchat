@@ -174,7 +174,7 @@ public abstract class PanelRight extends CustomOriginPanel {
 			this.form_panel1.setPreferredSize(null);
 			this.form_panel1.setMaximumSize(null);
 			this.form_panel1.setLayout(new MigLayout(
-				"hidemode 3",
+				"",
 				// columns
 				"[grow,fill]" +
 				"[7!]",

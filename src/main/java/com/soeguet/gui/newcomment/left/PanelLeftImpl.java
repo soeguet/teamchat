@@ -4,7 +4,6 @@ import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.newcomment.left.generated.PanelLeft;
 import com.soeguet.gui.newcomment.util.QuotePanelImpl;
-import com.soeguet.model.PanelTypes;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
@@ -101,12 +100,10 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     private void setupCommentEssentials(final MessageModel messageModel) {
 
         //setup name
-        String sender = setNameField(mainFrame, messageModel);
-        form_nameLabel.setText(sender);
+        setupNameField(this.mainFrame, messageModel, form_nameLabel);
 
         //setup time
-        String time = setTimestampField(mainFrame, messageModel);
-        form_timeLabel.setText(time);
+        setupTimeField(this.mainFrame, messageModel, form_timeLabel);
 
         //setup popup menu
         jPopupMenu = setupEditorPopupMenu(mainFrame, messageModel);
@@ -172,7 +169,7 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
 
         JLabel imageLabel = new JLabel(scaleImageIfTooBig(image));
         form_panel1.add(imageLabel, "cell 1 0, wrap");
-        addMaximizePictureOnClick(imageLabel,image);
+        addMaximizePictureOnClick(imageLabel, image);
     }
 
     /**
@@ -200,12 +197,10 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     private void setupCommentEssentials(final PictureModel pictureModel) {
 
         //setup name
-        String sender = setNameField(mainFrame, pictureModel);
-        form_nameLabel.setText(sender);
+        setupNameField(this.mainFrame, pictureModel, form_nameLabel);
 
         //setup time
-        String time = setTimestampField(mainFrame, pictureModel);
-        form_timeLabel.setText(time);
+        setupTimeField(this.mainFrame, pictureModel, form_timeLabel);
 
         //setup popup menu
         jPopupMenu = setupEditorPopupMenu(mainFrame, pictureModel);
