@@ -324,8 +324,8 @@ public class GuiFunctionality implements SocketToGuiInterface {
             }
 
             case ALL_DENIED, STARTUP -> {
-                //do nothing
-                System.out.println("Notification denied");
+                //do nothing, intentionally left blank
+                break;
             }
         }
     }
@@ -508,7 +508,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         Color borderColor = determineBorderColor(messageModel.getSender());
 
-        CommentInterface panelLeft = new PanelLeftImpl(this.mainFrame, messageModel, PanelTypes.NORMAL);
+        CommentInterface panelLeft = new PanelLeftImpl(this.mainFrame, messageModel);
         this.mainFrame.getCommentsHashMap().put(messageModel.getId(), panelLeft);
         panelLeft.setupTextPanelWrapper();
         panelLeft.setBorderColor(borderColor);
@@ -521,7 +521,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         Color borderColor = determineBorderColor("own");
 
-        CommentInterface panelRight = new PanelRightImpl(this.mainFrame, messageModel, PanelTypes.NORMAL);
+        CommentInterface panelRight = new PanelRightImpl(this.mainFrame, messageModel);
         this.mainFrame.getCommentsHashMap().put(messageModel.getId(), panelRight);
         panelRight.setupTextPanelWrapper();
         panelRight.setBorderColor(borderColor);

@@ -23,23 +23,8 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     private final Logger LOGGER = Logger.getLogger(PanelLeftImpl.class.getName());
     private final MainFrameInterface mainFrame;
     private final BaseModel baseModel;
-    private PanelTypes panelTyp;
     private JPopupMenu jPopupMenu;
     private BufferedImage image;
-
-    /**
-     Constructs a new PanelLeftImpl object.
-
-     @param mainFrame the MainFrameInterface object to associate with the panel
-     @param baseModel the BaseModel object to use for data access
-     @param panelTyp  the PanelTypes object to determine the type of panel
-     */
-    public PanelLeftImpl(MainFrameInterface mainFrame, BaseModel baseModel, PanelTypes panelTyp) {
-
-        this.mainFrame = mainFrame;
-        this.baseModel = baseModel;
-        this.panelTyp = panelTyp;
-    }
 
     /**
      Constructs a new PanelLeftImpl object.
@@ -115,8 +100,15 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
      */
     private void setupCommentEssentials(final MessageModel messageModel) {
 
-        setNameField(mainFrame, messageModel, form_nameLabel, panelTyp);
-        setTimestampField(mainFrame, messageModel, form_timeLabel, panelTyp);
+        //setup name
+        String sender = setNameField(mainFrame, messageModel);
+        form_nameLabel.setText(sender);
+
+        //setup time
+        String time = setTimestampField(mainFrame, messageModel);
+        form_timeLabel.setText(time);
+
+        //setup popup menu
         jPopupMenu = setupEditorPopupMenu(mainFrame, messageModel);
     }
 
@@ -180,7 +172,7 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
 
         JLabel imageLabel = new JLabel(scaleImageIfTooBig(image));
         form_panel1.add(imageLabel, "cell 1 0, wrap");
-        addMaximizePictureOnClick(imageLabel, image);
+        addMaximizePictureOnClick(imageLabel,image);
     }
 
     /**
@@ -207,8 +199,15 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
      */
     private void setupCommentEssentials(final PictureModel pictureModel) {
 
-        setNameField(mainFrame, pictureModel, form_nameLabel, panelTyp);
-        setTimestampField(mainFrame, pictureModel, form_timeLabel, panelTyp);
+        //setup name
+        String sender = setNameField(mainFrame, pictureModel);
+        form_nameLabel.setText(sender);
+
+        //setup time
+        String time = setTimestampField(mainFrame, pictureModel);
+        form_timeLabel.setText(time);
+
+        //setup popup menu
         jPopupMenu = setupEditorPopupMenu(mainFrame, pictureModel);
     }
 

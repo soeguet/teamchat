@@ -1,5 +1,6 @@
 package com.soeguet.gui.image_panel;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.soeguet.gui.image_panel.generated.ImagePanel;
 import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.model.jackson.PictureModel;
@@ -14,6 +15,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalTime;
 import java.util.logging.Logger;
@@ -177,8 +179,7 @@ public class ImagePanelImpl extends ImagePanel {
     @Override
     protected void closeImagePanelButtonMouseReleased(MouseEvent e) {
 
-        this.removeAll();
-        this.setVisible(false);
+        destructImagePanel();
     }
 
     /**
@@ -261,33 +262,67 @@ public class ImagePanelImpl extends ImagePanel {
     @Override
     protected void sendPictureButtonMouseClicked(MouseEvent e) {
 
-        ensureEDT();
+        //edt tested
+        if (isImageEmpty()) return;
 
-        PictureModel pictureModel = new PictureModel();
+        //convert image to a byte array
+        try (var baos = new ByteArrayOutputStream()) {
 
-        //convert image to byte array
-        try (java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream()) {
-
+            //bytearrayoutputstream to byte array
             ImageIO.write(image, "png", baos);
-
             byte[] imageBytesArray = baos.toByteArray();
 
-            pictureModel.setPicture(imageBytesArray);
-            pictureModel.setSender(mainFrame.getUsername());
-            pictureModel.setTime(LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm")));
-            pictureModel.setMessage(form_pictureDescriptionTextField.getText());
+            //setup model and convert to json
+            PictureModel pictureModel = buildPictureModelForWebSocket(imageBytesArray);
+            final String imageObjectJson = convertPictureModelToJson(pictureModel);
 
-            final String imageObjectJson = mainFrame.getObjectMapper().writeValueAsString(pictureModel);
+            //send json to websocket
+            sendPictureMessageToWebSocket(imageObjectJson);
 
-            mainFrame.getWebsocketClient().send(imageObjectJson);
-
-            this.removeAll();
-            this.setVisible(false);
+            //destruct panel
+            destructImagePanel();
 
         } catch (IOException ex) {
 
             LOGGER.log(java.util.logging.Level.SEVERE, "Could not convert image to byte array", ex);
         }
+    }
+
+    private void destructImagePanel() {
+
+        this.removeAll();
+        this.setVisible(false);
+    }
+
+    private String convertPictureModelToJson(final PictureModel pictureModel) throws JsonProcessingException {
+
+        final String imageObjectJson = mainFrame.getObjectMapper().writeValueAsString(pictureModel);
+        return imageObjectJson;
+    }
+
+    private void sendPictureMessageToWebSocket(final String imageObjectJson) {
+
+        mainFrame.getWebsocketClient().send(imageObjectJson);
+    }
+
+    private PictureModel buildPictureModelForWebSocket(final byte[] imageBytesArray) {
+
+        PictureModel pictureModel = new PictureModel();
+
+        pictureModel.setPicture(imageBytesArray);
+        pictureModel.setSender(mainFrame.getUsername());
+        pictureModel.setTime(LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm")));
+        pictureModel.setMessage(form_pictureDescriptionTextField.getText());
+
+        return pictureModel;
+    }
+
+    private boolean isImageEmpty() {
+
+        if (image == null) {
+            return true;
+        }
+        return false;
     }
 
     @Override

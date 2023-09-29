@@ -4,7 +4,6 @@ import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.newcomment.right.generated.PanelRight;
 import com.soeguet.gui.newcomment.util.QuotePanelImpl;
-import com.soeguet.model.PanelTypes;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
@@ -23,23 +22,8 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     private final Logger LOGGER = Logger.getLogger(PanelRightImpl.class.getName());
     private final MainFrameInterface mainFrame;
     private final BaseModel baseModel;
-    private PanelTypes panelTyp;
     private JPopupMenu jPopupMenu;
     private BufferedImage image;
-
-    /**
-     Creates a PanelRightImpl object with the given parameters.
-
-     @param mainFrame the reference to the MainFrameInterface object
-     @param baseModel the reference to the BaseModel object
-     @param panelTyp  the type of panel
-     */
-    public PanelRightImpl(MainFrameInterface mainFrame, BaseModel baseModel, PanelTypes panelTyp) {
-
-        this.mainFrame = mainFrame;
-        this.baseModel = baseModel;
-        this.panelTyp = panelTyp;
-    }
 
     /**
      Creates a PanelRightImpl object with the given parameters.
@@ -114,20 +98,27 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     }
 
     /**
-     Sets up the essentials for handling comments based on the given {@link MessageModel}.
-
-     This method sets the name field and timestamp field on the main frame based on the values obtained from the
-     {@code messageModel} parameter. The labels {@code form_nameLabel} and {@code panelTyp} are used for displaying
-     the name and timestamp respectively.
-
-     Additionally, the editor popup menu is also set up using the {@code mainFrame} and {@code messageModel}.
-
-     @param messageModel the message model containing the comment essentials
+     * Sets up the essentials for handling comments based on the given {@link MessageModel}.
+     *
+     * This method sets the name field and timestamp field on the main frame based on the values obtained from the
+     * {@code messageModel} parameter. The labels {@code form_nameLabel} and {@code panelTyp} are used for displaying
+     * the name and timestamp respectively.
+     *
+     * Additionally, the editor popup menu is also set up using the {@code mainFrame} and {@code messageModel}.
+     *
+     * @param messageModel the message model containing the comment essentials
      */
     private void setupCommentEssentials(final MessageModel messageModel) {
 
-        setNameField(mainFrame, messageModel, form_nameLabel, panelTyp);
-        setTimestampField(mainFrame, messageModel, form_timeLabel, panelTyp);
+        //setup time
+        String time = setTimestampField(mainFrame, messageModel);
+        form_timeLabel.setText(time);
+
+        //setup name
+        String sender = setNameField(mainFrame, messageModel);
+        form_nameLabel.setText(sender);
+
+        //setup popup menu
         jPopupMenu = setupEditorPopupMenu(mainFrame, messageModel);
     }
 
@@ -208,14 +199,21 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     }
 
     /**
-     Set up the comment essentials for the given PictureModel.
+     Handles the image caption for the given PictureModel.
 
-     @param pictureModel The PictureModel to set up comment essentials for.
+     @param pictureModel The PictureModel containing the image caption information.
      */
     private void setupCommentEssentials(final PictureModel pictureModel) {
 
-        setNameField(mainFrame, pictureModel, form_nameLabel, panelTyp);
-        setTimestampField(mainFrame, pictureModel, form_timeLabel, panelTyp);
+        //setup name
+        String sender = setNameField(mainFrame, pictureModel);
+        form_nameLabel.setText(sender);
+
+        //setup time
+        String time = setTimestampField(mainFrame, pictureModel);
+        form_timeLabel.setText(time);
+
+        //setup popup menu
         jPopupMenu = setupEditorPopupMenu(mainFrame, pictureModel);
     }
 
