@@ -42,13 +42,13 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
     private final Logger logger = Logger.getLogger(ChatMainFrameImpl.class.getName());
     private final HashMap<String, CustomUserProperties> chatClientPropertiesHashMap;
-    private final LinkedBlockingDeque<String> socketMessageQueue;
 
-    //TODO cache comments on pane for hot replacements as HashSet -> data structure ready, implementation missing
+    //TODO cache comments on pane for hot replacements as HashSet -> data structure ready, implementation missing -> add to cache
     private final LinkedHashMap<Long, CommentInterface> commentsHashMap = new LinkedHashMap<>();
-    private final LinkedBlockingDeque<String> messageQueue;
     private final ObjectMapper objectMapper;
     private final CustomProperties customProperties;
+
+    //TODO add to cache?
     private final List<NotificationImpl> notificationList = new ArrayList<>();
     private final EnvVariables envVariables;
     private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
@@ -81,8 +81,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             SwingUtilities.invokeLater(() -> setLocation(Integer.parseInt(chatXPosition), 100));
         }
 
-        socketMessageQueue = new LinkedBlockingDeque<>();
-        messageQueue = new LinkedBlockingDeque<>();
         chatClientPropertiesHashMap = new HashMap<>();
         objectMapper = new ObjectMapper();
         customProperties = new CustomProperties(this);
@@ -337,13 +335,16 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         this.serverInformationOptionPane();
     }
 
+
     /**
      Resets the connection when the reset connection menu item is pressed.
 
      @param e The mouse event that triggered the method.
      */
     @Override
-    protected void resetConnectionMenuItemMousePressed(MouseEvent e) {
+    public void resetConnectionMenuItemMousePressed(MouseEvent e) {
+
+        //TODO clean this up
 
         //clear the main text panel first
         SwingUtilities.invokeLater(() -> {
@@ -362,8 +363,20 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         //set null to be sure
         this.websocketClient = null;
+
+        this.setLastMessageSenderName(null);
+        this.setLastMessageTimeStamp(null);
         this.startUp = true;
         this.logger.info("Reconnecting websocket client");
+
+
+        //TODO fix this
+        System.out.println("username: " + this.username);
+
+//        this.username = this.customProperties.getProperty("username");
+
+        // invalidate all caches
+        cacheManager.invalidateCache();
 
         this.connectToWebsocket();
     }
@@ -675,17 +688,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     Retrieves the message panel.
-
-     @return the JPanel object representing the message panel.
-     */
-    @Override
-    public JPanel getMessagePanel() {
-
-        return messagePanel;
-    }
-
-    /**
      Sets the message panel for displaying messages.
 
      @param messagePanel the JPanel to set as the message panel.
@@ -696,16 +698,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         this.messagePanel = messagePanel;
     }
 
-    /**
-     Retrieves the message queue containing the messages.
 
-     @return the LinkedBlockingDeque<String> representing the message queue.
-     */
-    @Override
-    public LinkedBlockingDeque<String> getMessageQueue() {
-
-        return messageQueue;
-    }
 
     /**
      Returns a HashMap containing the list of emojis and their corresponding image icons.
@@ -736,17 +729,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     public CustomProperties getCustomProperties() {
 
         return customProperties;
-    }
-
-    /**
-     Retrieves the client message queue.
-
-     @return A LinkedBlockingDeque object representing the client message queue.
-     */
-    @Override
-    public synchronized LinkedBlockingDeque<String> getClientMessageQueue() {
-
-        return socketMessageQueue;
     }
 
     @Override

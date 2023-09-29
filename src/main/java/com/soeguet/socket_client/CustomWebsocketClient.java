@@ -33,34 +33,7 @@ public class CustomWebsocketClient extends WebSocketClient {
 
         logger.info("onOpen");
 
-        createPopup("Connected to server");
-    }
-
-    private synchronized void createPopup(String message) {
-
-        if (mainFrame.getMessagePanel() == null) {
-
-            SwingUtilities.invokeLater(() -> {
-
-                JPanel messagePanel = mainFrame.getMessagePanel();
-
-                if (messagePanel != null) {
-
-                    mainFrame.getMainTextPanelLayeredPane().remove(messagePanel);
-                    messagePanel.setVisible(false);
-                }
-
-                PopupPanelImpl popupPanel = new PopupPanelImpl(mainFrame, message);
-
-                mainFrame.setMessagePanel(popupPanel);
-                popupPanel.implementPopup(2000);
-
-            });
-
-        } else {
-
-            mainFrame.getMessageQueue().add(message);
-        }
+        new PopupPanelImpl(mainFrame, "Connected to server").implementPopup(2000);
     }
 
     @Override
@@ -77,7 +50,7 @@ public class CustomWebsocketClient extends WebSocketClient {
         logger.info(reason);
         logger.info(String.valueOf(remote));
 
-        createPopup("close: " + reason + " " + code);
+        new PopupPanelImpl(mainFrame, "Connection closed." + System.lineSeparator() + reason + " " + code).implementPopup(2000);
     }
 
     @Override
@@ -86,6 +59,6 @@ public class CustomWebsocketClient extends WebSocketClient {
         logger.info("onError");
         logger.info(ex.getMessage());
 
-        createPopup("Error: " + ex.getMessage() + ", " + ex.getCause());
+        new PopupPanelImpl(mainFrame, "Error: " + ex.getMessage()).implementPopup(2000);
     }
 }

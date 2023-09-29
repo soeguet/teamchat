@@ -4,18 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.behaviour.GuiFunctionality;
 import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.notification_panel.NotificationImpl;
-import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.properties.CustomProperties;
 import com.soeguet.properties.CustomUserProperties;
 import com.soeguet.socket_client.CustomWebsocketClient;
 import com.soeguet.util.NotificationStatus;
 
 import javax.swing.*;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  This interface defines the main GUI elements and functionality that can be accessed and manipulated by other classes.
@@ -115,25 +113,11 @@ public interface MainFrameInterface {
     void setUsername(String username);
 
     /**
-     Retrieves the message panel of the application.
-
-     @return the message panel of the application
-     */
-    JPanel getMessagePanel();
-
-    /**
      Sets the message panel of the application.
 
      @param messagePanel the message panel to be set for the application
      */
     void setMessagePanel(JPanel messagePanel);
-
-    /**
-     Returns the message queue containing Strings.
-
-     @return the message queue containing Strings
-     */
-    LinkedBlockingDeque<String> getMessageQueue();
 
     /**
      Returns the HashMap containing the emoji image icons.
@@ -157,21 +141,52 @@ public interface MainFrameInterface {
     CustomProperties getCustomProperties();
 
     /**
-     Returns the client message queue containing the messages to be sent by the chat client.
-
-     @return the client message queue containing the messages to be sent
+     * Returns the Y position of the notification.
+     *
+     * @return the Y position of the notification
      */
-    LinkedBlockingDeque<String> getClientMessageQueue();
-
     int getNotificationPositionY();
 
+    /**
+     * Sets the Y position of the notification.
+     *
+     * @param notificationPositionY the new Y position of the notification
+     */
     void setNotificationPositionY(int notificationPositionY);
 
+    /**
+     * Retrieves the list of notification objects.
+     *
+     * @return the list of NotificationImpl objects
+     */
     List<NotificationImpl> getNotificationList();
 
+    /**
+     * Sets the start up flag.
+     *
+     * @param b the boolean value to set the start up flag
+     */
     void setStartUp(boolean b);
-    
+
+    /**
+     * Returns the notification status.
+     *
+     * @return the current notification status
+     */
     NotificationStatus getNotificationStatus();
+
+    /**
+     * Returns a LinkedHashMap of comments.
+     *
+     * @return a LinkedHashMap with Long as keys and CommentInterface objects as values representing the comments
+     */
     LinkedHashMap<Long, CommentInterface> getCommentsHashMap();
+
+    /**
+     * Resets the connection when the reset connection menu item is pressed.
+     *
+     * @param e the MouseEvent object representing the mouse press event
+     */
+    void resetConnectionMenuItemMousePressed(MouseEvent e);
 
 }

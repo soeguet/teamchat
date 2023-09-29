@@ -26,6 +26,8 @@ new FormModel {
 					"enabled": false
 					"editable": false
 					"disabledTextColor": new java.awt.Color( 0, 0, 0, 255 )
+					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "messageTextFieldMouseClicked", true ) )
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "Center"
 				} )

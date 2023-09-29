@@ -238,7 +238,7 @@ public class CustomOriginPanel extends JPanel {
         // null value -> time
         if (previousMessageSenderName == null || lastMessageTimestamp == null) {
             mainFrame.setLastMessageTimeStamp(timeStamp);
-            return true;
+            return false;
         }
 
         // different sender -> time
@@ -247,14 +247,14 @@ public class CustomOriginPanel extends JPanel {
             return true;
         }
 
-        // same sender, same time -> no time
+        // same sender, same time -> remove time
         if (lastMessageTimestamp.equals(timeStamp)) {
-            return false;
+            return true;
         }
 
         //just in case
         mainFrame.setLastMessageTimeStamp(timeStamp);
-        return true;
+        return false;
     }
 
     protected void setupTimeField(MainFrameInterface mainFrame, BaseModel baseModel, JLabel timeLabel) {

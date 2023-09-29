@@ -1,18 +1,17 @@
 package com.soeguet.gui.popups.generated;
 
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
 /*
  * Created by JFormDesigner on Mon Sep 11 21:41:02 CEST 2023
  */
 
-
-
 /**
  * @author soeguet
  */
-public class PopupPanel extends JPanel {
+public abstract class PopupPanel extends JPanel {
 	public PopupPanel() {
 		initComponents();
 	}
@@ -24,6 +23,8 @@ public class PopupPanel extends JPanel {
 	public JTextField getMessageTextField() {
 		return this.form_messageTextField;
 	}
+
+	protected abstract void messageTextFieldMouseClicked(MouseEvent e);
 
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
@@ -46,6 +47,13 @@ public class PopupPanel extends JPanel {
 			this.form_messageTextField.setEnabled(false);
 			this.form_messageTextField.setEditable(false);
 			this.form_messageTextField.setDisabledTextColor(Color.black);
+			this.form_messageTextField.setBorder(null);
+			this.form_messageTextField.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					messageTextFieldMouseClicked(e);
+				}
+			});
 			this.form_messagePanel.add(this.form_messageTextField, BorderLayout.CENTER);
 		}
 		add(this.form_messagePanel, BorderLayout.CENTER);

@@ -5,6 +5,7 @@ import com.soeguet.cache.implementations.ActiveNotificationQueue;
 import com.soeguet.cache.implementations.MessageQueue;
 import com.soeguet.cache.implementations.WaitingNotificationQueue;
 
+import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class CacheManager {
@@ -16,23 +17,34 @@ public class CacheManager {
         cacheList = new ConcurrentHashMap<>();
     }
 
+    @SuppressWarnings("rawtypes")
     public synchronized CustomCache getCache(String cacheName) {
 
-        if (!cacheList.containsKey(cacheName)) {
+        final String lowercaseCacheName = cacheName.toLowerCase();
 
-            switch (cacheName) {
+        if (!cacheList.containsKey(lowercaseCacheName)) {
 
-                case "WaitingNotificationQueue" -> cacheList.put(cacheName, new WaitingNotificationQueue());
+            switch (lowercaseCacheName) {
 
-                case "ActiveNotificationQueue" -> cacheList.put(cacheName, new ActiveNotificationQueue());
+                case "waitingnotificationqueue" -> cacheList.put(lowercaseCacheName, new WaitingNotificationQueue());
 
-                case "MessageQueue" -> cacheList.put(cacheName, new MessageQueue());
+                case "activenotificationqueue" -> cacheList.put(lowercaseCacheName, new ActiveNotificationQueue());
+
+                case "messagequeue" -> cacheList.put(lowercaseCacheName, new MessageQueue());
 
                 default -> throw new IllegalArgumentException("Cache not found");
             }
         }
 
-        return cacheList.get(cacheName);
+        return cacheList.get(lowercaseCacheName);
+    }
+
+    public synchronized void invalidateCache() {
+
+        cacheList.forEach((key, value) -> {
+
+            value.invalidateCache();
+        });
     }
 
 

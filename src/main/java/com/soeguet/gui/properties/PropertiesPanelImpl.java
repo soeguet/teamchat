@@ -10,7 +10,6 @@ import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
 
 public class PropertiesPanelImpl extends PropertiesPanel {
 
@@ -193,6 +192,19 @@ public class PropertiesPanelImpl extends PropertiesPanel {
 
         this.removeAll();
         this.setVisible(false);
+
+        resetChatPanelOptionPane();
+    }
+
+    private void resetChatPanelOptionPane() {
+
+        int result = JOptionPane.showConfirmDialog((Component) this.mainFrame, "do you want to reset the chat?",
+                "reset", JOptionPane.OK_CANCEL_OPTION);
+
+        if (result == JOptionPane.OK_OPTION) {
+
+                mainFrame.resetConnectionMenuItemMousePressed(null);
+        }
     }
 
     @Override
@@ -236,8 +248,11 @@ public class PropertiesPanelImpl extends PropertiesPanel {
         mainFrame.setUsername(ownName);
 
 ///
-        final String selectedUsername = selectedClientInComboBox.getUsername();
-        selectedClientInComboBox = mainFrame.getChatClientPropertiesHashMap().get(selectedUsername);
+        if (form_clientSelectorComboBox.getItemCount() > 0) {
+
+            final String selectedUsername = selectedClientInComboBox.getUsername();
+            selectedClientInComboBox = mainFrame.getChatClientPropertiesHashMap().get(selectedUsername);
+        }
 
 ///
 

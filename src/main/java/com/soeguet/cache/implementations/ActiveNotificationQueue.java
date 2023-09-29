@@ -5,7 +5,7 @@ import com.soeguet.model.jackson.BaseModel;
 
 import java.util.concurrent.LinkedBlockingDeque;
 
-public class ActiveNotificationQueue implements CustomCache {
+public class ActiveNotificationQueue implements CustomCache<BaseModel> {
 
     private final LinkedBlockingDeque<BaseModel> activeNotificationQueue;
 
@@ -14,14 +14,39 @@ public class ActiveNotificationQueue implements CustomCache {
         activeNotificationQueue = new LinkedBlockingDeque<>(3);
     }
 
-    public int getRemainingCapacity() {
+    @Override
+    public void invalidateCache() {
 
-        return activeNotificationQueue.remainingCapacity();
+        activeNotificationQueue.clear();
     }
 
+    @Override
     public void addLast(BaseModel baseModel) {
 
         activeNotificationQueue.addLast(baseModel);
+    }
+
+    @Override
+    public String pollFirst() {
+
+        return null;
+    }
+
+    @Override
+    public void removeAll() {
+
+        activeNotificationQueue.clear();
+    }
+
+    @Override
+    public boolean isEmpty() {
+
+        return activeNotificationQueue.isEmpty();
+    }
+
+    public int getRemainingCapacity() {
+
+        return activeNotificationQueue.remainingCapacity();
     }
 
     public BaseModel popFirst() {
@@ -32,10 +57,5 @@ public class ActiveNotificationQueue implements CustomCache {
     public boolean remove(final BaseModel baseModel) {
 
         return activeNotificationQueue.remove(baseModel);
-    }
-
-    public boolean isEmpty() {
-
-        return activeNotificationQueue.isEmpty();
     }
 }

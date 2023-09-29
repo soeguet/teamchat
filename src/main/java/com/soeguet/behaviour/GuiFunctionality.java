@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.cache.CustomCache;
 import com.soeguet.cache.factory.CacheManagerFactory;
 import com.soeguet.cache.implementations.ActiveNotificationQueue;
+import com.soeguet.cache.implementations.MessageQueue;
 import com.soeguet.cache.implementations.WaitingNotificationQueue;
 import com.soeguet.cache.manager.CacheManager;
 import com.soeguet.gui.image_panel.ImagePanelImpl;
@@ -260,6 +261,8 @@ public class GuiFunctionality implements SocketToGuiInterface {
     @Override
     public void onMessage(String message) {
 
+        MessageQueue messageQueue = (MessageQueue) cacheManager.getCache("messageQueue");
+
         switch (message) {
 
             case "X" -> System.out.println("X");
@@ -270,7 +273,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
             default -> {
 
-                mainFrame.getClientMessageQueue().add(message);
+                messageQueue.addLast(message);
                 createDesktopNotification(message);
 
                 spamBuffer();
@@ -431,7 +434,9 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
     private synchronized void writeGuiMessageToChatPanel() {
 
-        String message = mainFrame.getClientMessageQueue().pollFirst();
+        MessageQueue messageQueue = (MessageQueue) cacheManager.getCache("messageQueue");
+
+        String message = messageQueue.pollFirst();
 
         if (message == null) {
             return;
@@ -531,12 +536,14 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
     private void checkIfDequeIsEmptyOrStartOver() {
 
+        MessageQueue messageQueue = (MessageQueue) cacheManager.getCache("messageQueue");
+
         ((JFrame) this.mainFrame).revalidate();
         ((JFrame) this.mainFrame).repaint();
 
         SwingUtilities.invokeLater(() -> scrollMainPanelDownToLastMessage(this.mainFrame.getMainTextBackgroundScrollPane()));
 
-        if (!this.mainFrame.getClientMessageQueue().isEmpty()) {
+        if (!messageQueue.isEmpty()) {
 
             Timer timer = new Timer(300, e -> {
 
