@@ -1,0 +1,96 @@
+JFDML JFormDesigner: "8.1.1.0.298" Java: "17.0.8" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		auxiliary() {
+			"JavaCodeGenerator.defaultVariableGetter": true
+			"JavaCodeGenerator.defaultVariableModifiers": 4
+			"JavaCodeGenerator.defaultHandlerModifiers": 1028
+			"JavaCodeGenerator.memberVariablePrefix": "form_"
+		}
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "panel3"
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.FlowLayout ) ) {
+					name: "panel1"
+					"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					"inheritsPopupMenu": true
+					add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
+						name: "hSpacer1"
+						"minimumSize": new java.awt.Dimension( 20, 12 )
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "quoteTime"
+						"text": "test"
+						"enabled": false
+						"foreground": &Color0 new java.awt.Color( 0, 0, 0, 255 )
+						"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"maximumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"horizontalTextPosition": 10
+						"font": &SwingDerivedFont0 new com.jformdesigner.model.SwingDerivedFont( null, 0, -2, false )
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "textField1"
+						"text": " - "
+						"enabled": false
+						"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"horizontalAlignment": 0
+						"font": #SwingDerivedFont0
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "quoteSender"
+						"text": "test"
+						"enabled": false
+						"foreground": #Color0
+						"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"maximumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"horizontalTextPosition": 10
+						"font": #SwingDerivedFont0
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "West"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+					name: "panel4"
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "First"
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+				"$layoutConstraints": "insets 3,hidemode 3"
+				"$columnConstraints": "[fill][fill][fill]"
+				"$rowConstraints": "[fill][fill][fill]"
+			} ) {
+				name: "panel2"
+				"border": new javax.swing.border.EtchedBorder( 1, null, null )
+				add( new FormComponent( "javax.swing.JTextPane" ) {
+					name: "quoteText"
+					"text": "test"
+					"editable": false
+					"enabled": false
+					"foreground": #Color0
+					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					"margin": new java.awt.Insets( 10, 10, 10, 10 )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 1 1,grow"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 910, 300 )
+		} )
+	}
+}

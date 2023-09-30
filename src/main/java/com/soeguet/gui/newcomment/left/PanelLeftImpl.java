@@ -1,358 +1,250 @@
 package com.soeguet.gui.newcomment.left;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.soeguet.config.Settings;
-import com.soeguet.gui.newcomment.Colorpicker;
-import com.soeguet.gui.newcomment.Comment;
-import com.soeguet.gui.newcomment.pane.TextPaneImpl;
-import com.soeguet.gui.reply.ReplyImpl;
-import com.soeguet.gui.translate.TranslateDialogImpl;
-import com.soeguet.gui.util.EmojiConverter;
-import com.soeguet.gui.util.MessageTypes;
-import com.soeguet.model.MessageModel;
-import lombok.Getter;
-import org.jetbrains.annotations.Nullable;
+import com.soeguet.gui.main_frame.MainFrameInterface;
+import com.soeguet.gui.newcomment.helper.CommentInterface;
+import com.soeguet.gui.newcomment.left.generated.PanelLeft;
+import com.soeguet.gui.newcomment.util.QuotePanelImpl;
+import com.soeguet.model.jackson.BaseModel;
+import com.soeguet.model.jackson.MessageModel;
+import com.soeguet.model.jackson.PictureModel;
 
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
-import java.awt.*;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.awt.image.BufferedImage;
+import java.util.logging.Logger;
 
-import static com.soeguet.gui.ChatImpl.*;
-import static com.soeguet.gui.util.EmojiConverter.emojiListFull;
-import static com.soeguet.gui.util.EmojiConverter.replaceWithEmoji;
+/**
+ This class represents an implementation of the PanelLeft interface and implements the CommentInterface.
+ It provides methods for setting up a left panel in a graphical user interface.
+ */
+public class PanelLeftImpl extends PanelLeft implements CommentInterface {
 
-public class PanelLeftImpl extends PanelLeft implements Comment {
+    private final Logger LOGGER = Logger.getLogger(PanelLeftImpl.class.getName());
+    private final BaseModel baseModel;
+    private JPopupMenu jPopupMenu;
+    private BufferedImage image;
 
-    private final MessageModel messageModel;
-    private final Long id;
-    private boolean executedFromJar = false;
-    @Getter
-    private TextPaneImpl textPaneComment;
-    private JPopupMenu likePopup;
+    /**
+     Constructs a new PanelLeftImpl object.
 
-    public PanelLeftImpl(MessageModel messageModel) {
-        this(messageModel, null, null);
-        form_button1.setVisible(false);
+     @param mainFrame the MainFrameInterface object to associate with the panel
+     @param baseModel the BaseModel object to use for data access
+     */
+    public PanelLeftImpl(MainFrameInterface mainFrame, BaseModel baseModel) {
+
+        super(mainFrame);
+
+        this.baseModel = baseModel;
     }
 
-    public PanelLeftImpl(MessageModel messageModel, String lastMessageFrom, String lastPostTime) {
+    /**
+     Set up the text panel wrapper for displaying messages.
+     This method is called to initialize the text panel with the necessary components and settings.
 
-        this.messageModel = messageModel;
-        this.id = messageModel.getId();
-
-        customInitialMethods(messageModel, lastMessageFrom, lastPostTime);
-    }
-
-    private void customInitialMethods(
-            MessageModel messageModel, @Nullable String lastMessageFrom, String lastPostTime) {
-
-        if (messageIsDeleted(messageModel)) return;
-
-        setBorderColor(Colorpicker.colorPicker(messageModel.getSender()).getBorderColor());
-        Settings settings = Settings.getInstance();
-        textPaneComment = new TextPaneImpl();
-
-        addRightClickOptionToPanel();
-
-        this.form_panel1.add(textPaneComment, "cell 1 1,grow");
-
-        addQuoteLayerToCommentIfPresent(messageModel, settings);
-
-        replaceWithEmoji(textPaneComment, messageModel.getMessage());
-
-        form_nameLabel.setText(messageModel.getSender());
-        form_timeLabel.setText(messageModel.getTime());
-
-        addingImportantFlagToComment(messageModel);
-
-        // add user interaction emojis to comment
-        if (messageModel.getUserInteractions() != null
-                && messageModel.getUserInteractions().size() > 0) {
-
-            addEmojiToInteractionPane(messageModel);
-        }
-
-        if (lastMessageFrom != null && lastMessageFrom.equals(messageModel.getSender())) {
-            form_nameLabel.setVisible(false);
-
-            if (lastPostTime.equals(messageModel.getTime())) {
-                form_timeLabel.setVisible(false);
-            }
-        }
-    }
-
-    private void addRightClickOptionToPanel() {
-        JPopupMenu popupMenu = new JPopupMenu();
-        popupMenu.setBackground(Color.WHITE);
-        JMenuItem copyItem = new JMenuItem("copy");
-        JMenuItem translateItem = new JMenuItem("translate");
-
-        copyItem.addActionListener(e -> textPaneComment.copy());
-        translateItem.addActionListener(
-                e -> {
-                    JDialog translateDialog =
-                            new TranslateDialogImpl(null, textPaneComment.getSelectedText());
-                    translateDialog.setVisible(true);
-                });
-
-        popupMenu.add(copyItem);
-        popupMenu.add(translateItem);
-
-        textPaneComment.setComponentPopupMenu(popupMenu);
-
-        textPaneComment.addMouseListener(
-                new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        if (SwingUtilities.isRightMouseButton(e)) {
-                            popupMenu.show(textPaneComment, e.getX(), e.getY());
-                        }
-                    }
-                });
-    }
-
-    private void addingImportantFlagToComment(MessageModel messageModel) {
-        if (messageModel.getMessageType() == 5) {
-            add(new JLabel("!!!"), "cell 0 1");
-        }
-    }
-
-    private void addQuoteLayerToCommentIfPresent(MessageModel messageModel, Settings settings) {
-        if (messageModel.getQuotedMessageText() != null) {
-
-            TextPaneImpl replyTextPane =
-                    new TextPaneImpl() {
-
-                        @Override
-                        protected void paintComponent(Graphics grphcs) {
-
-                            Graphics2D g2d = (Graphics2D) grphcs;
-                            g2d.setColor(Colorpicker.colorPicker(messageModel.getSender()).getBorderColor());
-                            g2d.drawLine(0, 0, 0, getHeight());
-                            g2d.drawLine(getWidth() - 1, 0, getWidth() - 1, getHeight());
-
-                            g2d.setColor(Colorpicker.colorPicker(messageModel.getSender()).getQuoteColor());
-                            g2d.fillRect(1, 0, getWidth() - 2, getHeight());
-
-                            super.paintComponent(grphcs);
-                        }
-                    };
-
-            replaceWithEmoji(replyTextPane, messageModel.getQuotedMessageText());
-            replyTextPane.setDisabledTextColor(settings.getTextColor());
-            this.form_panel1.add(replyTextPane, "cell 1 0");
-            replyTextPane.setEnabled(false);
-            replyTextPane.setBorder(
-                    new TitledBorder(
-                            BorderFactory.createEmptyBorder(),
-                            messageModel.getQuotedMessageSender() + " - " + messageModel.getQuotedMessageTime(),
-                            TitledBorder.LEADING,
-                            TitledBorder.ABOVE_TOP,
-                            null,
-                            new Color(117, 133, 175)));
-            replyTextPane.setMinimumSize(new Dimension(150, 50));
-        }
-    }
-
+     If the baseModel is an instance of MessageModel, the following actions are taken:
+     1. Invoke the setupTextPanelWrapper method on the Swing event dispatch thread.
+     2. Handle the extraction of messages containing quotes.
+     3. Set the text message on the chat panel and add a right-click option to the text pane.
+     4. Set up the remaining needed fields, such as name, time, and popup menu.
+     */
     @Override
-    protected void actionLabelMouseEntered(MouseEvent e) {
-        e.consume();
-        form_actionLabel.setForeground(new Color(92, 92, 92, 255));
-    }
+    public void setupTextPanelWrapper() {
 
-    @Override
-    protected void actionLabelMouseClicked(MouseEvent e) {
+        if (baseModel instanceof MessageModel messageModel) {
 
-        if (likePopup == null) {
+            SwingUtilities.invokeLater(() -> {
 
-            likePopup = new JPopupMenu();
-            likePopup.setLayout(new GridLayout(10, 10));
+                //handle message containing quotes
+                handleTextMessageExtraction(messageModel);
 
-            emojiListFull.forEach(
-                    emoji -> {
-                        ImageIcon icon;
-                        if (executedFromJar) {
-                            icon =
-                                    new ImageIcon(
-                                            Objects.requireNonNull(
-                                                    EmojiConverter.class.getResource("/emojis/" + emoji + ".png")));
-                        } else {
-                            icon = new ImageIcon("src/main/resources/emojis/" + emoji + ".png");
-                        }
+                //handle the actual message and add a right click option to text pane
+                setTextMessageOnChatPanel(messageModel);
 
-                        icon.setDescription(emoji);
-
-                        JButton jButton = new JButton(icon);
-                        jButton.setName(emoji);
-                        jButton.setPreferredSize(new Dimension(25, 25));
-                        jButton.setBorderPainted(false);
-                        jButton.setContentAreaFilled(false);
-                        jButton.setFocusPainted(false);
-                        jButton.setOpaque(false);
-
-                        jButton.addMouseListener(
-                                new MouseAdapter() {
-                                    @Override
-                                    public void mouseClicked(MouseEvent e) {
-
-                                        e.consume();
-                                        MessageModel likeModel =
-                                                new MessageModel(
-                                                        messageModel.getId(),
-                                                        MessageTypes.INTERACTED,
-                                                        messageModel.addUserInteractions(
-                                                                mapOfIps.get(client.getLocalSocketAddress().getHostString()),
-                                                                jButton.getName()),
-                                                        messageModel.getLocalIp(),
-                                                        messageModel.getSender(),
-                                                        messageModel.getTime(),
-                                                        messageModel.getMessage(),
-                                                        messageModel.getQuotedMessageSender(),
-                                                        messageModel.getQuotedMessageTime(),
-                                                        messageModel.getQuotedMessageText());
-
-                                        try {
-                                            client.send(
-                                                    MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(likeModel));
-                                        } catch (JsonProcessingException ex) {
-                                            throw new RuntimeException(ex);
-                                        }
-
-                                        likePopup.setVisible(false);
-                                    }
-                                });
-
-                        likePopup.add(jButton);
-                    });
+                //set up the remaining needed fields, e.g. name, time, popup menu
+                setupCommentEssentials(messageModel);
+            });
         }
-        likePopup.show(e.getComponent(), e.getX(), e.getY());
     }
 
+    /**
+     Handle the extraction of messages containing quotes.
+     If the given message model contains quotes, a quote panel is created and added to the form panel.
+
+     @param messageModel the message model containing the message to handle
+     */
+    private void handleTextMessageExtraction(final MessageModel messageModel) {
+
+        QuotePanelImpl quotedSectionPanel = checkForQuotesInMessage(messageModel);
+        if (quotedSectionPanel != null) {
+            form_panel1.add(quotedSectionPanel, "cell 1 0, wrap");
+        }
+    }
+
+    /**
+     Sets the text message on the chat panel.
+
+     @param messageModel the message model containing the message to be set
+     */
+    private void setTextMessageOnChatPanel(final MessageModel messageModel) {
+
+        JTextPane actualTextPane = setUserMessage(messageModel);
+        addRightClickOptionToPanel(actualTextPane);
+        form_panel1.add(actualTextPane, "cell 1 1, wrap");
+    }
+
+    /**
+     Sets up the essentials for comments.
+
+     @param messageModel the message model containing the comment information
+     */
+    private void setupCommentEssentials(final MessageModel messageModel) {
+
+        //setup time
+        setupTimeField( messageModel, form_timeLabel);
+
+        //setup name
+        setupNameField(messageModel, form_nameLabel);
+
+        //setup popup menu
+        jPopupMenu = setupEditorPopupMenu(messageModel);
+    }
+
+    /**
+     Sets up the picture panel wrapper.
+     This method is responsible for setting up the necessary components and behavior for displaying a picture in the chat panel.
+     It handles image extraction, resizing, caption, and right-click functionality.
+     After setting up the picture, it also calls the setupCommentEssentials method to set up the remaining needed fields.
+     */
     @Override
-    protected void actionLabelMouseExited(MouseEvent e) {
+    public void setupPicturePanelWrapper() {
 
-        e.consume();
-        form_actionLabel.setForeground(new Color(92, 92, 92, 0));
+        if (baseModel instanceof PictureModel pictureModel) {
+
+            SwingUtilities.invokeLater(() -> {
+
+                //handle image extraction and return, if null
+                if (handleImageExtraction(pictureModel)) return;
+
+                //handle image and max sizing of image on the main panel
+                setImageOnChatPanel();
+
+                //handle image caption and right click ability on the text pane
+                handleImageCaption(pictureModel);
+
+                //set up the remaining needed fields, e.g. name, time, popup menu
+                setupCommentEssentials(pictureModel);
+            });
+        }
     }
 
-    private boolean messageIsDeleted(MessageModel messageModel) {
-        // deleted message
-        if (messageModel.getMessageType() == 127) {
+    /**
+     Handles image extraction from the given PictureModel.
+     It extracts the image from the message and sets the extracted image to the instance variable 'image'.
+     If the extracted image is null, it logs a severe level message and returns true.
+     Otherwise, it returns false.
 
-            removeAll();
-            add(new JLabel(messageModel.getTime() + " - " + messageModel.getMessage()), "cell 0 1");
+     @param pictureModel The PictureModel containing the image message.
+
+     @return True if the extracted image is null, false otherwise.
+     */
+    private boolean handleImageExtraction(final PictureModel pictureModel) {
+
+        this.image = extractImageFromMessage(pictureModel);
+        if (image == null) {
+            LOGGER.log(java.util.logging.Level.SEVERE, "Buffered image is null");
             return true;
         }
         return false;
     }
 
+    /**
+     Sets the image on the chat panel.
+     It creates a JLabel with the scaled image and adds it to the form_panel1.
+     It also adds a click listener to the image label to support maximizing the image.
+
+     @see #scaleImageIfTooBig(BufferedImage)
+     @see #addMaximizePictureOnClick(JLabel, BufferedImage)
+     */
+    private void setImageOnChatPanel() {
+
+        JLabel imageLabel = new JLabel(scaleImageIfTooBig(image));
+        form_panel1.add(imageLabel, "cell 1 0, wrap");
+        addMaximizePictureOnClick(imageLabel, image);
+    }
+
+    /**
+     Handles the image caption for the given PictureModel.
+     It creates a JTextPane with the caption text and adds it to the form_panel1 if the imageCaptionTextPane is not null.
+     It also adds a right-click option to the image caption to support additional functionalities.
+
+     @param pictureModel The PictureModel object containing the image caption.
+     */
+    private void handleImageCaption(final PictureModel pictureModel) {
+
+        JTextPane imageCaptionTextPane = createImageCaptionTextPane(pictureModel);
+        if (imageCaptionTextPane != null) {
+            addRightClickOptionToPanel(imageCaptionTextPane);
+            form_panel1.add(imageCaptionTextPane, "cell 1 1, wrap");
+        }
+    }
+
+    /**
+     Sets up the essential comment fields for the given PictureModel.
+     It sets the name field, timestamp field, and the editor popup menu.
+
+     @param pictureModel The PictureModel object for which to set up the comment essentials.
+     */
+    private void setupCommentEssentials(final PictureModel pictureModel) {
+
+        //setup time
+        setupTimeField( pictureModel, form_timeLabel);
+
+        //setup name
+        setupNameField(pictureModel, form_nameLabel);
+
+        //setup popup menu
+        jPopupMenu = setupEditorPopupMenu(pictureModel);
+    }
+
+    /**
+     Handler for when the action label is mouse entered.
+
+     @param e The MouseEvent object representing the mouse enter event.
+     */
+    @Override
+    protected void actionLabelMouseEntered(MouseEvent e) {
+
+    }
+
+    /**
+     Handler for when the mouse pointer exits the action label.
+
+     @param e The MouseEvent object representing the mouse exit event.
+     */
+    @Override
+    protected void actionLabelMouseExited(MouseEvent e) {
+
+    }
+
+    /**
+     Handler for when the reply button is clicked.
+     Displays the editor popup menu at the position of the mouse click.
+
+     @param e The MouseEvent object representing the mouse click event.
+     */
     @Override
     protected void replyButtonClicked(MouseEvent e) {
-        JPopupMenu popupMenu = new JPopupMenu();
-        JMenuItem replyItem = new JMenuItem("reply");
-        replyItem.addActionListener(
-                e1 -> {
-                    ReplyImpl replyDialog = new ReplyImpl(messageModel);
-                    replyDialog.setVisible(true);
-                });
-        popupMenu.add(replyItem);
-        popupMenu.show(e.getComponent(), e.getX(), e.getY());
-        e.consume();
+
+        jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
     }
 
+    /**
+     Handler for when the action label is clicked.
+
+     @param e The MouseEvent object representing the mouse click event.
+     */
     @Override
-    public Long getId() {
-        return id;
-    }
+    protected void actionLabelMouseClicked(MouseEvent e) {
 
-    @Override
-    public String toString() {
-        return "PanelLeftImpl{" + "id=" + id + '}';
-    }
-
-    public void addEmojiInteraction(MessageModel messageModel) {
-
-        addEmojiToInteractionPane(messageModel);
-    }
-
-    private void addEmojiToInteractionPane(MessageModel messageModel) {
-
-        executedFromJar =
-                String.valueOf(PanelLeftImpl.class.getResource("PanelLeftImpl.class")).startsWith("jar:");
-
-        JPanel userInteractionPanel = new JPanel();
-        add(userInteractionPanel, "cell 3 2");
-
-        AtomicInteger interactionCount = new AtomicInteger(1);
-
-        SwingUtilities.invokeLater(
-                new Runnable() {
-                    @Override
-                    public void run() {
-
-                        messageModel.getUserInteractions().stream()
-                                .limit(form_layeredPane1.getWidth() / 25)
-                                .forEach(
-                                        (interaction) -> {
-                                            ImageIcon icon;
-
-                                            if (executedFromJar) {
-
-                                                icon =
-                                                        new ImageIcon(
-                                                                Objects.requireNonNull(
-                                                                        EmojiConverter.class.getResource(
-                                                                                "/emojis/" + interaction.getEmoji() + ".png")));
-
-                                            } else {
-
-                                                icon =
-                                                        new ImageIcon(
-                                                                "src/main/resources/emojis/" + interaction.getEmoji() + ".png");
-                                            }
-
-                                            icon.setDescription(interaction.getUsername());
-
-                                            int diameter = 25;
-                                            JLabel jLabel =
-                                                    new JLabel(icon) {
-                                                        @Override
-                                                        protected void paintComponent(Graphics g) {
-
-                                                            Graphics2D g2d = (Graphics2D) g;
-                                                            g2d.setRenderingHints(
-                                                                    new RenderingHints(
-                                                                            RenderingHints.KEY_ANTIALIASING,
-                                                                            RenderingHints.VALUE_ANTIALIAS_ON));
-                                                            g2d.setColor(Color.WHITE);
-                                                            g2d.fillRoundRect(1, 1, diameter - 2, diameter - 2, 50, 50);
-
-                                                            g2d.setColor(Color.DARK_GRAY);
-                                                            g2d.drawRoundRect(0, 0, diameter - 1, diameter - 1, 50, 50);
-                                                            super.paintComponent(g);
-                                                        }
-                                                    };
-
-                                            jLabel.setToolTipText(interaction.getUsername());
-                                            jLabel.setBounds(
-                                                    form_layeredPane1.getWidth() - (interactionCount.get() * 25),
-                                                    form_layeredPane1.getHeight() - 25,
-                                                    25,
-                                                    25);
-
-                                            jLabel.setVisible(true);
-                                            form_layeredPane1.add(jLabel);
-                                            form_layeredPane1.moveToFront(jLabel);
-
-                                            interactionCount.getAndIncrement();
-
-                                            PanelLeftImpl.this.repaint();
-                                        });
-                    }
-                });
     }
 }

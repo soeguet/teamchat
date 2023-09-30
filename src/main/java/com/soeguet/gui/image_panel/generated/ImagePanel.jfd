@@ -1,0 +1,159 @@
+JFDML JFormDesigner: "8.1.1.0.298" Java: "17.0.3" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		auxiliary() {
+			"JavaCodeGenerator.defaultVariableGetter": true
+			"JavaCodeGenerator.defaultVariableModifiers": 4
+			"JavaCodeGenerator.defaultHandlerModifiers": 1028
+			"JavaCodeGenerator.memberVariablePrefix": "form_"
+		}
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			"border": new javax.swing.border.LineBorder( sfield java.awt.Color black, 2, true )
+			addEvent( new FormEvent( "java.awt.event.MouseListener", "mousePressed", "thisMousePressed", true ) )
+			addEvent( new FormEvent( "java.awt.event.MouseMotionListener", "mouseDragged", "thisMouseDragged", true ) )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "panel4"
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "label1"
+					"text": "images"
+					"horizontalTextPosition": 0
+					"horizontalAlignment": 0
+					"focusable": false
+					"enabled": false
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "closeImagePanelButton"
+					"text": "x"
+					"border": new com.jformdesigner.model.SwingBorder( "TitledBorder.border" )
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseReleased", "closeImagePanelButtonMouseReleased", true ) )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "East"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "First"
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "formerMessagePanel"
+				add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
+					name: "hSpacer1"
+					"minimumSize": new java.awt.Dimension( 15, 12 )
+					"preferredSize": new java.awt.Dimension( 15, 10 )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "West"
+				} )
+				add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
+					name: "hSpacer2"
+					"minimumSize": new java.awt.Dimension( 15, 12 )
+					"preferredSize": new java.awt.Dimension( 15, 10 )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "East"
+				} )
+				add( new FormComponent( "com.jformdesigner.designer.wrapper.VSpacer" ) {
+					name: "vSpacer2"
+					"preferredSize": new java.awt.Dimension( 10, 5 )
+					"minimumSize": new java.awt.Dimension( 12, 5 )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "North"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+					name: "panel3"
+					add( new FormComponent( "com.jformdesigner.designer.wrapper.VSpacer" ) {
+						name: "vSpacer1"
+						"minimumSize": new java.awt.Dimension( 12, 15 )
+						"preferredSize": new java.awt.Dimension( 10, 15 )
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "Center"
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "South"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+					name: "pictureMainPanel"
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+						name: "pictureInteractionPanel"
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "pictureDescriptionTextField"
+						}, new FormLayoutConstraints( class java.lang.String ) {
+							"value": "Center"
+						} )
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+							name: "panel2"
+							add( new FormComponent( "javax.swing.JButton" ) {
+								name: "sendPictureButton"
+								"text": "send"
+								addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "sendPictureButtonMouseClicked", true ) )
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "Center"
+							} )
+							add( new FormComponent( "javax.swing.JButton" ) {
+								name: "selectPictureButton"
+								"text": "select"
+								addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "selectPictureButtonMouseClicked", true ) )
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "West"
+							} )
+						}, new FormLayoutConstraints( class java.lang.String ) {
+							"value": "East"
+						} )
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "South"
+					} )
+					add( new FormContainer( "javax.swing.JLayeredPane", new FormLayoutManager( class javax.swing.JLayeredPane ) ) {
+						name: "pictureLayeredPane"
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+							name: "zoomMotherPanel"
+							"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+							"opaque": false
+							addEvent( new FormEvent( "java.awt.event.MouseWheelListener", "mouseWheelMoved", "zoomMotherPanelMouseWheelMoved", true ) )
+							add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.FlowLayout ) ) {
+								name: "zoomPanel"
+								"opaque": false
+								add( new FormComponent( "javax.swing.JButton" ) {
+									name: "zoomOutButton"
+									"text": "-"
+									addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "zoomOutButtonMouseClicked", true ) )
+								} )
+								add( new FormComponent( "javax.swing.JButton" ) {
+									name: "zoomInButton"
+									"text": "+"
+									addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "zoomInButtonMouseClicked", true ) )
+								} )
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "North"
+							} )
+						}, new FormLayoutConstraints( null ) {
+							"width": 365
+							"height": 230
+							"x": 0
+							"y": 0
+						} )
+						add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+							name: "pictureScrollPane"
+							"border": new javax.swing.border.LineBorder( sfield java.awt.Color black, 1, false )
+							add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+								name: "picturePanel"
+							} )
+						}, new FormLayoutConstraints( null ) {
+							"width": 366
+							"height": 231
+						} )
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "Center"
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 300 )
+		} )
+	}
+}
