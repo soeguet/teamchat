@@ -30,8 +30,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 /**
@@ -50,8 +48,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
     //TODO add to cache?
     private final List<NotificationImpl> notificationList = new ArrayList<>();
-    private final EnvVariables envVariables;
     private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
+    private EnvVariables envVariables;
     private GuiFunctionality guiFunctionality;
     private URI serverUri;
     private int JSCROLLPANE_MARGIN_RIGHT_BORDER;
@@ -60,7 +58,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     private EmojiHandler emojiHandler;
     private CustomWebsocketClient websocketClient;
     private String username;
-    private JPanel messagePanel;
     private volatile int notificationPositionY = 0;
     private boolean startUp = true;
     private String lastMessageSenderName;
@@ -72,8 +69,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
     public ChatMainFrameImpl(final EnvVariables envVariables) {
 
-        this.envVariables = envVariables;
-        this.username = envVariables.getChatUsername();
+        loadEnvVariables(envVariables);
 
         //TODO remove for merge in master
         final String chatXPosition = System.getenv("chat.x.position");
@@ -81,22 +77,43 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             SwingUtilities.invokeLater(() -> setLocation(Integer.parseInt(chatXPosition), 100));
         }
 
+        //TODO maybe move to cache manager
         chatClientPropertiesHashMap = new HashMap<>();
         objectMapper = new ObjectMapper();
         customProperties = new CustomProperties(this);
 
+        //setup functionality
         initGuiFunctionality();
-
-        setScrollPaneMargins();
         initEmojiHandlerAndList();
-        initWebSocketClient();
 
+        //operating system specific settings
+        setScrollPaneMargins();
+
+        //setup GUI
         setVisible(true);
+
+        //setup websocket client
+        initWebSocketClient();
+    }
+
+    private void loadEnvVariables(final EnvVariables envVariables) {
+
+        this.envVariables = envVariables;
+
+        if (!envVariables.getChatUsername().isEmpty()) {
+            this.username = envVariables.getChatUsername();
+        }
     }
 
     private void initGuiFunctionality() {
 
         guiFunctionality = new GuiFunctionality(this);
+    }
+
+    private void initEmojiHandlerAndList() {
+
+        emojiHandler = new EmojiHandler(this);
+        emojiList = new EmojiInitializer().createEmojiList();
     }
 
     private void setScrollPaneMargins() {
@@ -120,12 +137,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
             JSCROLLPANE_MARGIN_RIGHT_BORDER = 4;
         }
-    }
-
-    private void initEmojiHandlerAndList() {
-
-        emojiHandler = new EmojiHandler(this);
-        emojiList = new EmojiInitializer().createEmojiList();
     }
 
     /**
@@ -161,13 +172,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         }
 
         //connect after 1 second
-        Timer connectTimer = new Timer(1000, e -> {
-            new PopupPanelImpl(this, "Connecting to server");
-            logger.info("connecting websocket client");
-            connectToWebsocket();
-        });
-        connectTimer.setRepeats(false);
-        connectTimer.start();
+        setupConnectionTimer();
     }
 
     /**
@@ -190,30 +195,26 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         if (result == JOptionPane.OK_OPTION) {
 
-            final String serverIp = serverIpTextField.getText();
-            final String serverPort = serverPortTextField.getText();
-
-            envVariables.setChatIp(serverIp);
-            envVariables.setChatPort(serverPort);
-
-            try {
-                serverUri = new URI("ws://" + serverIp + ":" + serverPort);
-            } catch (URISyntaxException e) {
-                throw new RuntimeException(e);
-            }
+            processValidatedServerInformation(serverIpTextField, serverPortTextField);
         }
     }
 
     /**
-     Establishes a connection to a WebSocket server.
+     Sets up a timer to connect to the WebSocket server after 1 second.
 
-     This method creates a new virtual thread executor and submits a task to it. The task is responsible for creating a new instance of a CustomWebsocketClient and connecting to the WebSocket server specified by the serverUri. The connection process is asynchronously executed on a separate thread.
+     It creates a timer that waits for 1 second and then executes the connection process.
+     The connection process involves displaying a popup panel indicating the connection status,
+     logging the connection attempt, and calling the connectToWebsocket() method to establish the WebSocket connection.
      */
-    private void connectToWebsocket() {
+    private void setupConnectionTimer() {
 
-        websocketClient = new CustomWebsocketClient(serverUri, this);
-        websocketClient.connect();
-
+        Timer connectTimer = new Timer(1000, e -> {
+            new PopupPanelImpl(this, "Connecting to server");
+            logger.info("connecting websocket client");
+            connectToWebsocket();
+        });
+        connectTimer.setRepeats(false);
+        connectTimer.start();
     }
 
     /**
@@ -228,10 +229,12 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         JPanel myPanel = new JPanel(new MigLayout("wrap 2"));
 
+        //port information
         myPanel.add(new JLabel("Port:"));
         serverIpTextField.setText(envVariables.getChatIp().isBlank() ? "127.0.0.1" : envVariables.getChatIp());
         myPanel.add(serverIpTextField);
 
+        //ip information
         myPanel.add(new JLabel("Ip:"));
         serverPortTextField.setText(envVariables.getChatPort().isBlank() ? "8100" : envVariables.getChatPort());
         myPanel.add(serverPortTextField);
@@ -241,6 +244,12 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         return myPanel;
     }
 
+    /**
+     Validates the server information input by the user.
+
+     @param serverIpText   the server IP input text
+     @param serverPortText the server port input text
+     */
     private void validateServerInformationInputByUser(final String serverIpText, final String serverPortText) {
 
         if (serverIpText.isEmpty() || serverPortText.isEmpty()) {
@@ -257,6 +266,42 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
             JOptionPane.showMessageDialog(this, "Server port is invalid", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    /**
+     Processes the validated server information provided by the user.
+     The server IP address and port number are extracted from the text fields.
+     The server IP address and port number are then stored in the envVariables object.
+     Finally, a URI object representing the server URI is created using the server IP address and port number.
+
+     @param serverIpTextField   the text field containing the server IP address
+     @param serverPortTextField the text field containing the server port number
+     */
+    private void processValidatedServerInformation(final JTextField serverIpTextField, final JTextField serverPortTextField) {
+
+        final String serverIp = serverIpTextField.getText();
+        final String serverPort = serverPortTextField.getText();
+
+        envVariables.setChatIp(serverIp);
+        envVariables.setChatPort(serverPort);
+
+        try {
+            serverUri = new URI("ws://" + serverIp + ":" + serverPort);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     Establishes a connection to a WebSocket server.
+
+     This method creates a new instance of a CustomWebsocketClient and connects to the specified WebSocket server. The connection process is asynchronously executed on a separate thread.
+     */
+    private void connectToWebsocket() {
+
+        websocketClient = new CustomWebsocketClient(serverUri, this);
+        websocketClient.connect();
+
     }
 
     /**
@@ -281,6 +326,16 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     protected void thisComponentResized(ComponentEvent e) {
 
         this.form_mainTextBackgroundScrollPane.setBounds(1, 1, e.getComponent().getWidth() - JSCROLLPANE_MARGIN_RIGHT_BORDER, e.getComponent().getHeight() - form_interactionAreaPanel.getHeight() - JSCROLLPANE_MARGIN_BOTTOM_BORDER);
+        repaintMainFrame();
+    }
+
+    /**
+     Method used to repaint the main frame.
+
+     This method revalidates and repaints the main frame component, ensuring that any changes to its layout or appearance are correctly displayed on the screen.
+     */
+    private void repaintMainFrame() {
+
         this.revalidate();
         this.repaint();
     }
@@ -335,7 +390,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         this.serverInformationOptionPane();
     }
 
-
     /**
      Resets the connection when the reset connection menu item is pressed.
 
@@ -350,8 +404,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         SwingUtilities.invokeLater(() -> {
 
             this.form_mainTextPanel.removeAll();
-            this.form_mainTextPanel.revalidate();
-            this.form_mainTextPanel.repaint();
+            repaintMainFrame();
         });
 
         //close the websocket client
@@ -369,11 +422,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         this.startUp = true;
         this.logger.info("Reconnecting websocket client");
 
-
         //TODO fix this
-        System.out.println("username: " + this.username);
-
-//        this.username = this.customProperties.getProperty("username");
+        //this.username = this.customProperties.getProperty("username");
 
         // invalidate all caches
         cacheManager.invalidateCache();
@@ -686,19 +736,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         this.username = username;
     }
-
-    /**
-     Sets the message panel for displaying messages.
-
-     @param messagePanel the JPanel to set as the message panel.
-     */
-    @Override
-    public void setMessagePanel(JPanel messagePanel) {
-
-        this.messagePanel = messagePanel;
-    }
-
-
 
     /**
      Returns a HashMap containing the list of emojis and their corresponding image icons.

@@ -113,13 +113,6 @@ public interface MainFrameInterface {
     void setUsername(String username);
 
     /**
-     Sets the message panel of the application.
-
-     @param messagePanel the message panel to be set for the application
-     */
-    void setMessagePanel(JPanel messagePanel);
-
-    /**
      Returns the HashMap containing the emoji image icons.
 
      @return the HashMap containing the emoji image icons

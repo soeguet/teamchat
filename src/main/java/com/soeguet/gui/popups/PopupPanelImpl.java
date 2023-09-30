@@ -32,7 +32,6 @@ public class PopupPanelImpl extends PopupPanel {
 
         this.mainFrame.getMainTextPanelLayeredPane().remove(PopupPanelImpl.this);
         setVisible(false);
-        this.mainFrame.setMessagePanel(null);
 
         ((JFrame) mainFrame).revalidate();
         ((JFrame) mainFrame).repaint();

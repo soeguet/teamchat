@@ -183,6 +183,9 @@ public class NotificationImpl extends Notification {
 
     private void adjustNotificationPanelHeight(final int factor) {
 
+        //TODO check if this is even needed anymore
+        //please don't ask..
+
         //some very ugly manual adjustments..
         final int notificationTextHeight = 25 * factor;
 
@@ -243,10 +246,10 @@ public class NotificationImpl extends Notification {
 
         final boolean remove = activeNotificationsCache.remove(this.baseModel);
 
-        if (remove && activeNotificationsCache.isEmpty()) {
+        if (remove && activeNotificationsCache.isEmpty() && !waitingNotificationsCache.isEmpty()) {
             this.mainFrame.setNotificationPositionY(0);
-            final String first = waitingNotificationsCache.pollFirst();
-            this.mainFrame.getGuiFunctionality().notificationActiveQueueHandling(first);
+            final String queuedNotification = waitingNotificationsCache.pollFirst();
+            this.mainFrame.getGuiFunctionality().internalNotificationHandling(queuedNotification);
         }
     }
 

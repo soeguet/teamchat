@@ -231,9 +231,9 @@ public class GuiFunctionality implements SocketToGuiInterface {
     }
 
     /**
-     This method is called when a new message is received.
+     Called when a message is received.
 
-     @param message The message received from the chat.
+     @param message The message received.
      */
     @Override
     public void onMessage(String message) {
@@ -245,6 +245,8 @@ public class GuiFunctionality implements SocketToGuiInterface {
             case "__startup__end__" -> mainFrame.setStartUp(false);
 
             case "welcome to the server!" -> new PopupPanelImpl(mainFrame, "Welcome to the server!").implementPopup(1000);
+
+            case null -> throw new IllegalStateException();
 
             default -> {
 
@@ -281,17 +283,13 @@ public class GuiFunctionality implements SocketToGuiInterface {
     }
 
     private void createDesktopNotification(final String message) {
-        //TODO clean this mess up
-        if (cacheManager.getCache("ActiveNotificationQueue") instanceof ActiveNotificationQueue activeNotificationQueue) {
 
-            if (activeNotificationQueue.getRemainingCapacity() < 1) {
+        //TODO clean this up
 
-                //max 3 notification at a time, cache message and bail out
-                if (cacheManager.getCache("WaitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
-                    waitingNotificationQueue.addLast(message);
-                    return;
-                }
-            }
+        //convert the message to a java object and return if the message came from this client
+        final BaseModel baseModel = convertMessageToBaseModel(message);
+        if (baseModel.getSender().equals(this.mainFrame.getUsername())) {
+            return;
         }
 
         //check if notifications are even wanted
@@ -315,6 +313,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
             }
 
             case ALL_DENIED, STARTUP -> {
+                //TODO check if message was even cached which in that case needs to be removed from cache
                 //do nothing, intentionally left blank
                 break;
             }
@@ -331,8 +330,11 @@ public class GuiFunctionality implements SocketToGuiInterface {
                 case MessageModel text -> {
 
                     try {
+
                         Runtime.getRuntime().exec(new String[]{"notify-send", "text message", text.getMessage()});
+
                     } catch (IOException e) {
+
                         throw new RuntimeException(e);
                     }
                 }
@@ -340,55 +342,71 @@ public class GuiFunctionality implements SocketToGuiInterface {
                 case PictureModel picture -> {
 
                     try {
+
                         Runtime.getRuntime().exec(new String[]{"notify-send", "picture message", "[picture]" + System.lineSeparator() + picture.getMessage()});
+
                     } catch (IOException e) {
+
                         throw new RuntimeException(e);
                     }
                 }
             }
 
         } catch (JsonProcessingException e) {
+
             throw new RuntimeException(e);
         }
-
     }
 
-    private void internalNotificationHandling(final String message) {
+    public synchronized void internalNotificationHandling(String message) {
 
-        notificationActiveQueueHandling(message);
+        //TODO clean this mess up..
+        BaseModel baseModel = convertMessageToBaseModel(message);
+        internalNotificationHandling(message, baseModel);
     }
 
-    public synchronized void notificationActiveQueueHandling(String message) {
+    public synchronized void internalNotificationHandling(String message, BaseModel baseModel) {
 
-        if (message == null) {
-            return;
+        //TODO clean this mess up..
+        if (cacheManager.getCache("ActiveNotificationQueue") instanceof ActiveNotificationQueue activeNotificationQueue) {
+
+            //max 3 notification at a time, cache message and bail out
+            if (activeNotificationQueue.getRemainingCapacity() < 1) {
+
+                if (cacheManager.getCache("WaitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
+
+                    //add to queue and skip the rest
+                    waitingNotificationQueue.addLast(message);
+
+                }
+
+            } else {
+
+                try {
+
+                    activeNotificationQueue.addLast(baseModel);
+                    createNotification(baseModel);
+
+                } catch (IllegalStateException e) {
+
+                    throw new RuntimeException(e);
+                }
+
+                handleRemainingCapacityInQueue(activeNotificationQueue);
+            }
         }
+    }
 
-        final BaseModel baseModel = convertMessageToBaseModel(message);
+    private void handleRemainingCapacityInQueue(ActiveNotificationQueue activeNotificationsCache) {
 
-        ActiveNotificationQueue activeNotificationsCache = (ActiveNotificationQueue) cacheManager.getCache("ActiveNotificationQueue");
         WaitingNotificationQueue waitingNotificationsCache = (WaitingNotificationQueue) cacheManager.getCache("WaitingNotificationQueue");
 
-        if (activeNotificationsCache.getRemainingCapacity() < 1) {
+        if (activeNotificationsCache.getRemainingCapacity() > 0 && !waitingNotificationsCache.isEmpty()) {
 
-            waitingNotificationsCache.addLast(message);
+            final String queuedNotification = waitingNotificationsCache.pollFirst();
 
-        } else {
-
-            activeNotificationsCache.addLast(baseModel);
-            createNotification(baseModel);
-        }
-
-        handleRemainingCapacityInQueue(activeNotificationsCache, waitingNotificationsCache);
-    }
-
-    private void handleRemainingCapacityInQueue(ActiveNotificationQueue activeNotificationsCache, WaitingNotificationQueue waitingNotificationsCache) {
-
-        if (activeNotificationsCache.getRemainingCapacity() > 0) {
-
-            final String first = waitingNotificationsCache.pollFirst();
-
-            Timer timer = new Timer(750, e -> notificationActiveQueueHandling(first));
+            //TODO is this one right?
+            Timer timer = new Timer(250, e -> internalNotificationHandling(queuedNotification));
             timer.setRepeats(false);
             timer.start();
         }
@@ -420,9 +438,12 @@ public class GuiFunctionality implements SocketToGuiInterface {
         }
     }
 
+    /**
+     This method writes a GUI message to the chat panel and handles all the setup.
+     */
     private synchronized void writeGuiMessageToChatPanel() {
 
-        //retrieve message from cache
+        //retrieve the message from cache
         final String message = pollMessageFromCache();
         if (message == null) return;
 
@@ -444,49 +465,72 @@ public class GuiFunctionality implements SocketToGuiInterface {
         checkIfDequeIsEmptyOrStartOver();
     }
 
+    /**
+     This method retrieves and removes the first message from the message queue.
+
+     @return The first message in the message queue, or null if the queue is empty.
+     */
     private String pollMessageFromCache() {
 
         MessageQueue messageQueue = (MessageQueue) cacheManager.getCache("messageQueue");
 
-        String message = messageQueue.pollFirst();
-
-        if (message == null) {
-            return null;
-        }
-        return message;
+        return messageQueue.pollFirst();
     }
 
+    /**
+     This method processes and displays a message based on the message model, username, and nickname.
+
+     @param messageModel The message model representing the message.
+     @param username     The username of the client.
+     @param nickname     The nickname of the client.
+     */
     private void processAndDisplayMessage(final BaseModel messageModel, final String username, final String nickname) {
+
+        //if the message is from this client -> message on right side
+        final boolean messageFromThisClient = messageModel.getSender().equals(username);
 
         switch (messageModel) {
 
+            //if the message contains text only
             case MessageModel text -> {
 
-                if (text.getSender().equals(username)) {
+                if (messageFromThisClient) {
 
+                    //right side = own message
                     setupMessagesRightSide(text, nickname);
 
                 } else {
 
+                    //left side = other message
                     setupMessagesLeftSide(text, nickname);
                 }
-
             }
 
+            //if the message contains a picture
             case PictureModel picture -> {
 
-                if (messageModel.getSender().equals(username)) {
+                if (messageFromThisClient) {
 
+                    //right side = own message
                     setupPicturesRightSide(picture, nickname);
 
                 } else {
 
+                    //left side = other message
                     setupPicturesLeftSide(picture, nickname);
                 }
             }
         }
     }
 
+    //TODO this is a very clunky part, needs to be refactored
+
+    /**
+     This method sets up and displays a picture message on the left side of the chat interface.
+
+     @param messageModel The message model representing the picture message.
+     @param nickname     The nickname of the client.
+     */
     private void setupPicturesLeftSide(final BaseModel messageModel, final String nickname) {
 
         Color borderColor = determineBorderColor(messageModel.getSender());
@@ -499,6 +543,12 @@ public class GuiFunctionality implements SocketToGuiInterface {
         addMessagePanelToMainChatPanel(panelLeft, "leading");
     }
 
+    /**
+     This method sets up and displays a picture message on the right side of the chat interface.
+
+     @param messageModel The message model representing the picture message.
+     @param nickname     The nickname of the client.
+     */
     private void setupPicturesRightSide(final BaseModel messageModel, final String nickname) {
 
         Color borderColor = determineBorderColor("own");
@@ -511,6 +561,12 @@ public class GuiFunctionality implements SocketToGuiInterface {
         addMessagePanelToMainChatPanel(panelRight, "trailing");
     }
 
+    /**
+     This method sets up and displays a text message on the left side of the chat interface.
+
+     @param messageModel The message model representing the text message.
+     @param nickname     The nickname of the client.
+     */
     private void setupMessagesLeftSide(final BaseModel messageModel, final String nickname) {
 
         Color borderColor = determineBorderColor(messageModel.getSender());
@@ -524,6 +580,12 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
     }
 
+    /**
+     This method sets up and displays a text message on the right side of the chat interface.
+
+     @param messageModel The message model representing the text message.
+     @param nickname     The nickname of the client.
+     */
     private void setupMessagesRightSide(final BaseModel messageModel, final String nickname) {
 
         Color borderColor = determineBorderColor("own");
@@ -540,8 +602,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         MessageQueue messageQueue = (MessageQueue) cacheManager.getCache("messageQueue");
 
-        ((JFrame) this.mainFrame).revalidate();
-        ((JFrame) this.mainFrame).repaint();
+        repaintMainFrame();
 
         SwingUtilities.invokeLater(() -> scrollMainPanelDownToLastMessage(this.mainFrame.getMainTextBackgroundScrollPane()));
 
@@ -556,6 +617,16 @@ public class GuiFunctionality implements SocketToGuiInterface {
             timer.start();
         }
 
+    }
+
+    /**
+     This method triggers the repainting of the main frame, refreshing the graphical user interface.
+     It revalidates and repaints the main frame to apply any changes made to its components.
+     */
+    private void repaintMainFrame() {
+
+        ((JFrame) this.mainFrame).revalidate();
+        ((JFrame) this.mainFrame).repaint();
     }
 
     /**
@@ -640,8 +711,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
     public void scrollMainPanelDownToLastMessage(JScrollPane scrollPane) {
 
         //EDT check done!
-        ((JFrame) this.mainFrame).revalidate();
-        ((JFrame) this.mainFrame).repaint();
+        repaintMainFrame();
         scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
     }
 
