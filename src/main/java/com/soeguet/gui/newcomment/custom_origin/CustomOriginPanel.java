@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 /**
- * The CustomOriginPanel class extends JPanel and provides additional functionality for displaying custom origin panels.
+ The CustomOriginPanel class extends JPanel and provides additional functionality for displaying custom origin panels.
  */
 public class CustomOriginPanel extends JPanel {
 
@@ -31,9 +31,9 @@ public class CustomOriginPanel extends JPanel {
     protected Logger LOGGER = Logger.getLogger(CustomOriginPanel.class.getName());
 
     /**
-     * Creates a new CustomOriginPanel object with the given MainFrameInterface object.
-     *
-     * @param mainFrame the MainFrameInterface object that will be used by the CustomOriginPanel
+     Creates a new CustomOriginPanel object with the given MainFrameInterface object.
+
+     @param mainFrame the MainFrameInterface object that will be used by the CustomOriginPanel
      */
     public CustomOriginPanel(MainFrameInterface mainFrame) {
 
@@ -41,10 +41,11 @@ public class CustomOriginPanel extends JPanel {
     }
 
     /**
-     * Extracts an image from a message.
-     *
-     * @param baseModel the base model containing the image data
-     * @return the extracted image as a BufferedImage, or null if an error occurs
+     Extracts an image from a message.
+
+     @param baseModel the base model containing the image data
+
+     @return the extracted image as a BufferedImage, or null if an error occurs
      */
     protected BufferedImage extractImageFromMessage(BaseModel baseModel) {
 
@@ -241,16 +242,17 @@ public class CustomOriginPanel extends JPanel {
         final String lastMessageTimestamp = this.mainFrame.getLastMessageTimeStamp();
         final String previousMessageSenderName = this.mainFrame.getLastMessageSenderName();
 
+        this.mainFrame.setLastMessageTimeStamp(timeStamp);
+
+
         // null value -> time
         if (previousMessageSenderName == null || lastMessageTimestamp == null) {
-            this.mainFrame.setLastMessageTimeStamp(timeStamp);
             return false;
         }
 
         // different sender -> time
         if (!previousMessageSenderName.equals(baseModel.getSender())) {
-            this.mainFrame.setLastMessageTimeStamp(timeStamp);
-            return true;
+            return false;
         }
 
         // same sender, same time -> remove time
@@ -259,7 +261,6 @@ public class CustomOriginPanel extends JPanel {
         }
 
         //just in case
-        this.mainFrame.setLastMessageTimeStamp(timeStamp);
         return false;
     }
 

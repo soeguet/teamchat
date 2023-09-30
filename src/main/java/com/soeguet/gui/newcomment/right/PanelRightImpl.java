@@ -105,11 +105,11 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
      */
     private void setupCommentEssentials(final MessageModel messageModel) {
 
-        //setup name
-        setupNameField(messageModel, form_nameLabel);
-
         //setup time
         setupTimeField(messageModel, form_timeLabel);
+
+        //setup name
+        setupNameField(messageModel, form_nameLabel);
 
         //setup popup menu
         jPopupMenu = setupEditorPopupMenu(messageModel);
@@ -198,11 +198,11 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
      */
     private void setupCommentEssentials(final PictureModel pictureModel) {
 
-        //setup name
-        setupNameField(pictureModel, form_nameLabel);
-
         //setup time
         setupTimeField(pictureModel, form_timeLabel);
+
+        //setup name
+        setupNameField(pictureModel, form_nameLabel);
 
         //setup popup menu
         jPopupMenu = setupEditorPopupMenu(pictureModel);
