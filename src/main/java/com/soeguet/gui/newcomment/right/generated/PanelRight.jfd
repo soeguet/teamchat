@@ -90,7 +90,6 @@ new FormModel {
 				name: "panel2"
 				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "timeLabel"
-					"text": "TIME"
 					"enabled": false
 					"horizontalAlignment": 11
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
@@ -114,7 +113,6 @@ new FormModel {
 				} )
 				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "nameLabel"
-					"text": "NAME"
 					"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 1, false )
 					"enabled": false
 					"horizontalAlignment": 11

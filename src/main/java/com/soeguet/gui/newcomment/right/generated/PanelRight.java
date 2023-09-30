@@ -166,7 +166,7 @@ public abstract class PanelRight extends CustomOriginPanel {
 			this.form_layeredPane1.setForeground(null);
 			this.form_layeredPane1.setMinimumSize(null);
 			this.form_layeredPane1.setPreferredSize(null);
-			this.form_layeredPane1.setBackground(new Color(0xcc0033));
+			this.form_layeredPane1.setBackground(null);
 		}
 		add(this.form_layeredPane1, "cell 1 1 2 2,grow");
 
@@ -176,6 +176,7 @@ public abstract class PanelRight extends CustomOriginPanel {
 			this.form_panel1.setMinimumSize(null);
 			this.form_panel1.setPreferredSize(null);
 			this.form_panel1.setMaximumSize(null);
+			this.form_panel1.setForeground(null);
 			this.form_panel1.setLayout(new MigLayout(
 				"",
 				// columns
@@ -190,6 +191,8 @@ public abstract class PanelRight extends CustomOriginPanel {
 		//======== form_layeredPane2 ========
 		{
 			this.form_layeredPane2.setMinimumSize(new Dimension(25, 25));
+			this.form_layeredPane2.setForeground(null);
+			this.form_layeredPane2.setBackground(null);
 
 			//---- form_actionLabel ----
 			this.form_actionLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -220,6 +223,8 @@ public abstract class PanelRight extends CustomOriginPanel {
 		//---- form_hSpacer1 ----
 		this.form_hSpacer1.setMaximumSize(new Dimension(10, 10));
 		this.form_hSpacer1.setMinimumSize(new Dimension(10, 10));
+		this.form_hSpacer1.setForeground(null);
+		this.form_hSpacer1.setBackground(null);
 		add(this.form_hSpacer1, "cell 3 1");
 
 		//======== form_panel2 ========
@@ -234,7 +239,6 @@ public abstract class PanelRight extends CustomOriginPanel {
 				"[grow,fill]"));
 
 			//---- form_timeLabel ----
-			this.form_timeLabel.setText("TIME");
 			this.form_timeLabel.setEnabled(false);
 			this.form_timeLabel.setHorizontalAlignment(SwingConstants.TRAILING);
 			this.form_panel2.add(this.form_timeLabel, "cell 0 1");
@@ -259,7 +263,6 @@ public abstract class PanelRight extends CustomOriginPanel {
 			this.form_panel2.add(this.form_button1, "cell 1 1");
 
 			//---- form_nameLabel ----
-			this.form_nameLabel.setText("NAME");
 			this.form_nameLabel.setFont(this.form_nameLabel.getFont().deriveFont(this.form_nameLabel.getFont().getStyle() | Font.BOLD, this.form_nameLabel.getFont().getSize() + 1f));
 			this.form_nameLabel.setEnabled(false);
 			this.form_nameLabel.setHorizontalAlignment(SwingConstants.TRAILING);

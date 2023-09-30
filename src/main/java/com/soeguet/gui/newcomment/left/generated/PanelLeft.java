@@ -160,7 +160,6 @@ public abstract class PanelLeft extends CustomOriginPanel {
 				"[grow,fill]"));
 
 			//---- form_nameLabel ----
-			form_nameLabel.setText("NAME");
 			form_nameLabel.setFont(form_nameLabel.getFont().deriveFont(form_nameLabel.getFont().getStyle() | Font.BOLD, form_nameLabel.getFont().getSize() + 1f));
 			form_nameLabel.setEnabled(false);
 			form_nameLabel.setHorizontalTextPosition(SwingConstants.LEADING);
@@ -186,7 +185,6 @@ public abstract class PanelLeft extends CustomOriginPanel {
 			form_panel2.add(form_button1, "cell 0 1");
 
 			//---- form_timeLabel ----
-			form_timeLabel.setText("TIME");
 			form_timeLabel.setEnabled(false);
 			form_timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 			form_panel2.add(form_timeLabel, "cell 1 1");

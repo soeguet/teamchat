@@ -274,7 +274,11 @@ public class CustomOriginPanel extends JPanel {
         if (setNameFieldInvisible(baseModel)) {
             nameLabel.setVisible(false);
         }
-        nameLabel.setText(baseModel.getSender());
+
+        if (nameLabel.getText().isBlank()) {
+
+            nameLabel.setText(baseModel.getSender());
+        }
     }
 
     /**
