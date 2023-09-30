@@ -9,6 +9,7 @@ import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -82,17 +83,18 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     }
 
     /**
-     Sets the text message on the chat panel based on the given {@link MessageModel}.
-
-     This method obtains the user message from the {@code messageModel} parameter and sets it to the {@link JTextPane}.
-     The main frame is obtained from the {@code mainFrame} parameter.
-     The user message is added to the {@code form_panel1} in the appropriate cell position.
-
-     @param messageModel the message model containing the text message
+     * Sets the text message on the chat panel based on the given {@link MessageModel}.
+     *
+     * This method obtains the user message from the {@code messageModel} parameter and sets it to the {@link JTextPane}.
+     * The main frame is obtained from the {@code mainFrame} parameter.
+     * The user message is added to the {@code form_panel1} in the appropriate cell position.
+     *
+     * @param messageModel the message model containing the text message
      */
     private void setTextMessageOnChatPanel(final MessageModel messageModel) {
 
         JTextPane actualTextPane = setUserMessage(mainFrame, messageModel);
+        actualTextPane.setForeground(Color.BLACK);
         addRightClickOptionToPanel(actualTextPane);
         form_panel1.add(actualTextPane, "cell 0 1, wrap");
     }

@@ -2,7 +2,6 @@ package com.soeguet.behaviour;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.soeguet.cache.CustomCache;
 import com.soeguet.cache.factory.CacheManagerFactory;
 import com.soeguet.cache.implementations.ActiveNotificationQueue;
 import com.soeguet.cache.implementations.MessageQueue;
@@ -16,7 +15,6 @@ import com.soeguet.gui.newcomment.right.PanelRightImpl;
 import com.soeguet.gui.notification_panel.NotificationImpl;
 import com.soeguet.gui.popups.PopupPanelImpl;
 import com.soeguet.model.MessageTypes;
-import com.soeguet.model.PanelTypes;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
@@ -177,27 +175,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
         return new Color(r, g, b).getRGB();
     }
 
-    /**
-     Displays the nickname instead of the username in a comment.
-
-     If the nickname parameter is not null and not empty after trimming,
-     it sets the text of the name label in the comment to the nickname.
-
-     @param nickname the nickname to be displayed
-     @param comment  the comment object containing the name label
-     */
-    private void displayNicknameInsteadOfUsername(String nickname, CommentInterface comment) {
-
-        if (nickname != null && !nickname.trim().isEmpty()) {
-            comment.getNameLabel().setText(nickname);
-        }
-    }
-
-    private void addMessagePanelToMainChatPanel(CommentInterface message, String alignment) {
-
-        this.mainFrame.getMainTextPanel().add((JPanel) message, "w 70%, " + alignment + ", wrap");
-    }
-
     public void clearTextPaneAndSendMessageToSocket() {
 
         String userTextInput = getTextFromInput();
@@ -265,8 +242,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         switch (message) {
 
-            case "X" -> System.out.println("X");
-
             case "__startup__end__" -> mainFrame.setStartUp(false);
 
             case "welcome to the server!" -> new PopupPanelImpl(mainFrame, "Welcome to the server!").implementPopup(1000);
@@ -282,18 +257,31 @@ public class GuiFunctionality implements SocketToGuiInterface {
     }
 
     private void spamBuffer() {
-        //using time to prevent spamming the GUI and making use of the cached messages
-        if (messageToPanelTimer != null) {
-            messageToPanelTimer.stop();
-        }
 
-        messageToPanelTimer = new Timer(500, e -> writeGuiMessageToChatPanel());
-        messageToPanelTimer.setRepeats(false);
-        messageToPanelTimer.start();
+        //TODO this does not work at all :( intention: prevent spamming the GUI and making use of a timeout system if messages are flooded in
+        //using time to prevent spamming the GUI and making use of the cached messages
+
+//        if (messageToPanelTimer != null &&  messageToPanelTimer.isRunning()) {
+//
+//            return;
+//        }
+//
+//        messageToPanelTimer = new Timer(1000, e -> writeGuiMessageToChatPanel());
+//        messageToPanelTimer.setRepeats(false);
+//        messageToPanelTimer.start();
+
+        writeGuiMessageToChatPanel();
+
+        //TODO remove this part as soon as the buffer is working
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void createDesktopNotification(final String message) {
-
+        //TODO clean this mess up
         if (cacheManager.getCache("ActiveNotificationQueue") instanceof ActiveNotificationQueue activeNotificationQueue) {
 
             if (activeNotificationQueue.getRemainingCapacity() < 1) {
@@ -376,7 +364,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
             return;
         }
 
-        final BaseModel baseModel = getMessageModel(message);
+        final BaseModel baseModel = convertMessageToBaseModel(message);
 
         ActiveNotificationQueue activeNotificationsCache = (ActiveNotificationQueue) cacheManager.getCache("ActiveNotificationQueue");
         WaitingNotificationQueue waitingNotificationsCache = (WaitingNotificationQueue) cacheManager.getCache("WaitingNotificationQueue");
@@ -391,7 +379,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
             createNotification(baseModel);
         }
 
-        handleRemainingCapacityInQueue(activeNotificationsCache,waitingNotificationsCache);
+        handleRemainingCapacityInQueue(activeNotificationsCache, waitingNotificationsCache);
     }
 
     private void handleRemainingCapacityInQueue(ActiveNotificationQueue activeNotificationsCache, WaitingNotificationQueue waitingNotificationsCache) {
@@ -434,24 +422,38 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
     private synchronized void writeGuiMessageToChatPanel() {
 
+        //retrieve message from cache
+        final String message = pollMessageFromCache();
+        if (message == null) return;
+
+        //convert message to java object
+        BaseModel baseModel = convertMessageToBaseModel(message);
+
+        //TODO user name checkup seems off
+        //register user from message to local cache if not present yet
+        checkIfMessageSenderAlreadyRegisteredInLocalCache(mainFrame.getChatClientPropertiesHashMap(), baseModel.getSender());
+
+        //handle displayed message name - nickname as well as username
+        String nickname = checkForNickname(baseModel.getSender());
+        final String username = mainFrame.getUsername();
+
+        //process and display message
+        processAndDisplayMessage(baseModel, username, nickname);
+
+        //check for remaining messages in the local cache
+        checkIfDequeIsEmptyOrStartOver();
+    }
+
+    private String pollMessageFromCache() {
+
         MessageQueue messageQueue = (MessageQueue) cacheManager.getCache("messageQueue");
 
         String message = messageQueue.pollFirst();
 
         if (message == null) {
-            return;
+            return null;
         }
-
-        BaseModel messageModel = getMessageModel(message);
-
-        checkIfMessageSenderAlreadyRegisteredInLocalCache(mainFrame.getChatClientPropertiesHashMap(), messageModel.getSender());
-        String nickname = checkForNickname(messageModel.getSender());
-
-        final String username = mainFrame.getUsername();
-
-        processAndDisplayMessage(messageModel, username, nickname);
-
-        checkIfDequeIsEmptyOrStartOver();
+        return message;
     }
 
     private void processAndDisplayMessage(final BaseModel messageModel, final String username, final String nickname) {
@@ -565,7 +567,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
      @throws IllegalArgumentException if the JSON string is malformed
      */
-    private BaseModel getMessageModel(String message) {
+    private BaseModel convertMessageToBaseModel(String message) {
 
         try {
 
@@ -655,5 +657,26 @@ public class GuiFunctionality implements SocketToGuiInterface {
     private BaseModel convertJsonToMessageModel(String jsonMessage) throws JsonProcessingException {
 
         return this.objectMapper.readValue(jsonMessage, BaseModel.class);
+    }
+
+    /**
+     Displays the nickname instead of the username in a comment.
+
+     If the nickname parameter is not null and not empty after trimming,
+     it sets the text of the name label in the comment to the nickname.
+
+     @param nickname the nickname to be displayed
+     @param comment  the comment object containing the name label
+     */
+    private void displayNicknameInsteadOfUsername(String nickname, CommentInterface comment) {
+
+        if (nickname != null && !nickname.trim().isEmpty()) {
+            comment.getNameLabel().setText(nickname);
+        }
+    }
+
+    private void addMessagePanelToMainChatPanel(CommentInterface message, String alignment) {
+
+        this.mainFrame.getMainTextPanel().add((JPanel) message, "w 70%, " + alignment + ", wrap");
     }
 }

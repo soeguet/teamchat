@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "8.1.1.0.298" Java: "17.0.3" encoding: "UTF-8"
+JFDML JFormDesigner: "8.1.1.0.298" Java: "17.0.8" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
@@ -236,6 +236,7 @@ new FormModel {
 					} )
 					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 						name: "scrollPane1"
+						"visible": false
 						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
 							name: "panel2"
 						} )
@@ -265,7 +266,7 @@ new FormModel {
 						"preferredSize": new java.awt.Dimension( 100, 40 )
 						add( new FormComponent( "javax.swing.JButton" ) {
 							name: "propertiesOkButton"
-							"text": "ok"
+							"text": "save"
 							"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
 							"maximumSize": new java.awt.Dimension( 35, 35 )
 							"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE

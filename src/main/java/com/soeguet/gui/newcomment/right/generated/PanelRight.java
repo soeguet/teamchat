@@ -46,14 +46,16 @@ public abstract class PanelRight extends CustomOriginPanel {
 				int rounding = 20;
 				Graphics2D g2d = (Graphics2D) grphcs;
 
+				final Color backgroundColor = Color.WHITE;
+
 				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2d.setColor(Color.WHITE);
+				g2d.setColor(backgroundColor);
 				g2d.fillRoundRect(0, 0, getWidth() - 13, getHeight() - 1, rounding, rounding);
 
 				g2d.setColor(borderColor);
 				g2d.drawRoundRect(0, 0, getWidth() - 13, getHeight() - 1, rounding, rounding);
 
-				g2d.setColor(Color.WHITE);
+				g2d.setColor(backgroundColor);
 				g2d.fillPolygon(new int[]{getWidth() - 1, getWidth() - 28, getWidth() - 13},
 						new int[]{getHeight() - 1, getHeight() - 1, getHeight() - 13}, 3);
 

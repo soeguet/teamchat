@@ -578,6 +578,7 @@ public abstract class PropertiesPanel extends JPanel {
 
 				//======== form_scrollPane1 ========
 				{
+					form_scrollPane1.setVisible(false);
 
 					//======== form_panel2 ========
 					{
@@ -610,7 +611,7 @@ public abstract class PropertiesPanel extends JPanel {
 					((GridBagLayout)form_panel12.getLayout()).rowWeights = new double[] {1.0, 1.0E-4};
 
 					//---- form_propertiesOkButton ----
-					form_propertiesOkButton.setText("ok");
+					form_propertiesOkButton.setText("save");
 					form_propertiesOkButton.setMinimumSize(null);
 					form_propertiesOkButton.setMaximumSize(new Dimension(35, 35));
 					form_propertiesOkButton.setPreferredSize(null);
