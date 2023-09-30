@@ -1,5 +1,6 @@
 package com.soeguet.properties;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.popups.PopupPanelImpl;
@@ -38,24 +39,19 @@ public class CustomProperties extends Properties {
 
     private void checkIfConfigFileExists() {
 
+        //handle the path in os filesystem
         String userHome = System.getProperty("user.home");
-
         String appDirPath = userHome + File.separator + ".teamchat";
         configFilePath = appDirPath + File.separator + "config.properties";
 
+        //handle folder
         File appDir = new File(appDirPath);
+        createFolderIfNotPresent(appDir);
 
-        if (!appDir.exists()) {
+        //try loading data from file
+        if (!loadDataSuccessful()) {
 
-            appDir.mkdir();
-        }
-
-        try (FileInputStream input = new FileInputStream(configFilePath)) {
-
-            load(input);
-
-        } catch (IOException e) {
-
+            //create file if not present
             createPropertiesFile(configFilePath);
         }
     }
@@ -67,15 +63,13 @@ public class CustomProperties extends Properties {
 
     private void populateHashMapWithNewValues() {
 
+        ObjectMapper mapper = mainFrame.getObjectMapper();
+
         stringPropertyNames().forEach(key -> {
-
-            String json = getProperty(key);
-
-            ObjectMapper mapper = mainFrame.getObjectMapper();
 
             try {
 
-                CustomUserProperties userProperties = mapper.readValue(json, CustomUserProperties.class);
+                CustomUserProperties userProperties = mapper.readValue(getProperty(key), CustomUserProperties.class);
 
                 mainFrame.getChatClientPropertiesHashMap().remove(key);
                 mainFrame.getChatClientPropertiesHashMap().put(key, userProperties);
@@ -88,16 +82,48 @@ public class CustomProperties extends Properties {
 
     }
 
+    private void createFolderIfNotPresent(final File appDir) {
+
+        if (!appDir.exists()) {
+
+            final boolean mkdir = appDir.mkdir();
+            if (!mkdir) {
+
+                logger.log(java.util.logging.Level.SEVERE, "ERROR! Could not create app dir!");
+            }
+        }
+    }
+
+    private boolean loadDataSuccessful() {
+
+        try (FileInputStream input = new FileInputStream(configFilePath)) {
+
+            load(input);
+            return true;
+
+        } catch (IOException e) {
+
+            logger.log(java.util.logging.Level.SEVERE, "Could not load config file, createing..", e);
+        }
+        return false;
+    }
+
     private void createPropertiesFile(String configFilePath) {
 
         try (FileOutputStream output = new FileOutputStream(configFilePath)) {
 
             store(output, null);
 
-        } catch (IOException ioException) {
+        } catch (IOException e) {
 
-            logger.log(java.util.logging.Level.SEVERE, "Could not save config file", ioException);
+            logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not create config file!", e);
+            throw new RuntimeException(e);
         }
+    }
+
+    public CustomUserProperties loaderThisClientProperties() throws JsonProcessingException {
+
+        return this.mainFrame.getObjectMapper().readValue(getProperty("own"), CustomUserProperties.class);
     }
 
     public void save() {
@@ -112,7 +138,7 @@ public class CustomProperties extends Properties {
 
             } catch (IOException e) {
 
-                logger.log(java.util.logging.Level.SEVERE, "Could not save user " + key, e);
+                logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not save user " + key, e);
             }
 
             setProperty(key, json);

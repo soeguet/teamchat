@@ -6,6 +6,7 @@ import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.soeguet.gui.main_frame.ChatMainFrameImpl;
 import com.soeguet.model.EnvVariables;
+import com.soeguet.properties.CustomProperties;
 
 import javax.swing.*;
 
@@ -14,6 +15,8 @@ import javax.swing.*;
  */
 public class ProgramInit {
 
+
+
     /**
      * Collects necessary data and starts GUI.
      */
@@ -21,6 +24,7 @@ public class ProgramInit {
 
         //TODO: add theme setting
         //setTheme('');
+
 
         EnvVariables envVariables = checkForEnvVariables();
         FlatIntelliJLaf.setup();

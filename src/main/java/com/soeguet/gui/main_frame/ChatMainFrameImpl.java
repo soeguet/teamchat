@@ -1,5 +1,6 @@
 package com.soeguet.gui.main_frame;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.behaviour.GuiFunctionality;
 import com.soeguet.cache.factory.CacheManagerFactory;
@@ -44,7 +45,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     //TODO cache comments on pane for hot replacements as HashSet -> data structure ready, implementation missing -> add to cache
     private final LinkedHashMap<Long, CommentInterface> commentsHashMap = new LinkedHashMap<>();
     private final ObjectMapper objectMapper;
-    private final CustomProperties customProperties;
+    private CustomProperties customProperties;
 
     //TODO add to cache?
     private final List<NotificationImpl> notificationList = new ArrayList<>();
@@ -69,18 +70,18 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
     public ChatMainFrameImpl(final EnvVariables envVariables) {
 
+        //TODO maybe move to cache manager
+        this.chatClientPropertiesHashMap = new HashMap<>();
+        this.objectMapper = new ObjectMapper();
+
         loadEnvVariables(envVariables);
+        loadCustomProperties();
 
         //TODO remove for merge in master
         final String chatXPosition = System.getenv("chat.x.position");
         if (chatXPosition != null) {
             SwingUtilities.invokeLater(() -> setLocation(Integer.parseInt(chatXPosition), 100));
         }
-
-        //TODO maybe move to cache manager
-        chatClientPropertiesHashMap = new HashMap<>();
-        objectMapper = new ObjectMapper();
-        customProperties = new CustomProperties(this);
 
         //setup functionality
         initGuiFunctionality();
@@ -96,10 +97,25 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         initWebSocketClient();
     }
 
+    private void loadCustomProperties() {
+
+        this.customProperties = new CustomProperties(this);
+
+        try {
+            CustomUserProperties client = this.customProperties.loaderThisClientProperties();
+            this.username = client.getUsername();
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
     private void loadEnvVariables(final EnvVariables envVariables) {
 
         this.envVariables = envVariables;
 
+        //override username if saved in GUI by user
         if (!envVariables.getChatUsername().isEmpty()) {
             this.username = envVariables.getChatUsername();
         }
@@ -107,7 +123,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
     private void initGuiFunctionality() {
 
-        guiFunctionality = new GuiFunctionality(this);
+        this.guiFunctionality = new GuiFunctionality(this);
     }
 
     private void initEmojiHandlerAndList() {
