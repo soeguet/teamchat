@@ -21,7 +21,6 @@ import java.util.logging.Logger;
 public class PanelRightImpl extends PanelRight implements CommentInterface {
 
     private final Logger LOGGER = Logger.getLogger(PanelRightImpl.class.getName());
-    private final MainFrameInterface mainFrame;
     private final BaseModel baseModel;
     private JPopupMenu jPopupMenu;
     private BufferedImage image;
@@ -34,7 +33,8 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
      */
     public PanelRightImpl(MainFrameInterface mainFrame, BaseModel baseModel) {
 
-        this.mainFrame = mainFrame;
+        super(mainFrame);
+
         this.baseModel = baseModel;
     }
 
@@ -43,7 +43,7 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
 
      This method handles various tasks related to message processing and UI setup.
      It should only be called when the base model is an instance of MessageModel.
-     The method uses SwingUtilities.invokeLater() to ensure that the UI related tasks are executed on the Event Dispatch Thread (EDT).
+     The method uses SwingUtilities.invokeLater() to ensure that the UI-related tasks are executed on the Event Dispatch Thread (EDT).
      */
     @Override
     public void setupTextPanelWrapper() {
@@ -65,61 +65,54 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     }
 
     /**
-     Handles the extraction of text message content from the given {@link MessageModel}.
+     Handles the extraction of quoted sections from a text message.
+     If the message contains any quotes, a QuotePanelImpl is created and added to the form_panel1.
 
-     This method checks if the message contains any quotes and adds the quoted section panel to the main frame if present.
-     The main frame is obtained from the {@code mainFrame} parameter.
-     The {@link QuotePanelImpl} is used to represent the quoted section panel.
-     The method then adds the quoted section panel to the {@code form_panel1} in the appropriate cell position.
-
-     @param messageModel the message model from which to extract the text message
+     @param messageModel the message model containing the text message
      */
     private void handleTextMessageExtraction(final MessageModel messageModel) {
 
-        QuotePanelImpl quotedSectionPanel = checkForQuotesInMessage(mainFrame, messageModel);
+        QuotePanelImpl quotedSectionPanel = checkForQuotesInMessage(messageModel);
         if (quotedSectionPanel != null) {
             form_panel1.add(quotedSectionPanel, "cell 0 0, wrap");
         }
     }
 
     /**
-     * Sets the text message on the chat panel based on the given {@link MessageModel}.
-     *
-     * This method obtains the user message from the {@code messageModel} parameter and sets it to the {@link JTextPane}.
-     * The main frame is obtained from the {@code mainFrame} parameter.
-     * The user message is added to the {@code form_panel1} in the appropriate cell position.
-     *
-     * @param messageModel the message model containing the text message
+     Sets the text message on the chat panel.
+     Creates a JTextPane with the user message from the given MessageModel and adds it to the form_panel1.
+     The text color is set to black, and a right-click option is added to the panel.
+
+     @param messageModel the message model containing the text message
      */
     private void setTextMessageOnChatPanel(final MessageModel messageModel) {
 
-        JTextPane actualTextPane = setUserMessage(mainFrame, messageModel);
+        JTextPane actualTextPane = setUserMessage(messageModel);
         actualTextPane.setForeground(Color.BLACK);
         addRightClickOptionToPanel(actualTextPane);
         form_panel1.add(actualTextPane, "cell 0 1, wrap");
     }
 
     /**
-     Sets up the essentials for handling comments based on the given {@link MessageModel}.
+     Sets up the comment essentials based on the given {@link MessageModel}.
 
-     This method sets the name field and timestamp field on the main frame based on the values obtained from the
-     {@code messageModel} parameter. The labels {@code form_nameLabel} and {@code panelTyp} are used for displaying
-     the name and timestamp respectively.
-
-     Additionally, the editor popup menu is also set up using the {@code mainFrame} and {@code messageModel}.
+     This method sets up the name field, time field, and popup menu for the comment based on the {@code messageModel} parameter.
+     The name field is set up using the {@code form_nameLabel} parameter.
+     The time field is set up using the {@code form_timeLabel} parameter.
+     The popup menu is obtained from the {@code setupEditorPopupMenu} method.
 
      @param messageModel the message model containing the comment essentials
      */
     private void setupCommentEssentials(final MessageModel messageModel) {
 
         //setup name
-        setupNameField(this.mainFrame, messageModel, form_nameLabel);
+        setupNameField(messageModel, form_nameLabel);
 
         //setup time
-        setupTimeField(this.mainFrame, messageModel, form_timeLabel);
+        setupTimeField(messageModel, form_timeLabel);
 
         //setup popup menu
-        jPopupMenu = setupEditorPopupMenu(mainFrame, messageModel);
+        jPopupMenu = setupEditorPopupMenu(messageModel);
     }
 
     /**
@@ -206,13 +199,13 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     private void setupCommentEssentials(final PictureModel pictureModel) {
 
         //setup name
-        setupNameField(this.mainFrame, pictureModel, form_nameLabel);
+        setupNameField(pictureModel, form_nameLabel);
 
         //setup time
-        setupTimeField(this.mainFrame, pictureModel, form_timeLabel);
+        setupTimeField(pictureModel, form_timeLabel);
 
         //setup popup menu
-        jPopupMenu = setupEditorPopupMenu(mainFrame, pictureModel);
+        jPopupMenu = setupEditorPopupMenu(pictureModel);
     }
 
     /**
@@ -227,7 +220,7 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     }
 
     /**
-     Called when the action label is hovered over by the mouse.
+     Called when the mouse hovers over the action label.
 
      @param e The MouseEvent that triggered the mouse enter event.
      */
@@ -237,7 +230,7 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     }
 
     /**
-     Called when the action label is clicked by the mouse.
+     Called when the mouse clicks the action label.
 
      @param e The MouseEvent that triggered the mouse click event.
      */

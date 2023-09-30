@@ -60,7 +60,7 @@ public class WrapEditorKit extends StyledEditorKit {
      * This class is a customized implementation of the LabelView class that provides
      * the ability to wrap the label text when it exceeds the available width.
      */
-    class WrapLabelView extends LabelView {
+    static class WrapLabelView extends LabelView {
 
         public WrapLabelView(Element elem) {
             super(elem);

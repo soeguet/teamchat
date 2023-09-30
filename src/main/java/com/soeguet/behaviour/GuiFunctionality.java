@@ -577,7 +577,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
         panelLeft.setBorderColor(borderColor);
         displayNicknameInsteadOfUsername(nickname, panelLeft);
         addMessagePanelToMainChatPanel(panelLeft, "leading");
-
     }
 
     /**
@@ -742,6 +741,8 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         if (nickname != null && !nickname.trim().isEmpty()) {
             comment.getNameLabel().setText(nickname);
+            comment.getNameLabel().revalidate();
+            comment.getNameLabel().repaint();
         }
     }
 

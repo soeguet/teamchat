@@ -20,7 +20,6 @@ import java.util.logging.Logger;
 public class PanelLeftImpl extends PanelLeft implements CommentInterface {
 
     private final Logger LOGGER = Logger.getLogger(PanelLeftImpl.class.getName());
-    private final MainFrameInterface mainFrame;
     private final BaseModel baseModel;
     private JPopupMenu jPopupMenu;
     private BufferedImage image;
@@ -33,7 +32,8 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
      */
     public PanelLeftImpl(MainFrameInterface mainFrame, BaseModel baseModel) {
 
-        this.mainFrame = mainFrame;
+        super(mainFrame);
+
         this.baseModel = baseModel;
     }
 
@@ -74,7 +74,7 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
      */
     private void handleTextMessageExtraction(final MessageModel messageModel) {
 
-        QuotePanelImpl quotedSectionPanel = checkForQuotesInMessage(mainFrame, messageModel);
+        QuotePanelImpl quotedSectionPanel = checkForQuotesInMessage(messageModel);
         if (quotedSectionPanel != null) {
             form_panel1.add(quotedSectionPanel, "cell 1 0, wrap");
         }
@@ -87,7 +87,7 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
      */
     private void setTextMessageOnChatPanel(final MessageModel messageModel) {
 
-        JTextPane actualTextPane = setUserMessage(mainFrame, messageModel);
+        JTextPane actualTextPane = setUserMessage(messageModel);
         addRightClickOptionToPanel(actualTextPane);
         form_panel1.add(actualTextPane, "cell 1 1, wrap");
     }
@@ -100,13 +100,13 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     private void setupCommentEssentials(final MessageModel messageModel) {
 
         //setup name
-        setupNameField(this.mainFrame, messageModel, form_nameLabel);
+        setupNameField(messageModel, form_nameLabel);
 
         //setup time
-        setupTimeField(this.mainFrame, messageModel, form_timeLabel);
+        setupTimeField( messageModel, form_timeLabel);
 
         //setup popup menu
-        jPopupMenu = setupEditorPopupMenu(mainFrame, messageModel);
+        jPopupMenu = setupEditorPopupMenu(messageModel);
     }
 
     /**
@@ -197,13 +197,13 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     private void setupCommentEssentials(final PictureModel pictureModel) {
 
         //setup name
-        setupNameField(this.mainFrame, pictureModel, form_nameLabel);
+        setupNameField(pictureModel, form_nameLabel);
 
         //setup time
-        setupTimeField(this.mainFrame, pictureModel, form_timeLabel);
+        setupTimeField( pictureModel, form_timeLabel);
 
         //setup popup menu
-        jPopupMenu = setupEditorPopupMenu(mainFrame, pictureModel);
+        jPopupMenu = setupEditorPopupMenu(pictureModel);
     }
 
     /**

@@ -6,6 +6,7 @@ package com.soeguet.gui.newcomment.right.generated;
 
 import java.awt.event.*;
 
+import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.newcomment.custom_origin.CustomOriginPanel;
 import net.miginfocom.swing.MigLayout;
 
@@ -18,8 +19,8 @@ public abstract class PanelRight extends CustomOriginPanel {
 
 	protected Color borderColor;
 
-	public PanelRight() {
-		super();
+	public PanelRight(MainFrameInterface mainFrame) {
+		super(mainFrame);
 		initComponents();
 	}
 

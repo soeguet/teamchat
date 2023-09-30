@@ -22,16 +22,29 @@ import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
+/**
+ * The CustomOriginPanel class extends JPanel and provides additional functionality for displaying custom origin panels.
+ */
 public class CustomOriginPanel extends JPanel {
 
+    private final MainFrameInterface mainFrame;
     protected Logger LOGGER = Logger.getLogger(CustomOriginPanel.class.getName());
 
     /**
-     Extracts an image from a message.
+     * Creates a new CustomOriginPanel object with the given MainFrameInterface object.
+     *
+     * @param mainFrame the MainFrameInterface object that will be used by the CustomOriginPanel
+     */
+    public CustomOriginPanel(MainFrameInterface mainFrame) {
 
-     @param baseModel The base model containing the image data.
+        this.mainFrame = mainFrame;
+    }
 
-     @return The extracted image as a BufferedImage. Returns null if an error occurs.
+    /**
+     * Extracts an image from a message.
+     *
+     * @param baseModel the base model containing the image data
+     * @return the extracted image as a BufferedImage, or null if an error occurs
      */
     protected BufferedImage extractImageFromMessage(BaseModel baseModel) {
 
@@ -122,15 +135,7 @@ public class CustomOriginPanel extends JPanel {
         }
     }
 
-    /**
-     Checks if a message contains a quote and creates a QuotePanel with the quote information.
-
-     @param mainFrame    The main frame object.
-     @param messageModel The message model object.
-
-     @return The created QuotePanel, or null if the message does not contain a quote.
-     */
-    protected QuotePanelImpl checkForQuotesInMessage(MainFrameInterface mainFrame, MessageModel messageModel) {
+    protected QuotePanelImpl checkForQuotesInMessage(MessageModel messageModel) {
 
         // EDT check done!
         String quotedText = messageModel.getQuotedMessageText();
@@ -142,78 +147,58 @@ public class CustomOriginPanel extends JPanel {
         String quotedChatParticipant = messageModel.getQuotedMessageSender();
         String quotedTime = messageModel.getQuotedMessageTime();
 
-        return new QuotePanelImpl(mainFrame, quotedText, quotedChatParticipant, quotedTime);
+        return new QuotePanelImpl(this.mainFrame, quotedText, quotedChatParticipant, quotedTime);
     }
 
-
     /**
-     Calculates the name to be displayed in the name field of the main frame based on the sender of the current message.
+     S et s the name field of the base model.
 
-     @param mainFrame  The main frame object.
-     @param baseModel  The base model object.
+     @param baseModel The base model containing the name to be set.
 
-     @return The name to be displayed in the name field, or an empty string if the sender's name is the same as the previous message's sender.
+     @return The name that was set, or an empty string if the name is already set to the previous message sender name.
      */
-    protected String setNameField(MainFrameInterface mainFrame, BaseModel baseModel) {
+    protected String setNameField(BaseModel baseModel) {
 
         // EDT check done!
         String sender = baseModel.getSender();
 
-        final String previousMessageSenderName = mainFrame.getLastMessageSenderName();
+        final String previousMessageSenderName = this.mainFrame.getLastMessageSenderName();
 
         // return no name and don't set a "new" sender
         if (previousMessageSenderName != null && previousMessageSenderName.equals(sender)) {
             return "";
         }
 
-        mainFrame.setLastMessageSenderName(sender);
+        this.mainFrame.setLastMessageSenderName(sender);
         return sender;
     }
 
-    protected boolean setNameFieldInvisible(MainFrameInterface mainFrame, BaseModel baseModel) {
-
-        // EDT check done!
-        String sender = baseModel.getSender();
-
-        final String previousMessageSenderName = mainFrame.getLastMessageSenderName();
-
-        // return no name and don't set a "new" sender
-        if (previousMessageSenderName != null && previousMessageSenderName.equals(sender)) {
-            return true;
-        }
-
-        mainFrame.setLastMessageSenderName(sender);
-        return false;
-    }
-
-
     /**
-     Sets the timestamp field based on the provided base model and main frame object.
+     Sets the timestamp field of the base model.
 
-     @param mainFrame   The main frame object.
-     @param baseModel   The base model object.
+     @param baseModel The base model containing the timestamp to be set.
 
-     @return The updated timestamp value, or an empty string if the timestamp remains the same.
+     @return The timestamp that was set, or an empty string if the timestamp is already set to the last message timestamp or if either the previous message sender name or the last message timestamp is null.
      */
-    protected String setTimestampField(MainFrameInterface mainFrame, BaseModel baseModel) {
+    protected String setTimestampField(BaseModel baseModel) {
 
         //TODO quite a mess, needs rework.. maybe?
 
         // EDT check done!
         String timeStamp = baseModel.getTime();
 
-        final String lastMessageTimestamp = mainFrame.getLastMessageTimeStamp();
-        final String previousMessageSenderName = mainFrame.getLastMessageSenderName();
+        final String lastMessageTimestamp = this.mainFrame.getLastMessageTimeStamp();
+        final String previousMessageSenderName = this.mainFrame.getLastMessageSenderName();
 
         // null value -> time
         if (previousMessageSenderName == null || lastMessageTimestamp == null) {
-            mainFrame.setLastMessageTimeStamp(timeStamp);
+            this.mainFrame.setLastMessageTimeStamp(timeStamp);
             return timeStamp;
         }
 
         // different sender -> time
         if (!previousMessageSenderName.equals(baseModel.getSender())) {
-            mainFrame.setLastMessageTimeStamp(timeStamp);
+            this.mainFrame.setLastMessageTimeStamp(timeStamp);
             return timeStamp;
         }
 
@@ -223,27 +208,48 @@ public class CustomOriginPanel extends JPanel {
         }
 
         //just in case
-        mainFrame.setLastMessageTimeStamp(timeStamp);
+        this.mainFrame.setLastMessageTimeStamp(timeStamp);
         return timeStamp;
     }
 
-    protected boolean setTimestampFieldInvisible(MainFrameInterface mainFrame, BaseModel baseModel) {
+    /**
+     Sets up the time field for a given base model and time label.
+
+     @param baseModel The base model containing the time to be set.
+     @param timeLabel The label where the time will be displayed.
+     */
+    protected void setupTimeField(BaseModel baseModel, JLabel timeLabel) {
+
+        if (setTimestampFieldInvisible(baseModel)) {
+            timeLabel.setVisible(false);
+        }
+        timeLabel.setText(baseModel.getTime());
+    }
+
+    /**
+     Sets the timestamp field of the base model to be invisible.
+
+     @param baseModel The base model containing the timestamp to be set. (NonNull)
+
+     @return true if the timestamp field was set to invisible, false otherwise.
+     */
+    protected boolean setTimestampFieldInvisible(BaseModel baseModel) {
 
         // EDT check done!
         String timeStamp = baseModel.getTime();
 
-        final String lastMessageTimestamp = mainFrame.getLastMessageTimeStamp();
-        final String previousMessageSenderName = mainFrame.getLastMessageSenderName();
+        final String lastMessageTimestamp = this.mainFrame.getLastMessageTimeStamp();
+        final String previousMessageSenderName = this.mainFrame.getLastMessageSenderName();
 
         // null value -> time
         if (previousMessageSenderName == null || lastMessageTimestamp == null) {
-            mainFrame.setLastMessageTimeStamp(timeStamp);
+            this.mainFrame.setLastMessageTimeStamp(timeStamp);
             return false;
         }
 
         // different sender -> time
         if (!previousMessageSenderName.equals(baseModel.getSender())) {
-            mainFrame.setLastMessageTimeStamp(timeStamp);
+            this.mainFrame.setLastMessageTimeStamp(timeStamp);
             return true;
         }
 
@@ -253,35 +259,55 @@ public class CustomOriginPanel extends JPanel {
         }
 
         //just in case
-        mainFrame.setLastMessageTimeStamp(timeStamp);
+        this.mainFrame.setLastMessageTimeStamp(timeStamp);
         return false;
     }
 
-    protected void setupTimeField(MainFrameInterface mainFrame, BaseModel baseModel, JLabel timeLabel) {
+    /**
+     Sets up the name field based on the given base model.
 
-        if (setTimestampFieldInvisible(mainFrame, baseModel)) {
-            timeLabel.setVisible(false);
-        }
-        timeLabel.setText(baseModel.getTime());
-    }
+     @param baseModel The base model containing the information for setting up the name field. (NonNull)
+     @param nameLabel The JLabel representing the name field to be set up. (NonNull)
+     */
+    protected void setupNameField(BaseModel baseModel, JLabel nameLabel) {
 
-    protected void setupNameField(MainFrameInterface mainFrame, BaseModel baseModel,JLabel nameLabel) {
-
-        if (setNameFieldInvisible(mainFrame, baseModel)) {
+        if (setNameFieldInvisible(baseModel)) {
             nameLabel.setVisible(false);
         }
         nameLabel.setText(baseModel.getSender());
     }
 
     /**
-     Sets the user message in a text pane, replacing emoji descriptions with actual image icons.
+     Sets the visibility of the name field based on the given base model.
 
-     @param mainFrame The main frame object.
-     @param baseModel The base model object.
+     @param baseModel The base model containing the information for setting up the name field. (NonNull)
 
-     @return The text pane containing the user message.
+     @return True if the name field should be set to invisible, false otherwise.
      */
-    protected JTextPane setUserMessage(MainFrameInterface mainFrame, BaseModel baseModel) {
+    protected boolean setNameFieldInvisible(BaseModel baseModel) {
+
+        // EDT check done!
+        String sender = baseModel.getSender();
+
+        final String previousMessageSenderName = this.mainFrame.getLastMessageSenderName();
+
+        // return no name and don't set a "new" sender
+        if (previousMessageSenderName != null && previousMessageSenderName.equals(sender)) {
+            return true;
+        }
+
+        this.mainFrame.setLastMessageSenderName(sender);
+        return false;
+    }
+
+    /**
+     Sets the user message in the text pane based on the given base model.
+
+     @param baseModel The base model containing the information for setting up the user message. (NonNull)
+
+     @return The JTextPane containing the user message.
+     */
+    protected JTextPane setUserMessage(BaseModel baseModel) {
 
         // EDT check done!
         JTextPane actualTextPane = createTextPane();
@@ -289,7 +315,7 @@ public class CustomOriginPanel extends JPanel {
 
         addRightClickOptionToPanel(actualTextPane);
 
-        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(actualTextPane, baseModel.getMessage());
+        new EmojiHandler(this.mainFrame).replaceEmojiDescriptionWithActualImageIcon(actualTextPane, baseModel.getMessage());
 
         return actualTextPane;
     }
@@ -416,21 +442,20 @@ public class CustomOriginPanel extends JPanel {
     }
 
     /**
-     Sets up the editor's popup menu with various menu items, such as "Reply", "Edit", and "Delete".
+     Creates and sets up a JPopupMenu for an editor.
 
-     @param mainFrame The MainFrameInterface object representing the main frame of the application.
-     @param baseModel The BaseModel object to which the popup menu is being set up.
+     @param baseModel The BaseModel object containing the associated data.
 
-     @return The JPopupMenu object containing the setup menu items.
+     @return The created and configured JPopupMenu.
      */
-    protected JPopupMenu setupEditorPopupMenu(final MainFrameInterface mainFrame, final BaseModel baseModel) {
+    protected JPopupMenu setupEditorPopupMenu(final BaseModel baseModel) {
 
         // EDT check done!
 
         JPopupMenu jPopupMenu = new JPopupMenu();
 
         JMenuItem reply = createAndAddMenuItem(jPopupMenu, "reply");
-        addMouseListenerToReplyMenuItem(mainFrame, baseModel, reply);
+        addMouseListenerToReplyMenuItem(baseModel, reply);
 
         jPopupMenu.addSeparator();
         createAndAddMenuItem(jPopupMenu, "edit");
@@ -442,14 +467,14 @@ public class CustomOriginPanel extends JPanel {
     }
 
     /**
-     Adds a mouse listener to the specified "Reply" menu item.
-     When the menu item is clicked, it displays a reply panel in the main frame's layered pane.
+     Adds a mouse listener to the "reply" menu item in a JPopupMenu.
+     When the menu item is clicked, it creates and displays a ReplyPanelImpl
+     with the specified baseModel and adds it to the mainTextPanel's layered pane.
 
-     @param mainFrame The MainFrameInterface object representing the main frame of the application.
-     @param baseModel The BaseModel object associated with the menu item.
-     @param reply     The JMenuItem object representing the "Reply" menu item.
+     @param baseModel The BaseModel object containing the associated data.
+     @param reply     The "reply" menu item to which the mouse listener is added.
      */
-    protected void addMouseListenerToReplyMenuItem(MainFrameInterface mainFrame, BaseModel baseModel, JMenuItem reply) {
+    protected void addMouseListenerToReplyMenuItem(BaseModel baseModel, JMenuItem reply) {
 
         reply.addMouseListener(new MouseAdapter() {
 
@@ -463,5 +488,4 @@ public class CustomOriginPanel extends JPanel {
             }
         });
     }
-
 }

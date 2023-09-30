@@ -4,6 +4,7 @@
 
 package com.soeguet.gui.newcomment.left.generated;
 
+import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.newcomment.custom_origin.CustomOriginPanel;
 import net.miginfocom.swing.MigLayout;
 
@@ -16,8 +17,8 @@ public abstract class PanelLeft extends CustomOriginPanel {
 
 	protected Color borderColor;
 
-	public PanelLeft() {
-		super();
+	public PanelLeft(MainFrameInterface mainFrame) {
+		super(mainFrame);
 		initComponents();
 	}
 
@@ -35,15 +36,16 @@ public abstract class PanelLeft extends CustomOriginPanel {
 				int rounding = 20;
 				Graphics2D g2d = (Graphics2D) grphcs;
 
+				final Color backgroundColor = Color.WHITE;
 
 				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2d.setColor(Color.WHITE);
+				g2d.setColor(backgroundColor);
 				g2d.fillRoundRect(13, 0, getWidth() - 13 - 1, getHeight() - 1, rounding, rounding);
 
 				g2d.setColor(borderColor);
 				g2d.drawRoundRect(13, 0, getWidth() - 13 - 1, getHeight() - 1, rounding, rounding);
 
-				g2d.setColor(Color.WHITE);
+				g2d.setColor(backgroundColor);
 				g2d.fillPolygon(new int[]{0, 13, 25},
 						new int[]{getHeight(), getHeight() - 13, getHeight()},
 						3);
