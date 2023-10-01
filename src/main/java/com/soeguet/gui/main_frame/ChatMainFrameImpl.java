@@ -1,6 +1,5 @@
 package com.soeguet.gui.main_frame;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.behaviour.GuiFunctionality;
 import com.soeguet.cache.factory.CacheManagerFactory;
@@ -45,11 +44,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     //TODO cache comments on pane for hot replacements as HashSet -> data structure ready, implementation missing -> add to cache
     private final LinkedHashMap<Long, CommentInterface> commentsHashMap = new LinkedHashMap<>();
     private final ObjectMapper objectMapper;
-    private CustomProperties customProperties;
-
     //TODO add to cache?
     private final List<NotificationImpl> notificationList = new ArrayList<>();
     private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
+    private CustomProperties customProperties;
     private EnvVariables envVariables;
     private GuiFunctionality guiFunctionality;
     private URI serverUri;
@@ -97,20 +95,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         initWebSocketClient();
     }
 
-    private void loadCustomProperties() {
-
-        this.customProperties = new CustomProperties(this);
-
-        try {
-            CustomUserProperties client = this.customProperties.loaderThisClientProperties();
-            this.username = client.getUsername();
-
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
     private void loadEnvVariables(final EnvVariables envVariables) {
 
         this.envVariables = envVariables;
@@ -118,6 +102,18 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         //override username if saved in GUI by user
         if (!envVariables.getChatUsername().isEmpty()) {
             this.username = envVariables.getChatUsername();
+        }
+    }
+
+    private void loadCustomProperties() {
+
+        this.customProperties = new CustomProperties(this);
+
+        CustomUserProperties client = this.customProperties.loaderThisClientProperties();
+
+        if (client != null) {
+
+            this.username = client.getUsername();
         }
     }
 
@@ -141,7 +137,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         } else {
 
-            if (System.getenv("linux.desktop.env").toLowerCase().contains("gnome")) {
+            if (System.getenv("XDG_CURRENT_DESKTOP").toLowerCase().contains("gnome")) {
 
                 JSCROLLPANE_MARGIN_BOTTOM_BORDER = 27;
 

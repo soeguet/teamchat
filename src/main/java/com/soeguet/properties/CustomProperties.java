@@ -49,7 +49,7 @@ public class CustomProperties extends Properties {
         createFolderIfNotPresent(appDir);
 
         //try loading data from file
-        if (!loadDataSuccessful()) {
+        if (!new File(configFilePath).exists()) {
 
             //create file if not present
             createPropertiesFile(configFilePath);
@@ -103,9 +103,9 @@ public class CustomProperties extends Properties {
 
         } catch (IOException e) {
 
-            logger.log(java.util.logging.Level.SEVERE, "Could not load config file, createing..", e);
+            logger.log(java.util.logging.Level.SEVERE, "Could not load config file, creating..", e);
+            return false;
         }
-        return false;
     }
 
     private void createPropertiesFile(String configFilePath) {
@@ -121,9 +121,22 @@ public class CustomProperties extends Properties {
         }
     }
 
-    public CustomUserProperties loaderThisClientProperties() throws JsonProcessingException {
+    public CustomUserProperties loaderThisClientProperties() {
 
-        return this.mainFrame.getObjectMapper().readValue(getProperty("own"), CustomUserProperties.class);
+        final String clientProperties = getProperty("own");
+
+        if (clientProperties == null || clientProperties.isEmpty()) {
+
+            return null;
+        }
+
+        try {
+            return this.mainFrame.getObjectMapper().readValue(clientProperties, CustomUserProperties.class);
+        } catch (JsonProcessingException e) {
+            logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not load own properties!", e);
+        }
+
+        return null;
     }
 
     public void save() {
