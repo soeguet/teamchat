@@ -1,6 +1,7 @@
 package com.soeguet.behaviour;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.cache.factory.CacheManagerFactory;
 import com.soeguet.cache.implementations.ActiveNotificationQueue;
@@ -202,6 +203,10 @@ public class GuiFunctionality implements SocketToGuiInterface {
     private void sendMessageToSocket(String messageString) {
 
         this.mainFrame.getWebsocketClient().send(messageString);
+
+        final String typingStatus = "{\"type\":\"send\"}";
+
+        this.mainFrame.getWebsocketClient().send(typingStatus.getBytes());
     }
 
     private String convertToJSON(BaseModel messageModel) {
@@ -238,6 +243,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
     @Override
     public void onMessage(String message) {
 
+
         MessageQueue messageQueue = (MessageQueue) cacheManager.getCache("messageQueue");
 
         switch (message) {
@@ -256,6 +262,62 @@ public class GuiFunctionality implements SocketToGuiInterface {
                 spamBuffer();
             }
         }
+    }
+
+    @Override
+    public void onMessage(byte[] message) {
+
+        //TODO clean this up
+
+        final JLabel typingLabel = mainFrame.getTypingLabel();
+
+        final JsonNode parsedJson;
+
+        try {
+
+            parsedJson = mainFrame.getObjectMapper().readTree(message);
+
+        } catch (IOException e) {
+
+            throw new RuntimeException(e);
+        }
+
+        final String eventType = parsedJson.get("type").asText();
+
+        switch (eventType) {
+
+            case "typing" -> {
+
+                final String username = parsedJson.get("username").asText();
+
+                String textOnTypingLabel = typingLabel.getText();
+
+                if (textOnTypingLabel.contains(username)) {
+                    return;
+                }
+
+                StringBuilder stringBuilder = new StringBuilder();
+
+                if (!textOnTypingLabel.isBlank()) {
+
+                    textOnTypingLabel = textOnTypingLabel.replace(" is typing...", "");
+                    stringBuilder.append(textOnTypingLabel);
+                    stringBuilder.append(", ");
+
+                } else {
+
+                    stringBuilder.append("  ");
+                }
+
+                stringBuilder.append(username);
+                stringBuilder.append(" is typing...");
+
+                SwingUtilities.invokeLater(() -> typingLabel.setText(stringBuilder.toString()));
+            }
+
+            case "send" -> typingLabel.setText(" ");
+        }
+
     }
 
     private void spamBuffer() {

@@ -47,8 +47,7 @@ public class NotificationImpl extends Notification {
 
     @Override
     protected void notificationAllPanelMouseClicked(final MouseEvent e) {
-
-        System.out.println("Clicked on notification all panel");
+        //TODO is this needed?
     }
 
     @Override

@@ -182,4 +182,11 @@ public interface MainFrameInterface {
      */
     void resetConnectionMenuItemMousePressed(MouseEvent e);
 
+    /**
+     * Returns the JLabel used for displaying typing animation.
+     *
+     * @return the JLabel for typing animation
+     */
+    JLabel getTypingLabel();
+
 }

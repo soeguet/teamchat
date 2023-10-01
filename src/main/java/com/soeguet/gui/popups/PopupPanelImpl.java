@@ -23,8 +23,7 @@ public class PopupPanelImpl extends PopupPanel {
 
     @Override
     protected void messageTextFieldMouseClicked(final MouseEvent e) {
-
-        System.out.println("PopupPanelImpl.messageTextFieldMouseClicked");
+        //TODO is this needed?
         removeThisPopup();
     }
 

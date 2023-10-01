@@ -359,7 +359,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         try {
 
-            serverUri = new URI("ws://" + serverIp + ":" + serverPort);
+            serverUri = new URI("ws://" + envVariables.getChatIp() + ":" + envVariables.getChatPort());
 
         } catch (URISyntaxException e) {
 
@@ -473,8 +473,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      */
     @Override
     protected void connectionDetailsButtonMousePressed(final MouseEvent e) {
-
-        System.out.println("connectionDetailsButtonMouseClicked");
+        //TODO is this needed?
         this.serverInformationOptionPane();
     }
 
@@ -621,6 +620,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         if (e.getKeyCode() != KeyEvent.VK_ENTER) {
 
             //TODO typing.. status!
+            String typingStatus = "{\"type\":\"typing\",\"username\":\"" + this.getUsername() + "\"}";
+            websocketClient.send(typingStatus.getBytes());
+
             return;
         }
 
