@@ -21,20 +21,17 @@ import com.soeguet.util.EmojiPopUpMenuHandler;
 import com.soeguet.util.NotificationStatus;
 import net.miginfocom.swing.MigLayout;
 
+import javax.swing.Timer;
 import javax.swing.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
- Represents the main frame for the chat application.
- Inherits from ChatPanel and implements MainFrameInterface.
+ Main GUI method
  */
 public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
@@ -66,6 +63,11 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     private boolean blockExternalNotifications = !form_externalNotificationsMenuItem.isSelected();
     private Timer blockTimer;
 
+    /**
+     Constructor for ChatMainFrameImpl. It initializes the main chat frame and sets up various components and functionalities.
+
+     @param envVariables The environment variables to be used in the chat frame.
+     */
     public ChatMainFrameImpl(final EnvVariables envVariables) {
 
         //TODO maybe move to cache manager
@@ -76,10 +78,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         loadCustomProperties();
 
         //TODO remove for merge in master
-        final String chatXPosition = System.getenv("chat.x.position");
-        if (chatXPosition != null) {
-            SwingUtilities.invokeLater(() -> setLocation(Integer.parseInt(chatXPosition), 100));
-        }
+        repositionChatFrameForTestingPurposes();
 
         //setup functionality
         initGuiFunctionality();
@@ -96,6 +95,11 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         initWebSocketClient();
     }
 
+    /**
+     Loads environment variables and assigns them to the appropriate fields.
+
+     @param envVariables The object containing the environment variables.
+     */
     private void loadEnvVariables(final EnvVariables envVariables) {
 
         this.envVariables = envVariables;
@@ -106,6 +110,15 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         }
     }
 
+    /**
+     This method is used to load custom properties for a specific client.
+     It initializes the customProperties object with a new instance of CustomProperties,
+     passing the current instance as a parameter.
+     It then calls the loaderThisClientProperties() method of the customProperties object
+     to load the properties for the current client.
+     If the client properties are successfully loaded, the method sets the username property
+     to the username obtained from the CustomUserProperties object.
+     */
     private void loadCustomProperties() {
 
         this.customProperties = new CustomProperties(this);
@@ -118,17 +131,63 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         }
     }
 
+    /**
+     This method is used to reposition the chat frame for testing purposes.
+     It retrieves the value of the 'chat.x.position' environment variable using System.getenv(),
+     which represents the desired x position of the chat frame.
+     If the environment variable is not null, it repositions the chat frame on the screen
+     by setting the location using the retrieved x position and a fixed y position of 100.
+     This operation is performed asynchronously using SwingUtilities.invokeLater()
+     to ensure compatibility with Swing's event dispatching thread.
+     */
+    private void repositionChatFrameForTestingPurposes() {
+
+        final String chatXPosition = System.getenv("chat.x.position");
+
+        if (chatXPosition != null) {
+
+            SwingUtilities.invokeLater(() -> {
+
+                final int chatFrameXPosition = Integer.parseInt(chatXPosition);
+                setLocation(chatFrameXPosition, 100);
+            });
+        }
+    }
+
+    /**
+     Initializes the GUI functionality.
+
+     This method creates a new instance of the GuiFunctionality class, passing
+     a reference to the current object as a constructor argument. The GuiFunctionality
+     object is then assigned to the guiFunctionality instance variable of the current object.
+     */
     private void initGuiFunctionality() {
 
         this.guiFunctionality = new GuiFunctionality(this);
     }
 
+    /**
+     Initializes the EmojiHandler and EmojiList.
+
+     This method creates a new instance of the EmojiHandler class, passing
+     a reference to the current object as a constructor argument. The EmojiHandler
+     object is then assigned to the emojiHandler instance variable of the current object.
+
+     This method also creates a new instance of the EmojiInitializer class and uses
+     it to create a list of emojis. The created emoji list is then assigned to the
+     emojiList instance variable of the current object.
+     */
     private void initEmojiHandlerAndList() {
 
         emojiHandler = new EmojiHandler(this);
         emojiList = new EmojiInitializer().createEmojiList();
     }
 
+    /**
+     Sets the scroll pane margins.
+
+     This method determines the appropriate margin values for the scroll pane based on the operating system and desktop environment.
+     */
     private void setScrollPaneMargins() {
 
         if (System.getProperty("os.name").toLowerCase().contains("windows")) {
@@ -155,7 +214,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     /**
      Initializes the WebSocket client.
 
-     It retrieves the server IP and port from the environment variables and creates a URI for the WebSocket server.
+     This method retrieves the server IP and port from the environment variables and creates a URI for the WebSocket server.
      If the server IP or port is missing or empty, it opens a server information option pane.
      Otherwise, it initializes the server URI and connects to the WebSocket server.
 
@@ -292,15 +351,18 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      */
     private void processValidatedServerInformation(final JTextField serverIpTextField, final JTextField serverPortTextField) {
 
-        final String serverIp = serverIpTextField.getText();
-        final String serverPort = serverPortTextField.getText();
+        Optional<String> serverIp = Optional.of(serverIpTextField.getText());
+        Optional<String> serverPort = Optional.of(serverPortTextField.getText());
 
-        envVariables.setChatIp(serverIp);
-        envVariables.setChatPort(serverPort);
+        envVariables.setChatIp(serverIp.orElse("127.0.0.1"));
+        envVariables.setChatPort(serverPort.orElse("8100"));
 
         try {
+
             serverUri = new URI("ws://" + serverIp + ":" + serverPort);
+
         } catch (URISyntaxException e) {
+
             throw new RuntimeException(e);
         }
     }
@@ -314,7 +376,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         websocketClient = new CustomWebsocketClient(serverUri, this);
         websocketClient.connect();
-
     }
 
     /**
@@ -338,7 +399,11 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void thisComponentResized(ComponentEvent e) {
 
-        this.form_mainTextBackgroundScrollPane.setBounds(1, 1, e.getComponent().getWidth() - JSCROLLPANE_MARGIN_RIGHT_BORDER, e.getComponent().getHeight() - form_interactionAreaPanel.getHeight() - JSCROLLPANE_MARGIN_BOTTOM_BORDER);
+        final int rightBorderMargin = e.getComponent().getWidth() - JSCROLLPANE_MARGIN_RIGHT_BORDER;
+        final int bottomBorderMargin = e.getComponent().getHeight() - form_interactionAreaPanel.getHeight() - JSCROLLPANE_MARGIN_BOTTOM_BORDER;
+
+        this.form_mainTextBackgroundScrollPane.setBounds(1, 1, rightBorderMargin, bottomBorderMargin);
+
         repaintMainFrame();
     }
 
@@ -374,6 +439,11 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         new PropertiesPanelImpl(this);
     }
 
+    /**
+     Called when the state of internal notifications menu item is changed.
+
+     @param e The ItemEvent object representing the event.
+     */
     @Override
     protected void internalNotificationsMenuItemItemStateChanged(final ItemEvent e) {
 
@@ -396,6 +466,11 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         }
     }
 
+    /**
+     Called when the connection details button is pressed.
+
+     @param e The MouseEvent object representing the event.
+     */
     @Override
     protected void connectionDetailsButtonMousePressed(final MouseEvent e) {
 
@@ -411,37 +486,73 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     public void resetConnectionMenuItemMousePressed(MouseEvent e) {
 
-        //TODO clean this up
-
         //clear the main text panel first
+        removeAllMessagesOnChatPanel();
+
+        //close the websocket client
+        closeActiveConnectionToSocket();
+
+        //set null to be sure + preparation for reconnect
+        prepareReconnection();
+
+        // invalidate all caches
+        cacheManager.invalidateCache();
+
+        //reconnect to socket
+        this.connectToWebsocket();
+        this.logger.info("Reconnecting websocket client");
+    }
+
+    /**
+     Removes all messages from the chat panel.
+
+     The method uses `SwingUtilities.invokeLater()` to ensure that the removal of messages
+     is performed on the event dispatch thread, as it involves modifications to the GUI.
+
+     Within the method, the `form_mainTextPanel.removeAll()` is called to remove all
+     components from the chat panel. Additionally, the `repaintMainFrame()` method is
+     called to repaint the main frame, ensuring that the changes are immediately visible
+     to the user.
+     */
+    private void removeAllMessagesOnChatPanel() {
+
         SwingUtilities.invokeLater(() -> {
 
             this.form_mainTextPanel.removeAll();
             repaintMainFrame();
         });
+    }
 
-        //close the websocket client
+    /**
+     Closes the active connection to the socket.
+
+     If the websocket client is open, the method closes the websocket client and logs an info message.
+     */
+    private void closeActiveConnectionToSocket() {
+
         if (this.websocketClient.isOpen()) {
 
             this.logger.info("Closing websocket client");
             this.websocketClient.close();
         }
+    }
 
-        //set null to be sure
+    /**
+     Prepares the application for reconnection.
+
+     Resets the websocket client to null, sets the last message sender name and timestamp to null,
+     and sets the startUp flag to true to disable notifications during initial message flood.
+     */
+    private void prepareReconnection() {
+
         this.websocketClient = null;
 
+        //new evaluation of last sender and time
         this.setLastMessageSenderName(null);
         this.setLastMessageTimeStamp(null);
+
+        //no notifications during initial message flood
         this.startUp = true;
-        this.logger.info("Reconnecting websocket client");
-
-        //TODO fix this
-        //this.username = this.customProperties.getProperty("username");
-
-        // invalidate all caches
-        cacheManager.invalidateCache();
-
-        this.connectToWebsocket();
     }
 
     /**
@@ -455,8 +566,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         SwingUtilities.invokeLater(() -> {
 
+            //make the window close on exit just to be sure
             this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             this.dispose();
+
             System.exit(0);
         });
     }
@@ -504,8 +617,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void textEditorPaneKeyPressed(KeyEvent e) {
 
+        //typing.. status
         if (e.getKeyCode() != KeyEvent.VK_ENTER) {
 
+            //TODO typing.. status!
             return;
         }
 
