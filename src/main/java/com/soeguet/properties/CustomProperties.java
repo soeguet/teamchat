@@ -125,14 +125,22 @@ public class CustomProperties extends Properties {
 
         final String clientProperties = getProperty("own");
 
+        //replace "own" preset username
+        if (this.mainFrame.getUsername() != null) {
+            return new CustomUserProperties(this.mainFrame.getUsername());
+        }
+
         if (clientProperties == null || clientProperties.isEmpty()) {
 
             return null;
         }
 
         try {
+
             return this.mainFrame.getObjectMapper().readValue(clientProperties, CustomUserProperties.class);
+
         } catch (JsonProcessingException e) {
+
             logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not load own properties!", e);
         }
 

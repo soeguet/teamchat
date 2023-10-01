@@ -98,7 +98,7 @@ public class ProgramInit {
 
      @return the username entered by the user
      */
-    private static String askForUsername() {
+    private String askForUsername() {
 
         String username = JOptionPane.showInputDialog(null, "Please enter your username", "");
 

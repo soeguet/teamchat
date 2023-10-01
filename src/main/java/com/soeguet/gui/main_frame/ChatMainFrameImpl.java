@@ -125,7 +125,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         CustomUserProperties client = this.customProperties.loaderThisClientProperties();
 
-        if (client != null) {
+        //only override username if nothing is set on start up
+        if (client != null && username == null) {
 
             this.username = client.getUsername();
         }
