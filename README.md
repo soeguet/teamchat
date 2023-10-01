@@ -4,6 +4,9 @@
 <img src="pictures/img.png" alt="img" height="600"/>
 </div>
 
+
+NOTE: this is the reworked version. 
+
 TeamChat is a chat client built with Java for local network usage. This project is a hobby initiative, intended to facilitate communication within a local network via WebSocket.
 
 ## Requirements
@@ -24,13 +27,15 @@ Please note that TeamChat is currently only intended for use within a local netw
 
 - Basic text chat.
 - Emoji support.
-- Emoji reactions to messages.
 - Quoting.
-- Ability to edit and delete your own messages.
-- Sending static images, either through a file-picker or direct clipboard recognition.
-- Customizable settings, including font size and theme (white, black, IntelliJ, Darcula).
-- Desktop notifications.
+- Sending images, either through a file-picker or direct clipboard recognition.
+- Setting nicknames and border colors.
+- Desktop notifications. Either external (OS dependent) or internal (Java Swing JDialog).
 - Conversation history, with the last 100 messages displayed on startup.
+
+### Planned Features
+- Emoji reactions to messages.
+- Ability to edit and delete your own messages.
 
 ## Usage
 
@@ -44,7 +49,9 @@ git clone https://github.com/soeguet/teamchat
 ``` 
 in the terminal.
 
-3. Run the application by typing 
+3a. Run the [Websocket Backend](https://github.com/soeguet/teamsocket)
+
+3b. Run the application by typing 
 ```bash
 java -jar target/teamchat-1.0-SNAPSHOT.jar
 ```
