@@ -89,6 +89,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         setScrollPaneMargins();
 
         //setup GUI
+        setTitle("teamchat");
         setVisible(true);
 
         //setup websocket client

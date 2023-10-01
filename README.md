@@ -1,5 +1,9 @@
 # TeamChat
 
+<div style="text-align: center;">
+<img src="pictures/img.png" alt="img" height="600"/>
+</div>
+
 TeamChat is a chat client built with Java for local network usage. This project is a hobby initiative, intended to facilitate communication within a local network via WebSocket.
 
 ## Requirements
@@ -56,14 +60,3 @@ Environment variables the chat client uses are listed below: (else it will promp
 TeamChat is licensed under the [MIT License](https://opensource.org/license/mit/).
 
 ### Screenshots
-![img.png](pictures/img.png)
-
-![img_1.png](pictures/img_1.png)
-
-![img_2.png](pictures/img_2.png)
-
-![img_3.png](pictures/img_3.png)
-
-![img_4.png](pictures/img_4.png)
-
-![img_5.png](pictures/img_5.png)
