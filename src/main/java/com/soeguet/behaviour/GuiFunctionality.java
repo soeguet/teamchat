@@ -46,7 +46,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
     private final ObjectMapper objectMapper = new ObjectMapper();
     Logger LOGGER = Logger.getLogger(GuiFunctionality.class.getName());
     CacheManager cacheManager = CacheManagerFactory.getCacheManager();
-    private Timer messageToPanelTimer;
 
     /**
      Constructs a new GuiFunctionality object with the given main frame.
@@ -117,7 +116,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
      */
     private void overrideTransferHandlerOfTextPane() {
 
-        //preserve the original transfer handler, otherwise clucky behavior
+        //preserve the original transfer handler, otherwise clunky behavior
         TransferHandler originalHandler = this.mainFrame.getTextEditorPane().getTransferHandler();
 
         this.mainFrame.getTextEditorPane().setTransferHandler(new TransferHandler() {
@@ -242,7 +241,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
      */
     @Override
     public void onMessage(String message) {
-
 
         MessageQueue messageQueue = (MessageQueue) cacheManager.getCache("messageQueue");
 
@@ -480,18 +478,14 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
             case MessageModel text -> {
 
-                Timer timer = new Timer(500, e -> {
-                    new NotificationImpl(this.mainFrame, text).setNotificationText();
-                });
+                Timer timer = new Timer(500, e -> new NotificationImpl(this.mainFrame, text).setNotificationText());
                 timer.setRepeats(false);
                 timer.start();
             }
 
             case PictureModel picture -> {
 
-                Timer timer = new Timer(500, e -> {
-                    new NotificationImpl(this.mainFrame, picture).setNotificationPicture();
-                });
+                Timer timer = new Timer(500, e -> new NotificationImpl(this.mainFrame, picture).setNotificationPicture());
                 timer.setRepeats(false);
                 timer.start();
             }
@@ -548,7 +542,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
      */
     private void processAndDisplayMessage(final BaseModel messageModel, final String username, final String nickname) {
 
-        //if the message is from this client -> message on right side
+        //if the message is from this client -> message on the right side
         final boolean messageFromThisClient = messageModel.getSender().equals(username);
 
         switch (messageModel) {

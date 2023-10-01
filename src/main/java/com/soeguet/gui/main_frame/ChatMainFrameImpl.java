@@ -142,7 +142,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      */
     private void repositionChatFrameForTestingPurposes() {
 
-        final String chatXPosition = System.getenv("chat.x.position");
+        final String chatXPosition = System.getenv("CHAT_X_POSITION");
 
         if (chatXPosition != null) {
 
@@ -556,7 +556,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
     /**
      Handles the event when the mouse presses the exit menu item. Sets the default close operation
-     for the current JFrame to EXIT_ON_CLOSE and disposes the current JFrame.
+     for the current JFrame to EXIT_ON_CLOSE and disposes of the current JFrame.
 
      @param e the MouseEvent object that triggered this event
      */
@@ -636,42 +636,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         }
 
         handleNonShiftEnterKeyPress();
-    }
-
-    /**
-     Appends a new line to the text editor pane.
-
-     <p>Retrieves the current text in the text editor pane and appends a new line character at the
-     end of it.
-     */
-    private void appendNewLineToTextEditorPane() {
-
-        String currentText = form_textEditorPane.getText();
-        form_textEditorPane.setText(currentText + "\n");
-    }
-
-    /**
-     Handles a key press event when the enter key is pressed without pressing the shift key.
-
-     <p>Retrieves the content of the text editor pane, trims any leading or trailing space, and
-     checks if it is empty. If the content is empty, it clears the text editor pane. Otherwise, it
-     calls the `clearTextPaneAndSendMessageToSocket` method to clear the text pane and send the
-     current content to a socket.
-     */
-    private void handleNonShiftEnterKeyPress() {
-
-        String textPaneContent = form_textEditorPane.getText().trim();
-
-        if (textPaneContent.isEmpty()) {
-
-            form_textEditorPane.setText("");
-
-        } else {
-
-            guiFunctionality.clearTextPaneAndSendMessageToSocket();
-
-        }
-
     }
 
     /**
@@ -783,68 +747,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
     }
 
-    public boolean isStartUp() {
-
-        return startUp;
-    }
-
-    /**
-     Retrieves the WebSocket client.
-
-     @return The WebSocket client.
-     */
-    @Override
-    public CustomWebsocketClient getWebsocketClient() {
-
-        return websocketClient;
-    }
-
-    /**
-     Gets the ObjectMapper instance used for converting JSON to Java objects and vice versa.
-
-     @return the ObjectMapper instance
-     */
-    @Override
-    public ObjectMapper getObjectMapper() {
-
-        return objectMapper;
-    }
-
-    /**
-     Retrieves the GuiFunctionality.
-
-     @return the GuiFunctionality object.
-     */
-    @Override
-    public GuiFunctionality getGuiFunctionality() {
-
-        return guiFunctionality;
-    }
-
-    @Override
-    public String getLastMessageSenderName() {
-
-        return lastMessageSenderName;
-    }
-
-    @Override
-    public void setLastMessageSenderName(final String lastMessageSenderName) {
-
-        this.lastMessageSenderName = lastMessageSenderName;
-    }
-
-    @Override
-    public String getLastMessageTimeStamp() {
-
-        return lastMessageTimeStamp;
-    }
-
-    @Override
-    public void setLastMessageTimeStamp(final String lastMessageTimeStamp) {
-
-        this.lastMessageTimeStamp = lastMessageTimeStamp;
-    }
-
     /**
      Retrieves the username.
 
@@ -854,6 +756,43 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     public String getUsername() {
 
         return username;
+    }
+
+    /**
+     Appends a new line to the text editor pane.
+
+     <p>Retrieves the current text in the text editor pane and appends a new line character at the
+     end of it.
+     */
+    private void appendNewLineToTextEditorPane() {
+
+        String currentText = form_textEditorPane.getText();
+        form_textEditorPane.setText(currentText + "\n");
+    }
+
+    /**
+     Handles a key press event when the enter key is pressed without pressing the shift key.
+
+     <p>Retrieves the content of the text editor pane, trims any leading or trailing space, and
+     checks if it is empty.
+     If the content is empty, it clears the text editor pane.
+     Otherwise, it calls the `clearTextPaneAndSendMessageToSocket` method to clear the text pane and send the
+     current content to a socket.
+     */
+    private void handleNonShiftEnterKeyPress() {
+
+        String textPaneContent = form_textEditorPane.getText().trim();
+
+        if (textPaneContent.isEmpty()) {
+
+            form_textEditorPane.setText("");
+
+        } else {
+
+            guiFunctionality.clearTextPaneAndSendMessageToSocket();
+
+        }
+
     }
 
     /**
@@ -947,5 +886,62 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     public LinkedHashMap<Long, CommentInterface> getCommentsHashMap() {
 
         return commentsHashMap;
+    }
+
+    /**
+     Retrieves the WebSocket client.
+
+     @return The WebSocket client.
+     */
+    @Override
+    public CustomWebsocketClient getWebsocketClient() {
+
+        return websocketClient;
+    }
+
+    /**
+     Gets the ObjectMapper instance used for converting JSON to Java objects and vice versa.
+
+     @return the ObjectMapper instance
+     */
+    @Override
+    public ObjectMapper getObjectMapper() {
+
+        return objectMapper;
+    }
+
+    /**
+     Retrieves the GuiFunctionality.
+
+     @return the GuiFunctionality object.
+     */
+    @Override
+    public GuiFunctionality getGuiFunctionality() {
+
+        return guiFunctionality;
+    }
+
+    @Override
+    public String getLastMessageSenderName() {
+
+        return lastMessageSenderName;
+    }
+
+    @Override
+    public void setLastMessageSenderName(final String lastMessageSenderName) {
+
+        this.lastMessageSenderName = lastMessageSenderName;
+    }
+
+    @Override
+    public String getLastMessageTimeStamp() {
+
+        return lastMessageTimeStamp;
+    }
+
+    @Override
+    public void setLastMessageTimeStamp(final String lastMessageTimeStamp) {
+
+        this.lastMessageTimeStamp = lastMessageTimeStamp;
     }
 }

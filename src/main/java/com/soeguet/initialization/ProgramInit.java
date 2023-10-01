@@ -39,8 +39,8 @@ public class ProgramInit {
         promptForUserNameIfNeeded(username);
 
         //retrieve websocket relevant data
-        String chatIp = getEnvData("chat.ip");
-        String chatPort = getEnvData("chat.port");
+        String chatIp = getEnvData("CHAT_IP");
+        String chatPort = getEnvData("CHAT_PORT");
 
         return new EnvVariables(username, chatIp, chatPort);
     }
@@ -52,11 +52,11 @@ public class ProgramInit {
      */
     private String retrieveUsername() {
 
-        final String chatUsername = getEnvData("chat.username");
+        final String chatUsername = getEnvData("CHAT_USERNAME");
 
         if (chatUsername != null && !chatUsername.isEmpty()) {
 
-            return getEnvData("chat.username");
+            return getEnvData("CHAT_USERNAME");
 
         } else {
 

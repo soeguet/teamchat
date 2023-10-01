@@ -18,7 +18,7 @@ public class CustomWebsocketClient extends WebSocketClient {
     private final Logger logger = Logger.getLogger(CustomWebsocketClient.class.getName());
     private final MainFrameInterface mainFrame;
 
-    private SocketToGuiInterface socketToGuiInterface;
+    private final SocketToGuiInterface socketToGuiInterface;
 
     public CustomWebsocketClient(URI serverUri, MainFrameInterface mainFrame) {
 
