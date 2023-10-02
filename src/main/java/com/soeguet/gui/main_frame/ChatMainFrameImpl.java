@@ -23,10 +23,12 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.Timer;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -697,6 +699,12 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         guiFunctionality.clearTextPaneAndSendMessageToSocket();
     }
 
+    /**
+     Handles the item state change event of the external notifications menu item.
+     Updates the state of the external notifications and displays a popup message accordingly.
+
+     @param e the ItemEvent object that triggered this event
+     */
     @Override
     protected void externalNotificationsMenuItemItemStateChanged(final ItemEvent e) {
 
@@ -714,6 +722,22 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         }
     }
 
+    /**
+     Handles the event when the window is closed.
+
+     @param e the WindowEvent object that triggered this event
+     */
+    @Override
+    protected void thisWindowClosing(final WindowEvent e) {
+
+        setState(Frame.ICONIFIED);
+    }
+
+    /**
+     Handles the event when the state of the allNotificationsMenuItem changes.
+
+     @param e the ItemEvent object that triggered this event
+     */
     @Override
     protected void allNotificationsMenuItemItemStateChanged(final ItemEvent e) {
 
@@ -838,30 +862,55 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         return customProperties;
     }
 
+    /**
+     Returns the Y position of the notification.
+
+     @return the Y position of the notification.
+     */
     @Override
     public synchronized int getNotificationPositionY() {
 
         return this.notificationPositionY;
     }
 
+    /**
+     * Sets the Y position of the notification.
+     *
+     * @param notificationPositionY the Y position of the notification.
+     */
     @Override
     public synchronized void setNotificationPositionY(int notificationPositionY) {
 
         this.notificationPositionY = notificationPositionY;
     }
 
+    /**
+     * Gets the list of notifications.
+     *
+     * @return the list of notifications.
+     */
     @Override
     public List<NotificationImpl> getNotificationList() {
 
         return notificationList;
     }
 
+    /**
+     * Sets the startUp flag to indicate whether the system is starting up.
+     *
+     * @param startUp the startUp flag
+     */
     @Override
     public void setStartUp(final boolean startUp) {
 
         this.startUp = startUp;
     }
 
+    /**
+     * Retrieves the status of notifications based on the current settings.
+     *
+     * @return the notification status
+     */
     public NotificationStatus getNotificationStatus() {
 
         if (blockAllNotifications || startUp) {
@@ -884,6 +933,11 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         return NotificationStatus.ALL_DENIED;
     }
 
+    /**
+     * Retrieves the comments hash map.
+     *
+     * @return the comments hash map
+     */
     public LinkedHashMap<Long, CommentInterface> getCommentsHashMap() {
 
         return commentsHashMap;
@@ -922,24 +976,44 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         return guiFunctionality;
     }
 
+    /**
+     * Retrieves the name of the sender of the last message.
+     *
+     * @return the name of the sender of the last message.
+     */
     @Override
     public String getLastMessageSenderName() {
 
         return lastMessageSenderName;
     }
 
+    /**
+     * Sets the name of the sender of the last message.
+     *
+     * @param lastMessageSenderName the name of the sender of the last message.
+     */
     @Override
     public void setLastMessageSenderName(final String lastMessageSenderName) {
 
         this.lastMessageSenderName = lastMessageSenderName;
     }
 
+    /**
+     * Retrieves the timestamp of the last message.
+     *
+     * @return the timestamp of the last message.
+     */
     @Override
     public String getLastMessageTimeStamp() {
 
         return lastMessageTimeStamp;
     }
 
+    /**
+     * Sets the timestamp of the last message.
+     *
+     * @param lastMessageTimeStamp the timestamp of the last message to be set.
+     */
     @Override
     public void setLastMessageTimeStamp(final String lastMessageTimeStamp) {
 

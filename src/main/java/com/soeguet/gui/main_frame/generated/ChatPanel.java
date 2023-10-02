@@ -192,6 +192,8 @@ public abstract class ChatPanel extends JFrame {
 
 	protected abstract void externalNotificationsMenuItemItemStateChanged(ItemEvent e);
 
+	protected abstract void thisWindowClosing(WindowEvent e);
+
 	protected abstract void allNotificationsMenuItemItemStateChanged(ItemEvent e);
 
 	private void initComponents() {
@@ -236,6 +238,7 @@ public abstract class ChatPanel extends JFrame {
 		setFocusable(false);
 		setMinimumSize(new Dimension(700, 700));
 		setPreferredSize(new Dimension(700, 700));
+		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		addPropertyChangeListener("FrameChange", e -> thisPropertyChange(e));
 		addComponentListener(new ComponentAdapter() {
 			@Override
@@ -247,6 +250,12 @@ public abstract class ChatPanel extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				thisMouseClicked(e);
+			}
+		});
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				thisWindowClosing(e);
 			}
 		});
 		Container contentPane = getContentPane();

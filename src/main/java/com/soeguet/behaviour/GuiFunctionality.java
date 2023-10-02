@@ -56,7 +56,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
     public GuiFunctionality(MainFrameInterface mainFrame) {
 
         this.mainFrame = mainFrame;
-        ((JFrame) mainFrame).setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         fixScrollPaneScrollSpeed();
         addDocumentListenerToTextPane();
         overrideTransferHandlerOfTextPane();
