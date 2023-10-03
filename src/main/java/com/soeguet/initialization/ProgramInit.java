@@ -82,7 +82,27 @@ public class ProgramInit {
      */
     public void initializeGUI(EnvVariables envVariables) {
 
-        SwingUtilities.invokeLater(() -> new ChatMainFrameImpl(envVariables));
+        SwingUtilities.invokeLater(() -> {
+
+            ChatMainFrameImpl mainFrame = new ChatMainFrameImpl(envVariables);
+
+            mainFrame.loadUsernameFromEnvVariables();
+            mainFrame.loadCustomProperties();
+
+            //TODO remove for merge in master
+            mainFrame.repositionChatFrameForTestingPurposes();
+
+            //setup functionality
+            mainFrame.initGuiFunctionality();
+            mainFrame.initEmojiHandlerAndList();
+
+            //operating system specific settings
+            mainFrame.setScrollPaneMargins();
+
+            //setup GUI
+            mainFrame.setTitle("teamchat");
+            mainFrame.setVisible(true);
+        });
     }
 
     /**

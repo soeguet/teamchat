@@ -14,22 +14,21 @@ import com.soeguet.gui.properties.PropertiesPanelImpl;
 import com.soeguet.model.EnvVariables;
 import com.soeguet.properties.CustomProperties;
 import com.soeguet.properties.CustomUserProperties;
+import com.soeguet.socket_client.ClientController;
 import com.soeguet.socket_client.CustomWebsocketClient;
 import com.soeguet.util.EmojiHandler;
 import com.soeguet.util.EmojiInitializer;
 import com.soeguet.util.EmojiPopUpMenuHandler;
 import com.soeguet.util.NotificationStatus;
-import net.miginfocom.swing.MigLayout;
 
-import javax.swing.Timer;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -38,23 +37,24 @@ import java.util.logging.Logger;
 public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
     private final Logger logger = Logger.getLogger(ChatMainFrameImpl.class.getName());
-    private final HashMap<String, CustomUserProperties> chatClientPropertiesHashMap;
+
+    //TODO maybe move to cache manager
+    private final HashMap<String, CustomUserProperties> chatClientPropertiesHashMap = new HashMap<>();
 
     //TODO cache comments on pane for hot replacements as HashSet -> data structure ready, implementation missing -> add to cache
     private final LinkedHashMap<Long, CommentInterface> commentsHashMap = new LinkedHashMap<>();
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
     //TODO add to cache?
     private final List<NotificationImpl> notificationList = new ArrayList<>();
     private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
+    private final EnvVariables envVariables;
+    private final ClientController clientController;
     private CustomProperties customProperties;
-    private EnvVariables envVariables;
     private GuiFunctionality guiFunctionality;
-    private URI serverUri;
     private int JSCROLLPANE_MARGIN_RIGHT_BORDER;
     private int JSCROLLPANE_MARGIN_BOTTOM_BORDER;
     private HashMap<String, ImageIcon> emojiList;
     private EmojiHandler emojiHandler;
-    private CustomWebsocketClient websocketClient;
     private String username;
     private volatile int notificationPositionY = 0;
     private boolean startUp = true;
@@ -72,42 +72,34 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      */
     public ChatMainFrameImpl(final EnvVariables envVariables) {
 
-        //TODO maybe move to cache manager
-        this.chatClientPropertiesHashMap = new HashMap<>();
-        this.objectMapper = new ObjectMapper();
+        this.envVariables = envVariables;
+        clientController = new ClientController(this);
+        clientController.initClient();
+    }
 
-        loadEnvVariables(envVariables);
-        loadCustomProperties();
+    public ClientController getClientController() {
 
-        //TODO remove for merge in master
-        repositionChatFrameForTestingPurposes();
+        return clientController;
+    }
 
-        //setup functionality
-        initGuiFunctionality();
-        initEmojiHandlerAndList();
+    public int getJSCROLLPANE_MARGIN_RIGHT_BORDER() {
 
-        //operating system specific settings
-        setScrollPaneMargins();
+        return JSCROLLPANE_MARGIN_RIGHT_BORDER;
+    }
 
-        //setup GUI
-        setTitle("teamchat");
-        setVisible(true);
+    public int getJSCROLLPANE_MARGIN_BOTTOM_BORDER() {
 
-        //setup websocket client
-        initWebSocketClient();
+        return JSCROLLPANE_MARGIN_BOTTOM_BORDER;
     }
 
     /**
-     Loads environment variables and assigns them to the appropriate fields.
-
-     @param envVariables The object containing the environment variables.
+     Loads the username from the environment variables and assigns it to the appropriate field.
      */
-    private void loadEnvVariables(final EnvVariables envVariables) {
-
-        this.envVariables = envVariables;
+    public void loadUsernameFromEnvVariables() {
 
         //override username if saved in GUI by user
         if (!envVariables.getChatUsername().isEmpty()) {
+
             this.username = envVariables.getChatUsername();
         }
     }
@@ -121,7 +113,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      If the client properties are successfully loaded, the method sets the username property
      to the username obtained from the CustomUserProperties object.
      */
-    private void loadCustomProperties() {
+    public void loadCustomProperties() {
 
         this.customProperties = new CustomProperties(this);
 
@@ -143,7 +135,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      This operation is performed asynchronously using SwingUtilities.invokeLater()
      to ensure compatibility with Swing's event dispatching thread.
      */
-    private void repositionChatFrameForTestingPurposes() {
+    public void repositionChatFrameForTestingPurposes() {
 
         final String chatXPosition = System.getenv("CHAT_X_POSITION");
 
@@ -164,7 +156,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      a reference to the current object as a constructor argument. The GuiFunctionality
      object is then assigned to the guiFunctionality instance variable of the current object.
      */
-    private void initGuiFunctionality() {
+    public void initGuiFunctionality() {
 
         this.guiFunctionality = new GuiFunctionality(this);
     }
@@ -180,10 +172,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      it to create a list of emojis. The created emoji list is then assigned to the
      emojiList instance variable of the current object.
      */
-    private void initEmojiHandlerAndList() {
+    public void initEmojiHandlerAndList() {
 
-        emojiHandler = new EmojiHandler(this);
-        emojiList = new EmojiInitializer().createEmojiList();
+        this.emojiHandler = new EmojiHandler(this);
+        this.emojiList = new EmojiInitializer().createEmojiList();
     }
 
     /**
@@ -191,16 +183,16 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
      This method determines the appropriate margin values for the scroll pane based on the operating system and desktop environment.
      */
-    private void setScrollPaneMargins() {
+    public void setScrollPaneMargins() {
 
-        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+        if (getOSName().toLowerCase().contains("windows")) {
 
             JSCROLLPANE_MARGIN_BOTTOM_BORDER = 63;
             JSCROLLPANE_MARGIN_RIGHT_BORDER = 20;
 
         } else {
 
-            if (System.getenv("XDG_CURRENT_DESKTOP").toLowerCase().contains("gnome")) {
+            if (getDesktopEnv().toLowerCase().contains("gnome")) {
 
                 JSCROLLPANE_MARGIN_BOTTOM_BORDER = 27;
 
@@ -214,171 +206,14 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         }
     }
 
-    /**
-     Initializes the WebSocket client.
+    public String getOSName() {
 
-     This method retrieves the server IP and port from the environment variables and creates a URI for the WebSocket server.
-     If the server IP or port is missing or empty, it opens a server information option pane.
-     Otherwise, it initializes the server URI and connects to the WebSocket server.
-
-     @throws RuntimeException if there is an error creating the server URI
-     */
-    private void initWebSocketClient() {
-
-        final String serverIp = envVariables.getChatIp();
-        final String serverPort = envVariables.getChatPort();
-
-        if (serverIp.isEmpty() || serverPort.isEmpty()) {
-
-            serverInformationOptionPane();
-
-        } else {
-
-            try {
-
-                serverUri = new URI("ws://" + serverIp + ":" + serverPort);
-
-            } catch (URISyntaxException e) {
-
-                new PopupPanelImpl(this, "Error creating server URI: " + e.getMessage());
-                logger.log(java.util.logging.Level.SEVERE, "Error creating server URI", e);
-                throw new RuntimeException(e);
-            }
-        }
-
-        //connect after 1 second
-        setupConnectionTimer();
+        return System.getProperty("os.name");
     }
 
-    /**
-     Displays a JOptionPane to gather server information from the user.
-     The user is prompted to enter the server IP address and port number.
-     If the user selects the OK option, the server IP address and port number
-     are stored in the envVariables object and a URI object representing the
-     server URI is created and stored in the serverUri variable.
-     */
-    private void serverInformationOptionPane() {
+    public String getDesktopEnv() {
 
-        JTextField serverIpTextField = new JTextField(7);
-        JTextField serverPortTextField = new JTextField(7);
-
-        final JPanel serverInfoPanel = createServerInfoPanel(serverIpTextField, serverPortTextField);
-
-        int result = JOptionPane.showConfirmDialog(this, serverInfoPanel, "please enter ip and port values", JOptionPane.OK_CANCEL_OPTION);
-
-        validateServerInformationInputByUser(serverIpTextField.getText(), serverPortTextField.getText());
-
-        if (result == JOptionPane.OK_OPTION) {
-
-            processValidatedServerInformation(serverIpTextField, serverPortTextField);
-        }
-    }
-
-    /**
-     Sets up a timer to connect to the WebSocket server after 1 second.
-
-     It creates a timer that waits for 1 second and then executes the connection process.
-     The connection process involves displaying a popup panel indicating the connection status,
-     logging the connection attempt, and calling the connectToWebsocket() method to establish the WebSocket connection.
-     */
-    private void setupConnectionTimer() {
-
-        Timer connectTimer = new Timer(1000, e -> {
-            new PopupPanelImpl(this, "Connecting to server");
-            logger.info("connecting websocket client");
-            connectToWebsocket();
-        });
-        connectTimer.setRepeats(false);
-        connectTimer.start();
-    }
-
-    /**
-     Creates a server information panel.
-
-     @param serverIpTextField   the text field for server IP
-     @param serverPortTextField the text field for server port
-
-     @return the created JPanel containing the server information panel
-     */
-    private JPanel createServerInfoPanel(final JTextField serverIpTextField, final JTextField serverPortTextField) {
-
-        JPanel myPanel = new JPanel(new MigLayout("wrap 2"));
-
-        //port information
-        myPanel.add(new JLabel("Port:"));
-        serverIpTextField.setText(envVariables.getChatIp().isBlank() ? "127.0.0.1" : envVariables.getChatIp());
-        myPanel.add(serverIpTextField);
-
-        //ip information
-        myPanel.add(new JLabel("Ip:"));
-        serverPortTextField.setText(envVariables.getChatPort().isBlank() ? "8100" : envVariables.getChatPort());
-        myPanel.add(serverPortTextField);
-
-        serverIpTextField.requestFocus();
-
-        return myPanel;
-    }
-
-    /**
-     Validates the server information input by the user.
-
-     @param serverIpText   the server IP input text
-     @param serverPortText the server port input text
-     */
-    private void validateServerInformationInputByUser(final String serverIpText, final String serverPortText) {
-
-        if (serverIpText.isEmpty() || serverPortText.isEmpty()) {
-
-            JOptionPane.showMessageDialog(this, "Server IP or port is empty", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-
-        if (!serverIpText.matches("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$")) {
-
-            JOptionPane.showMessageDialog(this, "Server IP is invalid", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-
-        if (!serverPortText.matches("^[0-9]+$")) {
-
-            JOptionPane.showMessageDialog(this, "Server port is invalid", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    /**
-     Processes the validated server information provided by the user.
-     The server IP address and port number are extracted from the text fields.
-     The server IP address and port number are then stored in the envVariables object.
-     Finally, a URI object representing the server URI is created using the server IP address and port number.
-
-     @param serverIpTextField   the text field containing the server IP address
-     @param serverPortTextField the text field containing the server port number
-     */
-    private void processValidatedServerInformation(final JTextField serverIpTextField, final JTextField serverPortTextField) {
-
-        Optional<String> serverIp = Optional.of(serverIpTextField.getText());
-        Optional<String> serverPort = Optional.of(serverPortTextField.getText());
-
-        envVariables.setChatIp(serverIp.orElse("127.0.0.1"));
-        envVariables.setChatPort(serverPort.orElse("8100"));
-
-        try {
-
-            serverUri = new URI("ws://" + envVariables.getChatIp() + ":" + envVariables.getChatPort());
-
-        } catch (URISyntaxException e) {
-
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     Establishes a connection to a WebSocket server.
-
-     This method creates a new instance of a CustomWebsocketClient and connects to the specified WebSocket server. The connection process is asynchronously executed on a separate thread.
-     */
-    private void connectToWebsocket() {
-
-        websocketClient = new CustomWebsocketClient(serverUri, this);
-        websocketClient.connect();
+        return System.getenv("XDG_CURRENT_DESKTOP");
     }
 
     /**
@@ -477,7 +312,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void connectionDetailsButtonMousePressed(final MouseEvent e) {
         //TODO is this needed?
-        this.serverInformationOptionPane();
+        clientController.serverInformationOptionPane();
     }
 
     /**
@@ -495,13 +330,13 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         closeActiveConnectionToSocket();
 
         //set null to be sure + preparation for reconnect
-        prepareReconnection();
+        clientController.prepareReconnection();
 
         // invalidate all caches
         cacheManager.invalidateCache();
 
         //reconnect to socket
-        this.connectToWebsocket();
+        clientController.connectToWebsocket();
         this.logger.info("Reconnecting websocket client");
     }
 
@@ -532,29 +367,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      */
     private void closeActiveConnectionToSocket() {
 
-        if (this.websocketClient.isOpen()) {
-
-            this.logger.info("Closing websocket client");
-            this.websocketClient.close();
-        }
-    }
-
-    /**
-     Prepares the application for reconnection.
-
-     Resets the websocket client to null, sets the last message sender name and timestamp to null,
-     and sets the startUp flag to true to disable notifications during initial message flood.
-     */
-    private void prepareReconnection() {
-
-        this.websocketClient = null;
-
-        //new evaluation of last sender and time
-        this.setLastMessageSenderName(null);
-        this.setLastMessageTimeStamp(null);
-
-        //no notifications during initial message flood
-        this.startUp = true;
+        clientController.closeConnection();
     }
 
     /**
@@ -624,7 +437,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
             //TODO typing.. status!
             String typingStatus = "{\"type\":\"typing\",\"username\":\"" + this.getUsername() + "\"}";
-            websocketClient.send(typingStatus.getBytes());
+            clientController.getWebsocketClient().send(typingStatus.getBytes());
 
             return;
         }
@@ -874,9 +687,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     * Sets the Y position of the notification.
-     *
-     * @param notificationPositionY the Y position of the notification.
+     Sets the Y position of the notification.
+
+     @param notificationPositionY the Y position of the notification.
      */
     @Override
     public synchronized void setNotificationPositionY(int notificationPositionY) {
@@ -885,9 +698,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     * Gets the list of notifications.
-     *
-     * @return the list of notifications.
+     Gets the list of notifications.
+
+     @return the list of notifications.
      */
     @Override
     public List<NotificationImpl> getNotificationList() {
@@ -896,9 +709,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     * Sets the startUp flag to indicate whether the system is starting up.
-     *
-     * @param startUp the startUp flag
+     Sets the startUp flag to indicate whether the system is starting up.
+
+     @param startUp the startUp flag
      */
     @Override
     public void setStartUp(final boolean startUp) {
@@ -907,9 +720,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     * Retrieves the status of notifications based on the current settings.
-     *
-     * @return the notification status
+     Retrieves the status of notifications based on the current settings.
+
+     @return the notification status
      */
     public NotificationStatus getNotificationStatus() {
 
@@ -934,24 +747,19 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     * Retrieves the comments hash map.
-     *
-     * @return the comments hash map
+     Retrieves the comments hash map.
+
+     @return the comments hash map
      */
     public LinkedHashMap<Long, CommentInterface> getCommentsHashMap() {
 
         return commentsHashMap;
     }
 
-    /**
-     Retrieves the WebSocket client.
-
-     @return The WebSocket client.
-     */
     @Override
     public CustomWebsocketClient getWebsocketClient() {
 
-        return websocketClient;
+        return clientController.getWebsocketClient();
     }
 
     /**
@@ -977,9 +785,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     * Retrieves the name of the sender of the last message.
-     *
-     * @return the name of the sender of the last message.
+     Retrieves the name of the sender of the last message.
+
+     @return the name of the sender of the last message.
      */
     @Override
     public String getLastMessageSenderName() {
@@ -988,9 +796,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     * Sets the name of the sender of the last message.
-     *
-     * @param lastMessageSenderName the name of the sender of the last message.
+     Sets the name of the sender of the last message.
+
+     @param lastMessageSenderName the name of the sender of the last message.
      */
     @Override
     public void setLastMessageSenderName(final String lastMessageSenderName) {
@@ -999,9 +807,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     * Retrieves the timestamp of the last message.
-     *
-     * @return the timestamp of the last message.
+     Retrieves the timestamp of the last message.
+
+     @return the timestamp of the last message.
      */
     @Override
     public String getLastMessageTimeStamp() {
@@ -1010,9 +818,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     * Sets the timestamp of the last message.
-     *
-     * @param lastMessageTimeStamp the timestamp of the last message to be set.
+     Sets the timestamp of the last message.
+
+     @param lastMessageTimeStamp the timestamp of the last message to be set.
      */
     @Override
     public void setLastMessageTimeStamp(final String lastMessageTimeStamp) {
