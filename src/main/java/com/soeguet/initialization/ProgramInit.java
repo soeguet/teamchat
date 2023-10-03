@@ -1,143 +1,104 @@
 package com.soeguet.initialization;
 
-import com.formdev.flatlaf.FlatDarculaLaf;
-import com.formdev.flatlaf.FlatDarkLaf;
-import com.formdev.flatlaf.FlatIntelliJLaf;
-import com.formdev.flatlaf.FlatLightLaf;
 import com.soeguet.gui.main_frame.ChatMainFrameImpl;
+import com.soeguet.initialization.enums.Themes;
+import com.soeguet.initialization.interfaces.EnvDataProvider;
+import com.soeguet.initialization.interfaces.UserInteraction;
+import com.soeguet.initialization.themes.interfaces.ThemeManager;
 import com.soeguet.model.EnvVariables;
 
 import javax.swing.*;
 
-/**
- The ProgramInit class initializes the program by setting up the necessary variables and launching the main frame.
- */
 public class ProgramInit {
 
+    private final EnvDataProvider envDataProvider;
+    private final UserInteraction userInteraction;
+    private final ThemeManager themeManager;
+
     /**
-     Collects necessary data and starts GUI.
+     Initializes the ProgramInit object with the given EnvDataProvider and UserInteraction objects.
+
+     @param envDataProvider The object responsible for providing environmental data.
+     @param userInteraction The object responsible for interacting with the user.
+     @param themeManager    The object responsible for managing themes.
      */
-    public ProgramInit() {
+    public ProgramInit(EnvDataProvider envDataProvider, UserInteraction userInteraction, final ThemeManager themeManager) {
 
-        //TODO: add theme setting
-        //setTheme('');
-
-        EnvVariables envVariables = checkForEnvVariables();
-        FlatIntelliJLaf.setup();
-        SwingUtilities.invokeLater(() -> new ChatMainFrameImpl(envVariables));
+        this.envDataProvider = envDataProvider;
+        this.userInteraction = userInteraction;
+        this.themeManager = themeManager;
     }
 
     /**
-     Checks for environment variables and retrieves the necessary data for the application.
+     Collects the environment variables needed for program initialization.
 
-     @return the environment variables (username, chat IP, and chat port)
+     @return An EnvVariables object containing the collected environment variables.
      */
-    private EnvVariables checkForEnvVariables() {
+    public EnvVariables collectEnvVariables() {
 
-        //retrieve username
         final String username = retrieveUsername();
         promptForUserNameIfNeeded(username);
-
-        //retrieve websocket relevant data
-        String chatIp = getEnvData("CHAT_IP");
-        String chatPort = getEnvData("CHAT_PORT");
-
+        final String chatIp = envDataProvider.getEnvData("CHAT_IP");
+        final String chatPort = envDataProvider.getEnvData("CHAT_PORT");
         return new EnvVariables(username, chatIp, chatPort);
     }
 
     /**
-     Retrieves the username from environment data if it exists, otherwise prompts the user for a username.
+     Retrieves the username for the chat.
 
-     @return the retrieved or prompted username
+     @return The username for the chat.
      */
     private String retrieveUsername() {
 
-        final String chatUsername = getEnvData("CHAT_USERNAME");
-
-        if (chatUsername != null && !chatUsername.isEmpty()) {
-
-            return getEnvData("CHAT_USERNAME");
-
-        } else {
-
-            return askForUsername();
-        }
+        String chatUsername = envDataProvider.getEnvData("CHAT_USERNAME");
+        return (chatUsername != null && !chatUsername.isEmpty()) ? chatUsername : userInteraction.askForUsername();
     }
 
     /**
-     Prompts the user for a username if one is needed.
+     Prompts the user for a username, if needed.
+     If the given username is null or empty, an error message is shown.
 
-     @param username the username to be checked
+     @param username The username to check.
      */
-    private void promptForUserNameIfNeeded(final String username) {
+    private void promptForUserNameIfNeeded(String username) {
 
         if (username == null || username.isEmpty()) {
-
-            SwingUtilities.invokeLater(() -> {
-
-                JOptionPane.showMessageDialog(null, "Username must not be empty", "Error", JOptionPane.ERROR_MESSAGE);
-                System.exit(0);
-            });
+            userInteraction.showError("Username must not be empty");
         }
     }
 
     /**
-     Gets the value of an environment variable specified by the given data.
+     Initializes the graphical user interface of the application.
+     This method creates a new instance of the ChatMainFrameImpl class,
+     which represents the main frame of the chat application.
+     The creation of the main frame is performed on the Event Dispatch Thread
+     using the SwingUtilities.invokeLater() method, ensuring that the GUI is
+     created and updated on the correct thread.
 
-     @param data the name of the environment variable
-
-     @return the value of the environment variable, or null if the variable is not found
+     @param envVariables the environment variables to be used by the application
+     This object contains any required configuration variables
+     or settings needed for the proper initialization of the GUI.
+     It is up to the caller to provide a valid EnvVariables object.
      */
-    private String getEnvData(String data) {
+    public void initializeGUI(EnvVariables envVariables) {
 
-        return System.getenv(data);
+        SwingUtilities.invokeLater(() -> new ChatMainFrameImpl(envVariables));
     }
 
     /**
-     Prompts the user to enter their username.
+     Sets the theme of the graphical user interface.
 
-     @return the username entered by the user
+     This method applies the specified theme to the GUI using the ThemeManager.
+     The themeSetting parameter should be a valid theme identifier that is supported
+     by the application's ThemeManager. If an invalid or unsupported theme identifier
+     is provided, the behavior of this method is undefined.
+
+     @param themeSetting the theme identifier to be applied to the GUI.
+     This should be a valid theme identifier supported by the application.
+     It is up to the caller to provide a valid theme identifier.
      */
-    private String askForUsername() {
+    public void setTheme(final Themes themeSetting) {
 
-        String username = JOptionPane.showInputDialog(null, "Please enter your username", "");
-
-        // this lead to less hung ups on startup
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
-        return username;
-    }
-
-    /**
-     Sets the theme based on the given theme setting.
-
-     @param themeSetting the theme setting to apply
-
-     @throws IllegalArgumentException if themeSetting is null
-     */
-    private void setTheme(String themeSetting) {
-
-        if (themeSetting == null) {
-            throw new IllegalArgumentException("Theme setting must not be null");
-        }
-
-        switch (themeSetting.toUpperCase()) {
-            case "LIGHT":
-                FlatLightLaf.setup();
-                break;
-            case "DARK":
-                FlatDarkLaf.setup();
-                break;
-            case "DARCULA":
-                FlatDarculaLaf.setup();
-                break;
-            default:
-                FlatIntelliJLaf.setup();
-                break;
-        }
+        themeManager.applyTheme(themeSetting);
     }
 }
