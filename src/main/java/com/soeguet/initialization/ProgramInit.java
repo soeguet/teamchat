@@ -8,6 +8,10 @@ import com.soeguet.initialization.themes.interfaces.ThemeManager;
 import com.soeguet.model.EnvVariables;
 
 import javax.swing.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Properties;
 
 public class ProgramInit {
 
@@ -36,10 +40,14 @@ public class ProgramInit {
      */
     public EnvVariables collectEnvVariables() {
 
+        //username
         final String username = retrieveUsername();
-        promptForUserNameIfNeeded(username);
+        validateUsernameInput(username);
+
+        //chat ip and port
         final String chatIp = envDataProvider.getEnvData("CHAT_IP");
         final String chatPort = envDataProvider.getEnvData("CHAT_PORT");
+
         return new EnvVariables(username, chatIp, chatPort);
     }
 
@@ -51,18 +59,20 @@ public class ProgramInit {
     private String retrieveUsername() {
 
         String chatUsername = envDataProvider.getEnvData("CHAT_USERNAME");
+
         return (chatUsername != null && !chatUsername.isEmpty()) ? chatUsername : userInteraction.askForUsername();
     }
 
     /**
-     Prompts the user for a username, if needed.
+     Validates the username input.
      If the given username is null or empty, an error message is shown.
 
-     @param username The username to check.
+     @param username The username to validate.
      */
-    private void promptForUserNameIfNeeded(String username) {
+    private void validateUsernameInput(String username) {
 
         if (username == null || username.isEmpty()) {
+
             userInteraction.showError("Username must not be empty");
         }
     }
@@ -86,13 +96,12 @@ public class ProgramInit {
 
             ChatMainFrameImpl mainFrame = new ChatMainFrameImpl(envVariables);
 
-            mainFrame.loadUsernameFromEnvVariables();
-            mainFrame.loadCustomProperties();
-
             //TODO remove for merge in master
             mainFrame.repositionChatFrameForTestingPurposes();
 
             //setup functionality
+            mainFrame.loadUsernameFromEnvVariables();
+            mainFrame.loadCustomProperties();
             mainFrame.initGuiFunctionality();
             mainFrame.initEmojiHandlerAndList();
 
@@ -100,9 +109,57 @@ public class ProgramInit {
             mainFrame.setScrollPaneMargins();
 
             //setup GUI
-            mainFrame.setTitle("teamchat");
+            setMainFrameTitle(mainFrame);
+            setGuiIcon(mainFrame);
             mainFrame.setVisible(true);
         });
+    }
+
+    private void setMainFrameTitle(final ChatMainFrameImpl mainFrame) {
+
+        final String title = "teamchat" + " - " +
+                chatVersion() +
+                "username: " +
+                mainFrame.getUsername();
+
+        mainFrame.setTitle(title);
+    }
+
+    /**
+     Sets the icon of the main frame in the graphical user interface.
+
+     @param mainFrame the instance of ChatMainFrameImpl representing the main frame of the application.
+     It is up to the caller to provide a valid instance of ChatMainFrameImpl.
+     */
+    private void setGuiIcon(final ChatMainFrameImpl mainFrame) {
+
+        URL iconURL = ChatMainFrameImpl.class.getResource("/icon.png");
+        assert iconURL != null;
+        ImageIcon icon = new ImageIcon(iconURL);
+        mainFrame.setIconImage(icon.getImage());
+    }
+
+    private String chatVersion() {
+
+        Properties properties = new Properties();
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("version.properties");
+
+        if (inputStream != null) {
+
+            try {
+
+                properties.load(inputStream);
+                return properties.getProperty("version") + " - ";
+
+            } catch (IOException e) {
+
+                throw new RuntimeException(e);
+            }
+
+        } else {
+
+            return "";
+        }
     }
 
     /**
