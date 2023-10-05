@@ -35,19 +35,20 @@ public class NotificationImpl extends Notification {
 
     @Override
     protected void thisWindowGainedFocus(final WindowEvent e) {
-
-        SwingUtilities.invokeLater(() -> {
-
-            ((JFrame) this.mainFrame).setAlwaysOnTop(true);
-            ((JFrame) this.mainFrame).toFront();
-            ((JFrame) this.mainFrame).repaint();
-            ((JFrame) this.mainFrame).setAlwaysOnTop(false);
-        });
+        //TODO remove this method if not needed
     }
 
     @Override
     protected void notificationAllPanelMouseClicked(final MouseEvent e) {
-        //TODO is this needed?
+        SwingUtilities.invokeLater(this::bringChatGuiToFront);
+    }
+
+    private void bringChatGuiToFront() {
+
+        ((JFrame) this.mainFrame).setAlwaysOnTop(true);
+        ((JFrame) this.mainFrame).toFront();
+        ((JFrame) this.mainFrame).repaint();
+        ((JFrame) this.mainFrame).setAlwaysOnTop(false);
     }
 
     @Override
@@ -55,10 +56,7 @@ public class NotificationImpl extends Notification {
 
         SwingUtilities.invokeLater(() -> {
 
-            ((JFrame) this.mainFrame).setAlwaysOnTop(true);
-            ((JFrame) this.mainFrame).toFront();
-            ((JFrame) this.mainFrame).repaint();
-            ((JFrame) this.mainFrame).setAlwaysOnTop(false);
+            bringChatGuiToFront();
 
             ReplyPanelImpl replyPanel = new ReplyPanelImpl(this.mainFrame, this.baseModel);
             this.mainFrame.getMainTextPanelLayeredPane().add(replyPanel, JLayeredPane.MODAL_LAYER);
@@ -106,7 +104,8 @@ public class NotificationImpl extends Notification {
         this.form_nameLabel.setText(messageModel.getSender() + " sent a message");
 
         form_notificationMainMessage.setText("");
-        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(this.form_notificationMainMessage, messageModel.getMessage());
+
+        replaceEmojiTextToIconOnTextPane(messageModel.getMessage());
 
         final int messageLength = messageModel.getMessage().length();
 
@@ -124,6 +123,11 @@ public class NotificationImpl extends Notification {
         }
     }
 
+    private void replaceEmojiTextToIconOnTextPane(final String message) {
+
+        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(this.form_notificationMainMessage, message);
+    }
+
     private void addPictureToNotificationPanel() {
 
         PictureModel messageModel = (PictureModel) this.baseModel;
@@ -131,7 +135,8 @@ public class NotificationImpl extends Notification {
         this.form_nameLabel.setText(messageModel.getSender() + " sent a message");
 
         form_notificationMainMessage.setText("[picture]\n");
-        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(this.form_notificationMainMessage, messageModel.getMessage());
+
+        replaceEmojiTextToIconOnTextPane(messageModel.getMessage());
 
         final int messageLength = messageModel.getMessage().length();
 
