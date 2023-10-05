@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "8.1.1.0.298" Java: "17.0.8" encoding: "UTF-8"
+JFDML JFormDesigner: "8.0.3.0.246" Java: "17.0.3" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
@@ -58,7 +58,6 @@ new FormModel {
 							add( new FormComponent( "javax.swing.JCheckBoxMenuItem" ) {
 								name: "externalNotificationsMenuItem"
 								"text": "external - on"
-								"selected": true
 								addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "externalNotificationsMenuItemItemStateChanged", true ) )
 							} )
 						} )
