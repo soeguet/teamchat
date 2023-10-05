@@ -21,14 +21,15 @@ import com.soeguet.util.EmojiInitializer;
 import com.soeguet.util.EmojiPopUpMenuHandler;
 import com.soeguet.util.NotificationStatus;
 
+import javax.swing.Timer;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -252,8 +253,179 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      */
     private void repaintMainFrame() {
 
+        String version = retrieveJarVersion();
+        this.setTitle("teamchat - " + version + " - username: " + this.getUsername());
+
         this.revalidate();
         this.repaint();
+    }
+
+    /**
+
+     */
+    private String retrieveJarVersion() {
+
+        Properties properties = new Properties();
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("version.properties");
+
+        if (inputStream != null) {
+            try {
+                properties.load(inputStream);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return properties.getProperty("version");
+        }
+
+        return "v.?";
+    }
+
+    /**
+     Retrieves the username.
+
+     @return the username as a String.
+     */
+    @Override
+    public String getUsername() {
+
+        return username;
+    }
+
+    /**
+     Sets the username.
+
+     @param username the username to set.
+     */
+    @Override
+    public void setUsername(String username) {
+
+        this.username = username;
+    }
+
+    /**
+     Returns a HashMap containing the list of emojis and their corresponding image icons.
+
+     <p>This method returns the emojiList HashMap, which contains the emojis and their corresponding image icons.
+     The key in the HashMap represents the emoji text, and the value represents the corresponding image icon.
+
+     @return the HashMap containing the list of emojis and their corresponding image icons
+     */
+    @Override
+    public HashMap<String, ImageIcon> getEmojiList() {
+
+        return emojiList;
+    }
+
+    @Override
+    public HashMap<String, CustomUserProperties> getChatClientPropertiesHashMap() {
+
+        return chatClientPropertiesHashMap;
+    }
+
+    /**
+     Returns the custom properties object.
+
+     @return the custom properties object.
+     */
+    @Override
+    public CustomProperties getCustomProperties() {
+
+        return customProperties;
+    }
+
+    /**
+     Returns the Y position of the notification.
+
+     @return the Y position of the notification.
+     */
+    @Override
+    public synchronized int getNotificationPositionY() {
+
+        return this.notificationPositionY;
+    }
+
+    /**
+     Sets the Y position of the notification.
+
+     @param notificationPositionY the Y position of the notification.
+     */
+    @Override
+    public synchronized void setNotificationPositionY(int notificationPositionY) {
+
+        this.notificationPositionY = notificationPositionY;
+    }
+
+    /**
+     Gets the list of notifications.
+
+     @return the list of notifications.
+     */
+    @Override
+    public List<NotificationImpl> getNotificationList() {
+
+        return notificationList;
+    }
+
+    /**
+     Sets the startUp flag to indicate whether the system is starting up.
+
+     @param startUp the startUp flag
+     */
+    @Override
+    public void setStartUp(final boolean startUp) {
+
+        this.startUp = startUp;
+    }
+
+    /**
+     Retrieves the status of notifications based on the current settings.
+
+     @return the notification status
+     */
+    public NotificationStatus getNotificationStatus() {
+
+        //TODO needs to be fixed
+        //TODO test!
+
+        //on program startup
+        if (startUp) {
+
+            return NotificationStatus.ALL_DENIED;
+        }
+
+        //all = no -- needs to be first since it will reset after 5 minutes
+        if (form_allNotificationsMenuItem.isSelected()) {
+
+            return NotificationStatus.ALL_DENIED;
+        }
+
+        //external = yes && internal = yes
+        if (form_internalNotificationsMenuItem.isSelected() && form_externalNotificationsMenuItem.isSelected()) {
+
+            return NotificationStatus.ALL_ALLOWED;
+        }
+
+        //external = yes && internal = no
+        if (form_externalNotificationsMenuItem.isSelected() && !form_internalNotificationsMenuItem.isSelected()) {
+            return NotificationStatus.EXTERNAL_ONLY;
+        }
+
+        //external = no && internal = yes
+        if (!form_externalNotificationsMenuItem.isSelected() && form_internalNotificationsMenuItem.isSelected()) {
+            return NotificationStatus.INTERNAL_ONLY;
+        }
+
+        return NotificationStatus.ALL_DENIED;
+    }
+
+    /**
+     Retrieves the comments hash map.
+
+     @return the comments hash map
+     */
+    public LinkedHashMap<Long, CommentInterface> getCommentsHashMap() {
+
+        return commentsHashMap;
     }
 
     /**
@@ -586,17 +758,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     Retrieves the username.
-
-     @return the username as a String.
-     */
-    @Override
-    public String getUsername() {
-
-        return username;
-    }
-
-    /**
      Appends a new line to the text editor pane.
 
      <p>Retrieves the current text in the text editor pane and appends a new line character at the
@@ -631,129 +792,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         }
 
-    }
-
-    /**
-     Sets the username.
-
-     @param username the username to set.
-     */
-    @Override
-    public void setUsername(String username) {
-
-        this.username = username;
-    }
-
-    /**
-     Returns a HashMap containing the list of emojis and their corresponding image icons.
-
-     <p>This method returns the emojiList HashMap, which contains the emojis and their corresponding image icons.
-     The key in the HashMap represents the emoji text, and the value represents the corresponding image icon.
-
-     @return the HashMap containing the list of emojis and their corresponding image icons
-     */
-    @Override
-    public HashMap<String, ImageIcon> getEmojiList() {
-
-        return emojiList;
-    }
-
-    @Override
-    public HashMap<String, CustomUserProperties> getChatClientPropertiesHashMap() {
-
-        return chatClientPropertiesHashMap;
-    }
-
-    /**
-     Returns the custom properties object.
-
-     @return the custom properties object.
-     */
-    @Override
-    public CustomProperties getCustomProperties() {
-
-        return customProperties;
-    }
-
-    /**
-     Returns the Y position of the notification.
-
-     @return the Y position of the notification.
-     */
-    @Override
-    public synchronized int getNotificationPositionY() {
-
-        return this.notificationPositionY;
-    }
-
-    /**
-     Sets the Y position of the notification.
-
-     @param notificationPositionY the Y position of the notification.
-     */
-    @Override
-    public synchronized void setNotificationPositionY(int notificationPositionY) {
-
-        this.notificationPositionY = notificationPositionY;
-    }
-
-    /**
-     Gets the list of notifications.
-
-     @return the list of notifications.
-     */
-    @Override
-    public List<NotificationImpl> getNotificationList() {
-
-        return notificationList;
-    }
-
-    /**
-     Sets the startUp flag to indicate whether the system is starting up.
-
-     @param startUp the startUp flag
-     */
-    @Override
-    public void setStartUp(final boolean startUp) {
-
-        this.startUp = startUp;
-    }
-
-    /**
-     Retrieves the status of notifications based on the current settings.
-
-     @return the notification status
-     */
-    public NotificationStatus getNotificationStatus() {
-
-        if (blockAllNotifications || startUp) {
-
-            return NotificationStatus.ALL_DENIED;
-
-        } else if (!blockInternalNotifications && !blockExternalNotifications) {
-
-            return NotificationStatus.ALL_ALLOWED;
-
-        } else if (!blockExternalNotifications) {
-
-            return NotificationStatus.INTERNAL_ONLY;
-
-        } else if (!blockInternalNotifications) {
-
-            return NotificationStatus.EXTERNAL_ONLY;
-        }
-
-        return NotificationStatus.ALL_DENIED;
-    }
-
-    /**
-     Retrieves the comments hash map.
-
-     @return the comments hash map
-     */
-    public LinkedHashMap<Long, CommentInterface> getCommentsHashMap() {
-
-        return commentsHashMap;
     }
 
     @Override
