@@ -12,11 +12,13 @@ public class Main {
 
     public static void main(String... args) {
 
+        //set up dependencies
         final ThemeSetterImpl themeSetterImpl = new ThemeSetterImpl();
         final ThemeManagerImpl themeManagerImpl = new ThemeManagerImpl(themeSetterImpl);
         final UserInteractionImpl userInteractionImpl = new UserInteractionImpl();
         final EnvDataProviderImpl envDataProvider = new EnvDataProviderImpl();
 
+        //initialize program and pass dependencies
         ProgramInit programInit = new ProgramInit(envDataProvider, userInteractionImpl, themeManagerImpl);
         final EnvVariables environmentVariables = programInit.collectEnvVariables();
         programInit.setTheme(Themes.INTELLIJ);
