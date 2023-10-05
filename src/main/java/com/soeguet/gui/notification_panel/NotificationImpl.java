@@ -35,19 +35,20 @@ public class NotificationImpl extends Notification {
 
     @Override
     protected void thisWindowGainedFocus(final WindowEvent e) {
-
-        SwingUtilities.invokeLater(() -> {
-
-            ((JFrame) this.mainFrame).setAlwaysOnTop(true);
-            ((JFrame) this.mainFrame).toFront();
-            ((JFrame) this.mainFrame).repaint();
-            ((JFrame) this.mainFrame).setAlwaysOnTop(false);
-        });
+        //TODO remove this method if not needed
     }
 
     @Override
     protected void notificationAllPanelMouseClicked(final MouseEvent e) {
-        // TODO is this needed?
+        SwingUtilities.invokeLater(this::bringChatGuiToFront);
+    }
+
+    private void bringChatGuiToFront() {
+
+        ((JFrame) this.mainFrame).setAlwaysOnTop(true);
+        ((JFrame) this.mainFrame).toFront();
+        ((JFrame) this.mainFrame).repaint();
+        ((JFrame) this.mainFrame).setAlwaysOnTop(false);
     }
 
     @Override
@@ -55,10 +56,7 @@ public class NotificationImpl extends Notification {
 
         SwingUtilities.invokeLater(() -> {
 
-            ((JFrame) this.mainFrame).setAlwaysOnTop(true);
-            ((JFrame) this.mainFrame).toFront();
-            ((JFrame) this.mainFrame).repaint();
-            ((JFrame) this.mainFrame).setAlwaysOnTop(false);
+            bringChatGuiToFront();
 
             ReplyPanelImpl replyPanel = new ReplyPanelImpl(this.mainFrame, this.baseModel);
             this.mainFrame.getMainTextPanelLayeredPane().add(replyPanel, JLayeredPane.MODAL_LAYER);
@@ -106,8 +104,8 @@ public class NotificationImpl extends Notification {
         this.form_nameLabel.setText(messageModel.getSender() + " sent a message");
 
         form_notificationMainMessage.setText("");
-        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(this.form_notificationMainMessage,
-                messageModel.getMessage());
+
+        replaceEmojiTextToIconOnTextPane(messageModel.getMessage());
 
         final int messageLength = messageModel.getMessage().length();
 
@@ -125,6 +123,11 @@ public class NotificationImpl extends Notification {
         }
     }
 
+    private void replaceEmojiTextToIconOnTextPane(final String message) {
+
+        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(this.form_notificationMainMessage, message);
+    }
+
     private void addPictureToNotificationPanel() {
 
         PictureModel messageModel = (PictureModel) this.baseModel;
@@ -132,8 +135,8 @@ public class NotificationImpl extends Notification {
         this.form_nameLabel.setText(messageModel.getSender() + " sent a message");
 
         form_notificationMainMessage.setText("[picture]\n");
-        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(this.form_notificationMainMessage,
-                messageModel.getMessage());
+
+        replaceEmojiTextToIconOnTextPane(messageModel.getMessage());
 
         final int messageLength = messageModel.getMessage().length();
 
@@ -161,8 +164,7 @@ public class NotificationImpl extends Notification {
     private void modifyNotificationPanel(final int screenResolutionWidth, final int newYPosition) {
 
         int MARGIN_RIGHT = 10;
-        setBounds(screenResolutionWidth - getWidth() - MARGIN_RIGHT, newYPosition + MARGIN_TOP, getWidth(),
-                getHeight());
+        setBounds(screenResolutionWidth - getWidth() - MARGIN_RIGHT, newYPosition + MARGIN_TOP, getWidth(), getHeight());
 
         setAlwaysOnTop(true);
         setVisible(true);
@@ -185,15 +187,14 @@ public class NotificationImpl extends Notification {
 
     private void adjustNotificationPanelHeight(final int factor) {
 
-        // TODO check if this is even needed anymore
-        // please don't ask..
+        //TODO check if this is even needed anymore
+        //please don't ask..
 
-        // some very ugly manual adjustments..
+        //some very ugly manual adjustments..
         final int notificationTextHeight = 25 * factor;
 
-        // components related stuff
-        final Dimension notificationPanelSize = new Dimension(this.form_notificationMainPanel.getWidth(),
-                notificationTextHeight - 50);
+        //components related stuff
+        final Dimension notificationPanelSize = new Dimension(this.form_notificationMainPanel.getWidth(), notificationTextHeight - 50);
         this.form_notificationMainPanel.setPreferredSize(notificationPanelSize);
         this.form_notificationMainPanel.setSize(notificationPanelSize);
         this.form_notificationMainPanel.setMinimumSize(notificationPanelSize);
@@ -205,14 +206,13 @@ public class NotificationImpl extends Notification {
         this.form_scrollPane1.setMinimumSize(scrollPaneSize);
         this.form_scrollPane1.setMaximumSize(scrollPaneSize);
 
-        final Dimension notificationTextSize = new Dimension(this.form_notificationMainMessage.getWidth(),
-                notificationTextHeight + 5);
+        final Dimension notificationTextSize = new Dimension(this.form_notificationMainMessage.getWidth(), notificationTextHeight + 5);
         this.form_notificationMainMessage.setPreferredSize(notificationTextSize);
         this.form_notificationMainMessage.setSize(notificationTextSize);
         this.form_notificationMainMessage.setMinimumSize(notificationTextSize);
         this.form_notificationMainMessage.setMaximumSize(notificationTextSize);
 
-        // panel related stuff
+        //panel related stuff
         final int adjustmentInHeight = 80;
 
         final Dimension thisSize = new Dimension(this.getWidth(), adjustmentInHeight + notificationTextHeight);
@@ -221,15 +221,13 @@ public class NotificationImpl extends Notification {
         this.setMinimumSize(thisSize);
         this.setMaximumSize(thisSize);
 
-        final Dimension panelSize = new Dimension(this.form_notificationAllPanel.getWidth(),
-                adjustmentInHeight + notificationTextHeight);
+        final Dimension panelSize = new Dimension(this.form_notificationAllPanel.getWidth(), adjustmentInHeight + notificationTextHeight);
         this.form_notificationAllPanel.setPreferredSize(panelSize);
         this.form_notificationAllPanel.setSize(panelSize);
         this.form_notificationAllPanel.setMinimumSize(panelSize);
         this.form_notificationAllPanel.setMaximumSize(panelSize);
 
-        final Dimension mainPanelSize = new Dimension(this.form_notificationMainPanel.getWidth(),
-                adjustmentInHeight + notificationTextHeight);
+        final Dimension mainPanelSize = new Dimension(this.form_notificationMainPanel.getWidth(), adjustmentInHeight + notificationTextHeight);
         this.form_notificationMainPanel.setPreferredSize(mainPanelSize);
         this.form_notificationMainPanel.setSize(mainPanelSize);
         this.form_notificationMainPanel.setMinimumSize(mainPanelSize);
@@ -247,10 +245,8 @@ public class NotificationImpl extends Notification {
         setVisible(false);
         dispose();
 
-        ActiveNotificationQueue activeNotificationsCache = (ActiveNotificationQueue) cacheManager
-                .getCache("ActiveNotificationQueue");
-        WaitingNotificationQueue waitingNotificationsCache = (WaitingNotificationQueue) cacheManager
-                .getCache("WaitingNotificationQueue");
+        ActiveNotificationQueue activeNotificationsCache = (ActiveNotificationQueue) cacheManager.getCache("ActiveNotificationQueue");
+        WaitingNotificationQueue waitingNotificationsCache = (WaitingNotificationQueue) cacheManager.getCache("WaitingNotificationQueue");
 
         final boolean remove = activeNotificationsCache.remove(this.baseModel);
 
@@ -258,16 +254,6 @@ public class NotificationImpl extends Notification {
             this.mainFrame.setNotificationPositionY(0);
             final String queuedNotification = waitingNotificationsCache.pollFirst();
             this.mainFrame.getGuiFunctionality().internalNotificationHandling(queuedNotification);
-        }
-
-        if (waitingNotificationsCache.isEmpty()) {
-
-            this.mainFrame.setNotificationPositionY(0);
-        }
-
-        if (activeNotificationsCache.isEmpty()) {
-
-            this.mainFrame.setNotificationPositionY(0);
         }
     }
 
