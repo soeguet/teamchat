@@ -304,7 +304,6 @@ public abstract class ChatPanel extends JFrame {
 
 						//---- form_externalNotificationsMenuItem ----
 						this.form_externalNotificationsMenuItem.setText("external - on");
-						this.form_externalNotificationsMenuItem.setSelected(true);
 						this.form_externalNotificationsMenuItem.addItemListener(e -> externalNotificationsMenuItemItemStateChanged(e));
 						this.form_menu1.add(this.form_externalNotificationsMenuItem);
 					}
