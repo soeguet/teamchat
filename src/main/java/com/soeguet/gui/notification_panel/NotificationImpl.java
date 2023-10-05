@@ -255,6 +255,16 @@ public class NotificationImpl extends Notification {
             final String queuedNotification = waitingNotificationsCache.pollFirst();
             this.mainFrame.getGuiFunctionality().internalNotificationHandling(queuedNotification);
         }
+
+        if (activeNotificationsCache.isEmpty()) {
+
+            this.mainFrame.setNotificationPositionY(0);
+        }
+
+        if (waitingNotificationsCache.isEmpty()) {
+
+                this.mainFrame.setNotificationPositionY(0);
+        }
     }
 
     public void setNotificationPicture() {
