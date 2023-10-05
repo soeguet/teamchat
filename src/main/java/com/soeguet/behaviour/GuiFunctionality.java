@@ -253,10 +253,14 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
             default -> {
 
+                //add to queue
                 messageQueue.addLast(message);
-                createDesktopNotification(message);
 
+                //write to pane
                 spamBuffer();
+
+                //notification
+                createDesktopNotification(message);
             }
         }
     }
@@ -355,11 +359,13 @@ public class GuiFunctionality implements SocketToGuiInterface {
         switch (this.mainFrame.getNotificationStatus()) {
 
             case INTERNAL_ONLY -> {
+
                 internalNotificationHandling(message);
                 Toolkit.getDefaultToolkit().beep();
             }
 
             case EXTERNAL_ONLY -> {
+
                 externalNotificationHandling(message);
                 Toolkit.getDefaultToolkit().beep();
             }
@@ -382,6 +388,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
     private void externalNotificationHandling(final String message) {
 
         try {
+
             final BaseModel baseModel = convertJsonToMessageModel(message);
 
             switch (baseModel) {
@@ -390,6 +397,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
                     try {
 
+                        //TODO linux only // windows needed
                         Runtime.getRuntime().exec(new String[]{"notify-send", "text message", text.getMessage()});
 
                     } catch (IOException e) {
