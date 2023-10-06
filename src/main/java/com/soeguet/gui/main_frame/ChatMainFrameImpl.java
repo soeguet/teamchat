@@ -391,24 +391,24 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         }
 
         //all = no -- needs to be first since it will reset after 5 minutes
-        if (form_allNotificationsMenuItem.isSelected()) {
+        if (getAllNotificationsMenuItem().isSelected()) {
 
             return NotificationStatus.ALL_DENIED;
         }
 
         //external = yes && internal = yes
-        if (form_internalNotificationsMenuItem.isSelected() && form_externalNotificationsMenuItem.isSelected()) {
+        if (getInternalNotificationsMenuItem().isSelected() && getExternalNotificationsMenuItem().isSelected()) {
 
             return NotificationStatus.ALL_ALLOWED;
         }
 
         //external = yes && internal = no
-        if (form_externalNotificationsMenuItem.isSelected() && !form_internalNotificationsMenuItem.isSelected()) {
+        if (getExternalNotificationsMenuItem().isSelected() && !getInternalNotificationsMenuItem().isSelected()) {
             return NotificationStatus.EXTERNAL_ONLY;
         }
 
         //external = no && internal = yes
-        if (!form_externalNotificationsMenuItem.isSelected() && form_internalNotificationsMenuItem.isSelected()) {
+        if (!getExternalNotificationsMenuItem().isSelected() && getInternalNotificationsMenuItem().isSelected()) {
             return NotificationStatus.INTERNAL_ONLY;
         }
 
@@ -589,11 +589,11 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     Called when a key is pressed in the text editor pane. If the pressed key is not the Enter key,
-     the method simply returns. If the pressed key is the Enter key, it consumes the event and
-     performs the appropriate action based on whether the Shift key is pressed or not.
-
-     @param e The KeyEvent object representing the key press event.
+     * Called when a key is pressed in the text editor pane. If the pressed key is not the Enter key,
+     * the method simply returns. If the pressed key is the Enter key, it consumes the event and
+     * performs the appropriate action based on whether the Shift key is pressed or not.
+     *
+     * @param e The KeyEvent object representing the key press event.
      */
     @Override
     protected void textEditorPaneKeyPressed(KeyEvent e) {
@@ -601,23 +601,29 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         //typing.. status
         if (e.getKeyCode() != KeyEvent.VK_ENTER) {
 
-            //TODO typing.. status!
-            String typingStatus = "{\"type\":\"typing\",\"username\":\"" + this.getUsername() + "\"}";
-            clientController.getWebsocketClient().send(typingStatus.getBytes());
+            sendIsTypingStatusToWebsocket();
+            return;
+        }
 
+        //shift + enter -> new line
+        if (e.isShiftDown()) {
+
+            appendNewLineToTextEditorPane();
             return;
         }
 
         e.consume();
-
-        if (e.isShiftDown()) {
-
-            appendNewLineToTextEditorPane();
-
-            return;
-        }
-
         handleNonShiftEnterKeyPress();
+    }
+
+    /**
+     * Sends a typing status message to the websocket server.
+     * The message is in JSON format and contains the type "typing" and the username of the user.
+     */
+    private void sendIsTypingStatusToWebsocket() {
+
+        String typingStatus = "{\"type\":\"typing\",\"username\":\"" + this.getUsername() + "\"}";
+        clientController.getWebsocketClient().send(typingStatus.getBytes());
     }
 
     /**
@@ -753,8 +759,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      */
     private void appendNewLineToTextEditorPane() {
 
-        String currentText = form_textEditorPane.getText();
-        form_textEditorPane.setText(currentText + "\n");
+        form_textEditorPane.setText(form_textEditorPane.getText() + "\n");
     }
 
     /**
@@ -777,11 +782,14 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         } else {
 
             guiFunctionality.clearTextPaneAndSendMessageToSocket();
-
         }
-
     }
 
+    /**
+     Returns the websocket client associated with this instance.
+
+     @return the websocket client
+     */
     @Override
     public CustomWebsocketClient getWebsocketClient() {
 
