@@ -61,9 +61,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     private boolean startUp = true;
     private String lastMessageSenderName;
     private String lastMessageTimeStamp;
-    private boolean blockAllNotifications = form_allNotificationsMenuItem.isSelected();
-    private boolean blockInternalNotifications = !form_internalNotificationsMenuItem.isSelected();
-    private boolean blockExternalNotifications = !form_externalNotificationsMenuItem.isSelected();
     private Timer blockTimer;
 
     /**
@@ -464,13 +461,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
             //getter call since this one is synchronized
             waitingNotificationQueue.removeAll();
-            blockInternalNotifications = true;
 
             new PopupPanelImpl(this, "Internal notifications disabled").implementPopup(2000);
 
         } else {
-
-            blockInternalNotifications = false;
 
             new PopupPanelImpl(this, "Internal notifications enabled").implementPopup(2000);
         }
@@ -695,13 +689,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         if (e.getStateChange() == ItemEvent.SELECTED) {
 
-            blockExternalNotifications = false;
-
             new PopupPanelImpl(this, "External notifications enabled").implementPopup(2000);
 
         } else if (e.getStateChange() == ItemEvent.DESELECTED) {
-
-            blockExternalNotifications = true;
 
             new PopupPanelImpl(this, "External notifications disabled").implementPopup(2000);
         }
@@ -738,17 +728,15 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         //block all notifications for 5 minutes
         if (e.getStateChange() == ItemEvent.SELECTED) {
 
-            this.blockAllNotifications = true;
-
             //getter call since this one is synchronized
             waitingNotificationQueue.removeAll();
 
-            blockTimer = new Timer(300000, e1 -> {
+            blockTimer = new Timer(1_000 * 60 * 5, e1 -> {
 
-                blockAllNotifications = false;
-
+                form_allNotificationsMenuItem.setSelected(false);
                 new PopupPanelImpl(this, "Notifications status" + System.lineSeparator() + "reverted").implementPopup(2000);
             });
+
             blockTimer.setRepeats(false);
             blockTimer.start();
 
