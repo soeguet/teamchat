@@ -56,6 +56,10 @@ public class GuiFunctionality implements SocketToGuiInterface {
     public GuiFunctionality(MainFrameInterface mainFrame) {
 
         this.mainFrame = mainFrame;
+    }
+
+    public void setupGuiFunctionality() {
+
         fixScrollPaneScrollSpeed();
         addDocumentListenerToTextPane();
         overrideTransferHandlerOfTextPane();
@@ -247,16 +251,20 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
             case "__startup__end__" -> mainFrame.setStartUp(false);
 
-            case "welcome to the server!" -> new PopupPanelImpl(mainFrame, "Welcome to the server!").implementPopup(1000);
+            case "welcome to the server" -> new PopupPanelImpl(mainFrame, "Welcome to the server!").implementPopup(1000);
 
             case null -> throw new IllegalStateException();
 
             default -> {
 
+                //add to queue
                 messageQueue.addLast(message);
-                createDesktopNotification(message);
 
+                //write to pane
                 spamBuffer();
+
+                //notification
+                createDesktopNotification(message);
             }
         }
     }
@@ -355,11 +363,13 @@ public class GuiFunctionality implements SocketToGuiInterface {
         switch (this.mainFrame.getNotificationStatus()) {
 
             case INTERNAL_ONLY -> {
+
                 internalNotificationHandling(message);
                 Toolkit.getDefaultToolkit().beep();
             }
 
             case EXTERNAL_ONLY -> {
+
                 externalNotificationHandling(message);
                 Toolkit.getDefaultToolkit().beep();
             }
@@ -382,6 +392,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
     private void externalNotificationHandling(final String message) {
 
         try {
+
             final BaseModel baseModel = convertJsonToMessageModel(message);
 
             switch (baseModel) {
@@ -390,6 +401,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
                     try {
 
+                        //TODO linux only // windows needed
                         Runtime.getRuntime().exec(new String[]{"notify-send", "text message", text.getMessage()});
 
                     } catch (IOException e) {
