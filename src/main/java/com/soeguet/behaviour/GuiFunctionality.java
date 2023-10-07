@@ -56,6 +56,10 @@ public class GuiFunctionality implements SocketToGuiInterface {
     public GuiFunctionality(MainFrameInterface mainFrame) {
 
         this.mainFrame = mainFrame;
+    }
+
+    public void setupGuiFunctionality() {
+
         fixScrollPaneScrollSpeed();
         addDocumentListenerToTextPane();
         overrideTransferHandlerOfTextPane();
@@ -247,7 +251,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
             case "__startup__end__" -> mainFrame.setStartUp(false);
 
-            case "welcome to the server!" -> new PopupPanelImpl(mainFrame, "Welcome to the server!").implementPopup(1000);
+            case "welcome to the server" -> new PopupPanelImpl(mainFrame, "Welcome to the server!").implementPopup(1000);
 
             case null -> throw new IllegalStateException();
 
