@@ -648,7 +648,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void pictureButtonMouseClicked(MouseEvent e) {
 
-        new ImagePanelImpl(this);
+        new ImagePanelImpl(this).initializeImagePanel();
     }
 
     /**
