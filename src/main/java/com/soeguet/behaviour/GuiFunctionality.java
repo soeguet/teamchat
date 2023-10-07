@@ -9,6 +9,7 @@ import com.soeguet.cache.implementations.MessageQueue;
 import com.soeguet.cache.implementations.WaitingNotificationQueue;
 import com.soeguet.cache.manager.CacheManager;
 import com.soeguet.gui.image_panel.ImagePanelImpl;
+import com.soeguet.gui.image_panel.generated.ImagePanel;
 import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.newcomment.helper.CommentInterface;
 import com.soeguet.gui.newcomment.left.PanelLeftImpl;
@@ -130,7 +131,9 @@ public class GuiFunctionality implements SocketToGuiInterface {
                 if (t.isDataFlavorSupported(DataFlavor.imageFlavor)) {
 
                     // image to text pane -> activate image panel
-                    new ImagePanelImpl(mainFrame).populateImagePanelFromClipboard();
+                    ImagePanelImpl imagePanel = new ImagePanelImpl(mainFrame);
+                    imagePanel.initializeImagePanel();
+                    imagePanel.populateImagePanelFromClipboard();
 
                     return true;
                 } else if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
