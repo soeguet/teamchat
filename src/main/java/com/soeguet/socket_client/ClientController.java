@@ -13,8 +13,6 @@ public class ClientController {
 
     private final Logger logger = Logger.getLogger(ClientController.class.getName());
     private final MainFrameInterface mainFrame;
-    private final String defaultServerIp = "127.0.0.1";
-    private final String defaultServerPort = "8100";
     private URI serverUri;
     private CustomWebsocketClient websocketClient;
 
@@ -32,6 +30,7 @@ public class ClientController {
     protected void determineWebsocketURI() {
 
         if (readServerIp().isEmpty() || readServerPort().isEmpty()) {
+
             serverInformationOptionPane();
             return;
         }
@@ -90,11 +89,13 @@ public class ClientController {
 
         //port information
         myPanel.add(new JLabel("Port:"));
+        String defaultServerIp = "127.0.0.1";
         serverIpTextField.setText(readServerIp().isEmpty() ? defaultServerIp : readServerIp().get());
         myPanel.add(serverIpTextField);
 
         //ip information
         myPanel.add(new JLabel("Ip:"));
+        String defaultServerPort = "8100";
         serverPortTextField.setText(readServerPort().isEmpty() ? defaultServerPort : readServerPort().get());
 
         myPanel.add(serverPortTextField);
