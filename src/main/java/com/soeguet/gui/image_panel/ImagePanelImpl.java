@@ -30,9 +30,10 @@ public class ImagePanelImpl extends ImagePanel {
 
     public ImagePanelImpl(MainFrameInterface mainFrame) {
 
-        ensureEDT();
-
         this.mainFrame = mainFrame;
+
+    }
+    public void initializeImagePanel(){
 
         populateImagePanel();
         setPosition();
@@ -40,26 +41,11 @@ public class ImagePanelImpl extends ImagePanel {
         setupPictureScrollPaneScrollSpeed();
     }
 
-    /**
-     Ensures that the current code is running on the Event Dispatch Thread (EDT). If the current thread is not the EDT, an
-     IllegalStateException is thrown.
-
-     @throws IllegalStateException if the current code is not running on the EDT
-     */
-    private void ensureEDT() {
-
-        if (!SwingUtilities.isEventDispatchThread()) {
-            throw new IllegalStateException("This should run on the EDT");
-        }
-    }
-
     private void populateImagePanel() {
 
     }
 
     private void setPosition() {
-
-        ensureEDT();
 
         int textPaneWidth = mainFrame.getMainTextPanelLayeredPane().getWidth();
         int textPaneHeight = mainFrame.getMainTextPanelLayeredPane().getHeight();
@@ -70,8 +56,6 @@ public class ImagePanelImpl extends ImagePanel {
     }
 
     private void setLayeredPaneLayerPositions() {
-
-        ensureEDT();
 
         final int width = form_pictureMainPanel.getWidth();
         final int height = form_pictureMainPanel.getHeight();
@@ -86,8 +70,6 @@ public class ImagePanelImpl extends ImagePanel {
 
     private void setupPictureScrollPaneScrollSpeed() {
 
-        ensureEDT();
-
         form_pictureScrollPane.getVerticalScrollBar().setUnitIncrement(50);
         form_pictureScrollPane.getHorizontalScrollBar().setUnitIncrement(50);
     }
@@ -97,15 +79,11 @@ public class ImagePanelImpl extends ImagePanel {
      */
     private void redrawEverything() {
 
-        ensureEDT();
-
         revalidate();
         repaint();
     }
 
     public void populateImagePanelFromClipboard() {
-
-        ensureEDT();
 
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         Transferable contents = clipboard.getContents(null);
@@ -229,8 +207,6 @@ public class ImagePanelImpl extends ImagePanel {
      */
     private Image resizeImage(double zoomFactor) {
 
-        ensureEDT();
-
         int width = (int) (image.getWidth(null) * zoomFactor);
         if (width < 100) {
             width = 100;
@@ -251,8 +227,6 @@ public class ImagePanelImpl extends ImagePanel {
      */
     @Override
     protected void zoomInButtonMouseClicked(MouseEvent e) {
-
-        ensureEDT();
 
         zoomFactor += 0.2;
 
@@ -288,21 +262,12 @@ public class ImagePanelImpl extends ImagePanel {
         }
     }
 
-    private void destructImagePanel() {
+    private boolean isImageEmpty() {
 
-        this.removeAll();
-        this.setVisible(false);
-    }
-
-    private String convertPictureModelToJson(final PictureModel pictureModel) throws JsonProcessingException {
-
-        final String imageObjectJson = mainFrame.getObjectMapper().writeValueAsString(pictureModel);
-        return imageObjectJson;
-    }
-
-    private void sendPictureMessageToWebSocket(final String imageObjectJson) {
-
-        mainFrame.getWebsocketClient().send(imageObjectJson);
+        if (image == null) {
+            return true;
+        }
+        return false;
     }
 
     private PictureModel buildPictureModelForWebSocket(final byte[] imageBytesArray) {
@@ -317,18 +282,19 @@ public class ImagePanelImpl extends ImagePanel {
         return pictureModel;
     }
 
-    private boolean isImageEmpty() {
+    private String convertPictureModelToJson(final PictureModel pictureModel) throws JsonProcessingException {
 
-        if (image == null) {
-            return true;
-        }
-        return false;
+        final String imageObjectJson = mainFrame.getObjectMapper().writeValueAsString(pictureModel);
+        return imageObjectJson;
+    }
+
+    private void sendPictureMessageToWebSocket(final String imageObjectJson) {
+
+        mainFrame.getWebsocketClient().send(imageObjectJson);
     }
 
     @Override
     protected void selectPictureButtonMouseClicked(MouseEvent e) {
-
-        ensureEDT();
 
         JFileChooser jFileChooser = new JFileChooser(System.getProperty("user.home"));
         jFileChooser.setDialogTitle("Select a picture");
@@ -383,8 +349,6 @@ public class ImagePanelImpl extends ImagePanel {
     @Override
     protected void zoomMotherPanelMouseWheelMoved(MouseWheelEvent e) {
 
-        ensureEDT();
-
         if (e.isControlDown()) {
 
             if (e.getWheelRotation() < 0) {
@@ -427,5 +391,11 @@ public class ImagePanelImpl extends ImagePanel {
 
             redrawEverything();
         }
+    }
+
+    private void destructImagePanel() {
+
+        this.removeAll();
+        this.setVisible(false);
     }
 }
