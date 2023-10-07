@@ -157,6 +157,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     public void initGuiFunctionality() {
 
         this.guiFunctionality = new GuiFunctionality(this);
+        this.guiFunctionality.setupGuiFunctionality();
     }
 
     /**
