@@ -1,6 +1,5 @@
 package com.soeguet.gui.comments.right;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import com.soeguet.gui.comments.interfaces.LinkPanelInterface;
 import com.soeguet.gui.comments.right.generated.PanelRight;
 import com.soeguet.gui.comments.util.LinkWrapEditorKit;
@@ -19,7 +18,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 
 public class LinkRightImpl extends PanelRight implements LinkPanelInterface {
-
 
     public LinkRightImpl(final MainFrameInterface mainFrame) {
 
@@ -80,6 +78,28 @@ public class LinkRightImpl extends PanelRight implements LinkPanelInterface {
         jEditorPane.setBackground(Color.WHITE);
         jEditorPane.setText("<a href=\"" + messageModel.getMessage() + "\" style=\"text-decoration:underline; color:blue; font-size:15;\">" + messageModel.getMessage() + "</a>");
         return jEditorPane;
+    }
+
+    /**
+     Sets up a time field for the given base model.
+
+     @param baseModel the base model to set up the time field for
+     */
+    @Override
+    public void setupTimeField(final BaseModel baseModel) {
+
+        super.setupTimeField(baseModel, getTimeLabel());
+    }
+
+    /**
+     Sets up the name field for the given base model.
+
+     @param baseModel the base model to set up the name field for
+     */
+    @Override
+    public void setupNameField(final BaseModel baseModel) {
+
+        super.setupNameField(baseModel, getNameLabel());
     }
 
     /**

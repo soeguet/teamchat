@@ -2,9 +2,9 @@ package com.soeguet.gui.comments.left;
 
 import com.soeguet.gui.comments.interfaces.LinkPanelInterface;
 import com.soeguet.gui.comments.left.generated.PanelLeft;
-import com.soeguet.gui.comments.right.generated.PanelRight;
 import com.soeguet.gui.comments.util.LinkWrapEditorKit;
 import com.soeguet.gui.main_frame.MainFrameInterface;
+import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 
 import javax.swing.*;
@@ -14,11 +14,9 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
-import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 
 public class LinkLeftImpl extends PanelLeft implements LinkPanelInterface {
-
 
     public LinkLeftImpl(final MainFrameInterface mainFrame) {
 
@@ -27,34 +25,9 @@ public class LinkLeftImpl extends PanelLeft implements LinkPanelInterface {
 
     @Override
     public void implementComment(final Component component) {
+
         form_container.add(component, "cell 1 1, wrap");
     }
-
-    @Override
-    public void setBorderColor(final Color borderColor) {
-
-    }
-
-    @Override
-    protected void replyButtonClicked(final MouseEvent e) {
-
-    }
-
-    @Override
-    protected void actionLabelMouseEntered(final MouseEvent e) {
-
-    }
-
-    @Override
-    protected void actionLabelMouseClicked(final MouseEvent e) {
-
-    }
-
-    @Override
-    protected void actionLabelMouseExited(final MouseEvent e) {
-
-    }
-
 
     /**
      Adds a hyperlink listener to the given component.
@@ -101,6 +74,28 @@ public class LinkLeftImpl extends PanelLeft implements LinkPanelInterface {
     }
 
     /**
+     Sets up a time field for the given base model.
+
+     @param baseModel the base model to set up the time field for
+     */
+    @Override
+    public void setupTimeField(final BaseModel baseModel) {
+
+        super.setupTimeField(baseModel, getTimeLabel());
+    }
+
+    /**
+     Sets up the name field for a given base model.
+
+     @param baseModel the base model to set up the name field for
+     */
+    @Override
+    public void setupNameField(final BaseModel baseModel) {
+
+        super.setupNameField(baseModel, getNameLabel());
+    }
+
+    /**
      Prepares the style for a clicked link in the JEditorPane.
 
      @param jEditorPane the JEditorPane to apply the clicked link style to
@@ -132,6 +127,26 @@ public class LinkLeftImpl extends PanelLeft implements LinkPanelInterface {
 
             throw new RuntimeException(ex);
         }
+    }
+
+    @Override
+    protected void actionLabelMouseEntered(final MouseEvent e) {
+
+    }
+
+    @Override
+    protected void actionLabelMouseExited(final MouseEvent e) {
+
+    }
+
+    @Override
+    protected void replyButtonClicked(final MouseEvent e) {
+
+    }
+
+    @Override
+    protected void actionLabelMouseClicked(final MouseEvent e) {
+
     }
 
 }

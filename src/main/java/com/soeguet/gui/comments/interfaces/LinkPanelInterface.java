@@ -1,5 +1,6 @@
 package com.soeguet.gui.comments.interfaces;
 
+import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 
 import javax.swing.*;
@@ -17,4 +18,8 @@ public interface LinkPanelInterface {
     void addHyperlinkListener(Component component);
 
     JEditorPane createEditorPaneForLinks(MessageModel messageModel);
+
+    void setupTimeField(BaseModel baseModel);
+
+    void setupNameField(BaseModel baseModel);
 }

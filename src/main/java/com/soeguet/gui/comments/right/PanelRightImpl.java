@@ -39,7 +39,6 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
         this.baseModel = baseModel;
     }
 
-
     public JEditorPane createEditorPaneForLinks(MessageModel messageModel) {
 
         JEditorPane jEditorPane = new JEditorPane();
@@ -84,8 +83,6 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
         }
     }
 
-
-
     @Override
     public void setupTextPanelWrapper() {
 
@@ -122,7 +119,6 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
         addRightClickOptionToPanel(actualTextPane);
         form_container.add(actualTextPane, "cell 0 1, wrap");
     }
-
 
     private void setupCommentEssentials(final MessageModel messageModel) {
 

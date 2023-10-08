@@ -114,6 +114,7 @@ public class CommentManagerImpl implements CommentManager {
             linkRight.setBorderColor(determineBorderColor("own"));
 
             linkRight.implementComment(jEditorPane);
+            linkRight.setupTimeField(messageModel);
 
             addMessagePanelToMainChatPanel((JPanel) linkRight, "trailing");
 
@@ -187,6 +188,7 @@ public class CommentManagerImpl implements CommentManager {
             linkLeft.setBorderColor(determineBorderColor(messageModel.getSender()));
 
             linkLeft.implementComment(jEditorPane);
+            linkLeft.setupTimeField(messageModel);
 
             addMessagePanelToMainChatPanel((JPanel) linkLeft, "leading");
 
