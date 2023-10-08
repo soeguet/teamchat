@@ -1,15 +1,21 @@
 package com.soeguet.gui.comments.right;
 
-import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.comments.interfaces.CommentInterface;
+import com.soeguet.gui.comments.interfaces.LinkPanelInterface;
 import com.soeguet.gui.comments.right.generated.PanelRight;
+import com.soeguet.gui.comments.util.LinkWrapEditorKit;
 import com.soeguet.gui.comments.util.QuotePanelImpl;
+import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
+import javax.swing.text.Document;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
@@ -25,14 +31,7 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     private final BaseModel baseModel;
     private JPopupMenu jPopupMenu;
     private BufferedImage image;
-    private JTextPane actualTextPane;
 
-    /**
-     Creates a PanelRightImpl object with the given parameters.
-
-     @param mainFrame the reference to the MainFrameInterface object
-     @param baseModel the reference to the BaseModel object
-     */
     public PanelRightImpl(MainFrameInterface mainFrame, BaseModel baseModel) {
 
         super(mainFrame);
@@ -40,13 +39,53 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
         this.baseModel = baseModel;
     }
 
-    /**
-     Sets up the text panel wrapper for the message.
 
-     This method handles various tasks related to message processing and UI setup.
-     It should only be called when the base model is an instance of MessageModel.
-     The method uses SwingUtilities.invokeLater() to ensure that the UI-related tasks are executed on the Event Dispatch Thread (EDT).
+    public JEditorPane createEditorPaneForLinks(MessageModel messageModel) {
+
+        JEditorPane jEditorPane = new JEditorPane();
+        jEditorPane.setEditorKit(new LinkWrapEditorKit());
+        jEditorPane.setEditable(false);
+        jEditorPane.setBackground(Color.WHITE);
+        jEditorPane.setText("<a href=\"" + messageModel.getMessage() + "\" style=\"text-decoration:underline; color:blue; font-size:15;\">" + messageModel.getMessage() + "</a>");
+        return jEditorPane;
+    }
+
+    /**
+     Prepares the style for a clicked link in the JEditorPane.
+
+     @param jEditorPane the JEditorPane to apply the clicked link style to
      */
+    private void prepareClickedLinkStyle(final JEditorPane jEditorPane) {
+
+        Document document = jEditorPane.getDocument();
+        Style style = ((HTMLDocument) document).addStyle("visited", null);
+
+        StyleConstants.setForeground(style, LinkPanelInterface.clickedLinkViolet);
+    }
+
+    /**
+     Changes the color of the clicked link to violet in the given JEditorPane.
+
+     @param jEditorPane    the JEditorPane in which the link is clicked
+     @param hyperlinkEvent the HyperlinkEvent containing the information of the clicked link
+     */
+    private void changeLinkColorToVioletAfterClickingOnIt(final JEditorPane jEditorPane, final HyperlinkEvent hyperlinkEvent) {
+
+        try {
+
+            Document doc = jEditorPane.getDocument();
+            ((HTMLDocument) doc).setCharacterAttributes(hyperlinkEvent.getSourceElement().getStartOffset(),
+                    hyperlinkEvent.getSourceElement().getEndOffset() - hyperlinkEvent.getSourceElement().getStartOffset(),
+                    ((HTMLDocument) doc).getStyle("visited"), false);
+
+        } catch (Exception ex) {
+
+            throw new RuntimeException(ex);
+        }
+    }
+
+
+
     @Override
     public void setupTextPanelWrapper() {
 
@@ -66,18 +105,6 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
         }
     }
 
-    @Override
-    public JPanel getContainer() {
-
-        return super.getContainer();
-    }
-
-    /**
-     Handles the extraction of quoted sections from a text message.
-     If the message contains any quotes, a QuotePanelImpl is created and added to the form_panel1.
-
-     @param messageModel the message model containing the text message
-     */
     private void handleTextMessageExtractionForQuotes(final MessageModel messageModel) {
 
         QuotePanelImpl quotedSectionPanel = checkForQuotesInMessage(messageModel);
@@ -88,31 +115,15 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
         }
     }
 
-    /**
-     Sets the text message on the chat panel.
-     Creates a JTextPane with the user message from the given MessageModel and adds it to the form_panel1.
-     The text color is set to black, and a right-click option is added to the panel.
-
-     @param messageModel the message model containing the text message
-     */
     private void setTextMessageOnChatPanel(final MessageModel messageModel) {
 
-        actualTextPane = setUserMessage(messageModel);
+        JTextPane actualTextPane = setUserMessage(messageModel);
         actualTextPane.setForeground(Color.BLACK);
         addRightClickOptionToPanel(actualTextPane);
         form_container.add(actualTextPane, "cell 0 1, wrap");
     }
 
-    /**
-     Sets up the comment essentials based on the given {@link MessageModel}.
 
-     This method sets up the name field, time field, and popup menu for the comment based on the {@code messageModel} parameter.
-     The name field is set up using the {@code form_nameLabel} parameter.
-     The time field is set up using the {@code form_timeLabel} parameter.
-     The popup menu is obtained from the {@code setupEditorPopupMenu} method.
-
-     @param messageModel the message model containing the comment essentials
-     */
     private void setupCommentEssentials(final MessageModel messageModel) {
 
         //setup time
@@ -125,19 +136,6 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
         jPopupMenu = setupEditorPopupMenu(messageModel);
     }
 
-    /**
-     Sets up the picture panel wrapper for handling a {@link PictureModel} object.
-
-     This method checks if the {@code baseModel} is an instance of the {@link PictureModel} class. If it is,
-     it performs the following actions:
-     - Handles image extraction and returns if the extracted image is null.
-     - Sets the image on the chat panel and handles the maximum sizing of the image.
-     - Handles the image caption and enables right-click ability on the text pane.
-     - Sets up the remaining needed fields such as name, time, and popup menu using the {@code pictureModel} object.
-
-     This method is executed asynchronously using {@link SwingUtilities#invokeLater(Runnable)} to ensure proper
-     handling of Swing components.
-     */
     @Override
     public void setupPicturePanelWrapper() {
 
@@ -159,9 +157,6 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
             });
         }
     }
-
-
-
 
     /**
      Handles the extraction of an image from a {@link PictureModel} object.
@@ -260,6 +255,12 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     @Override
     protected void actionLabelMouseExited(MouseEvent e) {
 
+    }
+
+    @Override
+    public JPanel getContainer() {
+
+        return super.getContainer();
     }
 
     /**

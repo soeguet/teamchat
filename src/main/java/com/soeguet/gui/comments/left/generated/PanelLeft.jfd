@@ -60,7 +60,7 @@ new FormModel {
 				"value": "cell 0 0 1 2,aligny bottom,growy 0"
 			} )
 			add( new FormContainer( "javax.swing.JLayeredPane", new FormLayoutManager( class javax.swing.JLayeredPane ) ) {
-				name: "layeredPane1"
+				name: "layeredContainer"
 				"background": sfield java.awt.Color red
 				"foreground": sfield com.jformdesigner.model.FormObject NULL_VALUE
 				"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
@@ -73,7 +73,7 @@ new FormModel {
 				"$columnConstraints": "[7!][grow,fill]"
 				"$rowConstraints": "[][]"
 			} ) {
-				name: "panel1"
+				name: "container"
 				"background": sfield com.jformdesigner.model.FormObject NULL_VALUE
 				"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
 				"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE

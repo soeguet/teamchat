@@ -84,7 +84,7 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
 
         QuotePanelImpl quotedSectionPanel = checkForQuotesInMessage(messageModel);
         if (quotedSectionPanel != null) {
-            form_panel1.add(quotedSectionPanel, "cell 1 0, wrap");
+            form_container.add(quotedSectionPanel, "cell 1 0, wrap");
         }
     }
 
@@ -97,7 +97,7 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
 
         actualTextPane = setUserMessage(messageModel);
         addRightClickOptionToPanel(actualTextPane);
-        form_panel1.add(actualTextPane, "cell 1 1, wrap");
+        form_container.add(actualTextPane, "cell 1 1, wrap");
     }
 
     /**
@@ -178,7 +178,7 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     private void setImageOnChatPanel() {
 
         JLabel imageLabel = new JLabel(scaleImageIfTooBig(image));
-        form_panel1.add(imageLabel, "cell 1 0, wrap");
+        form_container.add(imageLabel, "cell 1 0, wrap");
         addMaximizePictureOnClick(imageLabel, image);
     }
 
@@ -194,7 +194,7 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
         JTextPane imageCaptionTextPane = createImageCaptionTextPane(pictureModel);
         if (imageCaptionTextPane != null) {
             addRightClickOptionToPanel(imageCaptionTextPane);
-            form_panel1.add(imageCaptionTextPane, "cell 1 1, wrap");
+            form_container.add(imageCaptionTextPane, "cell 1 1, wrap");
         }
     }
 

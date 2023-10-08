@@ -28,7 +28,7 @@ public abstract class PanelLeft extends CustomOriginPanel {
 
 	private void createUIComponents() {
 
-		form_panel1 = new JPanel() {
+		form_container = new JPanel() {
 
 			@Override
 			protected void paintComponent(Graphics grphcs) {
@@ -77,16 +77,16 @@ public abstract class PanelLeft extends CustomOriginPanel {
 	protected abstract void actionLabelMouseEntered(MouseEvent e);
 	protected abstract void actionLabelMouseExited(MouseEvent e);
 	protected abstract void replyButtonClicked(MouseEvent e);
-	public JLayeredPane getLayeredPane1() {
-		return form_layeredPane1;
+	public JLayeredPane getLayeredContainer() {
+		return form_layeredContainer;
 	}
 
 	public JLabel getNameLabel() {
 		return form_nameLabel;
 	}
 
-	public JPanel getPanel1() {
-		return form_panel1;
+	public JPanel getContainer() {
+		return form_container;
 	}
 
 	public JLayeredPane getLayeredPane2() {
@@ -126,7 +126,7 @@ public abstract class PanelLeft extends CustomOriginPanel {
 		form_nameLabel = new JLabel();
 		form_button1 = new JButton();
 		form_timeLabel = new JLabel();
-		form_layeredPane1 = new JLayeredPane();
+		form_layeredContainer = new JLayeredPane();
 		form_layeredPane2 = new JLayeredPane();
 		form_hSpacer1 = new JPanel(null);
 
@@ -191,22 +191,22 @@ public abstract class PanelLeft extends CustomOriginPanel {
 		}
 		add(form_panel2, "cell 0 0 1 2,aligny bottom,growy 0");
 
-		//======== form_layeredPane1 ========
+		//======== form_layeredContainer ========
 		{
-			form_layeredPane1.setBackground(Color.red);
-			form_layeredPane1.setForeground(null);
-			form_layeredPane1.setMinimumSize(null);
-			form_layeredPane1.setPreferredSize(null);
+			form_layeredContainer.setBackground(Color.red);
+			form_layeredContainer.setForeground(null);
+			form_layeredContainer.setMinimumSize(null);
+			form_layeredContainer.setPreferredSize(null);
 		}
-		add(form_layeredPane1, "cell 2 1 2 2,grow");
+		add(form_layeredContainer, "cell 2 1 2 2,grow");
 
-		//======== form_panel1 ========
+		//======== form_container ========
 		{
-			form_panel1.setBackground(null);
-			form_panel1.setMinimumSize(null);
-			form_panel1.setPreferredSize(null);
-			form_panel1.setMaximumSize(null);
-			form_panel1.setLayout(new MigLayout(
+			form_container.setBackground(null);
+			form_container.setMinimumSize(null);
+			form_container.setPreferredSize(null);
+			form_container.setMaximumSize(null);
+			form_container.setLayout(new MigLayout(
 				"",
 				// columns
 				"[7!]" +
@@ -215,7 +215,7 @@ public abstract class PanelLeft extends CustomOriginPanel {
 				"[]" +
 				"[]"));
 		}
-		add(form_panel1, "cell 2 0 1 2");
+		add(form_container, "cell 2 0 1 2");
 
 		//======== form_layeredPane2 ========
 		{
@@ -260,8 +260,8 @@ public abstract class PanelLeft extends CustomOriginPanel {
 	protected JLabel form_nameLabel;
 	protected JButton form_button1;
 	protected JLabel form_timeLabel;
-	protected JLayeredPane form_layeredPane1;
-	protected JPanel form_panel1;
+	protected JLayeredPane form_layeredContainer;
+	protected JPanel form_container;
 	protected JLayeredPane form_layeredPane2;
 	protected JLabel form_actionLabel;
 	protected JPanel form_hSpacer1;

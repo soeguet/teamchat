@@ -118,6 +118,8 @@ public class GuiFunctionality implements SocketToGuiInterface {
                     String messageString = convertToJSON(messageModel);
                     sendMessageToSocket(messageString);
 
+                    mainFrame.getTextEditorPane().setText("");
+
                 } catch (BadLocationException ex) {
 
                     LOGGER.log(java.util.logging.Level.SEVERE, "Error inserting text", ex);
@@ -563,9 +565,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
      @param nickname  The nickname of the client.
      */
     private void processAndDisplayMessage(final BaseModel baseModel, final String username, final String nickname) {
-
-        //if the message is from this client -> message on the right side
-        final boolean messageFromThisClient = baseModel.getSender().equals(username);
 
         int messageCategory = commentManager.categorizeMessageFromSocket(baseModel);
 

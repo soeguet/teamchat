@@ -7,6 +7,9 @@ import java.awt.*;
 
 public interface LinkPanelInterface {
 
+    Color clickedLinkViolet = Color.decode("#551A8B");
+
+
     void implementComment(Component accessible);
 
     void setBorderColor(Color borderColor);

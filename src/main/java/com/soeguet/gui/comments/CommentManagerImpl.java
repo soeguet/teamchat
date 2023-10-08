@@ -3,6 +3,7 @@ package com.soeguet.gui.comments;
 import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.interfaces.CommentManager;
 import com.soeguet.gui.comments.interfaces.LinkPanelInterface;
+import com.soeguet.gui.comments.left.LinkLeftImpl;
 import com.soeguet.gui.comments.left.PanelLeftImpl;
 import com.soeguet.gui.comments.right.LinkRightImpl;
 import com.soeguet.gui.comments.right.PanelRightImpl;
@@ -26,35 +27,23 @@ public class CommentManagerImpl implements CommentManager {
         this.mainFrame = mainFrame;
     }
 
-    @Override
-    public void setupLinkRightSite(final BaseModel baseModel) {
+    /**
+     Categorizes messages received from a socket based on the given BaseModel.
 
-        if (baseModel instanceof MessageModel messageModel) {
+     @param baseModel the BaseModel representing the message received from the socket
 
-            LinkPanelInterface linkRight = new LinkRightImpl(this.mainFrame);
-
-            //create and set up the editor pane for the link
-            final JEditorPane jEditorPane = linkRight.createEditorPaneForLinks(messageModel);
-
-            linkRight.addHyperlinkListener(jEditorPane);
-            linkRight.setBorderColor(determineBorderColor("own"));
-
-            linkRight.implementComment(jEditorPane);
-
-            addMessagePanelToMainChatPanel((JPanel) linkRight, "trailing");
-
-            repaintMainFrame();
-        }
-    }
-
+     @return an integer value representing the category of the message
+     */
     @Override
     public int categorizeMessageFromSocket(final BaseModel baseModel) {
+
+        //TODO test this
 
         switch (baseModel) {
 
             case MessageModel messageModel -> {
 
-                if (messageModel.getSender().equals("own")) {
+                if (mainFrame.getUsername().equals(messageModel.getSender())) {
 
                     if (messageModel.getMessageType() == MessageTypes.LINK) {
 
@@ -80,7 +69,7 @@ public class CommentManagerImpl implements CommentManager {
 
             case PictureModel pictureModel -> {
 
-                if (pictureModel.getSender().equals("own")) {
+                if (mainFrame.getUsername().equals(pictureModel.getSender())) {
 
                     return MessageCategory.RIGHT_SIDE_PICTURE_MESSAGE;
 
@@ -94,61 +83,133 @@ public class CommentManagerImpl implements CommentManager {
     }
 
     @Override
-    public void setupPicturesRightSide(final BaseModel messageModel, final String nickname) {
+    public void setupMessagesRightSide(final BaseModel baseModel, final String nickname) {
 
-        Color borderColor = determineBorderColor("own");
+        //TEXT - RIGHT
+        if (baseModel instanceof MessageModel messageModel) {
 
-        CommentInterface panelRight = new PanelRightImpl(this.mainFrame, messageModel);
-        this.mainFrame.getCommentsHashMap().put(messageModel.getId(), panelRight);
-        panelRight.setupPicturePanelWrapper();
-        panelRight.setBorderColor(borderColor);
-        displayNicknameInsteadOfUsername(nickname, panelRight);
-        addMessagePanelToMainChatPanel((JPanel) panelRight, "trailing");
+            Color borderColor = determineBorderColor("own");
+
+            CommentInterface panelRight = new PanelRightImpl(this.mainFrame, messageModel);
+            this.mainFrame.getCommentsHashMap().put(messageModel.getId(), panelRight);
+            panelRight.setupTextPanelWrapper();
+            panelRight.setBorderColor(borderColor);
+            displayNicknameInsteadOfUsername(nickname, panelRight);
+            addMessagePanelToMainChatPanel((JPanel) panelRight, "trailing");
+        }
     }
 
     @Override
-    public void setupMessagesLeftSide(final BaseModel messageModel, final String nickname) {
+    public void setupLinkRightSite(final BaseModel baseModel) {
 
-        Color borderColor = determineBorderColor(messageModel.getSender());
+        //LINK - RIGHT
+        if (baseModel instanceof MessageModel messageModel) {
 
-        CommentInterface panelLeft = new PanelLeftImpl(this.mainFrame, messageModel);
-        this.mainFrame.getCommentsHashMap().put(messageModel.getId(), panelLeft);
-        panelLeft.setupTextPanelWrapper();
-        panelLeft.setBorderColor(borderColor);
-        displayNicknameInsteadOfUsername(nickname, panelLeft);
-        addMessagePanelToMainChatPanel((JPanel) panelLeft, "leading");
+            LinkPanelInterface linkRight = new LinkRightImpl(this.mainFrame);
+
+            //create and set up the editor pane for the link
+            final JEditorPane jEditorPane = linkRight.createEditorPaneForLinks(messageModel);
+
+            linkRight.addHyperlinkListener(jEditorPane);
+            linkRight.setBorderColor(determineBorderColor("own"));
+
+            linkRight.implementComment(jEditorPane);
+
+            addMessagePanelToMainChatPanel((JPanel) linkRight, "trailing");
+
+            repaintMainFrame();
+        }
     }
 
     @Override
-    public void setupPicturesLeftSide(final BaseModel messageModel, final String nickname) {
+    public void setupPicturesRightSide(final BaseModel baseModel, final String nickname) {
 
-        Color borderColor = determineBorderColor(messageModel.getSender());
+        //PICTURE - RIGHT
+        if (baseModel instanceof PictureModel pictureModel) {
 
-        CommentInterface panelLeft = new PanelLeftImpl(this.mainFrame, messageModel);
-        this.mainFrame.getCommentsHashMap().put(messageModel.getId(), panelLeft);
-        panelLeft.setupPicturePanelWrapper();
-        panelLeft.setBorderColor(borderColor);
-        displayNicknameInsteadOfUsername(nickname, panelLeft);
-        addMessagePanelToMainChatPanel((JPanel) panelLeft, "leading");
+            Color borderColor = determineBorderColor("own");
+
+            CommentInterface panelRight = new PanelRightImpl(this.mainFrame, pictureModel);
+            this.mainFrame.getCommentsHashMap().put(pictureModel.getId(), panelRight);
+            panelRight.setupPicturePanelWrapper();
+            panelRight.setBorderColor(borderColor);
+            displayNicknameInsteadOfUsername(nickname, panelRight);
+            addMessagePanelToMainChatPanel((JPanel) panelRight, "trailing");
+        }
+    }
+
+    @Override
+    public void setupMessagesLeftSide(final BaseModel baseModel, final String nickname) {
+
+        //TEXT - LEFT
+        if (baseModel instanceof MessageModel messageModel) {
+
+            Color borderColor = determineBorderColor(messageModel.getSender());
+
+            CommentInterface panelLeft = new PanelLeftImpl(this.mainFrame, messageModel);
+            this.mainFrame.getCommentsHashMap().put(messageModel.getId(), panelLeft);
+            panelLeft.setupTextPanelWrapper();
+            panelLeft.setBorderColor(borderColor);
+            displayNicknameInsteadOfUsername(nickname, panelLeft);
+            addMessagePanelToMainChatPanel((JPanel) panelLeft, "leading");
+        }
+    }
+
+    @Override
+    public void setupPicturesLeftSide(final BaseModel baseModel, final String nickname) {
+
+        //PICTURE - LEFT
+        if (baseModel instanceof MessageModel messageModel) {
+
+            Color borderColor = determineBorderColor(messageModel.getSender());
+
+            CommentInterface panelLeft = new PanelLeftImpl(this.mainFrame, messageModel);
+            this.mainFrame.getCommentsHashMap().put(messageModel.getId(), panelLeft);
+            panelLeft.setupPicturePanelWrapper();
+            panelLeft.setBorderColor(borderColor);
+            displayNicknameInsteadOfUsername(nickname, panelLeft);
+            addMessagePanelToMainChatPanel((JPanel) panelLeft, "leading");
+        }
     }
 
     @Override
     public void setupLinkLeftSide(final BaseModel baseModel) {
 
+        //LINK - LEFT
+        if (baseModel instanceof MessageModel messageModel) {
+
+            LinkPanelInterface linkLeft = new LinkLeftImpl(this.mainFrame);
+
+            //create and set up the editor pane for the link
+            final JEditorPane jEditorPane = linkLeft.createEditorPaneForLinks(messageModel);
+
+            linkLeft.addHyperlinkListener(jEditorPane);
+            linkLeft.setBorderColor(determineBorderColor(messageModel.getSender()));
+
+            linkLeft.implementComment(jEditorPane);
+
+            addMessagePanelToMainChatPanel((JPanel) linkLeft, "leading");
+
+            repaintMainFrame();
+        }
     }
 
-    @Override
-    public void setupMessagesRightSide(final BaseModel messageModel, final String nickname) {
+    private void repaintMainFrame() {
 
-        Color borderColor = determineBorderColor("own");
-
-        CommentInterface panelRight = new PanelRightImpl(this.mainFrame, messageModel);
-        this.mainFrame.getCommentsHashMap().put(messageModel.getId(), panelRight);
-        panelRight.setupTextPanelWrapper();
-        panelRight.setBorderColor(borderColor);
-        displayNicknameInsteadOfUsername(nickname, panelRight);
-        addMessagePanelToMainChatPanel((JPanel) panelRight, "trailing");
+        ((JFrame) this.mainFrame).revalidate();
+        ((JFrame) this.mainFrame).repaint();
     }
+
+    private Color determineBorderColor(String sender) {
+
+        if (this.mainFrame.getChatClientPropertiesHashMap().containsKey(sender)) {
+
+            return new Color(this.mainFrame.getChatClientPropertiesHashMap().get(sender).getBorderColor());
+        }
+
+        return new Color(getRandomRgbIntValue());
+    }
+
     /**
      Displays the nickname instead of the username in a comment.
 
@@ -167,25 +228,9 @@ public class CommentManagerImpl implements CommentManager {
         }
     }
 
-    private Color determineBorderColor(String sender) {
-
-        if (this.mainFrame.getChatClientPropertiesHashMap().containsKey(sender)) {
-
-            return new Color(this.mainFrame.getChatClientPropertiesHashMap().get(sender).getBorderColor());
-        }
-
-        return new Color(getRandomRgbIntValue());
-    }
-
     private void addMessagePanelToMainChatPanel(JPanel message, String alignment) {
 
         this.mainFrame.getMainTextPanel().add(message, "w 70%, " + alignment + ", wrap");
-    }
-
-    private void repaintMainFrame() {
-
-        ((JFrame) this.mainFrame).revalidate();
-        ((JFrame) this.mainFrame).repaint();
     }
 
     private int getRandomRgbIntValue() {

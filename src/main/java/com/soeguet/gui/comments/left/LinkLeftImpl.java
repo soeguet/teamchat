@@ -1,11 +1,10 @@
-package com.soeguet.gui.comments.right;
+package com.soeguet.gui.comments.left;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import com.soeguet.gui.comments.interfaces.LinkPanelInterface;
+import com.soeguet.gui.comments.left.generated.PanelLeft;
 import com.soeguet.gui.comments.right.generated.PanelRight;
 import com.soeguet.gui.comments.util.LinkWrapEditorKit;
 import com.soeguet.gui.main_frame.MainFrameInterface;
-import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 
 import javax.swing.*;
@@ -18,25 +17,44 @@ import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 
-public class LinkRightImpl extends PanelRight implements LinkPanelInterface {
+public class LinkLeftImpl extends PanelLeft implements LinkPanelInterface {
 
 
-    public LinkRightImpl(final MainFrameInterface mainFrame) {
+    public LinkLeftImpl(final MainFrameInterface mainFrame) {
 
         super(mainFrame);
-
     }
 
-    /**
-     Adds the given component to the form container.
-
-     @param component the component to be added to the form container
-     */
     @Override
-    public void implementComment(Component component) {
-
-        form_container.add(component, "cell 0 1");
+    public void implementComment(final Component component) {
+        form_container.add(component, "cell 1 1, wrap");
     }
+
+    @Override
+    public void setBorderColor(final Color borderColor) {
+
+    }
+
+    @Override
+    protected void replyButtonClicked(final MouseEvent e) {
+
+    }
+
+    @Override
+    protected void actionLabelMouseEntered(final MouseEvent e) {
+
+    }
+
+    @Override
+    protected void actionLabelMouseClicked(final MouseEvent e) {
+
+    }
+
+    @Override
+    protected void actionLabelMouseExited(final MouseEvent e) {
+
+    }
+
 
     /**
      Adds a hyperlink listener to the given component.
@@ -116,28 +134,4 @@ public class LinkRightImpl extends PanelRight implements LinkPanelInterface {
         }
     }
 
-    @Override
-    protected void replyButtonClicked(final MouseEvent e) {
-
-    }
-
-    @Override
-    protected void actionLabelMouseEntered(final MouseEvent e) {
-
-    }
-
-    @Override
-    protected void actionLabelMouseClicked(final MouseEvent e) {
-
-    }
-
-    @Override
-    protected void actionLabelMouseExited(final MouseEvent e) {
-
-    }
-
-    @Override
-    protected void thisComponentResized(final ComponentEvent e) {
-
-    }
 }
