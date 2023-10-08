@@ -9,12 +9,9 @@ import com.soeguet.cache.implementations.MessageQueue;
 import com.soeguet.cache.implementations.WaitingNotificationQueue;
 import com.soeguet.cache.manager.CacheManager;
 import com.soeguet.gui.comments.interfaces.CommentInterface;
-import com.soeguet.gui.comments.interfaces.LinkPanelInterface;
+import com.soeguet.gui.comments.interfaces.CommentManager;
 import com.soeguet.gui.comments.left.PanelLeftImpl;
-import com.soeguet.gui.comments.right.LinkRightImpl;
 import com.soeguet.gui.comments.right.PanelRightImpl;
-import com.soeguet.gui.comments.util.LinkWrapEditorKit;
-import com.soeguet.gui.comments.util.WrapEditorKit;
 import com.soeguet.gui.image_panel.ImagePanelImpl;
 import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.notification_panel.NotificationImpl;
@@ -24,6 +21,7 @@ import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
 import com.soeguet.properties.CustomUserProperties;
+import com.soeguet.util.MessageCategory;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -48,18 +46,21 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
     private final MainFrameInterface mainFrame;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final CommentManager commentManager;
     Logger LOGGER = Logger.getLogger(GuiFunctionality.class.getName());
     CacheManager cacheManager = CacheManagerFactory.getCacheManager();
 
     /**
-     Constructs a new GuiFunctionality object with the given main frame.
-     This class is responsible for providing additional functionality to the GUI.
+     Constructor for the GuiFunctionality class.
+     Initializes the mainFrame and commentManager properties.
 
-     @param mainFrame the main frame of the GUI
+     @param mainFrame      The main frame of the GUI.
+     @param commentManager The implementation of the CommentManager interface.
      */
-    public GuiFunctionality(MainFrameInterface mainFrame) {
+    public GuiFunctionality(MainFrameInterface mainFrame, final CommentManager commentManager) {
 
         this.mainFrame = mainFrame;
+        this.commentManager = commentManager;
     }
 
     /**
@@ -71,7 +72,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
      @return the random RGB integer value
      */
-    private static int getRandomRgbIntValue() {
+    private int getRandomRgbIntValue() {
 
         Random rand = new Random();
         int r = rand.nextInt(256);
@@ -557,153 +558,34 @@ public class GuiFunctionality implements SocketToGuiInterface {
     /**
      This method processes and displays a message based on the message model, username, and nickname.
 
-     @param messageModel The message model representing the message.
-     @param username     The username of the client.
-     @param nickname     The nickname of the client.
+     @param baseModel The message model representing the message.
+     @param username  The username of the client.
+     @param nickname  The nickname of the client.
      */
-    private void processAndDisplayMessage(final BaseModel messageModel, final String username, final String nickname) {
+    private void processAndDisplayMessage(final BaseModel baseModel, final String username, final String nickname) {
 
         //if the message is from this client -> message on the right side
-        final boolean messageFromThisClient = messageModel.getSender().equals(username);
+        final boolean messageFromThisClient = baseModel.getSender().equals(username);
 
-        switch (messageModel) {
+        int messageCategory = commentManager.categorizeMessageFromSocket(baseModel);
 
-            //if the message contains text only
-            case MessageModel text -> {
+        switch (messageCategory) {
 
-                //TODO implement MessageTypes
+            case MessageCategory.RIGHT_SIDE_TEXT_MESSAGE -> commentManager.setupMessagesRightSide(baseModel, nickname);
 
-                if (messageFromThisClient) {
+            case MessageCategory.RIGHT_SIDE_PICTURE_MESSAGE -> commentManager.setupPicturesRightSide(baseModel, nickname);
 
-                    if (text.getMessageType() == MessageTypes.LINK) {
+            case MessageCategory.RIGHT_SIDE_LINK_MESSAGE -> commentManager.setupLinkRightSite(baseModel);
 
-                        //LINK
-                        setupLinkRightSite(text);
+            case MessageCategory.LEFT_SIDE_TEXT_MESSAGE -> commentManager.setupMessagesLeftSide(baseModel, nickname);
 
-                    } else {
+            case MessageCategory.LEFT_SIDE_PICTURE_MESSAGE -> commentManager.setupPicturesLeftSide(baseModel, nickname);
 
-                        //right side = own message
-                        setupMessagesRightSide(text, nickname);
-                    }
-
-                } else {
-
-                    //left side = other message
-                    setupMessagesLeftSide(text, nickname);
-                }
-            }
-
-            //if the message contains a picture
-            case PictureModel picture -> {
-
-                if (messageFromThisClient) {
-
-                    //right side = own message
-                    setupPicturesRightSide(picture, nickname);
-
-                } else {
-
-                    //left side = other message
-                    setupPicturesLeftSide(picture, nickname);
-                }
-            }
+            case MessageCategory.LEFT_SIDE_LINK_MESSAGE -> commentManager.setupLinkLeftSide(baseModel);
         }
     }
 
-    private void setupLinkRightSite(final MessageModel messageModel) {
 
-        //TODO LINK INTEGRATION
-        //TODO clean up
-        LinkPanelInterface linkRight = new LinkRightImpl(this.mainFrame);
-
-        //create and set up the editor pane for the link
-        final JEditorPane jEditorPane = linkRight.createEditorPaneForLinks(messageModel);
-
-        linkRight.addHyperlinkListener(jEditorPane);
-        linkRight.setBorderColor(determineBorderColor("own"));
-
-        linkRight.implementComment(jEditorPane);
-
-//        this.mainFrame.getMainTextPanel().add((JPanel) linkRight, "w 70%, trailing, wrap");
-        addMessagePanelToMainChatPanel((JPanel) linkRight, "trailing");
-
-        repaintMainFrame();
-    }
-
-
-    //TODO this is a very clunky part, needs to be refactored
-
-    /**
-     This method sets up and displays a picture message on the left side of the chat interface.
-
-     @param messageModel The message model representing the picture message.
-     @param nickname     The nickname of the client.
-     */
-    private void setupPicturesLeftSide(final BaseModel messageModel, final String nickname) {
-
-        Color borderColor = determineBorderColor(messageModel.getSender());
-
-        CommentInterface panelLeft = new PanelLeftImpl(this.mainFrame, messageModel);
-        this.mainFrame.getCommentsHashMap().put(messageModel.getId(), panelLeft);
-        panelLeft.setupPicturePanelWrapper();
-        panelLeft.setBorderColor(borderColor);
-        displayNicknameInsteadOfUsername(nickname, panelLeft);
-        addMessagePanelToMainChatPanel((JPanel) panelLeft, "leading");
-    }
-
-    /**
-     This method sets up and displays a picture message on the right side of the chat interface.
-
-     @param messageModel The message model representing the picture message.
-     @param nickname     The nickname of the client.
-     */
-    private void setupPicturesRightSide(final BaseModel messageModel, final String nickname) {
-
-        Color borderColor = determineBorderColor("own");
-
-        CommentInterface panelRight = new PanelRightImpl(this.mainFrame, messageModel);
-        this.mainFrame.getCommentsHashMap().put(messageModel.getId(), panelRight);
-        panelRight.setupPicturePanelWrapper();
-        panelRight.setBorderColor(borderColor);
-        displayNicknameInsteadOfUsername(nickname, panelRight);
-        addMessagePanelToMainChatPanel((JPanel) panelRight, "trailing");
-    }
-
-    /**
-     This method sets up and displays a text message on the left side of the chat interface.
-
-     @param messageModel The message model representing the text message.
-     @param nickname     The nickname of the client.
-     */
-    private void setupMessagesLeftSide(final BaseModel messageModel, final String nickname) {
-
-        Color borderColor = determineBorderColor(messageModel.getSender());
-
-        CommentInterface panelLeft = new PanelLeftImpl(this.mainFrame, messageModel);
-        this.mainFrame.getCommentsHashMap().put(messageModel.getId(), panelLeft);
-        panelLeft.setupTextPanelWrapper();
-        panelLeft.setBorderColor(borderColor);
-        displayNicknameInsteadOfUsername(nickname, panelLeft);
-        addMessagePanelToMainChatPanel((JPanel) panelLeft, "leading");
-    }
-
-    /**
-     This method sets up and displays a text message on the right side of the chat interface.
-
-     @param messageModel The message model representing the text message.
-     @param nickname     The nickname of the client.
-     */
-    private void setupMessagesRightSide(final BaseModel messageModel, final String nickname) {
-
-        Color borderColor = determineBorderColor("own");
-
-        CommentInterface panelRight = new PanelRightImpl(this.mainFrame, messageModel);
-        this.mainFrame.getCommentsHashMap().put(messageModel.getId(), panelRight);
-        panelRight.setupTextPanelWrapper();
-        panelRight.setBorderColor(borderColor);
-        displayNicknameInsteadOfUsername(nickname, panelRight);
-        addMessagePanelToMainChatPanel((JPanel) panelRight, "trailing");
-    }
 
     private void checkIfDequeIsEmptyOrStartOver() {
 
@@ -836,23 +718,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
         return this.objectMapper.readValue(jsonMessage, BaseModel.class);
     }
 
-    /**
-     Displays the nickname instead of the username in a comment.
 
-     If the nickname parameter is not null and not empty after trimming,
-     it sets the text of the name label in the comment to the nickname.
-
-     @param nickname the nickname to be displayed
-     @param comment  the comment object containing the name label
-     */
-    private void displayNicknameInsteadOfUsername(String nickname, CommentInterface comment) {
-
-        if (nickname != null && !nickname.trim().isEmpty()) {
-            comment.getNameLabel().setText(nickname);
-            comment.getNameLabel().revalidate();
-            comment.getNameLabel().repaint();
-        }
-    }
 
     private void addMessagePanelToMainChatPanel(JPanel message, String alignment) {
 

@@ -17,12 +17,15 @@ public class CustomWebsocketClient extends WebSocketClient {
 
     private final Logger logger = Logger.getLogger(CustomWebsocketClient.class.getName());
     private final MainFrameInterface mainFrame;
-    private final SocketToGuiInterface socketToGuiInterface;
+//    private final SocketToGuiInterface socketToGuiInterface;
 
-    public CustomWebsocketClient(URI serverUri, MainFrameInterface mainFrame) {
+    private final SocketToGuiInterface guiFunctionality;
+
+    public CustomWebsocketClient(URI serverUri, MainFrameInterface mainFrame, final SocketToGuiInterface guiFunctionality) {
 
         super(serverUri);
-        socketToGuiInterface = new GuiFunctionality(mainFrame);
+//        socketToGuiInterface = new GuiFunctionality(mainFrame, commentManager);
+        this.guiFunctionality = guiFunctionality;
         this.mainFrame = mainFrame;
     }
 
@@ -55,7 +58,7 @@ public class CustomWebsocketClient extends WebSocketClient {
     @Override
     public void onMessage(String message) {
 
-        socketToGuiInterface.onMessage(message);
+        guiFunctionality.onMessage(message);
     }
 
     @Override
@@ -81,6 +84,6 @@ public class CustomWebsocketClient extends WebSocketClient {
     @Override
     public void onMessage(final ByteBuffer bytes) {
 
-        socketToGuiInterface.onMessage(bytes.array());
+        guiFunctionality.onMessage(bytes.array());
     }
 }

@@ -1,5 +1,6 @@
 package com.soeguet.socket_client;
 
+import com.soeguet.behaviour.SocketToGuiInterface;
 import com.soeguet.gui.main_frame.MainFrameInterface;
 import net.miginfocom.swing.MigLayout;
 
@@ -15,10 +16,12 @@ public class ClientController {
     private final MainFrameInterface mainFrame;
     private URI serverUri;
     private CustomWebsocketClient websocketClient;
+    private final SocketToGuiInterface guiFunctionality;
 
-    public ClientController(final MainFrameInterface mainFrame) {
+    public ClientController(final MainFrameInterface mainFrame, final SocketToGuiInterface guiFunctionality) {
 
         this.mainFrame = mainFrame;
+        this.guiFunctionality = guiFunctionality;
     }
 
     public void initClient() {
@@ -47,7 +50,7 @@ public class ClientController {
 
     public void connectToWebsocket() {
 
-        websocketClient = new CustomWebsocketClient(serverUri, mainFrame);
+        websocketClient = new CustomWebsocketClient(serverUri, mainFrame, guiFunctionality);
         websocketClient.connect();
     }
 

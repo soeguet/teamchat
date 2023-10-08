@@ -5,6 +5,8 @@ import com.soeguet.behaviour.GuiFunctionality;
 import com.soeguet.cache.factory.CacheManagerFactory;
 import com.soeguet.cache.implementations.WaitingNotificationQueue;
 import com.soeguet.cache.manager.CacheManager;
+import com.soeguet.gui.comments.CommentManagerImpl;
+import com.soeguet.gui.comments.interfaces.CommentManager;
 import com.soeguet.gui.image_panel.ImagePanelImpl;
 import com.soeguet.gui.main_frame.generated.ChatPanel;
 import com.soeguet.gui.comments.interfaces.CommentInterface;
@@ -49,7 +51,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     private final List<NotificationImpl> notificationList = new ArrayList<>();
     private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
     private final EnvVariables envVariables;
-    private final ClientController clientController;
+    private  ClientController clientController;
     private CustomProperties customProperties;
     private GuiFunctionality guiFunctionality;
     private int JSCROLLPANE_MARGIN_RIGHT_BORDER;
@@ -71,7 +73,11 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     public ChatMainFrameImpl(final EnvVariables envVariables) {
 
         this.envVariables = envVariables;
-        clientController = new ClientController(this);
+    }
+
+    public void initializeClientController() {
+
+        clientController = new ClientController(this, guiFunctionality);
         clientController.initClient();
     }
 
@@ -151,7 +157,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      */
     public void initGuiFunctionality() {
 
-        this.guiFunctionality = new GuiFunctionality(this);
+        CommentManager commentManager = new CommentManagerImpl(this);
+
+        this.guiFunctionality = new GuiFunctionality(this, commentManager);
         this.guiFunctionality.setupGuiFunctionality();
     }
 

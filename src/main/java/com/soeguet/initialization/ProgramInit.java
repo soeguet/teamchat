@@ -103,6 +103,7 @@ public class ProgramInit {
             mainFrame.loadUsernameFromEnvVariables();
             mainFrame.loadCustomProperties();
             mainFrame.initGuiFunctionality();
+            mainFrame.initializeClientController();
             mainFrame.initEmojiHandlerAndList();
 
             //operating system specific settings
@@ -140,12 +141,12 @@ public class ProgramInit {
     }
 
     /**
-     * Retrieves the version information of the chat application.
-     *
-     * @return a string representing the version information of the chat application.
-     * If the version information is available in the "version.properties" file,
-     * it is retrieved and returned along with a suffix "- ". If the file is not found or an error occurs while reading the property,
-     * an empty string is returned.
+     Retrieves the version information of the chat application.
+
+     @return a string representing the version information of the chat application.
+     If the version information is available in the "version.properties" file,
+     it is retrieved and returned along with a suffix "- ". If the file is not found or an error occurs while reading the property,
+     an empty string is returned.
      */
     private String chatVersion() {
 
