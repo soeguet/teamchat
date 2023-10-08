@@ -1,4 +1,4 @@
-package com.soeguet.gui.newcomment.util.generated;
+package com.soeguet.gui.comments.util.generated;
 
 import java.awt.*;
 import javax.swing.*;

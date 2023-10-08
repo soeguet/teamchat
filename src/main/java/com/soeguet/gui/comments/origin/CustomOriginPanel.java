@@ -1,8 +1,8 @@
-package com.soeguet.gui.newcomment.custom_origin;
+package com.soeguet.gui.comments.origin;
 
+import com.soeguet.gui.comments.util.QuotePanelImpl;
+import com.soeguet.gui.comments.util.WrapEditorKit;
 import com.soeguet.gui.main_frame.MainFrameInterface;
-import com.soeguet.gui.newcomment.util.QuotePanelImpl;
-import com.soeguet.gui.newcomment.util.WrapEditorKit;
 import com.soeguet.gui.reply.ReplyPanelImpl;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
@@ -138,7 +138,6 @@ public class CustomOriginPanel extends JPanel {
 
     protected QuotePanelImpl checkForQuotesInMessage(MessageModel messageModel) {
 
-        // EDT check done!
         String quotedText = messageModel.getQuotedMessageText();
 
         if (quotedText == null) {
@@ -156,11 +155,10 @@ public class CustomOriginPanel extends JPanel {
 
      @param baseModel The base model containing the name to be set.
 
-     @return The name that was set, or an empty string if the name is already set to the previous message sender name.
+     @return The name that was set or an empty string if the name is already set to the previous message sender name.
      */
     protected String setNameField(BaseModel baseModel) {
 
-        // EDT check done!
         String sender = baseModel.getSender();
 
         final String previousMessageSenderName = this.mainFrame.getLastMessageSenderName();
@@ -185,7 +183,6 @@ public class CustomOriginPanel extends JPanel {
 
         //TODO quite a mess, needs rework.. maybe?
 
-        // EDT check done!
         String timeStamp = baseModel.getTime();
 
         final String lastMessageTimestamp = this.mainFrame.getLastMessageTimeStamp();
@@ -236,14 +233,12 @@ public class CustomOriginPanel extends JPanel {
      */
     protected boolean setTimestampFieldInvisible(BaseModel baseModel) {
 
-        // EDT check done!
         String timeStamp = baseModel.getTime();
 
         final String lastMessageTimestamp = this.mainFrame.getLastMessageTimeStamp();
         final String previousMessageSenderName = this.mainFrame.getLastMessageSenderName();
 
         this.mainFrame.setLastMessageTimeStamp(timeStamp);
-
 
         // null value -> time
         if (previousMessageSenderName == null || lastMessageTimestamp == null) {
@@ -291,7 +286,6 @@ public class CustomOriginPanel extends JPanel {
      */
     protected boolean setNameFieldInvisible(BaseModel baseModel) {
 
-        // EDT check done!
         String sender = baseModel.getSender();
 
         final String previousMessageSenderName = this.mainFrame.getLastMessageSenderName();
@@ -314,7 +308,6 @@ public class CustomOriginPanel extends JPanel {
      */
     protected JTextPane setUserMessage(BaseModel baseModel) {
 
-        // EDT check done!
         JTextPane actualTextPane = createTextPane();
         actualTextPane.setEditorKit(new WrapEditorKit());
 
@@ -348,7 +341,6 @@ public class CustomOriginPanel extends JPanel {
      */
     protected void addRightClickOptionToPanel(final JTextPane actualTextPane) {
 
-        // EDT check done!
         //return if no text is present
         if (actualTextPane == null) {
             return;
@@ -427,8 +419,6 @@ public class CustomOriginPanel extends JPanel {
      */
     protected JTextPane createImageCaptionTextPane(BaseModel baseModel) {
 
-        // EDT check done!
-
         JTextPane actualTextPane = new JTextPane();
 
         if (baseModel.getMessage().isBlank()) {
@@ -454,8 +444,6 @@ public class CustomOriginPanel extends JPanel {
      @return The created and configured JPopupMenu.
      */
     protected JPopupMenu setupEditorPopupMenu(final BaseModel baseModel) {
-
-        // EDT check done!
 
         JPopupMenu jPopupMenu = new JPopupMenu();
 

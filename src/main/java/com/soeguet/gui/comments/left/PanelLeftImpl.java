@@ -1,14 +1,15 @@
-package com.soeguet.gui.newcomment.left;
+package com.soeguet.gui.comments.left;
 
 import com.soeguet.gui.main_frame.MainFrameInterface;
-import com.soeguet.gui.newcomment.helper.CommentInterface;
-import com.soeguet.gui.newcomment.left.generated.PanelLeft;
-import com.soeguet.gui.newcomment.util.QuotePanelImpl;
+import com.soeguet.gui.comments.interfaces.CommentInterface;
+import com.soeguet.gui.comments.left.generated.PanelLeft;
+import com.soeguet.gui.comments.util.QuotePanelImpl;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.logging.Logger;
@@ -23,6 +24,7 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     private final BaseModel baseModel;
     private JPopupMenu jPopupMenu;
     private BufferedImage image;
+    private JTextPane actualTextPane;
 
     /**
      Constructs a new PanelLeftImpl object.
@@ -35,6 +37,12 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
         super(mainFrame);
 
         this.baseModel = baseModel;
+    }
+
+    @Override
+    public JPanel getContainer() {
+
+        return null;
     }
 
     /**
@@ -87,7 +95,7 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
      */
     private void setTextMessageOnChatPanel(final MessageModel messageModel) {
 
-        JTextPane actualTextPane = setUserMessage(messageModel);
+        actualTextPane = setUserMessage(messageModel);
         addRightClickOptionToPanel(actualTextPane);
         form_panel1.add(actualTextPane, "cell 1 1, wrap");
     }
@@ -136,6 +144,8 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
             });
         }
     }
+
+
 
     /**
      Handles image extraction from the given PictureModel.

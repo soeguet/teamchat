@@ -1,14 +1,15 @@
-package com.soeguet.gui.newcomment.right;
+package com.soeguet.gui.comments.right;
 
 import com.soeguet.gui.main_frame.MainFrameInterface;
-import com.soeguet.gui.newcomment.helper.CommentInterface;
-import com.soeguet.gui.newcomment.right.generated.PanelRight;
-import com.soeguet.gui.newcomment.util.QuotePanelImpl;
+import com.soeguet.gui.comments.interfaces.CommentInterface;
+import com.soeguet.gui.comments.right.generated.PanelRight;
+import com.soeguet.gui.comments.util.QuotePanelImpl;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
 
 import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
@@ -24,6 +25,7 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     private final BaseModel baseModel;
     private JPopupMenu jPopupMenu;
     private BufferedImage image;
+    private JTextPane actualTextPane;
 
     /**
      Creates a PanelRightImpl object with the given parameters.
@@ -53,7 +55,7 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
             SwingUtilities.invokeLater(() -> {
 
                 //handle message containing quotes
-                handleTextMessageExtraction(messageModel);
+                handleTextMessageExtractionForQuotes(messageModel);
 
                 //handle the actual message and add a right click option to text pane
                 setTextMessageOnChatPanel(messageModel);
@@ -64,17 +66,25 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
         }
     }
 
+    @Override
+    public JPanel getContainer() {
+
+        return super.getContainer();
+    }
+
     /**
      Handles the extraction of quoted sections from a text message.
      If the message contains any quotes, a QuotePanelImpl is created and added to the form_panel1.
 
      @param messageModel the message model containing the text message
      */
-    private void handleTextMessageExtraction(final MessageModel messageModel) {
+    private void handleTextMessageExtractionForQuotes(final MessageModel messageModel) {
 
         QuotePanelImpl quotedSectionPanel = checkForQuotesInMessage(messageModel);
+
         if (quotedSectionPanel != null) {
-            form_panel1.add(quotedSectionPanel, "cell 0 0, wrap");
+
+            form_container.add(quotedSectionPanel, "cell 0 0, wrap");
         }
     }
 
@@ -87,10 +97,10 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
      */
     private void setTextMessageOnChatPanel(final MessageModel messageModel) {
 
-        JTextPane actualTextPane = setUserMessage(messageModel);
+        actualTextPane = setUserMessage(messageModel);
         actualTextPane.setForeground(Color.BLACK);
         addRightClickOptionToPanel(actualTextPane);
-        form_panel1.add(actualTextPane, "cell 0 1, wrap");
+        form_container.add(actualTextPane, "cell 0 1, wrap");
     }
 
     /**
@@ -150,6 +160,9 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
         }
     }
 
+
+
+
     /**
      Handles the extraction of an image from a {@link PictureModel} object.
 
@@ -173,7 +186,7 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     private void setImageOnChatPanel() {
 
         JLabel imageLabel = new JLabel(scaleImageIfTooBig(image));
-        form_panel1.add(imageLabel, "cell 0 0, wrap");
+        form_container.add(imageLabel, "cell 0 0, wrap");
         addMaximizePictureOnClick(imageLabel, image);
     }
 
@@ -187,7 +200,7 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
         JTextPane imageCaptionTextPane = createImageCaptionTextPane(pictureModel);
         if (imageCaptionTextPane != null) {
             addRightClickOptionToPanel(imageCaptionTextPane);
-            form_panel1.add(imageCaptionTextPane, "cell 0 1, wrap");
+            form_container.add(imageCaptionTextPane, "cell 0 1, wrap");
         }
     }
 

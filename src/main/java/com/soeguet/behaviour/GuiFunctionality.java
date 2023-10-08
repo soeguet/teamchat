@@ -8,12 +8,15 @@ import com.soeguet.cache.implementations.ActiveNotificationQueue;
 import com.soeguet.cache.implementations.MessageQueue;
 import com.soeguet.cache.implementations.WaitingNotificationQueue;
 import com.soeguet.cache.manager.CacheManager;
+import com.soeguet.gui.comments.interfaces.CommentInterface;
+import com.soeguet.gui.comments.interfaces.LinkPanelInterface;
+import com.soeguet.gui.comments.left.PanelLeftImpl;
+import com.soeguet.gui.comments.right.LinkRightImpl;
+import com.soeguet.gui.comments.right.PanelRightImpl;
+import com.soeguet.gui.comments.util.LinkWrapEditorKit;
+import com.soeguet.gui.comments.util.WrapEditorKit;
 import com.soeguet.gui.image_panel.ImagePanelImpl;
-import com.soeguet.gui.image_panel.generated.ImagePanel;
 import com.soeguet.gui.main_frame.MainFrameInterface;
-import com.soeguet.gui.newcomment.helper.CommentInterface;
-import com.soeguet.gui.newcomment.left.PanelLeftImpl;
-import com.soeguet.gui.newcomment.right.PanelRightImpl;
 import com.soeguet.gui.notification_panel.NotificationImpl;
 import com.soeguet.gui.popups.PopupPanelImpl;
 import com.soeguet.model.MessageTypes;
@@ -59,6 +62,24 @@ public class GuiFunctionality implements SocketToGuiInterface {
         this.mainFrame = mainFrame;
     }
 
+    /**
+     Generates a random RGB integer value.
+
+     This method creates a new instance of the Random class to generate random values for the red, green,
+     and blue components of the RGB color. It then creates a new Color object using the generated values
+     and retrieves the RGB integer value using the getRGB() method.
+
+     @return the random RGB integer value
+     */
+    private static int getRandomRgbIntValue() {
+
+        Random rand = new Random();
+        int r = rand.nextInt(256);
+        int g = rand.nextInt(256);
+        int b = rand.nextInt(256);
+        return new Color(r, g, b).getRGB();
+    }
+
     public void setupGuiFunctionality() {
 
         fixScrollPaneScrollSpeed();
@@ -91,6 +112,10 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
                     String insertedText = doc.getText(offset, length);
                     //TODO clickable links
+
+                    MessageModel messageModel = new MessageModel((byte) MessageTypes.LINK, mainFrame.getUsername(), insertedText);
+                    String messageString = convertToJSON(messageModel);
+                    sendMessageToSocket(messageString);
 
                 } catch (BadLocationException ex) {
 
@@ -163,22 +188,27 @@ public class GuiFunctionality implements SocketToGuiInterface {
         });
     }
 
-    /**
-     Generates a random RGB integer value.
+    private String convertToJSON(BaseModel messageModel) {
 
-     This method creates a new instance of the Random class to generate random values for the red, green,
-     and blue components of the RGB color. It then creates a new Color object using the generated values
-     and retrieves the RGB integer value using the getRGB() method.
+        try {
 
-     @return the random RGB integer value
-     */
-    private static int getRandomRgbIntValue() {
+            return this.mainFrame.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(messageModel);
 
-        Random rand = new Random();
-        int r = rand.nextInt(256);
-        int g = rand.nextInt(256);
-        int b = rand.nextInt(256);
-        return new Color(r, g, b).getRGB();
+        } catch (JsonProcessingException e) {
+
+            LOGGER.log(java.util.logging.Level.SEVERE, "Error converting to JSON", e);
+        }
+
+        return null;
+    }
+
+    private void sendMessageToSocket(String messageString) {
+
+        this.mainFrame.getWebsocketClient().send(messageString);
+
+        final String typingStatus = "{\"type\":\"send\"}";
+
+        this.mainFrame.getWebsocketClient().send(typingStatus.getBytes());
     }
 
     public void clearTextPaneAndSendMessageToSocket() {
@@ -203,29 +233,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
     private String convertUserTextToJSON(String userTextInput) {
 
         return convertToJSON(textToMessageModel(userTextInput));
-    }
-
-    private void sendMessageToSocket(String messageString) {
-
-        this.mainFrame.getWebsocketClient().send(messageString);
-
-        final String typingStatus = "{\"type\":\"send\"}";
-
-        this.mainFrame.getWebsocketClient().send(typingStatus.getBytes());
-    }
-
-    private String convertToJSON(BaseModel messageModel) {
-
-        try {
-
-            return this.mainFrame.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(messageModel);
-
-        } catch (JsonProcessingException e) {
-
-            LOGGER.log(java.util.logging.Level.SEVERE, "Error converting to JSON", e);
-        }
-
-        return null;
     }
 
     /**
@@ -564,10 +571,20 @@ public class GuiFunctionality implements SocketToGuiInterface {
             //if the message contains text only
             case MessageModel text -> {
 
+                //TODO implement MessageTypes
+
                 if (messageFromThisClient) {
 
-                    //right side = own message
-                    setupMessagesRightSide(text, nickname);
+                    if (text.getMessageType() == MessageTypes.LINK) {
+
+                        //LINK
+                        setupLinkRightSite(text);
+
+                    } else {
+
+                        //right side = own message
+                        setupMessagesRightSide(text, nickname);
+                    }
 
                 } else {
 
@@ -593,6 +610,27 @@ public class GuiFunctionality implements SocketToGuiInterface {
         }
     }
 
+    private void setupLinkRightSite(final MessageModel messageModel) {
+
+        //TODO LINK INTEGRATION
+        //TODO clean up
+        LinkPanelInterface linkRight = new LinkRightImpl(this.mainFrame);
+
+        //create and set up the editor pane for the link
+        final JEditorPane jEditorPane = linkRight.createEditorPaneForLinks(messageModel);
+
+        linkRight.addHyperlinkListener(jEditorPane);
+        linkRight.setBorderColor(determineBorderColor("own"));
+
+        linkRight.implementComment(jEditorPane);
+
+//        this.mainFrame.getMainTextPanel().add((JPanel) linkRight, "w 70%, trailing, wrap");
+        addMessagePanelToMainChatPanel((JPanel) linkRight, "trailing");
+
+        repaintMainFrame();
+    }
+
+
     //TODO this is a very clunky part, needs to be refactored
 
     /**
@@ -610,7 +648,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
         panelLeft.setupPicturePanelWrapper();
         panelLeft.setBorderColor(borderColor);
         displayNicknameInsteadOfUsername(nickname, panelLeft);
-        addMessagePanelToMainChatPanel(panelLeft, "leading");
+        addMessagePanelToMainChatPanel((JPanel) panelLeft, "leading");
     }
 
     /**
@@ -628,7 +666,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
         panelRight.setupPicturePanelWrapper();
         panelRight.setBorderColor(borderColor);
         displayNicknameInsteadOfUsername(nickname, panelRight);
-        addMessagePanelToMainChatPanel(panelRight, "trailing");
+        addMessagePanelToMainChatPanel((JPanel) panelRight, "trailing");
     }
 
     /**
@@ -646,7 +684,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
         panelLeft.setupTextPanelWrapper();
         panelLeft.setBorderColor(borderColor);
         displayNicknameInsteadOfUsername(nickname, panelLeft);
-        addMessagePanelToMainChatPanel(panelLeft, "leading");
+        addMessagePanelToMainChatPanel((JPanel) panelLeft, "leading");
     }
 
     /**
@@ -664,7 +702,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
         panelRight.setupTextPanelWrapper();
         panelRight.setBorderColor(borderColor);
         displayNicknameInsteadOfUsername(nickname, panelRight);
-        addMessagePanelToMainChatPanel(panelRight, "trailing");
+        addMessagePanelToMainChatPanel((JPanel) panelRight, "trailing");
     }
 
     private void checkIfDequeIsEmptyOrStartOver() {
@@ -816,8 +854,8 @@ public class GuiFunctionality implements SocketToGuiInterface {
         }
     }
 
-    private void addMessagePanelToMainChatPanel(CommentInterface message, String alignment) {
+    private void addMessagePanelToMainChatPanel(JPanel message, String alignment) {
 
-        this.mainFrame.getMainTextPanel().add((JPanel) message, "w 70%, " + alignment + ", wrap");
+        this.mainFrame.getMainTextPanel().add(message, "w 70%, " + alignment + ", wrap");
     }
 }

@@ -2,12 +2,12 @@
  * Created by JFormDesigner on Sat Mar 04 00:03:24 CET 2023
  */
 
-package com.soeguet.gui.newcomment.right.generated;
+package com.soeguet.gui.comments.right.generated;
 
 import java.awt.event.*;
 
 import com.soeguet.gui.main_frame.MainFrameInterface;
-import com.soeguet.gui.newcomment.custom_origin.CustomOriginPanel;
+import com.soeguet.gui.comments.origin.CustomOriginPanel;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -39,7 +39,7 @@ public abstract class PanelRight extends CustomOriginPanel {
 
 	private void createUIComponents() {
 
-		form_panel1 = new JPanel() {
+		form_container = new JPanel() {
 
 			@Override
 			protected void paintComponent(Graphics grphcs) {
@@ -86,16 +86,16 @@ public abstract class PanelRight extends CustomOriginPanel {
 		};
 	}
 
-	public JLayeredPane getLayeredPane1() {
-		return this.form_layeredPane1;
+	public JLayeredPane getLayeredContainer() {
+		return this.form_layeredContainer;
 	}
 
 	public JLabel getNameLabel() {
 		return this.form_nameLabel;
 	}
 
-	public JPanel getPanel1() {
-		return this.form_panel1;
+	public JPanel getContainer() {
+		return this.form_container;
 	}
 
 	public JLabel getTimeLabel() {
@@ -129,7 +129,7 @@ public abstract class PanelRight extends CustomOriginPanel {
 		// Generated using JFormDesigner non-commercial license
 		createUIComponents();
 
-		this.form_layeredPane1 = new JLayeredPane();
+		this.form_layeredContainer = new JLayeredPane();
 		this.form_layeredPane2 = new JLayeredPane();
 		this.form_hSpacer1 = new JPanel(null);
 		this.form_panel2 = new JPanel();
@@ -161,23 +161,23 @@ public abstract class PanelRight extends CustomOriginPanel {
 			"[]" +
 			"[]"));
 
-		//======== form_layeredPane1 ========
+		//======== form_layeredContainer ========
 		{
-			this.form_layeredPane1.setForeground(null);
-			this.form_layeredPane1.setMinimumSize(null);
-			this.form_layeredPane1.setPreferredSize(null);
-			this.form_layeredPane1.setBackground(null);
+			this.form_layeredContainer.setForeground(null);
+			this.form_layeredContainer.setMinimumSize(null);
+			this.form_layeredContainer.setPreferredSize(null);
+			this.form_layeredContainer.setBackground(null);
 		}
-		add(this.form_layeredPane1, "cell 1 1 2 2,grow");
+		add(this.form_layeredContainer, "cell 1 1 2 2,grow");
 
-		//======== form_panel1 ========
+		//======== form_container ========
 		{
-			this.form_panel1.setBackground(null);
-			this.form_panel1.setMinimumSize(null);
-			this.form_panel1.setPreferredSize(null);
-			this.form_panel1.setMaximumSize(null);
-			this.form_panel1.setForeground(null);
-			this.form_panel1.setLayout(new MigLayout(
+			this.form_container.setBackground(null);
+			this.form_container.setMinimumSize(null);
+			this.form_container.setPreferredSize(null);
+			this.form_container.setMaximumSize(null);
+			this.form_container.setForeground(null);
+			this.form_container.setLayout(new MigLayout(
 				"",
 				// columns
 				"[grow,fill]" +
@@ -186,7 +186,7 @@ public abstract class PanelRight extends CustomOriginPanel {
 				"[]" +
 				"[]"));
 		}
-		add(this.form_panel1, "pad 0,cell 2 0 1 2,aligny bottom,growy 0");
+		add(this.form_container, "pad 0,cell 2 0 1 2,aligny bottom,growy 0");
 
 		//======== form_layeredPane2 ========
 		{
@@ -274,8 +274,8 @@ public abstract class PanelRight extends CustomOriginPanel {
 
 	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables  @formatter:off
 	// Generated using JFormDesigner non-commercial license
-	protected JLayeredPane form_layeredPane1;
-	protected JPanel form_panel1;
+	protected JLayeredPane form_layeredContainer;
+	protected JPanel form_container;
 	protected JLayeredPane form_layeredPane2;
 	protected JLabel form_actionLabel;
 	protected JPanel form_hSpacer1;

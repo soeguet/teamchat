@@ -1,4 +1,4 @@
-package com.soeguet.gui.newcomment.helper;
+package com.soeguet.gui.comments.interfaces;
 
 import javax.swing.*;
 import java.awt.*;
@@ -6,7 +6,8 @@ import java.awt.*;
 public interface CommentInterface {
 
     JLabel getNameLabel();
-    JPanel getPanel1();
+
+    JPanel getContainer();
     void setupTextPanelWrapper();
     void setupPicturePanelWrapper();
     void setBorderColor(Color borderColor);

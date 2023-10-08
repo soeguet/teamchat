@@ -1,7 +1,7 @@
-package com.soeguet.gui.newcomment.util;
+package com.soeguet.gui.comments.util;
 
 import com.soeguet.gui.main_frame.MainFrameInterface;
-import com.soeguet.gui.newcomment.util.generated.QuotePanel;
+import com.soeguet.gui.comments.util.generated.QuotePanel;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;

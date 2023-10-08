@@ -3,7 +3,7 @@ package com.soeguet.gui.reply;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.soeguet.gui.reply.generated.ReplyPanel;
 import com.soeguet.gui.main_frame.MainFrameInterface;
-import com.soeguet.gui.newcomment.util.WrapEditorKit;
+import com.soeguet.gui.comments.util.WrapEditorKit;
 import com.soeguet.model.MessageTypes;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;

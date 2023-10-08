@@ -22,7 +22,7 @@ new FormModel {
 			"opaque": false
 			addEvent( new FormEvent( "java.awt.event.ComponentListener", "componentResized", "thisComponentResized", true ) )
 			add( new FormContainer( "javax.swing.JLayeredPane", new FormLayoutManager( class javax.swing.JLayeredPane ) ) {
-				name: "layeredPane1"
+				name: "layeredContainer"
 				"foreground": sfield com.jformdesigner.model.FormObject NULL_VALUE
 				"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
 				"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
@@ -35,7 +35,7 @@ new FormModel {
 				"$rowConstraints": "[][]"
 				"$layoutConstraints": ""
 			} ) {
-				name: "panel1"
+				name: "container"
 				"background": sfield com.jformdesigner.model.FormObject NULL_VALUE
 				"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
 				"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE

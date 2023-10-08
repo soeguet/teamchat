@@ -2,10 +2,10 @@
  * Created by JFormDesigner on Sat Mar 04 00:03:24 CET 2023
  */
 
-package com.soeguet.gui.newcomment.left.generated;
+package com.soeguet.gui.comments.left.generated;
 
 import com.soeguet.gui.main_frame.MainFrameInterface;
-import com.soeguet.gui.newcomment.custom_origin.CustomOriginPanel;
+import com.soeguet.gui.comments.origin.CustomOriginPanel;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
