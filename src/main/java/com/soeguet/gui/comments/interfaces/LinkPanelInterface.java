@@ -10,7 +10,7 @@ public interface LinkPanelInterface {
 
     Color clickedLinkViolet = Color.decode("#551A8B");
 
-
+void setCursorOnLink(Cursor cursor);
     void implementComment(Component accessible);
 
     void setBorderColor(Color borderColor);

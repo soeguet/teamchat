@@ -24,6 +24,13 @@ public class LinkLeftImpl extends PanelLeft implements LinkPanelInterface {
     }
 
     @Override
+    public void setCursorOnLink(final Cursor cursor) {
+
+        form_container.setCursor(cursor);
+        form_layeredContainer.setCursor(cursor);
+    }
+
+    @Override
     public void implementComment(final Component component) {
 
         form_container.add(component, "cell 1 1, wrap");

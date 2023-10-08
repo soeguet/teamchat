@@ -17,11 +17,12 @@ import com.soeguet.gui.properties.PropertiesPanelImpl;
 import com.soeguet.model.EnvVariables;
 import com.soeguet.properties.CustomProperties;
 import com.soeguet.properties.CustomUserProperties;
-import com.soeguet.socket_client.ClientController;
+import com.soeguet.socket_client.ClientControllerImpl;
 import com.soeguet.socket_client.CustomWebsocketClient;
-import com.soeguet.util.EmojiHandler;
-import com.soeguet.util.EmojiInitializer;
-import com.soeguet.util.EmojiPopUpMenuHandler;
+import com.soeguet.emoji.EmojiHandler;
+import com.soeguet.emoji.EmojiInitializer;
+import com.soeguet.emoji.EmojiPopUpMenuHandler;
+import com.soeguet.socket_client.interfaces.ClientController;
 import com.soeguet.util.NotificationStatus;
 
 import javax.swing.Timer;
@@ -31,6 +32,7 @@ import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 import java.util.*;
 import java.util.logging.Logger;
@@ -52,7 +54,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     private final List<NotificationImpl> notificationList = new ArrayList<>();
     private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
     private final EnvVariables envVariables;
-    private  ClientController clientController;
+    private ClientController clientController;
     private CustomProperties customProperties;
     private GuiFunctionality guiFunctionality;
     private int JSCROLLPANE_MARGIN_RIGHT_BORDER;
@@ -78,8 +80,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
     public void initializeClientController() {
 
-        clientController = new ClientController(this, guiFunctionality);
-        clientController.initClient();
+        clientController = new ClientControllerImpl(this, guiFunctionality);
+        clientController.determineWebsocketURI();
+        clientController.connectToWebsocket();
     }
 
     public int getJSCROLLPANE_MARGIN_RIGHT_BORDER() {
@@ -162,7 +165,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         this.guiFunctionality = new GuiFunctionalityImpl(this, commentManager);
         this.guiFunctionality.fixScrollPaneScrollSpeed();
-        this.guiFunctionality.addDocumentListenerToTextPane();
         this.guiFunctionality.overrideTransferHandlerOfTextPane();
     }
 
@@ -864,5 +866,20 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     public void setLastMessageTimeStamp(final String lastMessageTimeStamp) {
 
         this.lastMessageTimeStamp = lastMessageTimeStamp;
+    }
+
+    public void setButtonIcons() {
+
+        URL sendUrl = ChatMainFrameImpl.class.getResource("/emojis/$+1f4e8$+.png");
+        URL emojiUrl = ChatMainFrameImpl.class.getResource("/emojis/$+1f60e$+.png");
+        URL pictureUrl = ChatMainFrameImpl.class.getResource("/emojis/$+1f4bb$+.png");
+
+        assert sendUrl != null;
+        assert emojiUrl != null;
+        assert pictureUrl != null;
+
+        form_sendButton.setIcon(new ImageIcon(sendUrl));
+        form_emojiButton.setIcon(new ImageIcon(emojiUrl));
+        form_pictureButton.setIcon(new ImageIcon(pictureUrl));
     }
 }

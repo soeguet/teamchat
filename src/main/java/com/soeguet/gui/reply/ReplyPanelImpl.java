@@ -7,8 +7,8 @@ import com.soeguet.gui.comments.util.WrapEditorKit;
 import com.soeguet.model.MessageTypes;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
-import com.soeguet.util.EmojiHandler;
-import com.soeguet.util.EmojiPopUpMenuHandler;
+import com.soeguet.emoji.EmojiHandler;
+import com.soeguet.emoji.EmojiPopUpMenuHandler;
 
 import javax.swing.*;
 import javax.swing.border.Border;

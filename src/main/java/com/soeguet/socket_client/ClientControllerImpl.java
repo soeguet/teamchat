@@ -1,8 +1,8 @@
 package com.soeguet.socket_client;
 
 import com.soeguet.behaviour.interfaces.GuiFunctionality;
-import com.soeguet.behaviour.interfaces.SocketToGuiInterface;
 import com.soeguet.gui.main_frame.MainFrameInterface;
+import com.soeguet.socket_client.interfaces.ClientController;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -11,27 +11,22 @@ import java.net.URISyntaxException;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-public class ClientController {
+public class ClientControllerImpl implements ClientController {
 
-    private final Logger logger = Logger.getLogger(ClientController.class.getName());
+    private final Logger logger = Logger.getLogger(ClientControllerImpl.class.getName());
     private final MainFrameInterface mainFrame;
+    private final GuiFunctionality guiFunctionality;
     private URI serverUri;
     private CustomWebsocketClient websocketClient;
-    private final GuiFunctionality guiFunctionality;
 
-    public ClientController(final MainFrameInterface mainFrame, final GuiFunctionality guiFunctionality) {
+    public ClientControllerImpl(final MainFrameInterface mainFrame, final GuiFunctionality guiFunctionality) {
 
         this.mainFrame = mainFrame;
         this.guiFunctionality = guiFunctionality;
     }
 
-    public void initClient() {
-
-        determineWebsocketURI();
-        connectToWebsocket();
-    }
-
-    protected void determineWebsocketURI() {
+    @Override
+    public void determineWebsocketURI() {
 
         if (readServerIp().isEmpty() || readServerPort().isEmpty()) {
 
@@ -49,6 +44,7 @@ public class ClientController {
         }
     }
 
+    @Override
     public void connectToWebsocket() {
 
         websocketClient = new CustomWebsocketClient(serverUri, mainFrame, guiFunctionality);
@@ -65,6 +61,7 @@ public class ClientController {
         return Optional.ofNullable(System.getenv("CHAT_PORT"));
     }
 
+    @Override
     public void serverInformationOptionPane() {
 
         JTextField serverIpTextField = new JTextField(7);
@@ -145,11 +142,13 @@ public class ClientController {
         }
     }
 
+    @Override
     public CustomWebsocketClient getWebsocketClient() {
 
         return websocketClient;
     }
 
+    @Override
     public void closeConnection() {
 
         if (websocketClient != null) {
@@ -158,13 +157,13 @@ public class ClientController {
         }
     }
 
-
     /**
      Prepares the application for reconnection.
 
      Resets the websocket client to null, sets the last message sender name and timestamp to null,
      and sets the startUp flag to true to disable notifications during initial message flood.
      */
+    @Override
     public void prepareReconnection() {
 
         this.websocketClient = null;

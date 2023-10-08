@@ -106,6 +106,7 @@ public class CommentManagerImpl implements CommentManager {
         if (baseModel instanceof MessageModel messageModel) {
 
             LinkPanelInterface linkRight = new LinkRightImpl(this.mainFrame);
+            linkRight.setCursorOnLink(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
             //create and set up the editor pane for the link
             final JEditorPane jEditorPane = linkRight.createEditorPaneForLinks(messageModel);
@@ -180,6 +181,7 @@ public class CommentManagerImpl implements CommentManager {
         if (baseModel instanceof MessageModel messageModel) {
 
             LinkPanelInterface linkLeft = new LinkLeftImpl(this.mainFrame);
+            linkLeft.setCursorOnLink(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
             //create and set up the editor pane for the link
             final JEditorPane jEditorPane = linkLeft.createEditorPaneForLinks(messageModel);

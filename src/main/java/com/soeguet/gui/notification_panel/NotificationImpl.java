@@ -10,7 +10,7 @@ import com.soeguet.gui.notification_panel.generated.Notification;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
-import com.soeguet.util.EmojiHandler;
+import com.soeguet.emoji.EmojiHandler;
 
 import javax.swing.*;
 import java.awt.*;

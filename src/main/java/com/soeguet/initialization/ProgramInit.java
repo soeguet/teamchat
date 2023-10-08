@@ -112,6 +112,9 @@ public class ProgramInit {
             //setup GUI
             setMainFrameTitle(mainFrame);
             setGuiIcon(mainFrame);
+
+            mainFrame.setButtonIcons();
+
             mainFrame.setVisible(true);
         });
     }

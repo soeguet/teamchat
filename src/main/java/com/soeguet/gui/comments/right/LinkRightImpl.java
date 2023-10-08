@@ -22,7 +22,13 @@ public class LinkRightImpl extends PanelRight implements LinkPanelInterface {
     public LinkRightImpl(final MainFrameInterface mainFrame) {
 
         super(mainFrame);
+    }
 
+    @Override
+    public void setCursorOnLink(final Cursor cursor) {
+
+        form_container.setCursor(cursor);
+        form_layeredContainer.setCursor(cursor);
     }
 
     /**

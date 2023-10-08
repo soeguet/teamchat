@@ -7,7 +7,7 @@ import com.soeguet.gui.reply.ReplyPanelImpl;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
-import com.soeguet.util.EmojiHandler;
+import com.soeguet.emoji.EmojiHandler;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

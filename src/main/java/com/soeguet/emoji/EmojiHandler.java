@@ -1,4 +1,4 @@
-package com.soeguet.util;
+package com.soeguet.emoji;
 
 import com.soeguet.gui.main_frame.MainFrameInterface;
 

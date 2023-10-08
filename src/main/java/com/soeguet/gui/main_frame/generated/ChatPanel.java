@@ -349,6 +349,7 @@ public abstract class ChatPanel extends JFrame {
 
 					//---- form_participantsMenuItem ----
 					this.form_participantsMenuItem.setText("participants");
+					this.form_participantsMenuItem.setEnabled(false);
 					this.form_participantsMenuItem.addMouseListener(new MouseAdapter() {
 						@Override
 						public void mousePressed(MouseEvent e) {
@@ -479,6 +480,7 @@ public abstract class ChatPanel extends JFrame {
 					this.form_textEditorPane.setPreferredSize(new Dimension(53, 50));
 					this.form_textEditorPane.setOpaque(false);
 					this.form_textEditorPane.setDoubleBuffered(true);
+					this.form_textEditorPane.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
 					this.form_textEditorPane.addMouseListener(new MouseAdapter() {
 						@Override
 						public void mouseClicked(MouseEvent e) {
@@ -504,12 +506,12 @@ public abstract class ChatPanel extends JFrame {
 					this.form_panel2.setLayout(new FlowLayout());
 
 					//---- form_pictureButton ----
-					this.form_pictureButton.setText("@");
 					this.form_pictureButton.setDoubleBuffered(true);
 					this.form_pictureButton.setMinimumSize(new Dimension(50, 50));
 					this.form_pictureButton.setPreferredSize(new Dimension(50, 50));
 					this.form_pictureButton.setMaximumSize(new Dimension(32767, 50));
 					this.form_pictureButton.setToolTipText("picture");
+					this.form_pictureButton.setIcon(null);
 					this.form_pictureButton.addMouseListener(new MouseAdapter() {
 						@Override
 						public void mouseClicked(MouseEvent e) {
@@ -519,7 +521,6 @@ public abstract class ChatPanel extends JFrame {
 					this.form_panel2.add(this.form_pictureButton);
 
 					//---- form_emojiButton ----
-					this.form_emojiButton.setText("#");
 					this.form_emojiButton.setDoubleBuffered(true);
 					this.form_emojiButton.setMinimumSize(new Dimension(50, 50));
 					this.form_emojiButton.setPreferredSize(new Dimension(50, 50));
@@ -530,7 +531,6 @@ public abstract class ChatPanel extends JFrame {
 					this.form_panel2.add(this.form_emojiButton);
 
 					//---- form_sendButton ----
-					this.form_sendButton.setText("\u2192");
 					this.form_sendButton.setMinimumSize(new Dimension(50, 50));
 					this.form_sendButton.setMaximumSize(new Dimension(32767, 50));
 					this.form_sendButton.setPreferredSize(new Dimension(50, 50));
