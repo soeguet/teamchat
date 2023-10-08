@@ -1,4 +1,4 @@
-package com.soeguet.behaviour;
+package com.soeguet.behaviour.interfaces;
 
 public interface SocketToGuiInterface {
 

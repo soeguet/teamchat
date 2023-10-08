@@ -3,15 +3,14 @@ package com.soeguet.behaviour;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.soeguet.behaviour.interfaces.GuiFunctionality;
+import com.soeguet.behaviour.interfaces.SocketToGuiInterface;
 import com.soeguet.cache.factory.CacheManagerFactory;
 import com.soeguet.cache.implementations.ActiveNotificationQueue;
 import com.soeguet.cache.implementations.MessageQueue;
 import com.soeguet.cache.implementations.WaitingNotificationQueue;
 import com.soeguet.cache.manager.CacheManager;
-import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.interfaces.CommentManager;
-import com.soeguet.gui.comments.left.PanelLeftImpl;
-import com.soeguet.gui.comments.right.PanelRightImpl;
 import com.soeguet.gui.image_panel.ImagePanelImpl;
 import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.notification_panel.NotificationImpl;
@@ -24,10 +23,6 @@ import com.soeguet.properties.CustomUserProperties;
 import com.soeguet.util.MessageCategory;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -42,12 +37,12 @@ import java.util.logging.Logger;
 
  Implements the SocketToGuiInterface for receiving messages from the socket.
  */
-public class GuiFunctionality implements SocketToGuiInterface {
+public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterface {
 
     private final MainFrameInterface mainFrame;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final CommentManager commentManager;
-    Logger LOGGER = Logger.getLogger(GuiFunctionality.class.getName());
+    Logger LOGGER = Logger.getLogger(GuiFunctionalityImpl.class.getName());
     CacheManager cacheManager = CacheManagerFactory.getCacheManager();
 
     /**
@@ -57,7 +52,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
      @param mainFrame      The main frame of the GUI.
      @param commentManager The implementation of the CommentManager interface.
      */
-    public GuiFunctionality(MainFrameInterface mainFrame, final CommentManager commentManager) {
+    public GuiFunctionalityImpl(MainFrameInterface mainFrame, final CommentManager commentManager) {
 
         this.mainFrame = mainFrame;
         this.commentManager = commentManager;
@@ -81,64 +76,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
         return new Color(r, g, b).getRGB();
     }
 
-    public void setupGuiFunctionality() {
-
-        fixScrollPaneScrollSpeed();
-        addDocumentListenerToTextPane();
-        overrideTransferHandlerOfTextPane();
-    }
-
-    /**
-     Fixes the scroll speed for the main text background scroll pane.
-     This method sets the unit increment of the vertical scrollbar of the main text background scroll pane to 20.
-     This ensures that the scrolling speed is faster.
-     */
-    private void fixScrollPaneScrollSpeed() {
-
-        this.mainFrame.getMainTextBackgroundScrollPane().getVerticalScrollBar().setUnitIncrement(25);
-    }
-
-    private void addDocumentListenerToTextPane() {
-
-        this.mainFrame.getTextEditorPane().getDocument().addDocumentListener(new DocumentListener() {
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-
-                int offset = e.getOffset();
-                int length = e.getLength();
-                Document doc = e.getDocument();
-
-                try {
-
-                    String insertedText = doc.getText(offset, length);
-                    //TODO clickable links
-
-                    MessageModel messageModel = new MessageModel((byte) MessageTypes.LINK, mainFrame.getUsername(), insertedText);
-                    String messageString = convertToJSON(messageModel);
-                    sendMessageToSocket(messageString);
-
-                    mainFrame.getTextEditorPane().setText("");
-
-                } catch (BadLocationException ex) {
-
-                    LOGGER.log(java.util.logging.Level.SEVERE, "Error inserting text", ex);
-                }
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-
-            }
-        });
-
-    }
-
     /**
      Overrides the transfer handler of the text pane in the GUI.
      This method is responsible for handling dropped data onto the text pane,
@@ -146,7 +83,8 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
      The original transfer handler is preserved before overriding it with a new transfer handler.
      */
-    private void overrideTransferHandlerOfTextPane() {
+    @Override
+    public void overrideTransferHandlerOfTextPane() {
 
         //preserve the original transfer handler, otherwise clunky behavior
         TransferHandler originalHandler = this.mainFrame.getTextEditorPane().getTransferHandler();
@@ -154,9 +92,9 @@ public class GuiFunctionality implements SocketToGuiInterface {
         this.mainFrame.getTextEditorPane().setTransferHandler(new TransferHandler() {
 
             @Override
-            public boolean importData(JComponent comp, Transferable t) {
+            public boolean importData(JComponent jComponent, Transferable transferable) {
 
-                if (t.isDataFlavorSupported(DataFlavor.imageFlavor)) {
+                if (transferable.isDataFlavorSupported(DataFlavor.imageFlavor)) {
 
                     // image to text pane -> activate image panel
                     ImagePanelImpl imagePanel = new ImagePanelImpl(mainFrame);
@@ -164,18 +102,30 @@ public class GuiFunctionality implements SocketToGuiInterface {
                     imagePanel.populateImagePanelFromClipboard();
 
                     return true;
-                } else if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+                } else if (transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
 
                     try {
-                        String data = (String) t.getTransferData(DataFlavor.stringFlavor);
+                        String data = (String) transferable.getTransferData(DataFlavor.stringFlavor);
 
                         //TODO maybe emoji detection?
 
                         if (data.startsWith("http://") || data.startsWith("https://")) {
-                            //TODO maybe link detection?
+
+                            //TODO clickable link working, maybe add some kind of JPanel for further editing
+
+                            //send the link immediately
+                            MessageModel messageModel = new MessageModel((byte) MessageTypes.LINK, mainFrame.getUsername(), data);
+                            String messageString = convertToJSON(messageModel);
+                            sendMessageToSocket(messageString);
+
+                            mainFrame.getTextEditorPane().setText("");
                             LOGGER.info("HTTP Link detected");
+
+                            return false;
+
                         } else {
-                            return originalHandler.importData(comp, t);
+
+                            return originalHandler.importData(jComponent, transferable);
                         }
 
                     } catch (UnsupportedFlavorException | IOException e) {
@@ -183,12 +133,22 @@ public class GuiFunctionality implements SocketToGuiInterface {
                         LOGGER.log(java.util.logging.Level.SEVERE, "Error importing data", e);
                     }
 
-                    //TODO clickable links
-                    return originalHandler.importData(comp, t);
+                    return originalHandler.importData(jComponent, transferable);
                 }
                 return false;
             }
         });
+    }
+
+    /**
+     Fixes the scroll speed for the main text background scroll pane.
+     This method sets the unit increment of the vertical scrollbar of the main text background scroll pane to 20.
+     This ensures that the scrolling speed is faster.
+     */
+    @Override
+    public void fixScrollPaneScrollSpeed() {
+
+        this.mainFrame.getMainTextBackgroundScrollPane().getVerticalScrollBar().setUnitIncrement(25);
     }
 
     private String convertToJSON(BaseModel messageModel) {
@@ -214,6 +174,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
         this.mainFrame.getWebsocketClient().send(typingStatus.getBytes());
     }
 
+    @Override
     public void clearTextPaneAndSendMessageToSocket() {
 
         String userTextInput = getTextFromInput();
@@ -442,6 +403,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
         }
     }
 
+    @Override
     public synchronized void internalNotificationHandling(String message) {
 
         //TODO clean this mess up..
@@ -536,10 +498,9 @@ public class GuiFunctionality implements SocketToGuiInterface {
 
         //handle displayed message name - nickname as well as username
         String nickname = checkForNickname(baseModel.getSender());
-        final String username = mainFrame.getUsername();
 
         //process and display message
-        processAndDisplayMessage(baseModel, username, nickname);
+        processAndDisplayMessage(baseModel,  nickname);
 
         //check for remaining messages in the local cache
         checkIfDequeIsEmptyOrStartOver();
@@ -561,10 +522,9 @@ public class GuiFunctionality implements SocketToGuiInterface {
      This method processes and displays a message based on the message model, username, and nickname.
 
      @param baseModel The message model representing the message.
-     @param username  The username of the client.
      @param nickname  The nickname of the client.
      */
-    private void processAndDisplayMessage(final BaseModel baseModel, final String username, final String nickname) {
+    private void processAndDisplayMessage(final BaseModel baseModel, final String nickname) {
 
         int messageCategory = commentManager.categorizeMessageFromSocket(baseModel);
 
@@ -583,8 +543,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
             case MessageCategory.LEFT_SIDE_LINK_MESSAGE -> commentManager.setupLinkLeftSide(baseModel);
         }
     }
-
-
 
     private void checkIfDequeIsEmptyOrStartOver() {
 
@@ -613,8 +571,11 @@ public class GuiFunctionality implements SocketToGuiInterface {
      */
     private void repaintMainFrame() {
 
-        ((JFrame) this.mainFrame).revalidate();
-        ((JFrame) this.mainFrame).repaint();
+        if (mainFrame instanceof JFrame jFrame) {
+
+            jFrame.revalidate();
+            jFrame.repaint();
+        }
     }
 
     /**
@@ -656,6 +617,7 @@ public class GuiFunctionality implements SocketToGuiInterface {
                 customUserProperties.setBorderColor(getRandomRgbIntValue());
                 clientMap.put("own", customUserProperties);
             }
+
             return;
         }
 
@@ -666,16 +628,6 @@ public class GuiFunctionality implements SocketToGuiInterface {
             customUserProperties.setBorderColor(getRandomRgbIntValue());
             clientMap.put(sender, customUserProperties);
         }
-    }
-
-    private Color determineBorderColor(String sender) {
-
-        if (this.mainFrame.getChatClientPropertiesHashMap().containsKey(sender)) {
-
-            return new Color(this.mainFrame.getChatClientPropertiesHashMap().get(sender).getBorderColor());
-        }
-
-        return new Color(getRandomRgbIntValue());
     }
 
     private String checkForNickname(String sender) {
@@ -715,12 +667,5 @@ public class GuiFunctionality implements SocketToGuiInterface {
     private BaseModel convertJsonToMessageModel(String jsonMessage) throws JsonProcessingException {
 
         return this.objectMapper.readValue(jsonMessage, BaseModel.class);
-    }
-
-
-
-    private void addMessagePanelToMainChatPanel(JPanel message, String alignment) {
-
-        this.mainFrame.getMainTextPanel().add(message, "w 70%, " + alignment + ", wrap");
     }
 }

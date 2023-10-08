@@ -1,7 +1,8 @@
 package com.soeguet.gui.main_frame;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.soeguet.behaviour.GuiFunctionality;
+import com.soeguet.behaviour.GuiFunctionalityImpl;
+import com.soeguet.behaviour.interfaces.GuiFunctionality;
 import com.soeguet.cache.factory.CacheManagerFactory;
 import com.soeguet.cache.implementations.WaitingNotificationQueue;
 import com.soeguet.cache.manager.CacheManager;
@@ -159,8 +160,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         CommentManager commentManager = new CommentManagerImpl(this);
 
-        this.guiFunctionality = new GuiFunctionality(this, commentManager);
-        this.guiFunctionality.setupGuiFunctionality();
+        this.guiFunctionality = new GuiFunctionalityImpl(this, commentManager);
+        this.guiFunctionality.fixScrollPaneScrollSpeed();
+        this.guiFunctionality.addDocumentListenerToTextPane();
+        this.guiFunctionality.overrideTransferHandlerOfTextPane();
     }
 
     /**

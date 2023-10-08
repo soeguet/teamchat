@@ -1,7 +1,7 @@
 package com.soeguet.gui.main_frame;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.soeguet.behaviour.GuiFunctionality;
+import com.soeguet.behaviour.interfaces.GuiFunctionality;
 import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.notification_panel.NotificationImpl;
 import com.soeguet.properties.CustomProperties;

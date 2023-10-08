@@ -1,7 +1,7 @@
 package com.soeguet.socket_client;
 
-import com.soeguet.behaviour.GuiFunctionality;
-import com.soeguet.behaviour.SocketToGuiInterface;
+import com.soeguet.behaviour.interfaces.GuiFunctionality;
+import com.soeguet.behaviour.interfaces.SocketToGuiInterface;
 import com.soeguet.gui.main_frame.MainFrameInterface;
 import com.soeguet.gui.popups.PopupPanelImpl;
 import org.java_websocket.WebSocket;
@@ -17,16 +17,21 @@ public class CustomWebsocketClient extends WebSocketClient {
 
     private final Logger logger = Logger.getLogger(CustomWebsocketClient.class.getName());
     private final MainFrameInterface mainFrame;
-//    private final SocketToGuiInterface socketToGuiInterface;
+    private final SocketToGuiInterface socketToGuiInterface;
 
-    private final SocketToGuiInterface guiFunctionality;
-
-    public CustomWebsocketClient(URI serverUri, MainFrameInterface mainFrame, final SocketToGuiInterface guiFunctionality) {
+    public CustomWebsocketClient(URI serverUri, MainFrameInterface mainFrame, final GuiFunctionality guiFunctionality) {
 
         super(serverUri);
-//        socketToGuiInterface = new GuiFunctionality(mainFrame, commentManager);
-        this.guiFunctionality = guiFunctionality;
         this.mainFrame = mainFrame;
+
+        if (guiFunctionality instanceof SocketToGuiInterface socket) {
+
+            this.socketToGuiInterface = socket;
+
+        } else {
+
+            throw new IllegalArgumentException("socketToGuiInterface must implement SocketToGuiInterface");
+        }
     }
 
     @Override
@@ -58,7 +63,7 @@ public class CustomWebsocketClient extends WebSocketClient {
     @Override
     public void onMessage(String message) {
 
-        guiFunctionality.onMessage(message);
+        socketToGuiInterface.onMessage(message);
     }
 
     @Override
@@ -84,6 +89,6 @@ public class CustomWebsocketClient extends WebSocketClient {
     @Override
     public void onMessage(final ByteBuffer bytes) {
 
-        guiFunctionality.onMessage(bytes.array());
+        socketToGuiInterface.onMessage(bytes.array());
     }
 }
