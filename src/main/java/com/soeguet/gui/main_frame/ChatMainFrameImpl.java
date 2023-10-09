@@ -6,14 +6,17 @@ import com.soeguet.behaviour.interfaces.GuiFunctionality;
 import com.soeguet.cache.factory.CacheManagerFactory;
 import com.soeguet.cache.implementations.WaitingNotificationQueue;
 import com.soeguet.cache.manager.CacheManager;
+import com.soeguet.emoji.EmojiHandler;
+import com.soeguet.emoji.EmojiInitializer;
+import com.soeguet.emoji.EmojiPopUpMenuHandler;
 import com.soeguet.emoji.interfaces.EmojiInitializerInterface;
 import com.soeguet.emoji.interfaces.EmojiPopupInterface;
 import com.soeguet.gui.comments.CommentManagerImpl;
+import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.interfaces.CommentManager;
 import com.soeguet.gui.image_panel.ImagePanelImpl;
 import com.soeguet.gui.image_panel.interfaces.ImageInterface;
 import com.soeguet.gui.main_frame.generated.ChatPanel;
-import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.gui.notification_panel.NotificationImpl;
 import com.soeguet.gui.popups.PopupPanelImpl;
@@ -25,9 +28,6 @@ import com.soeguet.properties.CustomProperties;
 import com.soeguet.properties.CustomUserProperties;
 import com.soeguet.socket_client.ClientControllerImpl;
 import com.soeguet.socket_client.CustomWebsocketClient;
-import com.soeguet.emoji.EmojiHandler;
-import com.soeguet.emoji.EmojiInitializer;
-import com.soeguet.emoji.EmojiPopUpMenuHandler;
 import com.soeguet.socket_client.interfaces.ClientController;
 import com.soeguet.util.NotificationStatus;
 
@@ -48,30 +48,84 @@ import java.util.logging.Logger;
  */
 public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
-    private final Logger logger = Logger.getLogger(ChatMainFrameImpl.class.getName());
+    //TODO these need to be re-evaluated and maybe moved into the cache manager
 
     //TODO maybe move to cache manager
     private final HashMap<String, CustomUserProperties> chatClientPropertiesHashMap = new HashMap<>();
 
     //TODO cache comments on pane for hot replacements as HashSet -> data structure ready, implementation missing -> add to cache
     private final LinkedHashMap<Long, CommentInterface> commentsHashMap = new LinkedHashMap<>();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+
     //TODO add to cache?
     private final List<NotificationImpl> notificationList = new ArrayList<>();
+
+    /////////////////////////
+    private final Logger logger = Logger.getLogger(ChatMainFrameImpl.class.getName());
+    /**
+     Instance of the object mapper used to convert objects to json and vice versa.
+     */
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    /**
+     Instance of cache manager primarily storing data structures of the collections api to help cache some data.
+     */
     private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
+    /**
+     Instance of class, holding a few environment variables
+     */
     private final EnvVariables envVariables;
+    /**
+     Instance of client controller handling everything socket related.
+     */
     private ClientController clientController;
+    /**
+     Instance of custom properties handling everything properties related.
+     */
     private CustomProperties customProperties;
+    /**
+     Instance of the gui functionality handler.
+     */
     private GuiFunctionality guiFunctionality;
+    /**
+     The margin east border for the JScrollPane.
+     */
     private int JSCROLLPANE_MARGIN_RIGHT_BORDER;
+    /**
+     The margin bottom border for the JScrollPane.
+     */
     private int JSCROLLPANE_MARGIN_BOTTOM_BORDER;
+    /**
+     Hashmap of all available emojis.
+     */
     private HashMap<String, ImageIcon> emojiList;
+    /**
+     Instance of the emoji handler, which switches emojis with strings and vice versa.
+     */
     private EmojiHandler emojiHandler;
+    /**
+     Variable representing the username of this pc's client.
+     The username on the right side
+     */
     private String username;
+    /**
+     Represents the Y position of a notification.
+     Will be updated everytime a notification is generated
+     */
     private volatile int notificationPositionY = 0;
+    /**
+     Indicates whether the start-up process has already been completed.
+     */
     private boolean startUp = true;
+    /**
+     The name of the client which was last posted on the main panel.
+     */
     private String lastMessageSenderName;
+    /**
+     The last time someone posted on the main panel.
+     */
     private String lastMessageTimeStamp;
+    /**
+     Timer for blocking all messages.
+     */
     private Timer blockTimer;
 
     /**
@@ -84,6 +138,11 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         this.envVariables = envVariables;
     }
 
+    public ChatMainFrameImpl() {
+        //for testing
+        envVariables = new EnvVariables();
+    }
+
     public void initializeClientController() {
 
         clientController = new ClientControllerImpl(this, guiFunctionality);
@@ -91,11 +150,26 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         clientController.connectToWebsocket();
     }
 
+    public ClientController getClientController() {
+
+        return clientController;
+    }
+
+    /**
+     Retrieves the value of the JSCROLLPANE_MARGIN_RIGHT_BORDER constant.
+
+     @return The value of the JSCROLLPANE_MARGIN_RIGHT_BORDER constant.
+     */
     public int getJSCROLLPANE_MARGIN_RIGHT_BORDER() {
 
         return JSCROLLPANE_MARGIN_RIGHT_BORDER;
     }
 
+    /**
+     Retrieves the value of the JSCROLLPANE_MARGIN_BOTTOM_BORDER constant.
+
+     @return The value of the JSCROLLPANE_MARGIN_BOTTOM_BORDER constant.
+     */
     public int getJSCROLLPANE_MARGIN_BOTTOM_BORDER() {
 
         return JSCROLLPANE_MARGIN_BOTTOM_BORDER;
@@ -232,19 +306,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     {@inheritDoc}
-
-     <p>This method is called when a property change event occurs. It logs the provided event and
-     method name.
-
-     @param e The property change event to be handled. Must not be null.
-     */
-    @Override
-    protected void thisPropertyChange(PropertyChangeEvent e) {
-
-    }
-
-    /**
      Method called when the component is resized.
 
      @param e The ComponentEvent object representing the resize event.
@@ -330,6 +391,14 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         return emojiList;
     }
 
+    /**
+     Returns a HashMap containing the chat client properties.
+
+     <p>This method returns the chatClientPropertiesHashMap, which contains the chat client properties.
+     The key in the HashMap represents the property name, and the value represents the corresponding value.
+
+     @return the HashMap containing the chat client properties
+     */
     @Override
     public HashMap<String, CustomUserProperties> getChatClientPropertiesHashMap() {
 
@@ -418,11 +487,13 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         //external = yes && internal = no
         if (getExternalNotificationsMenuItem().isSelected() && !getInternalNotificationsMenuItem().isSelected()) {
+
             return NotificationStatus.EXTERNAL_ONLY;
         }
 
         //external = no && internal = yes
         if (!getExternalNotificationsMenuItem().isSelected() && getInternalNotificationsMenuItem().isSelected()) {
+
             return NotificationStatus.INTERNAL_ONLY;
         }
 
@@ -518,7 +589,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         removeAllMessagesOnChatPanel();
 
         //close the websocket client
-        closeActiveConnectionToSocket();
+        clientController.closeConnection();
 
         //set null to be sure + preparation for reconnect
         clientController.prepareReconnection();
@@ -549,16 +620,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             this.form_mainTextPanel.removeAll();
             repaintMainFrame();
         });
-    }
-
-    /**
-     Closes the active connection to the socket.
-
-     If the websocket client is open, the method closes the websocket client and logs an info message.
-     */
-    private void closeActiveConnectionToSocket() {
-
-        clientController.closeConnection();
     }
 
     /**
@@ -683,19 +744,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
             guiFunctionality.clearTextPaneAndSendMessageToSocket();
         }
-    }
-
-    /**
-     Invoked when a key is released in the text editor pane.
-
-     <p>This method is an override of the textEditorPaneKeyReleased method from the superclass. It
-     is called when a key is released in the text editor pane.
-
-     @param e the KeyEvent object generated when a key is released
-     */
-    @Override
-    protected void textEditorPaneKeyReleased(KeyEvent e) {
-
     }
 
     /**
@@ -918,4 +966,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         form_emojiButton.setIcon(new ImageIcon(emojiUrl));
         form_pictureButton.setIcon(new ImageIcon(pictureUrl));
     }
+
+
 }

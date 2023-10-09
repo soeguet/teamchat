@@ -22,8 +22,6 @@ public abstract class ChatPanel extends JFrame {
 		initComponents();
 	}
 
-	protected abstract void thisPropertyChange(PropertyChangeEvent e);
-
 	protected abstract void thisComponentResized(ComponentEvent e);
 
 	protected abstract void thisMouseClicked(MouseEvent e);
@@ -45,8 +43,6 @@ public abstract class ChatPanel extends JFrame {
 	protected abstract void textEditorPaneMouseClicked(MouseEvent e);
 
 	protected abstract void textEditorPaneKeyPressed(KeyEvent e);
-
-	protected abstract void textEditorPaneKeyReleased(KeyEvent e);
 
 	protected abstract void pictureButtonMouseClicked(MouseEvent e);
 
@@ -239,7 +235,6 @@ public abstract class ChatPanel extends JFrame {
 		setMinimumSize(new Dimension(700, 700));
 		setPreferredSize(new Dimension(700, 700));
 		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		addPropertyChangeListener("FrameChange", e -> thisPropertyChange(e));
 		addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent e) {
@@ -491,10 +486,6 @@ public abstract class ChatPanel extends JFrame {
 						@Override
 						public void keyPressed(KeyEvent e) {
 							textEditorPaneKeyPressed(e);
-						}
-						@Override
-						public void keyReleased(KeyEvent e) {
-							textEditorPaneKeyReleased(e);
 						}
 					});
 					this.form_mainTextFieldScrollPane.setViewportView(this.form_textEditorPane);

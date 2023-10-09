@@ -5,7 +5,9 @@ import com.soeguet.socket_client.CustomWebsocketClient;
 public interface ClientController {
 
     void determineWebsocketURI();
+
     void connectToWebsocket();
+
     void serverInformationOptionPane();
 
     void closeConnection();

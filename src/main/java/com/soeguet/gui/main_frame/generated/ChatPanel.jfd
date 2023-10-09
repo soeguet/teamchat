@@ -16,7 +16,6 @@ new FormModel {
 			"minimumSize": new java.awt.Dimension( 700, 700 )
 			"preferredSize": new java.awt.Dimension( 700, 700 )
 			"defaultCloseOperation": 0
-			addEvent( new FormEvent( "java.beans.PropertyChangeListener", "propertyChange", "thisPropertyChange", true, "FrameChange" ) )
 			addEvent( new FormEvent( "java.awt.event.ComponentListener", "componentResized", "thisComponentResized", true ) )
 			addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "thisMouseClicked", true ) )
 			addEvent( new FormEvent( "java.awt.event.WindowListener", "windowClosing", "thisWindowClosing", true ) )
@@ -210,7 +209,6 @@ new FormModel {
 							"cursor": new java.awt.Cursor( 2 )
 							addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "textEditorPaneMouseClicked", true ) )
 							addEvent( new FormEvent( "java.awt.event.KeyListener", "keyPressed", "textEditorPaneKeyPressed", true ) )
-							addEvent( new FormEvent( "java.awt.event.KeyListener", "keyReleased", "textEditorPaneKeyReleased", true ) )
 						} )
 					}, new FormLayoutConstraints( class java.lang.String ) {
 						"value": "Center"

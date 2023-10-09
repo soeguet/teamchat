@@ -70,5 +70,4 @@ class ChatMainFrameImplTests {
         when(chatMainFrame.getInternalNotificationsMenuItem().isSelected()).thenReturn(true);
         assertTrue(chatMainFrame.getInternalNotificationsMenuItem().isSelected());
     }
-
 }
