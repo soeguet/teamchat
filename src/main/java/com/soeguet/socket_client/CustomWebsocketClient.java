@@ -1,9 +1,10 @@
 package com.soeguet.socket_client;
 
-import com.soeguet.behaviour.GuiFunctionality;
-import com.soeguet.behaviour.SocketToGuiInterface;
-import com.soeguet.gui.main_frame.MainFrameInterface;
+import com.soeguet.behaviour.interfaces.GuiFunctionality;
+import com.soeguet.behaviour.interfaces.SocketToGuiInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.gui.popups.PopupPanelImpl;
+import com.soeguet.gui.popups.interfaces.PopupInterface;
 import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.framing.Framedata;
@@ -19,11 +20,19 @@ public class CustomWebsocketClient extends WebSocketClient {
     private final MainFrameInterface mainFrame;
     private final SocketToGuiInterface socketToGuiInterface;
 
-    public CustomWebsocketClient(URI serverUri, MainFrameInterface mainFrame) {
+    public CustomWebsocketClient(URI serverUri, MainFrameInterface mainFrame, final GuiFunctionality guiFunctionality) {
 
         super(serverUri);
-        socketToGuiInterface = new GuiFunctionality(mainFrame);
         this.mainFrame = mainFrame;
+
+        if (guiFunctionality instanceof SocketToGuiInterface socket) {
+
+            this.socketToGuiInterface = socket;
+
+        } else {
+
+            throw new IllegalArgumentException("socketToGuiInterface must implement SocketToGuiInterface");
+        }
     }
 
     @Override
@@ -49,7 +58,10 @@ public class CustomWebsocketClient extends WebSocketClient {
 
         logger.info("onOpen");
 
-        new PopupPanelImpl(mainFrame, "Connected to server").implementPopup(2000);
+        PopupInterface popup = new PopupPanelImpl(mainFrame);
+        popup.getMessageTextField().setText("Connected to server");
+        popup.configurePopupPanelPlacement();
+        popup.initiatePopupTimer(2_000);
     }
 
     @Override
@@ -66,7 +78,10 @@ public class CustomWebsocketClient extends WebSocketClient {
         logger.info(reason);
         logger.info(String.valueOf(remote));
 
-        new PopupPanelImpl(mainFrame, "Connection closed." + System.lineSeparator() + reason + " " + code).implementPopup(2000);
+        PopupInterface popup = new PopupPanelImpl(mainFrame);
+        popup.getMessageTextField().setText("Connection closed." + System.lineSeparator() + reason + " " + code);
+        popup.configurePopupPanelPlacement();
+        popup.initiatePopupTimer(2_000);
     }
 
     @Override
@@ -75,7 +90,10 @@ public class CustomWebsocketClient extends WebSocketClient {
         logger.info("onError");
         logger.info(ex.getMessage());
 
-        new PopupPanelImpl(mainFrame, "Error: " + ex.getMessage()).implementPopup(2000);
+        PopupInterface popup = new PopupPanelImpl(mainFrame);
+        popup.getMessageTextField().setText("Error: " + ex.getMessage());
+        popup.configurePopupPanelPlacement();
+        popup.initiatePopupTimer(2_000);
     }
 
     @Override

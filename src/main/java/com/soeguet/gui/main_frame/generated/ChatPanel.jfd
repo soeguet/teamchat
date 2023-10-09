@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "8.0.3.0.246" Java: "17.0.3" encoding: "UTF-8"
+JFDML JFormDesigner: "8.1.1.0.298" Java: "17.0.8" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
@@ -89,6 +89,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JMenuItem" ) {
 							name: "participantsMenuItem"
 							"text": "participants"
+							"enabled": false
 							addEvent( new FormEvent( "java.awt.event.MouseListener", "mousePressed", "participantsMenuItemMousePressed", true ) )
 						} )
 					} )
@@ -206,6 +207,7 @@ new FormModel {
 							"preferredSize": new java.awt.Dimension( 53, 50 )
 							"opaque": false
 							"doubleBuffered": true
+							"cursor": new java.awt.Cursor( 2 )
 							addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "textEditorPaneMouseClicked", true ) )
 							addEvent( new FormEvent( "java.awt.event.KeyListener", "keyPressed", "textEditorPaneKeyPressed", true ) )
 							addEvent( new FormEvent( "java.awt.event.KeyListener", "keyReleased", "textEditorPaneKeyReleased", true ) )
@@ -217,17 +219,16 @@ new FormModel {
 						name: "panel2"
 						add( new FormComponent( "javax.swing.JButton" ) {
 							name: "pictureButton"
-							"text": "@"
 							"doubleBuffered": true
 							"minimumSize": &Dimension0 new java.awt.Dimension( 50, 50 )
 							"preferredSize": &Dimension1 new java.awt.Dimension( 50, 50 )
 							"maximumSize": &Dimension2 new java.awt.Dimension( 32767, 50 )
 							"toolTipText": "picture"
+							"icon": sfield com.jformdesigner.model.FormObject NULL_VALUE
 							addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "pictureButtonMouseClicked", true ) )
 						} )
 						add( new FormComponent( "javax.swing.JButton" ) {
 							name: "emojiButton"
-							"text": "#"
 							"doubleBuffered": true
 							"minimumSize": #Dimension0
 							"preferredSize": #Dimension1
@@ -238,7 +239,6 @@ new FormModel {
 						} )
 						add( new FormComponent( "javax.swing.JButton" ) {
 							name: "sendButton"
-							"text": "→"
 							"minimumSize": new java.awt.Dimension( 50, 50 )
 							"maximumSize": new java.awt.Dimension( 32767, 50 )
 							"preferredSize": new java.awt.Dimension( 50, 50 )

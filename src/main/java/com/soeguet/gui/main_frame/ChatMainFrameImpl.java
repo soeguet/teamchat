@@ -1,24 +1,34 @@
 package com.soeguet.gui.main_frame;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.soeguet.behaviour.GuiFunctionality;
+import com.soeguet.behaviour.GuiFunctionalityImpl;
+import com.soeguet.behaviour.interfaces.GuiFunctionality;
 import com.soeguet.cache.factory.CacheManagerFactory;
 import com.soeguet.cache.implementations.WaitingNotificationQueue;
 import com.soeguet.cache.manager.CacheManager;
+import com.soeguet.emoji.interfaces.EmojiInitializerInterface;
+import com.soeguet.emoji.interfaces.EmojiPopupInterface;
+import com.soeguet.gui.comments.CommentManagerImpl;
+import com.soeguet.gui.comments.interfaces.CommentManager;
 import com.soeguet.gui.image_panel.ImagePanelImpl;
+import com.soeguet.gui.image_panel.interfaces.ImageInterface;
 import com.soeguet.gui.main_frame.generated.ChatPanel;
-import com.soeguet.gui.newcomment.helper.CommentInterface;
+import com.soeguet.gui.comments.interfaces.CommentInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.gui.notification_panel.NotificationImpl;
 import com.soeguet.gui.popups.PopupPanelImpl;
+import com.soeguet.gui.popups.interfaces.PopupInterface;
 import com.soeguet.gui.properties.PropertiesPanelImpl;
+import com.soeguet.gui.properties.interfaces.PropertiesInterface;
 import com.soeguet.model.EnvVariables;
 import com.soeguet.properties.CustomProperties;
 import com.soeguet.properties.CustomUserProperties;
-import com.soeguet.socket_client.ClientController;
+import com.soeguet.socket_client.ClientControllerImpl;
 import com.soeguet.socket_client.CustomWebsocketClient;
-import com.soeguet.util.EmojiHandler;
-import com.soeguet.util.EmojiInitializer;
-import com.soeguet.util.EmojiPopUpMenuHandler;
+import com.soeguet.emoji.EmojiHandler;
+import com.soeguet.emoji.EmojiInitializer;
+import com.soeguet.emoji.EmojiPopUpMenuHandler;
+import com.soeguet.socket_client.interfaces.ClientController;
 import com.soeguet.util.NotificationStatus;
 
 import javax.swing.Timer;
@@ -28,6 +38,7 @@ import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 import java.util.*;
 import java.util.logging.Logger;
@@ -49,7 +60,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     private final List<NotificationImpl> notificationList = new ArrayList<>();
     private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
     private final EnvVariables envVariables;
-    private final ClientController clientController;
+    private ClientController clientController;
     private CustomProperties customProperties;
     private GuiFunctionality guiFunctionality;
     private int JSCROLLPANE_MARGIN_RIGHT_BORDER;
@@ -71,13 +82,13 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     public ChatMainFrameImpl(final EnvVariables envVariables) {
 
         this.envVariables = envVariables;
-        clientController = new ClientController(this);
-        clientController.initClient();
     }
 
-    public ClientController getClientController() {
+    public void initializeClientController() {
 
-        return clientController;
+        clientController = new ClientControllerImpl(this, guiFunctionality);
+        clientController.determineWebsocketURI();
+        clientController.connectToWebsocket();
     }
 
     public int getJSCROLLPANE_MARGIN_RIGHT_BORDER() {
@@ -156,8 +167,11 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      */
     public void initGuiFunctionality() {
 
-        this.guiFunctionality = new GuiFunctionality(this);
-        this.guiFunctionality.setupGuiFunctionality();
+        CommentManager commentManager = new CommentManagerImpl(this);
+
+        this.guiFunctionality = new GuiFunctionalityImpl(this, commentManager);
+        this.guiFunctionality.fixScrollPaneScrollSpeed();
+        this.guiFunctionality.overrideTransferHandlerOfTextPane();
     }
 
     /**
@@ -174,7 +188,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     public void initEmojiHandlerAndList() {
 
         this.emojiHandler = new EmojiHandler(this);
-        this.emojiList = new EmojiInitializer().createEmojiList();
+
+        EmojiInitializerInterface emojiInitializer = new EmojiInitializer();
+        this.emojiList = emojiInitializer.createEmojiList();
     }
 
     /**
@@ -382,9 +398,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      */
     public NotificationStatus getNotificationStatus() {
 
-        //TODO needs to be fixed
-        //TODO test!
-
         //on program startup
         if (startUp) {
 
@@ -417,7 +430,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     Retrieves the comments hash map.
+     Retrieves the comment hash map.
 
      @return the comments hash map
      */
@@ -444,7 +457,13 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void propertiesMenuItemMousePressed(MouseEvent e) {
 
-        new PropertiesPanelImpl(this);
+        PropertiesInterface properties = new PropertiesPanelImpl(this);
+
+        properties.setPosition();
+        properties.setupOwnTabbedPane();
+        properties.setupClientsTabbedPane();
+
+        properties.setVisible(true);
     }
 
     /**
@@ -457,18 +476,23 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         WaitingNotificationQueue waitingNotificationQueue = (WaitingNotificationQueue) cacheManager.getCache("waitingNotificationQueue");
 
+        PopupInterface popup = new PopupPanelImpl(this);
+
         //remove all remaining and queued notifications
         if (e.getStateChange() == ItemEvent.DESELECTED) {
 
             //getter call since this one is synchronized
             waitingNotificationQueue.removeAll();
 
-            new PopupPanelImpl(this, "Internal notifications disabled").implementPopup(2000);
+            popup.getMessageTextField().setText("Internal notifications disabled");
 
         } else {
 
-            new PopupPanelImpl(this, "Internal notifications enabled").implementPopup(2000);
+            popup.getMessageTextField().setText("Internal notifications enabled");
         }
+
+        popup.configurePopupPanelPlacement();
+        popup.initiatePopupTimer(2_000);
     }
 
     /**
@@ -590,11 +614,11 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     * Called when a key is pressed in the text editor pane. If the pressed key is not the Enter key,
-     * the method simply returns. If the pressed key is the Enter key, it consumes the event and
-     * performs the appropriate action based on whether the Shift key is pressed or not.
-     *
-     * @param e The KeyEvent object representing the key press event.
+     Called when a key is pressed in the text editor pane. If the pressed key is not the Enter key,
+     the method simply returns. If the pressed key is the Enter key, it consumes the event and
+     performs the appropriate action based on whether the Shift key is pressed or not.
+
+     @param e The KeyEvent object representing the key press event.
      */
     @Override
     protected void textEditorPaneKeyPressed(KeyEvent e) {
@@ -618,13 +642,47 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     * Sends a typing status message to the websocket server.
-     * The message is in JSON format and contains the type "typing" and the username of the user.
+     Sends a typing status message to the websocket server.
+     The message is in JSON format and contains the type "typing" and the username of the user.
      */
     private void sendIsTypingStatusToWebsocket() {
 
         String typingStatus = "{\"type\":\"typing\",\"username\":\"" + this.getUsername() + "\"}";
         clientController.getWebsocketClient().send(typingStatus.getBytes());
+    }
+
+    /**
+     Appends a new line to the text editor pane.
+
+     <p>Retrieves the current text in the text editor pane and appends a new line character at the
+     end of it.
+     */
+    private void appendNewLineToTextEditorPane() {
+
+        form_textEditorPane.setText(form_textEditorPane.getText() + "\n");
+    }
+
+    /**
+     Handles a key press event when the enter key is pressed without pressing the shift key.
+
+     <p>Retrieves the content of the text editor pane, trims any leading or trailing space, and
+     checks if it is empty.
+     If the content is empty, it clears the text editor pane.
+     Otherwise, it calls the `clearTextPaneAndSendMessageToSocket` method to clear the text pane and send the
+     current content to a socket.
+     */
+    private void handleNonShiftEnterKeyPress() {
+
+        String textPaneContent = form_textEditorPane.getText().trim();
+
+        if (textPaneContent.isEmpty()) {
+
+            form_textEditorPane.setText("");
+
+        } else {
+
+            guiFunctionality.clearTextPaneAndSendMessageToSocket();
+        }
     }
 
     /**
@@ -648,7 +706,11 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void pictureButtonMouseClicked(MouseEvent e) {
 
-        new ImagePanelImpl(this);
+        ImageInterface imagePanel = new ImagePanelImpl(this);
+        imagePanel.setPosition();
+        imagePanel.setLayeredPaneLayerPositions();
+        imagePanel.setupPictureScrollPaneScrollSpeed();
+        imagePanel.populateImagePanelFromClipboard();
     }
 
     /**
@@ -662,7 +724,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void emojiButton(ActionEvent e) {
 
-        new EmojiPopUpMenuHandler(this, form_textEditorPane, form_emojiButton);
+        EmojiPopupInterface emojiPopup = new EmojiPopUpMenuHandler(this, form_textEditorPane, form_emojiButton);
+        emojiPopup.createEmojiPopupMenu();
     }
 
     /**
@@ -694,14 +757,19 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void externalNotificationsMenuItemItemStateChanged(final ItemEvent e) {
 
+        PopupInterface popup = new PopupPanelImpl(this);
+
         if (e.getStateChange() == ItemEvent.SELECTED) {
 
-            new PopupPanelImpl(this, "External notifications enabled").implementPopup(2000);
+            popup.getMessageTextField().setText("External notifications enabled!");
 
         } else if (e.getStateChange() == ItemEvent.DESELECTED) {
 
-            new PopupPanelImpl(this, "External notifications disabled").implementPopup(2000);
+            popup.getMessageTextField().setText("External notifications disabled!");
         }
+
+        popup.configurePopupPanelPlacement();
+        popup.initiatePopupTimer(2_000);
     }
 
     /**
@@ -741,49 +809,22 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             blockTimer = new Timer(1_000 * 60 * 5, e1 -> {
 
                 form_allNotificationsMenuItem.setSelected(false);
-                new PopupPanelImpl(this, "Notifications status" + System.lineSeparator() + "reverted").implementPopup(2000);
+
+                PopupInterface popup = new PopupPanelImpl(this);
+                popup.getMessageTextField().setText("Notifications status" + System.lineSeparator() + "reverted");
+                popup.configurePopupPanelPlacement();
+                popup.initiatePopupTimer(3_000);
             });
 
             blockTimer.setRepeats(false);
             blockTimer.start();
 
-            new PopupPanelImpl(this, "All notifications disabled" + System.lineSeparator() + "for 5 minutes").implementPopup(2000);
+            PopupInterface popup = new PopupPanelImpl(this);
+            popup.getMessageTextField().setText("All notifications disabled" + System.lineSeparator() + "for 5 minutes");
+            popup.configurePopupPanelPlacement();
+            popup.initiatePopupTimer(3_000);
         }
 
-    }
-
-    /**
-     Appends a new line to the text editor pane.
-
-     <p>Retrieves the current text in the text editor pane and appends a new line character at the
-     end of it.
-     */
-    private void appendNewLineToTextEditorPane() {
-
-        form_textEditorPane.setText(form_textEditorPane.getText() + "\n");
-    }
-
-    /**
-     Handles a key press event when the enter key is pressed without pressing the shift key.
-
-     <p>Retrieves the content of the text editor pane, trims any leading or trailing space, and
-     checks if it is empty.
-     If the content is empty, it clears the text editor pane.
-     Otherwise, it calls the `clearTextPaneAndSendMessageToSocket` method to clear the text pane and send the
-     current content to a socket.
-     */
-    private void handleNonShiftEnterKeyPress() {
-
-        String textPaneContent = form_textEditorPane.getText().trim();
-
-        if (textPaneContent.isEmpty()) {
-
-            form_textEditorPane.setText("");
-
-        } else {
-
-            guiFunctionality.clearTextPaneAndSendMessageToSocket();
-        }
     }
 
     /**
@@ -820,9 +861,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     Retrieves the name of the sender of the last message.
+     Retrieves the name of the last message.
 
-     @return the name of the sender of the last message.
+     @return the name of the last message.
      */
     @Override
     public String getLastMessageSenderName() {
@@ -831,9 +872,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     Sets the name of the sender of the last message.
+     Sets the name of the last message.
 
-     @param lastMessageSenderName the name of the sender of the last message.
+     @param lastMessageSenderName the name of the last message.
      */
     @Override
     public void setLastMessageSenderName(final String lastMessageSenderName) {
@@ -861,5 +902,20 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     public void setLastMessageTimeStamp(final String lastMessageTimeStamp) {
 
         this.lastMessageTimeStamp = lastMessageTimeStamp;
+    }
+
+    public void setButtonIcons() {
+
+        URL sendUrl = ChatMainFrameImpl.class.getResource("/emojis/$+1f4e8$+.png");
+        URL emojiUrl = ChatMainFrameImpl.class.getResource("/emojis/$+1f60e$+.png");
+        URL pictureUrl = ChatMainFrameImpl.class.getResource("/emojis/$+1f4bb$+.png");
+
+        assert sendUrl != null;
+        assert emojiUrl != null;
+        assert pictureUrl != null;
+
+        form_sendButton.setIcon(new ImageIcon(sendUrl));
+        form_emojiButton.setIcon(new ImageIcon(emojiUrl));
+        form_pictureButton.setIcon(new ImageIcon(pictureUrl));
     }
 }

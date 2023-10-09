@@ -1,8 +1,10 @@
 package com.soeguet.gui.properties;
 
-import com.soeguet.gui.main_frame.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.gui.popups.PopupPanelImpl;
+import com.soeguet.gui.popups.interfaces.PopupInterface;
 import com.soeguet.gui.properties.generated.PropertiesPanel;
+import com.soeguet.gui.properties.interfaces.PropertiesInterface;
 import com.soeguet.properties.CustomUserProperties;
 
 import javax.swing.*;
@@ -11,7 +13,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
 
-public class PropertiesPanelImpl extends PropertiesPanel {
+public class PropertiesPanelImpl extends PropertiesPanel implements PropertiesInterface {
 
     private final MainFrameInterface mainFrame;
     private final Point offset = new Point();
@@ -21,68 +23,7 @@ public class PropertiesPanelImpl extends PropertiesPanel {
 
         this.mainFrame = mainFrame;
 
-        setPosition();
-        this.setVisible(true);
-
-        setupOwnTabbedPane();
         setupClientsTabbedPane();
-    }
-
-    /**
-     This method sets the position of the current element.
-     It sets the bounds of the element based on the size of the main text panel in the GUI.
-     The element is added to the main text panel layered pane with a modal layer.
-
-     Preconditions:
-     - The main frame must be set in the GUI.
-
-     Postconditions:
-     - The position of the element is set.
-     - The element is added to the main text panel layered pane.
-     */
-    private void setPosition() {
-
-        int textPaneWidth = mainFrame.getMainTextPanelLayeredPane().getWidth();
-        int textPaneHeight = mainFrame.getMainTextPanelLayeredPane().getHeight();
-
-        this.setBounds(20, 20, textPaneWidth - 40, textPaneHeight - 40);
-
-        mainFrame.getMainTextPanelLayeredPane().add(this, JLayeredPane.MODAL_LAYER);
-    }
-
-    /**
-     This method sets up the own tabbed pane with the custom user properties.
-     It sets the username text field with the username from the own client properties.
-     It sets the background color of the border color panel with the border color from the own client properties.
-
-     Preconditions:
-     - The main frame must be set in the GUI.
-     - The "own" chat client properties must exist in the chat client properties hash map.
-
-     Postconditions:
-     - The own tabbed pane is set up with the custom user properties.
-     - The username text field is set with the username from the own client properties.
-     - The background color of the border color panel is set with the border color from the own client properties.
-     */
-    private void setupOwnTabbedPane() {
-
-        CustomUserProperties ownClient = mainFrame.getChatClientPropertiesHashMap().get("own");
-
-        if (ownClient == null) {
-
-            ownClient = new CustomUserProperties();
-        }
-
-        if (ownClient.getUsername() == null) {
-
-            getOwnUserNameTextField().setText("me");
-
-        } else {
-
-            getOwnUserNameTextField().setText(ownClient.getUsername());
-        }
-
-        getOwnBorderColorPanel().setBackground(new Color(ownClient.getBorderColor()));
     }
 
     /**
@@ -96,7 +37,8 @@ public class PropertiesPanelImpl extends PropertiesPanel {
      - Clients are added to the combo box.
      - Components on the properties panel are set up.
      */
-    private void setupClientsTabbedPane() {
+    @Override
+    public void setupClientsTabbedPane() {
 
         addClientsToComboBox();
         setUpComponentsOnPropertiesPanel(selectedClientInComboBox);
@@ -156,6 +98,65 @@ public class PropertiesPanelImpl extends PropertiesPanel {
         form_colorPickerPanel.setBackground(new Color(client.getBorderColor()));
     }
 
+    /**
+     This method sets the position of the current element.
+     It sets the bounds of the element based on the size of the main text panel in the GUI.
+     The element is added to the main text panel layered pane with a modal layer.
+
+     Preconditions:
+     - The main frame must be set in the GUI.
+
+     Postconditions:
+     - The position of the element is set.
+     - The element is added to the main text panel layered pane.
+     */
+    @Override
+    public void setPosition() {
+
+        int textPaneWidth = mainFrame.getMainTextPanelLayeredPane().getWidth();
+        int textPaneHeight = mainFrame.getMainTextPanelLayeredPane().getHeight();
+
+        this.setBounds(20, 20, textPaneWidth - 40, textPaneHeight - 40);
+
+        mainFrame.getMainTextPanelLayeredPane().add(this, JLayeredPane.MODAL_LAYER);
+    }
+
+    /**
+     This method sets up the own tabbed pane with the custom user properties.
+     It sets the username text field with the username from the own client properties.
+     It sets the background color of the border color panel with the border color from the own client properties.
+
+     Preconditions:
+     - The main frame must be set in the GUI.
+     - The "own" chat client properties must exist in the chat client properties hash map.
+
+     Postconditions:
+     - The own tabbed pane is set up with the custom user properties.
+     - The username text field is set with the username from the own client properties.
+     - The background color of the border color panel is set with the border color from the own client properties.
+     */
+    @Override
+    public void setupOwnTabbedPane() {
+
+        CustomUserProperties ownClient = mainFrame.getChatClientPropertiesHashMap().get("own");
+
+        if (ownClient == null) {
+
+            ownClient = new CustomUserProperties();
+        }
+
+        if (ownClient.getUsername() == null) {
+
+            getOwnUserNameTextField().setText("me");
+
+        } else {
+
+            getOwnUserNameTextField().setText(ownClient.getUsername());
+        }
+
+        getOwnBorderColorPanel().setBackground(new Color(ownClient.getBorderColor()));
+    }
+
     @Override
     protected void thisMousePressed(MouseEvent e) {
 
@@ -203,7 +204,7 @@ public class PropertiesPanelImpl extends PropertiesPanel {
 
         if (result == JOptionPane.OK_OPTION) {
 
-                mainFrame.resetConnectionMenuItemMousePressed(null);
+            mainFrame.resetConnectionMenuItemMousePressed(null);
         }
     }
 
@@ -223,57 +224,8 @@ public class PropertiesPanelImpl extends PropertiesPanel {
     }
 
     @Override
-    protected void clientSelectorComboBoxItemStateChanged(ItemEvent e) {
-
-        if (e.getStateChange() == ItemEvent.SELECTED) {
-
-            String selectedItem = (String) getClientSelectorComboBox().getSelectedItem();
-            selectedClientInComboBox = mainFrame.getChatClientPropertiesHashMap().get(selectedItem);
-            setUpComponentsOnPropertiesPanel(selectedClientInComboBox);
-        }
-    }
-
-    @Override
     protected void ownUserNameTextFieldFocusLost(FocusEvent e) {
 
-    }
-
-    @Override
-    protected void propertiesOkButtonMousePressed(final MouseEvent e) {
-
-        //TODO clean up this part
-        String ownName = getOwnUserNameTextField().getText();
-
-        mainFrame.getChatClientPropertiesHashMap().get("own").setUsername(ownName);
-        mainFrame.setUsername(ownName);
-
-///
-        if (form_clientSelectorComboBox.getItemCount() > 0) {
-
-            final String selectedUsername = selectedClientInComboBox.getUsername();
-            selectedClientInComboBox = mainFrame.getChatClientPropertiesHashMap().get(selectedUsername);
-        }
-
-///
-
-        if (form_clientSelectorComboBox.getItemCount() == 0) {
-
-            return;
-        }
-
-        String nickname = getNicknameTextField().getText();
-        String username = getUsernameTextField().getText();
-
-        mainFrame.getChatClientPropertiesHashMap().get(username).setNickname(nickname);
-
-
-
-        ///
-
-        mainFrame.getCustomProperties().save();
-
-        new PopupPanelImpl(mainFrame,"nickname saved").implementPopup(1000);
-        setUpComponentsOnPropertiesPanel(selectedClientInComboBox);
     }
 
     @Override
@@ -304,8 +256,58 @@ public class PropertiesPanelImpl extends PropertiesPanel {
     }
 
     @Override
-    protected void colorPickerPanelMouseClicked(MouseEvent e) {
+    protected void propertiesOkButtonMousePressed(final MouseEvent e) {
 
+        //TODO clean up this part
+        String ownName = getOwnUserNameTextField().getText();
+
+        mainFrame.getChatClientPropertiesHashMap().get("own").setUsername(ownName);
+        mainFrame.setUsername(ownName);
+
+///
+        if (form_clientSelectorComboBox.getItemCount() > 0) {
+
+            final String selectedUsername = selectedClientInComboBox.getUsername();
+            selectedClientInComboBox = mainFrame.getChatClientPropertiesHashMap().get(selectedUsername);
+        }
+
+///
+
+        if (form_clientSelectorComboBox.getItemCount() == 0) {
+
+            return;
+        }
+
+        String nickname = getNicknameTextField().getText();
+        String username = getUsernameTextField().getText();
+
+        mainFrame.getChatClientPropertiesHashMap().get(username).setNickname(nickname);
+
+        ///
+
+        mainFrame.getCustomProperties().save();
+
+        PopupInterface popup = new PopupPanelImpl(mainFrame);
+        popup.getMessageTextField().setText("nickname saved");
+        popup.configurePopupPanelPlacement();
+        popup.initiatePopupTimer(2_000);
+
+        setUpComponentsOnPropertiesPanel(selectedClientInComboBox);
+    }
+
+    @Override
+    protected void clientSelectorComboBoxItemStateChanged(ItemEvent e) {
+
+        if (e.getStateChange() == ItemEvent.SELECTED) {
+
+            String selectedItem = (String) getClientSelectorComboBox().getSelectedItem();
+            selectedClientInComboBox = mainFrame.getChatClientPropertiesHashMap().get(selectedItem);
+            setUpComponentsOnPropertiesPanel(selectedClientInComboBox);
+        }
+    }
+
+    @Override
+    protected void colorPickerPanelMouseClicked(MouseEvent e) {
 
         if (form_clientSelectorComboBox.getItemCount() == 0) {
 

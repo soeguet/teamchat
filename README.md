@@ -1,4 +1,5 @@
 # TeamChat
+### v1.0.2
 
 <div style="text-align: center;">
 <img src="pictures/img.png" alt="img" height="600"/>
@@ -64,7 +65,7 @@ in the terminal.
 3b. Run the application by typing
 
 ```bash
-java -jar target/teamchat-1.0-SNAPSHOT.jar
+java -jar target/teamchat.jar
 ```
 
 ## Environment Variables

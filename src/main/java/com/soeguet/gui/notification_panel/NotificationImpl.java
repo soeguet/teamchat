@@ -4,13 +4,16 @@ import com.soeguet.cache.factory.CacheManagerFactory;
 import com.soeguet.cache.implementations.ActiveNotificationQueue;
 import com.soeguet.cache.implementations.WaitingNotificationQueue;
 import com.soeguet.cache.manager.CacheManager;
+import com.soeguet.emoji.interfaces.EmojiHandlerInterface;
+import com.soeguet.gui.notification_panel.interfaces.NotificationInterface;
 import com.soeguet.gui.reply.ReplyPanelImpl;
-import com.soeguet.gui.main_frame.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.gui.notification_panel.generated.Notification;
+import com.soeguet.gui.reply.interfaces.ReplyInterface;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
-import com.soeguet.util.EmojiHandler;
+import com.soeguet.emoji.EmojiHandler;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,7 +21,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 
-public class NotificationImpl extends Notification {
+public class NotificationImpl extends Notification implements NotificationInterface {
 
     private final MainFrameInterface mainFrame;
     private final int MARGIN_TOP = 10;
@@ -29,7 +32,6 @@ public class NotificationImpl extends Notification {
 
         super(null);
         this.baseModel = baseModel;
-        super.setMaximumSize(new Dimension(400, 400));
         this.mainFrame = mainFrame;
     }
 
@@ -58,8 +60,11 @@ public class NotificationImpl extends Notification {
 
             bringChatGuiToFront();
 
-            ReplyPanelImpl replyPanel = new ReplyPanelImpl(this.mainFrame, this.baseModel);
-            this.mainFrame.getMainTextPanelLayeredPane().add(replyPanel, JLayeredPane.MODAL_LAYER);
+            ReplyInterface replyPanel = new ReplyPanelImpl(this.mainFrame, this.baseModel);
+            replyPanel.populatePanel();
+            replyPanel.setPosition();
+            replyPanel.requestAllFocus();
+            replyPanel.addPanelToMainFrame();
         });
     }
 
@@ -83,6 +88,7 @@ public class NotificationImpl extends Notification {
         return this.timer;
     }
 
+    @Override
     public void setNotificationText() {
 
         addMessageToNotificationPanel();
@@ -125,7 +131,8 @@ public class NotificationImpl extends Notification {
 
     private void replaceEmojiTextToIconOnTextPane(final String message) {
 
-        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(this.form_notificationMainMessage, message);
+        EmojiHandlerInterface emojiHandler = new EmojiHandler(mainFrame);
+        emojiHandler.replaceEmojiDescriptionWithActualImageIcon(this.form_notificationMainMessage, message);
     }
 
     private void addPictureToNotificationPanel() {
@@ -178,9 +185,7 @@ public class NotificationImpl extends Notification {
 
     private void addNotificationTimer() {
 
-        this.timer = new Timer(5000, e -> {
-            processNotificationQueue();
-        });
+        this.timer = new Timer(5000, e -> processNotificationQueue());
         this.timer.setRepeats(false);
         this.timer.start();
     }
@@ -267,6 +272,7 @@ public class NotificationImpl extends Notification {
         }
     }
 
+    @Override
     public void setNotificationPicture() {
 
         addPictureToNotificationPanel();
