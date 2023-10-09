@@ -2,8 +2,9 @@ package com.soeguet.properties;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.soeguet.gui.main_frame.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.gui.popups.PopupPanelImpl;
+import com.soeguet.gui.popups.interfaces.PopupInterface;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -165,7 +166,11 @@ public class CustomProperties extends Properties {
             setProperty(key, json);
         });
 
-        new PopupPanelImpl(mainFrame, "properties saved").implementPopup(1000);
+
+        PopupInterface popup = new PopupPanelImpl(mainFrame);
+        popup.getMessageTextField().setText("properties saved");
+        popup.configurePopupPanelPlacement();
+        popup.initiatePopupTimer(2_000);
 
         createPropertiesFile(configFilePath);
     }

@@ -3,22 +3,21 @@ package com.soeguet.gui.popups;
 import com.soeguet.cache.factory.CacheManagerFactory;
 import com.soeguet.cache.implementations.MessageQueue;
 import com.soeguet.cache.manager.CacheManager;
-import com.soeguet.gui.main_frame.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.gui.popups.generated.PopupPanel;
+import com.soeguet.gui.popups.interfaces.PopupInterface;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
 
-public class PopupPanelImpl extends PopupPanel {
+public class PopupPanelImpl extends PopupPanel implements PopupInterface {
 
     private final MainFrameInterface mainFrame;
     private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
 
-    public PopupPanelImpl(MainFrameInterface mainFrame, String message) {
+    public PopupPanelImpl(MainFrameInterface mainFrame) {
 
         this.mainFrame = mainFrame;
-        //TODO linebreaks are not working
-        this.getMessageTextField().setText(message);
     }
 
     @Override
@@ -43,7 +42,6 @@ public class PopupPanelImpl extends PopupPanel {
      */
     public void implementPopup(int delayMilliseconds) {
 
-        configurePopupPanelPlacement();
 
         initiatePopupTimer(delayMilliseconds);
     }
@@ -53,7 +51,8 @@ public class PopupPanelImpl extends PopupPanel {
 
      @param delayMilliseconds The delay in milliseconds before the popup is displayed.
      */
-    private void initiatePopupTimer(int delayMilliseconds) {
+    @Override
+    public void initiatePopupTimer(int delayMilliseconds) {
 
         Timer swingTimer = new Timer(delayMilliseconds, event -> {
 
@@ -82,18 +81,38 @@ public class PopupPanelImpl extends PopupPanel {
         }
     }
 
+    /**
+     Recursively processes strings in the message queue until it is empty.
+     Throws InterruptedException if the thread is interrupted while waiting for a message to be available in the queue.
+
+     @throws InterruptedException If the thread is interrupted while waiting for a message to be available in the queue.
+     */
     private void recursivelyProcessStringsInQueue() throws InterruptedException {
 
         MessageQueue messageQueue = (MessageQueue) cacheManager.getCache("messageQueue");
         String message = messageQueue.pollFirst();
-        PopupPanelImpl popupPanel = new PopupPanelImpl(mainFrame, message);
-        popupPanel.implementPopup(1500);
+
+        generatePopup(message);
+    }
+
+    /**
+     Generates a popup with the given message.
+
+     @param message The message to be displayed in the popup.
+     */
+    private void generatePopup(final String message) {
+
+        PopupInterface popup = new PopupPanelImpl(mainFrame);
+        popup.getMessageTextField().setText(message);
+        popup.configurePopupPanelPlacement();
+        popup.initiatePopupTimer(2_000);
     }
 
     /**
      Configures the placement of the popup panel within the main GUI.
      */
-    private void configurePopupPanelPlacement() {
+    @Override
+    public void configurePopupPanelPlacement() {
 
         this.setBounds((this.mainFrame.getMainTextPanelLayeredPane().getWidth() - 250) / 2, 100, 250, 100);
         this.mainFrame.getMainTextPanelLayeredPane().add(this, JLayeredPane.POPUP_LAYER);

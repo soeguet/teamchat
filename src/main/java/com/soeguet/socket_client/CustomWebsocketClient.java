@@ -2,8 +2,9 @@ package com.soeguet.socket_client;
 
 import com.soeguet.behaviour.interfaces.GuiFunctionality;
 import com.soeguet.behaviour.interfaces.SocketToGuiInterface;
-import com.soeguet.gui.main_frame.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.gui.popups.PopupPanelImpl;
+import com.soeguet.gui.popups.interfaces.PopupInterface;
 import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.framing.Framedata;
@@ -57,7 +58,10 @@ public class CustomWebsocketClient extends WebSocketClient {
 
         logger.info("onOpen");
 
-        new PopupPanelImpl(mainFrame, "Connected to server").implementPopup(2000);
+        PopupInterface popup = new PopupPanelImpl(mainFrame);
+        popup.getMessageTextField().setText("Connected to server");
+        popup.configurePopupPanelPlacement();
+        popup.initiatePopupTimer(2_000);
     }
 
     @Override
@@ -74,7 +78,10 @@ public class CustomWebsocketClient extends WebSocketClient {
         logger.info(reason);
         logger.info(String.valueOf(remote));
 
-        new PopupPanelImpl(mainFrame, "Connection closed." + System.lineSeparator() + reason + " " + code).implementPopup(2000);
+        PopupInterface popup = new PopupPanelImpl(mainFrame);
+        popup.getMessageTextField().setText("Connection closed." + System.lineSeparator() + reason + " " + code);
+        popup.configurePopupPanelPlacement();
+        popup.initiatePopupTimer(2_000);
     }
 
     @Override
@@ -83,7 +90,10 @@ public class CustomWebsocketClient extends WebSocketClient {
         logger.info("onError");
         logger.info(ex.getMessage());
 
-        new PopupPanelImpl(mainFrame, "Error: " + ex.getMessage()).implementPopup(2000);
+        PopupInterface popup = new PopupPanelImpl(mainFrame);
+        popup.getMessageTextField().setText("Error: " + ex.getMessage());
+        popup.configurePopupPanelPlacement();
+        popup.initiatePopupTimer(2_000);
     }
 
     @Override

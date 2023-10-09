@@ -1,7 +1,7 @@
 package com.soeguet.socket_client;
 
 import com.soeguet.behaviour.interfaces.GuiFunctionality;
-import com.soeguet.gui.main_frame.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.socket_client.interfaces.ClientController;
 import net.miginfocom.swing.MigLayout;
 
@@ -143,12 +143,6 @@ public class ClientControllerImpl implements ClientController {
     }
 
     @Override
-    public CustomWebsocketClient getWebsocketClient() {
-
-        return websocketClient;
-    }
-
-    @Override
     public void closeConnection() {
 
         if (websocketClient != null) {
@@ -174,5 +168,11 @@ public class ClientControllerImpl implements ClientController {
 
         //no notifications during initial message flood
         mainFrame.setStartUp(true);
+    }
+
+    @Override
+    public CustomWebsocketClient getWebsocketClient() {
+
+        return websocketClient;
     }
 }

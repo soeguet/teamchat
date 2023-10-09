@@ -5,7 +5,7 @@ import com.soeguet.gui.comments.interfaces.LinkPanelInterface;
 import com.soeguet.gui.comments.right.generated.PanelRight;
 import com.soeguet.gui.comments.util.LinkWrapEditorKit;
 import com.soeguet.gui.comments.util.QuotePanelImpl;
-import com.soeguet.gui.main_frame.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;

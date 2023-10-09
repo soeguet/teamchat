@@ -7,7 +7,7 @@ import com.soeguet.gui.comments.left.LinkLeftImpl;
 import com.soeguet.gui.comments.left.PanelLeftImpl;
 import com.soeguet.gui.comments.right.LinkRightImpl;
 import com.soeguet.gui.comments.right.PanelRightImpl;
-import com.soeguet.gui.main_frame.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.model.MessageTypes;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
@@ -161,12 +161,12 @@ public class CommentManagerImpl implements CommentManager {
     public void setupPicturesLeftSide(final BaseModel baseModel, final String nickname) {
 
         //PICTURE - LEFT
-        if (baseModel instanceof MessageModel messageModel) {
+        if (baseModel instanceof PictureModel pictureModel) {
 
-            Color borderColor = determineBorderColor(messageModel.getSender());
+            Color borderColor = determineBorderColor(pictureModel.getSender());
 
-            CommentInterface panelLeft = new PanelLeftImpl(this.mainFrame, messageModel);
-            this.mainFrame.getCommentsHashMap().put(messageModel.getId(), panelLeft);
+            CommentInterface panelLeft = new PanelLeftImpl(this.mainFrame, pictureModel);
+            this.mainFrame.getCommentsHashMap().put(pictureModel.getId(), panelLeft);
             panelLeft.setupPicturePanelWrapper();
             panelLeft.setBorderColor(borderColor);
             displayNicknameInsteadOfUsername(nickname, panelLeft);

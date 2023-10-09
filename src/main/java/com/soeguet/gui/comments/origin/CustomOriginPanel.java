@@ -2,8 +2,9 @@ package com.soeguet.gui.comments.origin;
 
 import com.soeguet.gui.comments.util.QuotePanelImpl;
 import com.soeguet.gui.comments.util.WrapEditorKit;
-import com.soeguet.gui.main_frame.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.gui.reply.ReplyPanelImpl;
+import com.soeguet.gui.reply.interfaces.ReplyInterface;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
@@ -476,8 +477,11 @@ public class CustomOriginPanel extends JPanel {
 
                 super.mouseReleased(e);
 
-                ReplyPanelImpl replyPanel = new ReplyPanelImpl(mainFrame, baseModel);
-                mainFrame.getMainTextPanelLayeredPane().add(replyPanel, JLayeredPane.MODAL_LAYER);
+                ReplyInterface replyPanel = new ReplyPanelImpl(mainFrame, baseModel);
+                replyPanel.populatePanel();
+                replyPanel.setPosition();
+                replyPanel.requestAllFocus();
+                replyPanel.addPanelToMainFrame();
             }
         });
     }

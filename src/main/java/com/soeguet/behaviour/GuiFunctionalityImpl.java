@@ -12,9 +12,12 @@ import com.soeguet.cache.implementations.WaitingNotificationQueue;
 import com.soeguet.cache.manager.CacheManager;
 import com.soeguet.gui.comments.interfaces.CommentManager;
 import com.soeguet.gui.image_panel.ImagePanelImpl;
-import com.soeguet.gui.main_frame.MainFrameInterface;
+import com.soeguet.gui.image_panel.interfaces.ImageInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.gui.notification_panel.NotificationImpl;
+import com.soeguet.gui.notification_panel.interfaces.NotificationInterface;
 import com.soeguet.gui.popups.PopupPanelImpl;
+import com.soeguet.gui.popups.interfaces.PopupInterface;
 import com.soeguet.model.MessageTypes;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
@@ -77,6 +80,17 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
     }
 
     /**
+     Fixes the scroll speed for the main text background scroll pane.
+     This method sets the unit increment of the vertical scrollbar of the main text background scroll pane to 20.
+     This ensures that the scrolling speed is faster.
+     */
+    @Override
+    public void fixScrollPaneScrollSpeed() {
+
+        this.mainFrame.getMainTextBackgroundScrollPane().getVerticalScrollBar().setUnitIncrement(25);
+    }
+
+    /**
      Overrides the transfer handler of the text pane in the GUI.
      This method is responsible for handling dropped data onto the text pane,
      distinguishing between image and text data and triggering the appropriate actions.
@@ -97,11 +111,14 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
                 if (transferable.isDataFlavorSupported(DataFlavor.imageFlavor)) {
 
                     // image to text pane -> activate image panel
-                    ImagePanelImpl imagePanel = new ImagePanelImpl(mainFrame);
-                    imagePanel.initializeImagePanel();
+                    ImageInterface imagePanel = new ImagePanelImpl(mainFrame);
+                    imagePanel.setPosition();
+                    imagePanel.setLayeredPaneLayerPositions();
+                    imagePanel.setupPictureScrollPaneScrollSpeed();
                     imagePanel.populateImagePanelFromClipboard();
 
                     return true;
+
                 } else if (transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
 
                     try {
@@ -138,17 +155,6 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
                 return false;
             }
         });
-    }
-
-    /**
-     Fixes the scroll speed for the main text background scroll pane.
-     This method sets the unit increment of the vertical scrollbar of the main text background scroll pane to 20.
-     This ensures that the scrolling speed is faster.
-     */
-    @Override
-    public void fixScrollPaneScrollSpeed() {
-
-        this.mainFrame.getMainTextBackgroundScrollPane().getVerticalScrollBar().setUnitIncrement(25);
     }
 
     private String convertToJSON(BaseModel messageModel) {
@@ -211,6 +217,14 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         return new MessageModel((byte) MessageTypes.NORMAL, mainFrame.getUsername(), userTextInput);
     }
 
+    @Override
+    public synchronized void internalNotificationHandling(String message) {
+
+        //TODO clean this mess up..
+        BaseModel baseModel = convertMessageToBaseModel(message);
+        internalNotificationHandling(message, baseModel);
+    }
+
     /**
      Called when a message is received.
 
@@ -225,7 +239,12 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
             case "__startup__end__" -> mainFrame.setStartUp(false);
 
-            case "welcome to the server" -> new PopupPanelImpl(mainFrame, "Welcome to the server!").implementPopup(1000);
+            case "welcome to the server" -> {
+                PopupInterface popup = new PopupPanelImpl(mainFrame);
+                popup.getMessageTextField().setText("Welcome to the server!");
+                popup.configurePopupPanelPlacement();
+                popup.initiatePopupTimer(2_000);
+            }
 
             case null -> throw new IllegalStateException();
 
@@ -403,14 +422,6 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         }
     }
 
-    @Override
-    public synchronized void internalNotificationHandling(String message) {
-
-        //TODO clean this mess up..
-        BaseModel baseModel = convertMessageToBaseModel(message);
-        internalNotificationHandling(message, baseModel);
-    }
-
     public synchronized void internalNotificationHandling(String message, BaseModel baseModel) {
 
         //TODO clean this mess up..
@@ -464,14 +475,24 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
             case MessageModel text -> {
 
-                Timer timer = new Timer(500, e -> new NotificationImpl(this.mainFrame, text).setNotificationText());
+                Timer timer = new Timer(500, e -> {
+                    NotificationInterface notification = new NotificationImpl(this.mainFrame, text);
+                    notification.setNotificationText();
+                    notification.setMaximumSize(new Dimension(400,300));
+                });
                 timer.setRepeats(false);
                 timer.start();
             }
 
             case PictureModel picture -> {
 
-                Timer timer = new Timer(500, e -> new NotificationImpl(this.mainFrame, picture).setNotificationPicture());
+                Timer timer = new Timer(500, e -> {
+                    NotificationInterface notification = new NotificationImpl(this.mainFrame, picture);
+
+                    notification.setNotificationPicture();
+                    notification.setMaximumSize(new Dimension(400,300));
+
+                });
                 timer.setRepeats(false);
                 timer.start();
             }
@@ -500,7 +521,7 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         String nickname = checkForNickname(baseModel.getSender());
 
         //process and display message
-        processAndDisplayMessage(baseModel,  nickname);
+        processAndDisplayMessage(baseModel, nickname);
 
         //check for remaining messages in the local cache
         checkIfDequeIsEmptyOrStartOver();

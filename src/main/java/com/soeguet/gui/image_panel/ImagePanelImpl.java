@@ -2,7 +2,8 @@ package com.soeguet.gui.image_panel;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.soeguet.gui.image_panel.generated.ImagePanel;
-import com.soeguet.gui.main_frame.MainFrameInterface;
+import com.soeguet.gui.image_panel.interfaces.ImageInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.model.jackson.PictureModel;
 
 import javax.imageio.ImageIO;
@@ -20,7 +21,7 @@ import java.io.IOException;
 import java.time.LocalTime;
 import java.util.logging.Logger;
 
-public class ImagePanelImpl extends ImagePanel {
+public class ImagePanelImpl extends ImagePanel implements ImageInterface {
 
     private final Logger LOGGER = Logger.getLogger(ImagePanelImpl.class.getName());
     private final MainFrameInterface mainFrame;
@@ -33,19 +34,9 @@ public class ImagePanelImpl extends ImagePanel {
         this.mainFrame = mainFrame;
 
     }
-    public void initializeImagePanel(){
 
-        populateImagePanel();
-        setPosition();
-        setLayeredPaneLayerPositions();
-        setupPictureScrollPaneScrollSpeed();
-    }
-
-    private void populateImagePanel() {
-
-    }
-
-    private void setPosition() {
+    @Override
+    public void setPosition() {
 
         int textPaneWidth = mainFrame.getMainTextPanelLayeredPane().getWidth();
         int textPaneHeight = mainFrame.getMainTextPanelLayeredPane().getHeight();
@@ -55,7 +46,8 @@ public class ImagePanelImpl extends ImagePanel {
         mainFrame.getMainTextPanelLayeredPane().add(this, JLayeredPane.MODAL_LAYER);
     }
 
-    private void setLayeredPaneLayerPositions() {
+    @Override
+    public void setLayeredPaneLayerPositions() {
 
         final int width = form_pictureMainPanel.getWidth();
         final int height = form_pictureMainPanel.getHeight();
@@ -68,7 +60,8 @@ public class ImagePanelImpl extends ImagePanel {
         redrawEverything();
     }
 
-    private void setupPictureScrollPaneScrollSpeed() {
+    @Override
+    public void setupPictureScrollPaneScrollSpeed() {
 
         form_pictureScrollPane.getVerticalScrollBar().setUnitIncrement(50);
         form_pictureScrollPane.getHorizontalScrollBar().setUnitIncrement(50);
@@ -83,6 +76,7 @@ public class ImagePanelImpl extends ImagePanel {
         repaint();
     }
 
+    @Override
     public void populateImagePanelFromClipboard() {
 
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();

@@ -1,4 +1,4 @@
-package com.soeguet.gui.main_frame;
+package com.soeguet.gui.main_frame.interfaces;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.behaviour.interfaces.GuiFunctionality;

@@ -1,6 +1,6 @@
 package com.soeguet.gui.comments.util;
 
-import com.soeguet.gui.main_frame.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.gui.comments.util.generated.QuotePanel;
 
 import javax.swing.*;

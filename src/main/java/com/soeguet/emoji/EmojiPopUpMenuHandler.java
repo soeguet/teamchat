@@ -1,6 +1,7 @@
 package com.soeguet.emoji;
 
-import com.soeguet.gui.main_frame.MainFrameInterface;
+import com.soeguet.emoji.interfaces.EmojiPopupInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -12,7 +13,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.logging.Logger;
 
-public class EmojiPopUpMenuHandler {
+public class EmojiPopUpMenuHandler implements EmojiPopupInterface {
 
     private final MainFrameInterface mainFrame;
     private final JTextPane textPane;
@@ -25,8 +26,6 @@ public class EmojiPopUpMenuHandler {
         this.mainFrame = mainFrame;
         this.textPane = textPane;
         this.emojiButton = emojiButton;
-
-        createEmojiPopupMenu();
     }
 
     /**
@@ -35,7 +34,8 @@ public class EmojiPopUpMenuHandler {
      <p>This method is responsible for creating a pop-up menu and adding emojis to it. The pop-up
      menu is then displayed at the position of the emoji button.
      */
-    private void createEmojiPopupMenu() {
+    @Override
+    public void createEmojiPopupMenu() {
 
         JPopupMenu emojiPopupMenu = new JPopupMenu();
         JPanel emojiPanelWrapper = createEmojiPanel();
@@ -84,8 +84,6 @@ public class EmojiPopUpMenuHandler {
         return emojiPanelForOneEmoji;
     }
 
-
-
     /**
      Adds a mouse listener to the specified emoji panel.
 
@@ -114,8 +112,6 @@ public class EmojiPopUpMenuHandler {
             }
         });
     }
-
-
 
     /**
      Inserts an emoji at the current caret position in the text editor pane.

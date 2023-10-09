@@ -1,6 +1,6 @@
 package com.soeguet.gui.comments.left;
 
-import com.soeguet.gui.main_frame.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.left.generated.PanelLeft;
 import com.soeguet.gui.comments.util.QuotePanelImpl;
@@ -9,7 +9,6 @@ import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.logging.Logger;

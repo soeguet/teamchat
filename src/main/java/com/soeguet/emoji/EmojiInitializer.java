@@ -1,5 +1,6 @@
 package com.soeguet.emoji;
 
+import com.soeguet.emoji.interfaces.EmojiInitializerInterface;
 import com.soeguet.gui.main_frame.ChatMainFrameImpl;
 
 import javax.swing.*;
@@ -12,15 +13,20 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class EmojiInitializer {
+public class EmojiInitializer implements EmojiInitializerInterface {
 
     private final Logger logger = Logger.getLogger(EmojiInitializer.class.getName());
+
+    public EmojiInitializer() {
+
+    }
 
     /**
      Creates a list of ImageIcons for emojis.
 
      @return an ArrayList of ImageIcons representing emojis
      */
+    @Override
     public HashMap<String, ImageIcon> createEmojiList() {
 
         HashMap<String, ImageIcon> imageIcons = new HashMap<>();
