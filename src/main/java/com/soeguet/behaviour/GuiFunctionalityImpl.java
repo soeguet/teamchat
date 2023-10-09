@@ -336,7 +336,7 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
         //TODO remove this part as soon as the buffer is working
         try {
-            Thread.sleep(500);
+            Thread.sleep(15);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
