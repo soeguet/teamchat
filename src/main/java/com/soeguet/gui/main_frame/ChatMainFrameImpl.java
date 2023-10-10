@@ -35,7 +35,6 @@ import javax.swing.Timer;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -249,22 +248,38 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     Initializes the EmojiHandler and EmojiList.
+     Initializes the emoji handler.
 
-     This method creates a new instance of the EmojiHandler class, passing
-     a reference to the current object as a constructor argument. The EmojiHandler
-     object is then assigned to the emojiHandler instance variable of the current object.
+     This method creates a new instance of the EmojiHandler class and assigns it to the
+     emojiHandler instance variable of the current object.
 
-     This method also creates a new instance of the EmojiInitializer class and uses
-     it to create a list of emojis. The created emoji list is then assigned to the
-     emojiList instance variable of the current object.
+     The EmojiHandler class handles emoji functionality within the application.
      */
-    public void initEmojiHandlerAndList() {
+    public void initEmojiHandler() {
 
         this.emojiHandler = new EmojiHandler(this);
+    }
 
-        EmojiInitializerInterface emojiInitializer = new EmojiInitializer();
-        this.emojiList = emojiInitializer.createEmojiList();
+    /**
+     Initializes the emoji list.
+
+     This method initializes the emoji list by creating a new instance of the EmojiInitializer class
+     and calling the createEmojiList() method to obtain the list of emojis. The emoji list is then
+     assigned to the emojiList instance variable of the current object.
+
+     The EmojiInitializer class is responsible for creating and initializing the list of emojis.
+
+     @see EmojiInitializer
+     @see EmojiInitializerInterface
+     */
+    public void initEmojiList(EmojiInitializerInterface emojiInitializer) {
+
+        emojiList = emojiInitializer.createEmojiList();
+    }
+
+    public EmojiHandler getEmojiHandler() {
+
+        return emojiHandler;
     }
 
     /**
@@ -338,10 +353,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     /**
 
      */
-    private String retrieveJarVersion() {
+    String retrieveJarVersion() {
 
         Properties properties = new Properties();
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("version.properties");
+        InputStream inputStream = getClassLoader().getResourceAsStream("version.properties");
 
         if (inputStream != null) {
             try {
@@ -353,6 +368,17 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         }
 
         return "v.?";
+    }
+
+    /**
+     * Retrieves the ClassLoader for the current class.
+     *
+     * @return the ClassLoader for the current class
+     */
+    ClassLoader getClassLoader(){
+
+        //make the classloader mockable
+        return getClass().getClassLoader();
     }
 
     /**
@@ -511,16 +537,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     Handles the event when the mouse clicks the current JFrame.
-
-     @param e the MouseEvent object that triggered this event
-     */
-    @Override
-    protected void thisMouseClicked(MouseEvent e) {
-
-    }
-
-    /**
      Called when the mouse is pressed on the property menu item.
 
      @param e The MouseEvent object representing the event.
@@ -573,7 +589,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      */
     @Override
     protected void connectionDetailsButtonMousePressed(final MouseEvent e) {
-        //TODO is this needed?
+
         clientController.serverInformationOptionPane();
     }
 
@@ -642,39 +658,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     Called when the participant menu item is pressed. Logs the provided event and method name.
-
-     @param e The MouseEvent associated with the button press.
-     */
-    @Override
-    protected void participantsMenuItemMousePressed(MouseEvent e) {
-
-    }
-
-    /**
-     Called when the main text panel is clicked. Logs the provided event and method name.
-
-     @param e The MouseEvent associated with the click event.
-     */
-    @Override
-    protected void mainTextPanelMouseClicked(MouseEvent e) {
-
-    }
-
-    /**
-     {@inheritDoc}
-
-     <p>This method is called when the mouse is clicked on the text editor pane in the ChatGuiImpl
-     class. It logs the method call with the provided MouseEvent object and the method name.
-
-     @param e the MouseEvent object representing the mouse click event on the text editor pane
-     */
-    @Override
-    protected void textEditorPaneMouseClicked(MouseEvent e) {
-
-    }
-
-    /**
      Called when a key is pressed in the text editor pane. If the pressed key is not the Enter key,
      the method simply returns. If the pressed key is the Enter key, it consumes the event and
      performs the appropriate action based on whether the Shift key is pressed or not.
@@ -720,7 +703,14 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      */
     private void appendNewLineToTextEditorPane() {
 
-        form_textEditorPane.setText(form_textEditorPane.getText() + "\n");
+        final int caretPosition = form_textEditorPane.getCaretPosition();
+        form_textEditorPane.setSelectionStart(0);
+        form_textEditorPane.setSelectionEnd(caretPosition);
+        form_textEditorPane.replaceSelection(form_textEditorPane.getSelectedText() + "\n");
+
+        final int endPosition = form_textEditorPane.getCaretPosition();
+        form_textEditorPane.setSelectionStart(endPosition);
+        form_textEditorPane.setSelectionEnd(endPosition);
     }
 
     /**
@@ -966,6 +956,5 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         form_emojiButton.setIcon(new ImageIcon(emojiUrl));
         form_pictureButton.setIcon(new ImageIcon(pictureUrl));
     }
-
 
 }

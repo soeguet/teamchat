@@ -24,8 +24,6 @@ public abstract class ChatPanel extends JFrame {
 
 	protected abstract void thisComponentResized(ComponentEvent e);
 
-	protected abstract void thisMouseClicked(MouseEvent e);
-
 	protected abstract void propertiesMenuItemMousePressed(MouseEvent e);
 
 	protected abstract void internalNotificationsMenuItemItemStateChanged(ItemEvent e);
@@ -35,12 +33,6 @@ public abstract class ChatPanel extends JFrame {
 	protected abstract void resetConnectionMenuItemMousePressed(MouseEvent e);
 
 	protected abstract void exitMenuItemMousePressed(MouseEvent e);
-
-	protected abstract void participantsMenuItemMousePressed(MouseEvent e);
-
-	protected abstract void mainTextPanelMouseClicked(MouseEvent e);
-
-	protected abstract void textEditorPaneMouseClicked(MouseEvent e);
 
 	protected abstract void textEditorPaneKeyPressed(KeyEvent e);
 
@@ -241,12 +233,6 @@ public abstract class ChatPanel extends JFrame {
 				thisComponentResized(e);
 			}
 		});
-		addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				thisMouseClicked(e);
-			}
-		});
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -345,12 +331,6 @@ public abstract class ChatPanel extends JFrame {
 					//---- form_participantsMenuItem ----
 					this.form_participantsMenuItem.setText("participants");
 					this.form_participantsMenuItem.setEnabled(false);
-					this.form_participantsMenuItem.addMouseListener(new MouseAdapter() {
-						@Override
-						public void mousePressed(MouseEvent e) {
-							participantsMenuItemMousePressed(e);
-						}
-					});
 					this.form_extraMenu.add(this.form_participantsMenuItem);
 				}
 				this.form_menuBar1.add(this.form_extraMenu);
@@ -408,12 +388,6 @@ public abstract class ChatPanel extends JFrame {
 							this.form_mainTextPanel.setPreferredSize(null);
 							this.form_mainTextPanel.setOpaque(false);
 							this.form_mainTextPanel.setBorder(null);
-							this.form_mainTextPanel.addMouseListener(new MouseAdapter() {
-								@Override
-								public void mouseClicked(MouseEvent e) {
-									mainTextPanelMouseClicked(e);
-								}
-							});
 							this.form_mainTextPanel.setLayout(new MigLayout(
 								"fill,novisualpadding,hidemode 3",
 								// columns
@@ -476,12 +450,6 @@ public abstract class ChatPanel extends JFrame {
 					this.form_textEditorPane.setOpaque(false);
 					this.form_textEditorPane.setDoubleBuffered(true);
 					this.form_textEditorPane.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
-					this.form_textEditorPane.addMouseListener(new MouseAdapter() {
-						@Override
-						public void mouseClicked(MouseEvent e) {
-							textEditorPaneMouseClicked(e);
-						}
-					});
 					this.form_textEditorPane.addKeyListener(new KeyAdapter() {
 						@Override
 						public void keyPressed(KeyEvent e) {
