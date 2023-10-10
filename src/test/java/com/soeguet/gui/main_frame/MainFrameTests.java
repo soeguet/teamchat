@@ -87,17 +87,6 @@ public class MainFrameTests {
     }
 
     @Test
-    void testIfSystemDesktopEnvironmentIsDetected() {
-
-        when(chatMainFrame.getDesktopEnv()).thenReturn("GNOME");
-
-        String result = chatMainFrame.getDesktopEnv();
-
-        assertEquals("GNOME", result);
-
-    }
-
-    @Test
     void testIfClientControllerIsInitializedProperly(){
 
         chatMainFrame.initGuiFunctionality();
