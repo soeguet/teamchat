@@ -18,6 +18,8 @@ import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.gui.notification_panel.NotificationImpl;
 import com.soeguet.gui.notification_panel.interfaces.NotificationInterface;
 import com.soeguet.gui.option_pane.links.LinkDialogImpl;
+import com.soeguet.gui.option_pane.links.dtos.AbsoluteLinkRecord;
+import com.soeguet.gui.option_pane.links.dtos.MetadataStorageRecord;
 import com.soeguet.gui.option_pane.links.interfaces.LinkDialogInterface;
 import com.soeguet.gui.popups.PopupPanelImpl;
 import com.soeguet.gui.popups.interfaces.PopupInterface;
@@ -27,10 +29,8 @@ import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
 import com.soeguet.properties.CustomUserProperties;
 import com.soeguet.util.MessageCategory;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
@@ -39,8 +39,6 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.logging.Logger;
@@ -164,69 +162,130 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
         //TODO clickable link working, maybe add some kind of JPanel for further editing
 
+        //main object
         LinkDialogInterface linkDialog = new LinkDialogImpl(((Window) mainFrame));
-        JTextPane jEditorPane = new JTextPane();
-        jEditorPane.setEditorKit(new LinkWrapEditorKit());
-        jEditorPane.setText(link);
-        linkDialog.getContentPanel().add(jEditorPane, BorderLayout.CENTER);
 
-        Document doc = null;
-        try {
-            doc = Jsoup.connect(link).get();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        String title = doc.title();
-        String imageUrl = doc.select("meta[property=og:image]").attr("content");
+        //link text pane
+        //TODO wrap link and extra comment in another JPanel
+        final JTextPane linkTextPane = createLinkEditorPane(link);
+        linkDialog.getContentPanel().add(linkTextPane,BorderLayout.CENTER);
 
-        System.out.println("imageUrl = " + imageUrl);
-        System.out.println("Titel: " + title);
+        //if GET request is ok -> look for metadata
+        int statuscode = linkDialog.checkStatusCodeOfLink(link);
+        if (statuscode < 400) {
 
-        JPanel panel = new JPanel();
-        panel.setBorder(new LineBorder(Color.BLACK, 1));
+            final JPanel panel = createMetadataPanel();
 
-        try {
-            BufferedImage img = ImageIO.read(new URI(imageUrl).toURL());
+            //check if it is an absolute link -> if not, there are most likely no metadata
+            AbsoluteLinkRecord absoluteLinkRecord = linkDialog.validateUri(link);
 
-            int maxWidth = 400;
-            int maxHeight = 350;
+            if (absoluteLinkRecord.isAbsoluteLink()) {
 
-            int imgWidth = img.getWidth();
-            int imgHeight = img.getHeight();
+                Document doc = linkDialog.loadDocumentForLink(absoluteLinkRecord.link());
 
-            double aspectRatio = (double) imgWidth / imgHeight;
-            int newWidth = maxWidth;
-            int newHeight = (int) (maxWidth / aspectRatio);
+                //fetch metadata -> title and preview image
+                MetadataStorageRecord metadataStorageRecord = linkDialog.fetchMetaDataFromLink(doc);
 
-            if (newHeight > maxHeight) {
-                newHeight = maxHeight;
-                newWidth = (int) (maxHeight * aspectRatio);
+                //metadata title
+                if (metadataStorageRecord.title() != null) {
+
+                    final JTextPane titleLabel = createTitleLabel(metadataStorageRecord);
+                    panel.add(titleLabel, BorderLayout.NORTH);
+                }
+
+                //metadata image
+                if (metadataStorageRecord.previewImage() != null) {
+
+                    BufferedImage bufferedImage = metadataStorageRecord.previewImage();
+                    JLabel imageLabel = new JLabel(new ImageIcon(bufferedImage));
+                    panel.add(imageLabel, BorderLayout.CENTER);
+                }
+
+                //add a vertical spacer
+                final JPanel verticalSpacer = createVerticalSpacer();
+                panel.add(verticalSpacer, BorderLayout.SOUTH);
             }
 
-            Image scaledImg = img.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-
-            JLabel label = new JLabel(new ImageIcon(scaledImg));
-            panel.add(label);
+            //add metadata panel to link dialog
             linkDialog.getContentPanel().add(panel, BorderLayout.NORTH);
-
-        } catch (IOException | URISyntaxException e) {
-
-            throw new RuntimeException(e);
         }
 
+        //readjust the size of link dialog
         linkDialog.pack();
-        if (jEditorPane.getWidth() > 500) {
-            jEditorPane.setSize(500, jEditorPane.getHeight());
-        }
+
+        //show link dialog
         linkDialog.setLocationRelativeTo(((Component) mainFrame));
         linkDialog.setVisible(true);
 
-//                            MessageModel messageModel = new MessageModel((byte) MessageTypes.LINK, mainFrame.getUsername(), data);
-//                            String messageString = convertToJSON(messageModel);
-//                            sendMessageToSocket(messageString);
 
-        mainFrame.getTextEditorPane().setText("");
-        LOGGER.info("HTTP Link detected");
+//        MessageModel messageModel = new MessageModel((byte) MessageTypes.LINK, mainFrame.getUsername(), data);
+//        String messageString = convertToJSON(messageModel);
+//        sendMessageToSocket(messageString);
+//        mainFrame.getTextEditorPane().setText("");
+    }
+
+    private JPanel createVerticalSpacer() {
+
+        JPanel verticalSpacer = new JPanel();
+        verticalSpacer.setPreferredSize(new Dimension(0, 10));
+        verticalSpacer.setMinimumSize(new Dimension(0, 10));
+        return verticalSpacer;
+    }
+
+    private JTextPane createLinkEditorPane(final String link) {
+
+        final Dimension editorPaneSize = new Dimension(0, 75);
+
+        JTextPane jEditorPane = new JTextPane();
+
+        jEditorPane.setMinimumSize(editorPaneSize);
+        jEditorPane.setPreferredSize(editorPaneSize);
+
+        jEditorPane.setEditorKit(new LinkWrapEditorKit());
+        jEditorPane.setText(link + "\n\n");
+
+        jEditorPane.requestFocus();
+
+        return jEditorPane;
+    }
+
+    private JPanel createMetadataPanel() {
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(new LineBorder(Color.BLACK, 1));
+        return panel;
+    }
+
+    private JTextPane createTitleLabel(final MetadataStorageRecord metadataStorageRecord) {
+
+        JTextPane titleLabel = new JTextPane();
+        titleLabel.setEditable(false);
+        titleLabel.setText(metadataStorageRecord.title());
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        return titleLabel;
+    }
+
+    private String convertToJSON(BaseModel messageModel) {
+
+        try {
+
+            return this.mainFrame.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(messageModel);
+
+        } catch (JsonProcessingException e) {
+
+            LOGGER.log(java.util.logging.Level.SEVERE, "Error converting to JSON", e);
+        }
+
+        return null;
+    }
+
+    private void sendMessageToSocket(String messageString) {
+
+        this.mainFrame.getWebsocketClient().send(messageString);
+
+        final String typingStatus = "{\"type\":\"send\"}";
+
+        this.mainFrame.getWebsocketClient().send(typingStatus.getBytes());
     }
 
     @Override
@@ -252,29 +311,6 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
     private String convertUserTextToJSON(String userTextInput) {
 
         return convertToJSON(textToMessageModel(userTextInput));
-    }
-
-    private void sendMessageToSocket(String messageString) {
-
-        this.mainFrame.getWebsocketClient().send(messageString);
-
-        final String typingStatus = "{\"type\":\"send\"}";
-
-        this.mainFrame.getWebsocketClient().send(typingStatus.getBytes());
-    }
-
-    private String convertToJSON(BaseModel messageModel) {
-
-        try {
-
-            return this.mainFrame.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(messageModel);
-
-        } catch (JsonProcessingException e) {
-
-            LOGGER.log(java.util.logging.Level.SEVERE, "Error converting to JSON", e);
-        }
-
-        return null;
     }
 
     /**
