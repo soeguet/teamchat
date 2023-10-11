@@ -162,11 +162,6 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
         final LinkDialogInterface linkDialog = createLinkDialog(link);
         linkDialog.generate();
-
-//        MessageModel messageModel = new MessageModel((byte) MessageTypes.LINK, mainFrame.getUsername(), data);
-//        String messageString = convertToJSON(messageModel);
-//        sendMessageToSocket(messageString);
-//        mainFrame.getTextEditorPane().setText("");
     }
 
     private LinkDialogInterface createLinkDialog(final String link) {

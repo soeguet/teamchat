@@ -1,15 +1,19 @@
 package com.soeguet.gui.option_pane.links;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.gui.option_pane.links.dtos.AbsoluteLinkRecord;
 import com.soeguet.gui.option_pane.links.dtos.MetadataStorageRecord;
 import com.soeguet.gui.option_pane.links.generated.LinkDialog;
 import com.soeguet.gui.option_pane.links.interfaces.LinkDialogInterface;
+import com.soeguet.model.MessageTypes;
+import com.soeguet.model.jackson.MessageModel;
 import org.jsoup.nodes.Document;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 
 public class LinkDialogImpl extends LinkDialog implements LinkDialogInterface {
@@ -104,5 +108,28 @@ public class LinkDialogImpl extends LinkDialog implements LinkDialogInterface {
         verticalSpacer.setPreferredSize(new Dimension(0, 10));
         verticalSpacer.setMinimumSize(new Dimension(0, 10));
         return verticalSpacer;
+    }
+
+    @Override
+    protected void okButtonActionPerformed(final ActionEvent e) {
+
+        String link = getLinkTextPane().getText();
+        String comment = getCommentTextPane().getText();
+        String message = link + "{LINK}" + comment;
+
+        MessageModel messageModel = new MessageModel((byte) MessageTypes.LINK, mainFrame.getUsername(), message);
+        try {
+            String messageString = mainFrame.getObjectMapper().writeValueAsString(messageModel);
+            mainFrame.getWebsocketClient().send(messageString);
+        } catch (JsonProcessingException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Override
+    protected void cancelButtonActionPerformed(final ActionEvent e) {
+
+        this.dispose();
+        this.setVisible(false);
     }
 }
