@@ -32,6 +32,27 @@ new FormModel {
 					}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
 						name: "contentPanel"
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
+							"columns": 1
+							"rows": 2
+							"hgap": 5
+							"vgap": 5
+						} ) {
+							name: "linkTextPanel"
+							add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+								name: "scrollPane1"
+								add( new FormComponent( "javax.swing.JTextPane" ) {
+									name: "linkTextPane"
+									"border": new javax.swing.border.TitledBorder( "link" )
+								} )
+							} )
+							add( new FormComponent( "javax.swing.JTextPane" ) {
+								name: "commentTextPane"
+								"border": new javax.swing.border.TitledBorder( "comment" )
+							} )
+						}, new FormLayoutConstraints( class java.lang.String ) {
+							"value": "South"
+						} )
 					}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
 						"gridx": 1
 					} )

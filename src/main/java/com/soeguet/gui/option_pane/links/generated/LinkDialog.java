@@ -1,12 +1,14 @@
 package com.soeguet.gui.option_pane.links.generated;
 
-import net.miginfocom.swing.MigLayout;
-
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
+import javax.swing.border.*;
+import net.miginfocom.swing.*;
 /*
- * Created by JFormDesigner on Tue Oct 10 10:02:53 CEST 2023
+ * Created by JFormDesigner on Wed Oct 11 21:14:43 CEST 2023
  */
+
+
 
 /**
  * @author soeguet
@@ -21,8 +23,44 @@ public abstract class LinkDialog extends JDialog {
 		return form_dialogPane;
 	}
 
+	public JPanel getPanel1() {
+		return form_panel1;
+	}
+
+	public JPanel getPanel2() {
+		return form_panel2;
+	}
+
+	public JPanel getHSpacer1() {
+		return form_hSpacer1;
+	}
+
 	public JPanel getContentPanel() {
 		return form_contentPanel;
+	}
+
+	public JPanel getLinkTextPanel() {
+		return form_linkTextPanel;
+	}
+
+	public JScrollPane getScrollPane1() {
+		return form_scrollPane1;
+	}
+
+	public JTextPane getLinkTextPane() {
+		return form_linkTextPane;
+	}
+
+	public JTextPane getCommentTextPane() {
+		return form_commentTextPane;
+	}
+
+	public JPanel getPanel3() {
+		return form_panel3;
+	}
+
+	public JPanel getHSpacer2() {
+		return form_hSpacer2;
 	}
 
 	public JPanel getButtonBar() {
@@ -37,26 +75,6 @@ public abstract class LinkDialog extends JDialog {
 		return form_cancelButton;
 	}
 
-	public JPanel getPanel1() {
-		return form_panel1;
-	}
-
-	public JPanel getPanel2() {
-		return form_panel2;
-	}
-
-	public JPanel getHSpacer1() {
-		return form_hSpacer1;
-	}
-
-	public JPanel getPanel3() {
-		return form_panel3;
-	}
-
-	public JPanel getHSpacer2() {
-		return form_hSpacer2;
-	}
-
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
 		// Generated using JFormDesigner non-commercial license
@@ -65,6 +83,10 @@ public abstract class LinkDialog extends JDialog {
 		form_panel2 = new JPanel();
 		form_hSpacer1 = new JPanel(null);
 		form_contentPanel = new JPanel();
+		form_linkTextPanel = new JPanel();
+		form_scrollPane1 = new JScrollPane();
+		form_linkTextPane = new JTextPane();
+		form_commentTextPane = new JTextPane();
 		form_panel3 = new JPanel();
 		form_hSpacer2 = new JPanel(null);
 		form_buttonBar = new JPanel();
@@ -103,6 +125,25 @@ public abstract class LinkDialog extends JDialog {
 				//======== form_contentPanel ========
 				{
 					form_contentPanel.setLayout(new BorderLayout());
+
+					//======== form_linkTextPanel ========
+					{
+						form_linkTextPanel.setLayout(new GridLayout(2, 1, 5, 5));
+
+						//======== form_scrollPane1 ========
+						{
+
+							//---- form_linkTextPane ----
+							form_linkTextPane.setBorder(new TitledBorder("link"));
+							form_scrollPane1.setViewportView(form_linkTextPane);
+						}
+						form_linkTextPanel.add(form_scrollPane1);
+
+						//---- form_commentTextPane ----
+						form_commentTextPane.setBorder(new TitledBorder("comment"));
+						form_linkTextPanel.add(form_commentTextPane);
+					}
+					form_contentPanel.add(form_linkTextPanel, BorderLayout.SOUTH);
 				}
 				form_panel1.add(form_contentPanel, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
 					GridBagConstraints.CENTER, GridBagConstraints.BOTH,
@@ -156,6 +197,10 @@ public abstract class LinkDialog extends JDialog {
 	protected JPanel form_panel2;
 	protected JPanel form_hSpacer1;
 	protected JPanel form_contentPanel;
+	protected JPanel form_linkTextPanel;
+	protected JScrollPane form_scrollPane1;
+	protected JTextPane form_linkTextPane;
+	protected JTextPane form_commentTextPane;
 	protected JPanel form_panel3;
 	protected JPanel form_hSpacer2;
 	protected JPanel form_buttonBar;

@@ -12,13 +12,14 @@ import com.soeguet.cache.implementations.WaitingNotificationQueue;
 import com.soeguet.cache.manager.CacheManager;
 import com.soeguet.gui.comments.interfaces.CommentManager;
 import com.soeguet.gui.comments.util.LinkWrapEditorKit;
+import com.soeguet.gui.comments.util.WrapEditorKit;
 import com.soeguet.gui.image_panel.ImagePanelImpl;
 import com.soeguet.gui.image_panel.interfaces.ImageInterface;
 import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.gui.notification_panel.NotificationImpl;
 import com.soeguet.gui.notification_panel.interfaces.NotificationInterface;
+import com.soeguet.gui.option_pane.links.LinkDialogHandler;
 import com.soeguet.gui.option_pane.links.LinkDialogImpl;
-import com.soeguet.gui.option_pane.links.dtos.AbsoluteLinkRecord;
 import com.soeguet.gui.option_pane.links.dtos.MetadataStorageRecord;
 import com.soeguet.gui.option_pane.links.interfaces.LinkDialogInterface;
 import com.soeguet.gui.popups.PopupPanelImpl;
@@ -29,15 +30,12 @@ import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
 import com.soeguet.properties.CustomUserProperties;
 import com.soeguet.util.MessageCategory;
-import org.jsoup.nodes.Document;
 
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Random;
@@ -162,61 +160,8 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
         //TODO clickable link working, maybe add some kind of JPanel for further editing
 
-        //main object
-        LinkDialogInterface linkDialog = new LinkDialogImpl(((Window) mainFrame));
-
-        //link text pane
-        //TODO wrap link and extra comment in another JPanel
-        final JTextPane linkTextPane = createLinkEditorPane(link);
-        linkDialog.getContentPanel().add(linkTextPane,BorderLayout.CENTER);
-
-        //if GET request is ok -> look for metadata
-        int statuscode = linkDialog.checkStatusCodeOfLink(link);
-        if (statuscode < 400) {
-
-            final JPanel panel = createMetadataPanel();
-
-            //check if it is an absolute link -> if not, there are most likely no metadata
-            AbsoluteLinkRecord absoluteLinkRecord = linkDialog.validateUri(link);
-
-            if (absoluteLinkRecord.isAbsoluteLink()) {
-
-                Document doc = linkDialog.loadDocumentForLink(absoluteLinkRecord.link());
-
-                //fetch metadata -> title and preview image
-                MetadataStorageRecord metadataStorageRecord = linkDialog.fetchMetaDataFromLink(doc);
-
-                //metadata title
-                if (metadataStorageRecord.title() != null) {
-
-                    final JTextPane titleLabel = createTitleLabel(metadataStorageRecord);
-                    panel.add(titleLabel, BorderLayout.NORTH);
-                }
-
-                //metadata image
-                if (metadataStorageRecord.previewImage() != null) {
-
-                    BufferedImage bufferedImage = metadataStorageRecord.previewImage();
-                    JLabel imageLabel = new JLabel(new ImageIcon(bufferedImage));
-                    panel.add(imageLabel, BorderLayout.CENTER);
-                }
-
-                //add a vertical spacer
-                final JPanel verticalSpacer = createVerticalSpacer();
-                panel.add(verticalSpacer, BorderLayout.SOUTH);
-            }
-
-            //add metadata panel to link dialog
-            linkDialog.getContentPanel().add(panel, BorderLayout.NORTH);
-        }
-
-        //readjust the size of link dialog
-        linkDialog.pack();
-
-        //show link dialog
-        linkDialog.setLocationRelativeTo(((Component) mainFrame));
-        linkDialog.setVisible(true);
-
+        final LinkDialogInterface linkDialog = createLinkDialog(link);
+        linkDialog.generate();
 
 //        MessageModel messageModel = new MessageModel((byte) MessageTypes.LINK, mainFrame.getUsername(), data);
 //        String messageString = convertToJSON(messageModel);
@@ -224,68 +169,29 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 //        mainFrame.getTextEditorPane().setText("");
     }
 
-    private JPanel createVerticalSpacer() {
+    private LinkDialogInterface createLinkDialog(final String link) {
 
-        JPanel verticalSpacer = new JPanel();
-        verticalSpacer.setPreferredSize(new Dimension(0, 10));
-        verticalSpacer.setMinimumSize(new Dimension(0, 10));
-        return verticalSpacer;
-    }
+        final LinkDialogInterface linkDialog = initializeLinkDialog(link);
 
-    private JTextPane createLinkEditorPane(final String link) {
+        MetadataStorageRecord metadataStorageRecord = linkDialog.checkForMetaData(link);
 
-        final Dimension editorPaneSize = new Dimension(0, 75);
+        if (metadataStorageRecord != null) {
 
-        JTextPane jEditorPane = new JTextPane();
-
-        jEditorPane.setMinimumSize(editorPaneSize);
-        jEditorPane.setPreferredSize(editorPaneSize);
-
-        jEditorPane.setEditorKit(new LinkWrapEditorKit());
-        jEditorPane.setText(link + "\n\n");
-
-        jEditorPane.requestFocus();
-
-        return jEditorPane;
-    }
-
-    private JPanel createMetadataPanel() {
-
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(new LineBorder(Color.BLACK, 1));
-        return panel;
-    }
-
-    private JTextPane createTitleLabel(final MetadataStorageRecord metadataStorageRecord) {
-
-        JTextPane titleLabel = new JTextPane();
-        titleLabel.setEditable(false);
-        titleLabel.setText(metadataStorageRecord.title());
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        return titleLabel;
-    }
-
-    private String convertToJSON(BaseModel messageModel) {
-
-        try {
-
-            return this.mainFrame.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(messageModel);
-
-        } catch (JsonProcessingException e) {
-
-            LOGGER.log(java.util.logging.Level.SEVERE, "Error converting to JSON", e);
+            JPanel metaDataPanel = linkDialog.createMetadataPanel(metadataStorageRecord);
+            linkDialog.getContentPanel().add(metaDataPanel, BorderLayout.CENTER);
         }
 
-        return null;
+        return linkDialog;
     }
 
-    private void sendMessageToSocket(String messageString) {
+    private LinkDialogInterface initializeLinkDialog(final String link) {
 
-        this.mainFrame.getWebsocketClient().send(messageString);
+        LinkDialogInterface linkDialog = new LinkDialogImpl(mainFrame, new LinkDialogHandler());
 
-        final String typingStatus = "{\"type\":\"send\"}";
-
-        this.mainFrame.getWebsocketClient().send(typingStatus.getBytes());
+        linkDialog.getLinkTextPane().setEditorKit(new LinkWrapEditorKit());
+        linkDialog.getLinkTextPane().setText(link);
+        linkDialog.getCommentTextPane().setEditorKit(new WrapEditorKit());
+        return linkDialog;
     }
 
     @Override
@@ -311,6 +217,29 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
     private String convertUserTextToJSON(String userTextInput) {
 
         return convertToJSON(textToMessageModel(userTextInput));
+    }
+
+    private void sendMessageToSocket(String messageString) {
+
+        this.mainFrame.getWebsocketClient().send(messageString);
+
+        final String typingStatus = "{\"type\":\"send\"}";
+
+        this.mainFrame.getWebsocketClient().send(typingStatus.getBytes());
+    }
+
+    private String convertToJSON(BaseModel messageModel) {
+
+        try {
+
+            return this.mainFrame.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(messageModel);
+
+        } catch (JsonProcessingException e) {
+
+            LOGGER.log(java.util.logging.Level.SEVERE, "Error converting to JSON", e);
+        }
+
+        return null;
     }
 
     /**
