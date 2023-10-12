@@ -1,5 +1,6 @@
 package com.soeguet.gui.comments.left;
 
+import com.soeguet.gui.comments.dtos.LinkCommentRecord;
 import com.soeguet.gui.comments.interfaces.LinkPanelInterface;
 import com.soeguet.gui.comments.left.generated.PanelLeft;
 import com.soeguet.gui.comments.util.LinkWrapEditorKit;
@@ -76,8 +77,16 @@ public class LinkLeftImpl extends PanelLeft implements LinkPanelInterface {
         jEditorPane.setEditorKit(new LinkWrapEditorKit());
         jEditorPane.setEditable(false);
         jEditorPane.setBackground(Color.WHITE);
-        jEditorPane.setText("<a href=\"" + messageModel.getMessage() + "\" style=\"text-decoration:underline; color:blue; font-size:15;\">" + messageModel.getMessage() + "</a>");
+        LinkCommentRecord linkCommentRecord = extractLinkFromMessageModel(messageModel);
+        final String hyperlinkHtml = "<a href=\"" + linkCommentRecord.link() + "\" style=\"text-decoration:underline; color:blue; font-size:15;\">" + linkCommentRecord.link() + "</a><br><br>";
+        jEditorPane.setText(hyperlinkHtml + linkCommentRecord.comment());
         return jEditorPane;
+    }
+
+    private LinkCommentRecord extractLinkFromMessageModel(final MessageModel messageModel) {
+
+        String[] messageParts = messageModel.getMessage().split("\\{LINK\\}");
+        return new LinkCommentRecord(messageParts[0], messageParts[1]);
     }
 
     /**

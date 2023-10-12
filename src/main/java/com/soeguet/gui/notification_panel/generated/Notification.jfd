@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "8.1.1.0.298" Java: "17.0.3" encoding: "UTF-8"
+JFDML JFormDesigner: "8.1.1.0.298" Java: "17.0.8" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
@@ -19,6 +19,8 @@ new FormModel {
 			"type": enum java.awt.Window$Type POPUP
 			"minimumSize": new java.awt.Dimension( 400, 170 )
 			"preferredSize": new java.awt.Dimension( 400, 170 )
+			"focusableWindowState": false
+			"focusable": false
 			addEvent( new FormEvent( "java.awt.event.WindowFocusListener", "windowGainedFocus", "thisWindowGainedFocus", true ) )
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) {
 				"hgap": 5
@@ -27,12 +29,16 @@ new FormModel {
 				name: "notificationAllPanel"
 				"preferredSize": new java.awt.Dimension( 400, 170 )
 				"minimumSize": new java.awt.Dimension( 400, 170 )
+				"focusable": false
+				"requestFocusEnabled": false
 				addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "notificationAllPanelMouseClicked", true ) )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) {
 					"hgap": 5
 					"vgap": 5
 				} ) {
 					name: "panel9"
+					"requestFocusEnabled": false
+					"focusable": false
 					add( new FormComponent( "javax.swing.JLabel" ) {
 						name: "nameLabel"
 						"text": "sender"
@@ -48,6 +54,8 @@ new FormModel {
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "closeAllNotificationsButton"
 						"text": "x"
+						"requestFocusEnabled": false
+						"focusable": false
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "closeAllNotificationsActionPerformed", true ) )
 					}, new FormLayoutConstraints( class java.lang.String ) {
 						"value": "East"
@@ -59,19 +67,27 @@ new FormModel {
 					name: "notificationMainPanel"
 					"minimumSize": new java.awt.Dimension( 400, 170 )
 					"preferredSize": new java.awt.Dimension( 400, 170 )
+					"requestFocusEnabled": false
+					"focusable": false
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) {
 						"hgap": 5
 						"vgap": 5
 					} ) {
 						name: "panel7"
+						"requestFocusEnabled": false
+						"focusable": false
 						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
 							name: "panel10"
+							"requestFocusEnabled": false
+							"focusable": false
 							add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 								name: "scrollPane1"
 								"horizontalScrollBarPolicy": 31
 								"verticalScrollBarPolicy": 22
 								"preferredSize": new java.awt.Dimension( 74, 72 )
 								"minimumSize": new java.awt.Dimension( 16, 72 )
+								"requestFocusEnabled": false
+								"focusable": false
 								add( new FormComponent( "javax.swing.JTextPane" ) {
 									name: "notificationMainMessage"
 									"text": "text"
@@ -83,21 +99,29 @@ new FormModel {
 							} )
 							add( new FormComponent( "com.jformdesigner.designer.wrapper.VSpacer" ) {
 								name: "vSpacer1"
+								"requestFocusEnabled": false
+								"focusable": false
 							}, new FormLayoutConstraints( class java.lang.String ) {
 								"value": "South"
 							} )
 							add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
 								name: "hSpacer1"
+								"requestFocusEnabled": false
+								"focusable": false
 							}, new FormLayoutConstraints( class java.lang.String ) {
 								"value": "West"
 							} )
 							add( new FormComponent( "com.jformdesigner.designer.wrapper.VSpacer" ) {
 								name: "vSpacer2"
+								"requestFocusEnabled": false
+								"focusable": false
 							}, new FormLayoutConstraints( class java.lang.String ) {
 								"value": "North"
 							} )
 							add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
 								name: "hSpacer2"
+								"requestFocusEnabled": false
+								"focusable": false
 							}, new FormLayoutConstraints( class java.lang.String ) {
 								"value": "East"
 							} )
@@ -106,6 +130,8 @@ new FormModel {
 						} )
 						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
 							name: "panel8"
+							"requestFocusEnabled": false
+							"focusable": false
 							add( new FormComponent( "javax.swing.JButton" ) {
 								name: "notificationReplySendButton"
 								"text": ">"
@@ -113,27 +139,37 @@ new FormModel {
 								"minimumSize": new java.awt.Dimension( 30, 30 )
 								"maximumSize": new java.awt.Dimension( 30, 30 )
 								"toolTipText": "reply"
+								"requestFocusEnabled": false
+								"focusable": false
 								addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "notificationReplySendActionPerformed", true ) )
 							}, new FormLayoutConstraints( class java.lang.String ) {
 								"value": "Center"
 							} )
 							add( new FormComponent( "com.jformdesigner.designer.wrapper.VSpacer" ) {
 								name: "vSpacer3"
+								"requestFocusEnabled": false
+								"focusable": false
 							}, new FormLayoutConstraints( class java.lang.String ) {
 								"value": "First"
 							} )
 							add( new FormComponent( "com.jformdesigner.designer.wrapper.VSpacer" ) {
 								name: "vSpacer4"
+								"requestFocusEnabled": false
+								"focusable": false
 							}, new FormLayoutConstraints( class java.lang.String ) {
 								"value": "Last"
 							} )
 							add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
 								name: "hSpacer3"
+								"requestFocusEnabled": false
+								"focusable": false
 							}, new FormLayoutConstraints( class java.lang.String ) {
 								"value": "After"
 							} )
 							add( new FormComponent( "com.jformdesigner.designer.wrapper.HSpacer" ) {
 								name: "hSpacer4"
+								"requestFocusEnabled": false
+								"focusable": false
 							}, new FormLayoutConstraints( class java.lang.String ) {
 								"value": "Before"
 							} )

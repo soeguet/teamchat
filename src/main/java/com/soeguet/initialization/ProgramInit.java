@@ -1,5 +1,7 @@
 package com.soeguet.initialization;
 
+import com.soeguet.emoji.EmojiInitializer;
+import com.soeguet.emoji.interfaces.EmojiInitializerInterface;
 import com.soeguet.gui.main_frame.ChatMainFrameImpl;
 import com.soeguet.initialization.enums.Themes;
 import com.soeguet.initialization.interfaces.EnvDataProvider;
@@ -104,7 +106,10 @@ public class ProgramInit {
             mainFrame.loadCustomProperties();
             mainFrame.initGuiFunctionality();
             mainFrame.initializeClientController();
-            mainFrame.initEmojiHandlerAndList();
+            mainFrame.initEmojiHandler();
+
+            EmojiInitializerInterface emojiInitializer = new EmojiInitializer();
+            mainFrame.initEmojiList(emojiInitializer);
 
             //operating system specific settings
             mainFrame.setScrollPaneMargins();

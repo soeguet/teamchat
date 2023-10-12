@@ -134,6 +134,8 @@ public abstract class Notification extends JDialog {
 		setType(Window.Type.POPUP);
 		setMinimumSize(new Dimension(400, 170));
 		setPreferredSize(new Dimension(400, 170));
+		setFocusableWindowState(false);
+		setFocusable(false);
 		addWindowFocusListener(new WindowAdapter() {
 			@Override
 			public void windowGainedFocus(WindowEvent e) {
@@ -147,6 +149,8 @@ public abstract class Notification extends JDialog {
 		{
 			this.form_notificationAllPanel.setPreferredSize(new Dimension(400, 170));
 			this.form_notificationAllPanel.setMinimumSize(new Dimension(400, 170));
+			this.form_notificationAllPanel.setFocusable(false);
+			this.form_notificationAllPanel.setRequestFocusEnabled(false);
 			this.form_notificationAllPanel.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
@@ -157,6 +161,8 @@ public abstract class Notification extends JDialog {
 
 			//======== form_panel9 ========
 			{
+				this.form_panel9.setRequestFocusEnabled(false);
+				this.form_panel9.setFocusable(false);
 				this.form_panel9.setLayout(new BorderLayout(5, 5));
 
 				//---- form_nameLabel ----
@@ -171,6 +177,8 @@ public abstract class Notification extends JDialog {
 
 				//---- form_closeAllNotificationsButton ----
 				this.form_closeAllNotificationsButton.setText("x");
+				this.form_closeAllNotificationsButton.setRequestFocusEnabled(false);
+				this.form_closeAllNotificationsButton.setFocusable(false);
 				this.form_closeAllNotificationsButton.addActionListener(e -> closeAllNotificationsActionPerformed(e));
 				this.form_panel9.add(this.form_closeAllNotificationsButton, BorderLayout.EAST);
 			}
@@ -180,14 +188,20 @@ public abstract class Notification extends JDialog {
 			{
 				this.form_notificationMainPanel.setMinimumSize(new Dimension(400, 170));
 				this.form_notificationMainPanel.setPreferredSize(new Dimension(400, 170));
+				this.form_notificationMainPanel.setRequestFocusEnabled(false);
+				this.form_notificationMainPanel.setFocusable(false);
 				this.form_notificationMainPanel.setLayout(new BorderLayout());
 
 				//======== form_panel7 ========
 				{
+					this.form_panel7.setRequestFocusEnabled(false);
+					this.form_panel7.setFocusable(false);
 					this.form_panel7.setLayout(new BorderLayout(5, 5));
 
 					//======== form_panel10 ========
 					{
+						this.form_panel10.setRequestFocusEnabled(false);
+						this.form_panel10.setFocusable(false);
 						this.form_panel10.setLayout(new BorderLayout());
 
 						//======== form_scrollPane1 ========
@@ -196,6 +210,8 @@ public abstract class Notification extends JDialog {
 							this.form_scrollPane1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 							this.form_scrollPane1.setPreferredSize(new Dimension(74, 72));
 							this.form_scrollPane1.setMinimumSize(new Dimension(16, 72));
+							this.form_scrollPane1.setRequestFocusEnabled(false);
+							this.form_scrollPane1.setFocusable(false);
 
 							//---- form_notificationMainMessage ----
 							this.form_notificationMainMessage.setText("text");
@@ -204,15 +220,33 @@ public abstract class Notification extends JDialog {
 							this.form_scrollPane1.setViewportView(this.form_notificationMainMessage);
 						}
 						this.form_panel10.add(this.form_scrollPane1, BorderLayout.CENTER);
+
+						//---- form_vSpacer1 ----
+						this.form_vSpacer1.setRequestFocusEnabled(false);
+						this.form_vSpacer1.setFocusable(false);
 						this.form_panel10.add(this.form_vSpacer1, BorderLayout.SOUTH);
+
+						//---- form_hSpacer1 ----
+						this.form_hSpacer1.setRequestFocusEnabled(false);
+						this.form_hSpacer1.setFocusable(false);
 						this.form_panel10.add(this.form_hSpacer1, BorderLayout.WEST);
+
+						//---- form_vSpacer2 ----
+						this.form_vSpacer2.setRequestFocusEnabled(false);
+						this.form_vSpacer2.setFocusable(false);
 						this.form_panel10.add(this.form_vSpacer2, BorderLayout.NORTH);
+
+						//---- form_hSpacer2 ----
+						this.form_hSpacer2.setRequestFocusEnabled(false);
+						this.form_hSpacer2.setFocusable(false);
 						this.form_panel10.add(this.form_hSpacer2, BorderLayout.EAST);
 					}
 					this.form_panel7.add(this.form_panel10, BorderLayout.CENTER);
 
 					//======== form_panel8 ========
 					{
+						this.form_panel8.setRequestFocusEnabled(false);
+						this.form_panel8.setFocusable(false);
 						this.form_panel8.setLayout(new BorderLayout());
 
 						//---- form_notificationReplySendButton ----
@@ -221,11 +255,29 @@ public abstract class Notification extends JDialog {
 						this.form_notificationReplySendButton.setMinimumSize(new Dimension(30, 30));
 						this.form_notificationReplySendButton.setMaximumSize(new Dimension(30, 30));
 						this.form_notificationReplySendButton.setToolTipText("reply");
+						this.form_notificationReplySendButton.setRequestFocusEnabled(false);
+						this.form_notificationReplySendButton.setFocusable(false);
 						this.form_notificationReplySendButton.addActionListener(e -> notificationReplySendActionPerformed(e));
 						this.form_panel8.add(this.form_notificationReplySendButton, BorderLayout.CENTER);
+
+						//---- form_vSpacer3 ----
+						this.form_vSpacer3.setRequestFocusEnabled(false);
+						this.form_vSpacer3.setFocusable(false);
 						this.form_panel8.add(this.form_vSpacer3, BorderLayout.PAGE_START);
+
+						//---- form_vSpacer4 ----
+						this.form_vSpacer4.setRequestFocusEnabled(false);
+						this.form_vSpacer4.setFocusable(false);
 						this.form_panel8.add(this.form_vSpacer4, BorderLayout.PAGE_END);
+
+						//---- form_hSpacer3 ----
+						this.form_hSpacer3.setRequestFocusEnabled(false);
+						this.form_hSpacer3.setFocusable(false);
 						this.form_panel8.add(this.form_hSpacer3, BorderLayout.LINE_END);
+
+						//---- form_hSpacer4 ----
+						this.form_hSpacer4.setRequestFocusEnabled(false);
+						this.form_hSpacer4.setFocusable(false);
 						this.form_panel8.add(this.form_hSpacer4, BorderLayout.LINE_START);
 					}
 					this.form_panel7.add(this.form_panel8, BorderLayout.EAST);

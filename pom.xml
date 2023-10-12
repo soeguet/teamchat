@@ -6,7 +6,7 @@
 
     <groupId>com.soeguet</groupId>
     <artifactId>teamchat</artifactId>
-    <version>v1.0.2</version>
+    <version>v1.0.3</version>
 
     <name>teamchat</name>
 
@@ -34,6 +34,12 @@
             <groupId>com.miglayout</groupId>
             <artifactId>miglayout-swing</artifactId>
             <version>11.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.16.1</version>
         </dependency>
 
         <dependency>

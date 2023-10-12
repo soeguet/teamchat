@@ -11,11 +11,16 @@ import com.soeguet.cache.implementations.MessageQueue;
 import com.soeguet.cache.implementations.WaitingNotificationQueue;
 import com.soeguet.cache.manager.CacheManager;
 import com.soeguet.gui.comments.interfaces.CommentManager;
+import com.soeguet.gui.comments.util.WrapEditorKit;
 import com.soeguet.gui.image_panel.ImagePanelImpl;
 import com.soeguet.gui.image_panel.interfaces.ImageInterface;
 import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.gui.notification_panel.NotificationImpl;
 import com.soeguet.gui.notification_panel.interfaces.NotificationInterface;
+import com.soeguet.gui.option_pane.links.LinkDialogHandler;
+import com.soeguet.gui.option_pane.links.LinkDialogImpl;
+import com.soeguet.gui.option_pane.links.dtos.MetadataStorageRecord;
+import com.soeguet.gui.option_pane.links.interfaces.LinkDialogInterface;
 import com.soeguet.gui.popups.PopupPanelImpl;
 import com.soeguet.gui.popups.interfaces.PopupInterface;
 import com.soeguet.model.MessageTypes;
@@ -128,15 +133,8 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
                         if (data.startsWith("http://") || data.startsWith("https://")) {
 
-                            //TODO clickable link working, maybe add some kind of JPanel for further editing
-
-                            //send the link immediately
-                            MessageModel messageModel = new MessageModel((byte) MessageTypes.LINK, mainFrame.getUsername(), data);
-                            String messageString = convertToJSON(messageModel);
-                            sendMessageToSocket(messageString);
-
-                            mainFrame.getTextEditorPane().setText("");
-                            LOGGER.info("HTTP Link detected");
+                            //send the link
+                            callLinkConfirmationDialog(data);
 
                             return false;
 
@@ -157,27 +155,72 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         });
     }
 
-    private String convertToJSON(BaseModel messageModel) {
+    /**
+     Calls the link confirmation dialog for the given link.
 
-        try {
+     This method is responsible for displaying a link confirmation dialog with the given link.
 
-            return this.mainFrame.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(messageModel);
+     @param link the link to be confirmed
+     */
+    private void callLinkConfirmationDialog(String link) {
 
-        } catch (JsonProcessingException e) {
+        //TODO clickable link working, maybe add some kind of JPanel for further editing
 
-            LOGGER.log(java.util.logging.Level.SEVERE, "Error converting to JSON", e);
-        }
-
-        return null;
+        final LinkDialogInterface linkDialog = createLinkDialog(link);
+        linkDialog.generate();
     }
 
-    private void sendMessageToSocket(String messageString) {
+    /**
+     Creates a link confirmation dialog for the given link.
 
-        this.mainFrame.getWebsocketClient().send(messageString);
+     This method is responsible for creating and initializing a link confirmation dialog
+     with the given link.
+     If metadata for the link exists, it adds a metadata panel to
+     the dialog's content panel.
 
-        final String typingStatus = "{\"type\":\"send\"}";
+     @param link the link to be confirmed
 
-        this.mainFrame.getWebsocketClient().send(typingStatus.getBytes());
+     @return the initialized link dialog
+     */
+    private LinkDialogInterface createLinkDialog(final String link) {
+
+        final LinkDialogInterface linkDialog = initializeLinkDialog(link);
+
+        MetadataStorageRecord metadataStorageRecord = linkDialog.checkForMetaData(link);
+
+        if (metadataStorageRecord != null) {
+
+            JPanel metaDataPanel = linkDialog.createMetadataPanel(metadataStorageRecord);
+
+            if (metaDataPanel != null) {
+
+                linkDialog.getContentPanel().add(metaDataPanel, BorderLayout.CENTER);
+            }
+        }
+
+        return linkDialog;
+    }
+
+    /**
+     Creates and initializes a link confirmation dialog with the given link.
+
+     This method creates a new instance of the LinkDialogImpl class and initializes
+     it by setting the editor kits for the link and comment text panes. The link text pane
+     is populated with the given link.
+
+     @param link the link to be confirmed
+
+     @return the initialized link dialog
+     */
+    private LinkDialogInterface initializeLinkDialog(final String link) {
+
+        LinkDialogInterface linkDialog = new LinkDialogImpl(mainFrame, new LinkDialogHandler());
+
+        linkDialog.getLinkTextPane().setEditorKit(new WrapEditorKit());
+        linkDialog.getLinkTextPane().setText(link);
+        linkDialog.getCommentTextPane().setEditorKit(new WrapEditorKit());
+
+        return linkDialog;
     }
 
     @Override
@@ -203,6 +246,29 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
     private String convertUserTextToJSON(String userTextInput) {
 
         return convertToJSON(textToMessageModel(userTextInput));
+    }
+
+    private void sendMessageToSocket(String messageString) {
+
+        this.mainFrame.getWebsocketClient().send(messageString);
+
+        final String typingStatus = "{\"type\":\"send\"}";
+
+        this.mainFrame.getWebsocketClient().send(typingStatus.getBytes());
+    }
+
+    private String convertToJSON(BaseModel messageModel) {
+
+        try {
+
+            return this.mainFrame.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(messageModel);
+
+        } catch (JsonProcessingException e) {
+
+            LOGGER.log(java.util.logging.Level.SEVERE, "Error converting to JSON", e);
+        }
+
+        return null;
     }
 
     /**
@@ -478,7 +544,7 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
                 Timer timer = new Timer(500, e -> {
                     NotificationInterface notification = new NotificationImpl(this.mainFrame, text);
                     notification.setNotificationText();
-                    notification.setMaximumSize(new Dimension(400,300));
+                    notification.setMaximumSize(new Dimension(400, 300));
                 });
                 timer.setRepeats(false);
                 timer.start();
@@ -490,7 +556,7 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
                     NotificationInterface notification = new NotificationImpl(this.mainFrame, picture);
 
                     notification.setNotificationPicture();
-                    notification.setMaximumSize(new Dimension(400,300));
+                    notification.setMaximumSize(new Dimension(400, 300));
 
                 });
                 timer.setRepeats(false);
@@ -665,7 +731,7 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
      Scrolls the main panel down to the last message in the scroll pane.
 
      This method updates the main frame, repaints it, and scrolls the vertical scroll bar
-     to its maximum position in order to display the last message.
+     to its maximum position to display the last message.
 
      @param scrollPane the scroll pane containing the main panel
      */
