@@ -26,7 +26,13 @@ public class LinkDialogImpl extends LinkDialog implements LinkDialogInterface {
         super((Window) mainFrame);
         this.mainFrame = mainFrame;
         this.linkDialogHandler = linkDialogHandler;
-        setTitle("send link");
+    }
+
+    public LinkDialogImpl() {
+
+        super(null);
+        mainFrame = null;
+        linkDialogHandler = new LinkDialogHandler();
     }
 
     @Override
@@ -56,19 +62,24 @@ public class LinkDialogImpl extends LinkDialog implements LinkDialogInterface {
 
         final JPanel panel = generateMetadataPanel();
 
-        //metadata title
-        if (metadataStorageRecord.title() != null) {
-
-            final JTextPane titleLabel = createTitleLabel(metadataStorageRecord);
-            panel.add(titleLabel, BorderLayout.NORTH);
-        }
-
         //metadata image
         if (metadataStorageRecord.previewImage() != null) {
 
             BufferedImage bufferedImage = metadataStorageRecord.previewImage();
             JLabel imageLabel = new JLabel(new ImageIcon(bufferedImage));
             panel.add(imageLabel, BorderLayout.CENTER);
+
+        } else {
+
+            //return an empty panel if no image. title is not needed if there is no image
+            return null;
+        }
+
+        //metadata title
+        if (metadataStorageRecord.title() != null) {
+
+            final JTextPane titleLabel = createTitleLabel(metadataStorageRecord);
+            panel.add(titleLabel, BorderLayout.NORTH);
         }
 
         //add a vertical spacer
@@ -78,12 +89,30 @@ public class LinkDialogImpl extends LinkDialog implements LinkDialogInterface {
         return panel;
     }
 
+    /**
+     Generates and displays the GUI.
+
+     This method is called to generate and display the graphical user interface (GUI).
+
+     This method performs the following steps:
+     1. Packs the components of the GUI, ensuring they are laid out and sized correctly.
+     2. Sets the location of the GUI relative to the mainFrame.
+     3. Sets the visibility of the GUI to true, making it visible to the user.
+     4. Requests focus for the commentTextPane component, allowing user input.
+
+     There are no input parameters for this method.
+
+     There is no return value for this method.
+
+     @see JFrame
+     */
     @Override
     public void generate() {
 
         pack();
         setLocationRelativeTo((JFrame) mainFrame);
         setVisible(true);
+        getCommentTextPane().requestFocus();
     }
 
     private JPanel generateMetadataPanel() {
@@ -118,12 +147,18 @@ public class LinkDialogImpl extends LinkDialog implements LinkDialogInterface {
         String message = link + "{LINK}" + comment;
 
         MessageModel messageModel = new MessageModel((byte) MessageTypes.LINK, mainFrame.getUsername(), message);
+
         try {
+
             String messageString = mainFrame.getObjectMapper().writeValueAsString(messageModel);
             mainFrame.getWebsocketClient().send(messageString);
+
         } catch (JsonProcessingException ex) {
+
             throw new RuntimeException(ex);
         }
+
+        this.cancelButtonActionPerformed(e);
     }
 
     @Override

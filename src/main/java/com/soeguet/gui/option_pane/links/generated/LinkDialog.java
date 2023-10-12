@@ -109,6 +109,7 @@ public abstract class LinkDialog extends JDialog {
 		form_cancelButton = new JButton();
 
 		//======== this ========
+		setTitle("send link");
 		Container contentPane = getContentPane();
 		contentPane.setLayout(new BorderLayout());
 
@@ -160,12 +161,14 @@ public abstract class LinkDialog extends JDialog {
 
 						//---- form_linkTextPane ----
 						form_linkTextPane.setBorder(new TitledBorder("link"));
+						form_linkTextPane.setBackground(null);
 						form_linkTextPanel.add(form_linkTextPane, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
 							GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 							new Insets(0, 0, 5, 0), 0, 0));
 
 						//---- form_commentTextPane ----
 						form_commentTextPane.setBorder(new TitledBorder("comment"));
+						form_commentTextPane.setBackground(null);
 						form_linkTextPanel.add(form_commentTextPane, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0,
 							GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 							new Insets(0, 0, 0, 0), 0, 0));

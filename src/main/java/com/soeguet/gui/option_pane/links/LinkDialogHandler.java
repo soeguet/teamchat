@@ -15,6 +15,8 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class LinkDialogHandler {
 
@@ -53,40 +55,34 @@ public class LinkDialogHandler {
         }
     }
 
-
-
     public int checkStatusCodeOfLink(final String link) {
 
-        HttpResponse<String> response;
+        final AtomicReference<HttpResponse<String>> response = new AtomicReference<>();
 
-        try (HttpClient client = HttpClient.newHttpClient()) {
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
 
-            HttpRequest request;
+            executor.execute(() -> {
 
-            try {
-                request = HttpRequest.newBuilder()
-                        .uri(new URI(link))
-                        .build();
+                try (HttpClient client = HttpClient.newHttpClient()) {
 
-            } catch (URISyntaxException e) {
+                    HttpRequest request;
 
-                throw new RuntimeException(e);
-            }
+                    try {
+                        request = HttpRequest.newBuilder()
+                                .uri(new URI(link))
+                                .build();
 
-            try {
+                        response.set(client.send(request, HttpResponse.BodyHandlers.ofString()));
 
-                response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                    } catch (IOException | InterruptedException | URISyntaxException e) {
 
-            } catch (IOException | InterruptedException e) {
-
-                throw new RuntimeException(e);
-            }
-
-            int statusCode = response.statusCode();
-            System.out.println(statusCode);
-
-            return statusCode;
+                        System.err.println("Failed to connect or send the HTTP request: " + e.getMessage());
+                    }
+                }
+            });
         }
+
+        return response.get() == null ? 1_000 : response.get().statusCode();
     }
 
     public MetadataStorageRecord fetchMetaDataFromLink(final Document doc) {
@@ -103,22 +99,14 @@ public class LinkDialogHandler {
 
             image = ImageIO.read(new URI(imageUrl).toURL());
 
-            cropImageIfTooLarge(image);
-
         } catch (IOException | URISyntaxException e) {
 
             throw new RuntimeException(e);
         }
 
+        cropImageIfTooLarge(image);
+
         return new MetadataStorageRecord(doc.title(), image);
-    }
-
-    private void cropImageIfTooLarge(final BufferedImage image) {
-
-        if (image.getWidth() > 500) {
-
-            image.getScaledInstance(500, -1, Image.SCALE_SMOOTH);
-        }
     }
 
     private String extractImageUrl(final Document doc) {
@@ -131,5 +119,13 @@ public class LinkDialogHandler {
         }
 
         return null;
+    }
+
+    private void cropImageIfTooLarge(final BufferedImage image) {
+
+        if (image.getWidth() > 500) {
+
+            image.getScaledInstance(500, -1, Image.SCALE_SMOOTH);
+        }
     }
 }

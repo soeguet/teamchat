@@ -11,7 +11,6 @@ import com.soeguet.cache.implementations.MessageQueue;
 import com.soeguet.cache.implementations.WaitingNotificationQueue;
 import com.soeguet.cache.manager.CacheManager;
 import com.soeguet.gui.comments.interfaces.CommentManager;
-import com.soeguet.gui.comments.util.LinkWrapEditorKit;
 import com.soeguet.gui.comments.util.WrapEditorKit;
 import com.soeguet.gui.image_panel.ImagePanelImpl;
 import com.soeguet.gui.image_panel.interfaces.ImageInterface;
@@ -156,6 +155,13 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         });
     }
 
+    /**
+     Calls the link confirmation dialog for the given link.
+
+     This method is responsible for displaying a link confirmation dialog with the given link.
+
+     @param link the link to be confirmed
+     */
     private void callLinkConfirmationDialog(String link) {
 
         //TODO clickable link working, maybe add some kind of JPanel for further editing
@@ -164,6 +170,18 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         linkDialog.generate();
     }
 
+    /**
+     Creates a link confirmation dialog for the given link.
+
+     This method is responsible for creating and initializing a link confirmation dialog
+     with the given link.
+     If metadata for the link exists, it adds a metadata panel to
+     the dialog's content panel.
+
+     @param link the link to be confirmed
+
+     @return the initialized link dialog
+     */
     private LinkDialogInterface createLinkDialog(final String link) {
 
         final LinkDialogInterface linkDialog = initializeLinkDialog(link);
@@ -173,19 +191,35 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         if (metadataStorageRecord != null) {
 
             JPanel metaDataPanel = linkDialog.createMetadataPanel(metadataStorageRecord);
-            linkDialog.getContentPanel().add(metaDataPanel, BorderLayout.CENTER);
+
+            if (metaDataPanel != null) {
+
+                linkDialog.getContentPanel().add(metaDataPanel, BorderLayout.CENTER);
+            }
         }
 
         return linkDialog;
     }
 
+    /**
+     Creates and initializes a link confirmation dialog with the given link.
+
+     This method creates a new instance of the LinkDialogImpl class and initializes
+     it by setting the editor kits for the link and comment text panes. The link text pane
+     is populated with the given link.
+
+     @param link the link to be confirmed
+
+     @return the initialized link dialog
+     */
     private LinkDialogInterface initializeLinkDialog(final String link) {
 
         LinkDialogInterface linkDialog = new LinkDialogImpl(mainFrame, new LinkDialogHandler());
 
-        linkDialog.getLinkTextPane().setEditorKit(new LinkWrapEditorKit());
+        linkDialog.getLinkTextPane().setEditorKit(new WrapEditorKit());
         linkDialog.getLinkTextPane().setText(link);
         linkDialog.getCommentTextPane().setEditorKit(new WrapEditorKit());
+
         return linkDialog;
     }
 
@@ -697,7 +731,7 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
      Scrolls the main panel down to the last message in the scroll pane.
 
      This method updates the main frame, repaints it, and scrolls the vertical scroll bar
-     to its maximum position in order to display the last message.
+     to its maximum position to display the last message.
 
      @param scrollPane the scroll pane containing the main panel
      */

@@ -11,6 +11,7 @@ new FormModel {
 		}
 		add( new FormWindow( "javax.swing.JDialog", new FormLayoutManager( class java.awt.BorderLayout ) ) {
 			name: "this"
+			"title": "send link"
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
 				name: "dialogPane"
 				add( new FormComponent( "com.jformdesigner.designer.wrapper.VSpacer" ) {
@@ -55,12 +56,14 @@ new FormModel {
 							add( new FormComponent( "javax.swing.JTextPane" ) {
 								name: "linkTextPane"
 								"border": new javax.swing.border.TitledBorder( "link" )
+								"background": sfield com.jformdesigner.model.FormObject NULL_VALUE
 							}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
 								"gridy": 1
 							} )
 							add( new FormComponent( "javax.swing.JTextPane" ) {
 								name: "commentTextPane"
 								"border": new javax.swing.border.TitledBorder( "comment" )
+								"background": sfield com.jformdesigner.model.FormObject NULL_VALUE
 							}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
 								"gridy": 2
 							} )
