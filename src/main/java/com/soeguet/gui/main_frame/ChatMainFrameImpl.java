@@ -762,6 +762,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      */
     private void handleNonShiftEnterKeyPress() {
 
+        emojiHandler.replaceImageIconWithEmojiDescription(form_textEditorPane);
         String textPaneContent = form_textEditorPane.getText().trim();
 
         if (textPaneContent.isEmpty()) {
