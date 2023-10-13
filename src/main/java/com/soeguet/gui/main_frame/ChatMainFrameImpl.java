@@ -137,11 +137,26 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         this.envVariables = envVariables;
     }
 
+    /**
+     Constructor for ChatMainFrameImpl.
+     It initializes the main chat frame with default environment variables.
+
+     This constructor is mainly used for testing purposes.
+
+     @see EnvVariables
+     */
     public ChatMainFrameImpl() {
         //for testing
         envVariables = new EnvVariables();
     }
 
+    /**
+     Initializes the client controller.
+
+     This method creates a new instance of the ClientControllerImpl class, passing in the current instance of the ChatMainFrameImpl class
+     and the guiFunctionality object.
+     It then calls the determineWebsocketURI() method and the connectToWebsocket() method on the clientController object.
+     */
     public void initializeClientController() {
 
         clientController = new ClientControllerImpl(this, guiFunctionality);
@@ -210,7 +225,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
     /**
      This method is used to reposition the chat frame for testing purposes.
-     It retrieves the value of the 'chat.x.position' environment variable using System.getenv(),
+     It retrieves the value of the 'chat_x_position' environment variable using System.getenv(),
      which represents the desired x position of the chat frame.
      If the environment variable is not null, it repositions the chat frame on the screen
      by setting the location using the retrieved x position and a fixed y position of 100.
@@ -371,17 +386,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     * Retrieves the ClassLoader for the current class.
-     *
-     * @return the ClassLoader for the current class
-     */
-    ClassLoader getClassLoader(){
-
-        //make the classloader mockable
-        return getClass().getClassLoader();
-    }
-
-    /**
      Retrieves the username.
 
      @return the username as a String.
@@ -390,6 +394,17 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     public String getUsername() {
 
         return username;
+    }
+
+    /**
+     Retrieves the ClassLoader for the current class.
+
+     @return the ClassLoader for the current class
+     */
+    ClassLoader getClassLoader() {
+
+        //make the classloader mockable
+        return getClass().getClassLoader();
     }
 
     /**

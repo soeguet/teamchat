@@ -98,7 +98,7 @@ public class ProgramInit {
 
             ChatMainFrameImpl mainFrame = new ChatMainFrameImpl(envVariables);
 
-            //TODO remove for merge in master
+            //TODO remove later on
             mainFrame.repositionChatFrameForTestingPurposes();
 
             //setup functionality
@@ -108,6 +108,7 @@ public class ProgramInit {
             mainFrame.initializeClientController();
             mainFrame.initEmojiHandler();
 
+            //setup emojis
             EmojiInitializerInterface emojiInitializer = new EmojiInitializer();
             mainFrame.initEmojiList(emojiInitializer);
 
@@ -183,7 +184,7 @@ public class ProgramInit {
      Sets the theme of the graphical user interface.
 
      This method applies the specified theme to the GUI using the ThemeManager.
-     The themeSetting parameter should be a valid theme identifier that is supported
+     The themeSetting parameter should be a valid theme identifier supported
      by the application's ThemeManager. If an invalid or unsupported theme identifier
      is provided, the behavior of this method is undefined.
 

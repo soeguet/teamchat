@@ -1,7 +1,11 @@
 package com.soeguet.gui.option_pane.links;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.gui.option_pane.links.dtos.AbsoluteLinkRecord;
 import com.soeguet.gui.option_pane.links.dtos.MetadataStorageRecord;
+import com.soeguet.model.MessageTypes;
+import com.soeguet.model.jackson.MessageModel;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -22,6 +26,61 @@ public class LinkDialogHandler {
 
     public LinkDialogHandler() {
 
+    }
+
+    public MetadataStorageRecord checkForMetaData(final String link) {
+
+        //if GET request is ok -> look for metadata
+        int statusCode = checkStatusCodeOfLink(link);
+        if (statusCode < 400) {
+
+            //check if it is an absolute link -> if not, there are most likely no metadata
+            AbsoluteLinkRecord absoluteLinkRecord = validateUri(link);
+
+            if (absoluteLinkRecord.isAbsoluteLink()) {
+
+                Document doc = loadDocumentForLink(absoluteLinkRecord.link());
+
+                //fetch metadata -> title and preview image
+                return fetchMetaDataFromLink(doc);
+            }
+        }
+        return null;
+    }
+
+    /**
+     Sends an HTTP request to the given link and returns the status code of the response.
+
+     @param link the URL of the link to check
+
+     @return the status code of the response, or 1000 if an error occurred
+     */
+    public int checkStatusCodeOfLink(final String link) {
+
+        final AtomicReference<HttpResponse<String>> response = new AtomicReference<>();
+
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+
+            executor.execute(() -> {
+
+                try (HttpClient client = HttpClient.newHttpClient()) {
+
+                    HttpRequest request;
+
+                    request = HttpRequest.newBuilder()
+                            .uri(new URI(link))
+                            .build();
+
+                    response.set(client.send(request, HttpResponse.BodyHandlers.ofString()));
+
+                } catch (IOException | InterruptedException | URISyntaxException | IllegalArgumentException e) {
+
+                    System.err.println("Failed to connect or send the HTTP request: " + e.getMessage());
+                }
+            });
+        }
+
+        return response.get() == null ? 1_000 : response.get().statusCode();
     }
 
     public AbsoluteLinkRecord validateUri(final String link) {
@@ -53,36 +112,6 @@ public class LinkDialogHandler {
 
             throw new RuntimeException(e);
         }
-    }
-
-    public int checkStatusCodeOfLink(final String link) {
-
-        final AtomicReference<HttpResponse<String>> response = new AtomicReference<>();
-
-        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-
-            executor.execute(() -> {
-
-                try (HttpClient client = HttpClient.newHttpClient()) {
-
-                    HttpRequest request;
-
-                    try {
-                        request = HttpRequest.newBuilder()
-                                .uri(new URI(link))
-                                .build();
-
-                        response.set(client.send(request, HttpResponse.BodyHandlers.ofString()));
-
-                    } catch (IOException | InterruptedException | URISyntaxException e) {
-
-                        System.err.println("Failed to connect or send the HTTP request: " + e.getMessage());
-                    }
-                }
-            });
-        }
-
-        return response.get() == null ? 1_000 : response.get().statusCode();
     }
 
     public MetadataStorageRecord fetchMetaDataFromLink(final Document doc) {
@@ -126,6 +155,27 @@ public class LinkDialogHandler {
         if (image.getWidth() > 500) {
 
             image.getScaledInstance(500, -1, Image.SCALE_SMOOTH);
+        }
+    }
+
+    /**
+     Sends a link message to the websocket server.
+
+     @param mainFrame the main frame interface
+     @param message the message to send
+     */
+    public void sendLinkToWebsocket(final MainFrameInterface mainFrame, final String message) {
+
+        MessageModel messageModel = new MessageModel((byte) MessageTypes.LINK, mainFrame.getUsername(), message);
+
+        try {
+
+            String messageString = mainFrame.getObjectMapper().writeValueAsString(messageModel);
+            mainFrame.getWebsocketClient().send(messageString);
+
+        } catch (JsonProcessingException ex) {
+
+            throw new RuntimeException(ex);
         }
     }
 }
