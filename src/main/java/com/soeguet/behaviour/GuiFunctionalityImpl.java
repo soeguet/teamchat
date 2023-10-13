@@ -115,44 +115,59 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
                 if (transferable.isDataFlavorSupported(DataFlavor.imageFlavor)) {
 
+                    //image route
+
                     // image to text pane -> activate image panel
-                    ImageInterface imagePanel = new ImagePanelImpl(mainFrame);
-                    imagePanel.setPosition();
-                    imagePanel.setLayeredPaneLayerPositions();
-                    imagePanel.setupPictureScrollPaneScrollSpeed();
-                    imagePanel.populateImagePanelFromClipboard();
+                    callImagePanel();
 
                     return true;
 
                 } else if (transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
 
+                    //string route
+
+                    String data = "";
+
                     try {
-                        String data = (String) transferable.getTransferData(DataFlavor.stringFlavor);
 
-                        //TODO maybe emoji detection?
-
-                        if (data.startsWith("http://") || data.startsWith("https://")) {
-
-                            //send the link
-                            callLinkConfirmationDialog(data);
-
-                            return false;
-
-                        } else {
-
-                            return originalHandler.importData(jComponent, transferable);
-                        }
+                        data = (String) transferable.getTransferData(DataFlavor.stringFlavor);
 
                     } catch (UnsupportedFlavorException | IOException e) {
 
                         LOGGER.log(java.util.logging.Level.SEVERE, "Error importing data", e);
                     }
 
+                    //TODO maybe emoji detection?
+
+                    //check if link
+                    if (data.startsWith("http://") || data.startsWith("https://")) {
+
+                        //send the link
+                        callLinkConfirmationDialog(data);
+
+                        //don't append the link to the text pane
+                        return false;
+                    }
+
+                    //append what was pasted to the text pane
                     return originalHandler.importData(jComponent, transferable);
                 }
-                return false;
+
+//                return false;
+                //TODO check if this is right or false was the better return value
+                return originalHandler.importData(jComponent, transferable);
             }
         });
+    }
+
+    private void callImagePanel() {
+
+        ImageInterface imagePanel = new ImagePanelImpl(mainFrame);
+
+        imagePanel.setPosition();
+        imagePanel.setLayeredPaneLayerPositions();
+        imagePanel.setupPictureScrollPaneScrollSpeed();
+        imagePanel.populateImagePanelFromClipboard();
     }
 
     /**
@@ -163,8 +178,6 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
      @param link the link to be confirmed
      */
     private void callLinkConfirmationDialog(String link) {
-
-        //TODO clickable link working, maybe add some kind of JPanel for further editing
 
         final LinkDialogInterface linkDialog = createLinkDialog(link);
         linkDialog.generate();
@@ -224,10 +237,9 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
     }
 
     @Override
-    public void clearTextPaneAndSendMessageToSocket() {
+    public void sendMessageToSocket() {
 
         String userTextInput = getTextFromInput();
-        clearTextPane();
         String messageString = convertUserTextToJSON(userTextInput);
         sendMessageToSocket(messageString);
 
@@ -236,11 +248,6 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
     private String getTextFromInput() {
 
         return this.mainFrame.getTextEditorPane().getText();
-    }
-
-    private void clearTextPane() {
-
-        this.mainFrame.getTextEditorPane().setText("");
     }
 
     private String convertUserTextToJSON(String userTextInput) {
@@ -283,10 +290,14 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         return new MessageModel((byte) MessageTypes.NORMAL, mainFrame.getUsername(), userTextInput);
     }
 
+    public void clearTextPane() {
+
+        this.mainFrame.getTextEditorPane().setText("");
+    }
+
     @Override
     public synchronized void internalNotificationHandling(String message) {
 
-        //TODO clean this mess up..
         BaseModel baseModel = convertMessageToBaseModel(message);
         internalNotificationHandling(message, baseModel);
     }
@@ -333,74 +344,81 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
         //TODO clean this up
 
-        final JLabel typingLabel = mainFrame.getTypingLabel();
+        final JsonNode parsedJson = parseJsonNode(message);
 
-        final JsonNode parsedJson;
+        switch (parsedJson.get("type").asText()) {
+
+            case "typing" -> {
+
+                String textOnTypingLabel = mainFrame.getTypingLabel().getText();
+
+                //if typing client is already present on label -> return!
+                if (textOnTypingLabel.contains(parsedJson.get("username").asText())) {
+                    return;
+                }
+
+                final StringBuilder stringBuilder = generateTypingLabel(textOnTypingLabel, parsedJson);
+
+                SwingUtilities.invokeLater(() -> mainFrame.getTypingLabel().setText(stringBuilder.toString()));
+            }
+
+            case "send" -> mainFrame.getTypingLabel().setText(" ");
+        }
+
+    }
+
+    /**
+     * Generates the typing label.
+     *
+     * @param textOnTypingLabel The text that is currently on the typing label.
+     * @param parsedJson The parsed JSON containing the username.
+     * @return The StringBuilder containing the updated typing label text.
+     */
+    private StringBuilder generateTypingLabel(String textOnTypingLabel, final JsonNode parsedJson) {
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (!textOnTypingLabel.isBlank()) {
+
+            textOnTypingLabel = textOnTypingLabel.replace(" is typing...", "");
+            stringBuilder.append(textOnTypingLabel);
+            stringBuilder.append(", ");
+
+        } else {
+
+            stringBuilder.append("  ");
+        }
+
+        stringBuilder.append(parsedJson.get("username").asText());
+        stringBuilder.append(" is typing...");
+
+        return stringBuilder;
+    }
+
+    /**
+     * Parses a JSON byte array and returns the corresponding JsonNode object.
+     *
+     * @param message The byte array representing the JSON message.
+     * @return The JsonNode object representing the parsed JSON message.
+     * @throws RuntimeException if there is an IOException while parsing the JSON.
+     */
+    private JsonNode parseJsonNode(final byte[] message) {
 
         try {
 
-            parsedJson = mainFrame.getObjectMapper().readTree(message);
+            return mainFrame.getObjectMapper().readTree(message);
 
         } catch (IOException e) {
 
             throw new RuntimeException(e);
         }
-
-        final String eventType = parsedJson.get("type").asText();
-
-        switch (eventType) {
-
-            case "typing" -> {
-
-                final String username = parsedJson.get("username").asText();
-
-                String textOnTypingLabel = typingLabel.getText();
-
-                if (textOnTypingLabel.contains(username)) {
-                    return;
-                }
-
-                StringBuilder stringBuilder = new StringBuilder();
-
-                if (!textOnTypingLabel.isBlank()) {
-
-                    textOnTypingLabel = textOnTypingLabel.replace(" is typing...", "");
-                    stringBuilder.append(textOnTypingLabel);
-                    stringBuilder.append(", ");
-
-                } else {
-
-                    stringBuilder.append("  ");
-                }
-
-                stringBuilder.append(username);
-                stringBuilder.append(" is typing...");
-
-                SwingUtilities.invokeLater(() -> typingLabel.setText(stringBuilder.toString()));
-            }
-
-            case "send" -> typingLabel.setText(" ");
-        }
-
     }
 
     private void spamBuffer() {
 
-        //TODO this does not work at all :( intention: prevent spamming the GUI and making use of a timeout system if messages are flooded in
-        //using time to prevent spamming the GUI and making use of the cached messages
-
-//        if (messageToPanelTimer != null &&  messageToPanelTimer.isRunning()) {
-//
-//            return;
-//        }
-//
-//        messageToPanelTimer = new Timer(1000, e -> writeGuiMessageToChatPanel());
-//        messageToPanelTimer.setRepeats(false);
-//        messageToPanelTimer.start();
-
         writeGuiMessageToChatPanel();
 
-        //TODO remove this part as soon as the buffer is working
+        //TODO replace this with a buffer or caching system
         try {
             Thread.sleep(15);
         } catch (InterruptedException e) {
@@ -414,7 +432,9 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
         //convert the message to a java object and return if the message came from this client
         final BaseModel baseModel = convertMessageToBaseModel(message);
-        if (baseModel.getSender().equals(this.mainFrame.getUsername())) {
+
+        if (compareSenderToUsername(baseModel)) {
+
             return;
         }
 
@@ -446,6 +466,11 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
                 break;
             }
         }
+    }
+
+    private boolean compareSenderToUsername(final BaseModel baseModel) {
+
+        return baseModel.getSender().equals(this.mainFrame.getUsername());
     }
 
     private void externalNotificationHandling(final String message) {

@@ -6,7 +6,8 @@ public interface GuiFunctionality {
 
     void overrideTransferHandlerOfTextPane();
 
-    void clearTextPaneAndSendMessageToSocket();
+    void sendMessageToSocket();
+    void clearTextPane();
 
     void internalNotificationHandling(String message);
 }

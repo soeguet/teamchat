@@ -757,21 +757,25 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      <p>Retrieves the content of the text editor pane, trims any leading or trailing space, and
      checks if it is empty.
      If the content is empty, it clears the text editor pane.
-     Otherwise, it calls the `clearTextPaneAndSendMessageToSocket` method to clear the text pane and send the
+     Otherwise, it calls the `sendMessageToSocket` method to clear the text pane and send the
      current content to a socket.
      */
     private void handleNonShiftEnterKeyPress() {
 
+        //emoji to text -> text extraction
         emojiHandler.replaceImageIconWithEmojiDescription(form_textEditorPane);
         String textPaneContent = form_textEditorPane.getText().trim();
 
         if (textPaneContent.isEmpty()) {
 
+            //empty -> reset
             form_textEditorPane.setText("");
 
         } else {
 
-            guiFunctionality.clearTextPaneAndSendMessageToSocket();
+            //send
+            guiFunctionality.sendMessageToSocket();
+            guiFunctionality.clearTextPane();
         }
     }
 
@@ -784,6 +788,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     protected void pictureButtonMouseClicked(MouseEvent e) {
 
         ImageInterface imagePanel = new ImagePanelImpl(this);
+
         imagePanel.setPosition();
         imagePanel.setLayeredPaneLayerPositions();
         imagePanel.setupPictureScrollPaneScrollSpeed();
@@ -815,6 +820,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void sendButton(ActionEvent e) {
 
+        //first replace emoji with text
         emojiHandler.replaceImageIconWithEmojiDescription(getTextEditorPane());
 
         if (form_textEditorPane.getText().trim().isEmpty()) {
@@ -822,7 +828,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             return;
         }
 
-        guiFunctionality.clearTextPaneAndSendMessageToSocket();
+        guiFunctionality.sendMessageToSocket();
+        guiFunctionality.clearTextPane();
     }
 
     /**
