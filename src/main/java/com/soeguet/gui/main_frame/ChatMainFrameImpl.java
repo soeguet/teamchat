@@ -292,6 +292,13 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         emojiList = emojiInitializer.createEmojiList();
     }
 
+    /**
+     * Returns the emoji handler.
+     *
+     * This method returns the emoji handler associated with the current object.
+     *
+     * @return the emoji handler.
+     */
     public EmojiHandler getEmojiHandler() {
 
         return emojiHandler;
@@ -325,11 +332,22 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         }
     }
 
+    /**
+     * Returns the name of the operating system.
+     *
+     * @return the name of the operating system.
+     */
     public String getOSName() {
 
         return System.getProperty("os.name");
     }
 
+    /**
+     * Returns the name of the user's current desktop environment.
+     * The method retrieves the value of the environment variable "XDG_CURRENT_DESKTOP".
+     *
+     * @return the name of the user's current desktop environment or null if the variable is not set.
+     */
     public String getDesktopEnv() {
 
         return System.getenv("XDG_CURRENT_DESKTOP");
@@ -366,7 +384,12 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-
+     * Retrieves the version of the JAR file.
+     *
+     * This method reads the version from the "version.properties" file in the JAR file. If the file is not found or if an error occurs while reading the file, it returns a default value of "v.?".
+     *
+     * @return The version of the JAR file, or "v.?" if the version is not found or an error occurs.
+     * @throws RuntimeException If an error occurs while reading the "version.properties" file.
      */
     String retrieveJarVersion() {
 
@@ -844,40 +867,40 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void allNotificationsMenuItemItemStateChanged(final ItemEvent e) {
 
-        WaitingNotificationQueue waitingNotificationQueue = (WaitingNotificationQueue) cacheManager.getCache("waitingNotificationQueue");
+        if (cacheManager.getCache("waitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
 
-        //any kind of change needs to get rid of an existing timer
-        if (blockTimer != null) {
+            //any kind of change needs to get rid of an existing timer
+            if (blockTimer != null) {
 
-            blockTimer.stop();
-            blockTimer = null;
-        }
+                blockTimer.stop();
+                blockTimer = null;
+            }
 
-        //block all notifications for 5 minutes
-        if (e.getStateChange() == ItemEvent.SELECTED) {
+            //block all notifications for 5 minutes
+            if (e.getStateChange() == ItemEvent.SELECTED) {
 
-            //getter call since this one is synchronized
-            waitingNotificationQueue.removeAll();
+                //getter call since this one is synchronized
+                waitingNotificationQueue.removeAll();
 
-            blockTimer = new Timer(1_000 * 60 * 5, e1 -> {
+                blockTimer = new Timer(1_000 * 60 * 5, e1 -> {
 
-                form_allNotificationsMenuItem.setSelected(false);
+                    form_allNotificationsMenuItem.setSelected(false);
+
+                    PopupInterface popup = new PopupPanelImpl(this);
+                    popup.getMessageTextField().setText("Notifications status" + System.lineSeparator() + "reverted");
+                    popup.configurePopupPanelPlacement();
+                    popup.initiatePopupTimer(3_000);
+                });
+
+                blockTimer.setRepeats(false);
+                blockTimer.start();
 
                 PopupInterface popup = new PopupPanelImpl(this);
-                popup.getMessageTextField().setText("Notifications status" + System.lineSeparator() + "reverted");
+                popup.getMessageTextField().setText("All notifications disabled" + System.lineSeparator() + "for 5 minutes");
                 popup.configurePopupPanelPlacement();
                 popup.initiatePopupTimer(3_000);
-            });
-
-            blockTimer.setRepeats(false);
-            blockTimer.start();
-
-            PopupInterface popup = new PopupPanelImpl(this);
-            popup.getMessageTextField().setText("All notifications disabled" + System.lineSeparator() + "for 5 minutes");
-            popup.configurePopupPanelPlacement();
-            popup.initiatePopupTimer(3_000);
+            }
         }
-
     }
 
     /**
@@ -957,6 +980,17 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         this.lastMessageTimeStamp = lastMessageTimeStamp;
     }
 
+    /**
+     Sets the icons for the buttons in the chat form.
+
+     The icons are obtained from the resources folder and are used to set the icons for the send, emoji, and picture buttons in the chat form.
+
+     The resource URLs for the icons are retrieved using the ChatMainFrameImpl class and the corresponding file paths.
+
+     This method assumes that the required icons exist in the resources folder and will throw an AssertionError if any of the resource URLs are null.
+
+     @throws AssertionError if any of the required resource URLs are null.
+     */
     public void setButtonIcons() {
 
         URL sendUrl = ChatMainFrameImpl.class.getResource("/emojis/$+1f4e8$+.png");
