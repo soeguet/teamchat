@@ -16,6 +16,8 @@ import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.interfaces.CommentManager;
 import com.soeguet.gui.image_panel.ImagePanelImpl;
 import com.soeguet.gui.image_panel.interfaces.ImageInterface;
+import com.soeguet.gui.interrupt_dialog.InterruptDialogImpl;
+import com.soeguet.gui.interrupt_dialog.interfaces.InterruptDialogInterface;
 import com.soeguet.gui.main_frame.generated.ChatPanel;
 import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.gui.notification_panel.NotificationImpl;
@@ -293,11 +295,11 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     * Returns the emoji handler.
-     *
-     * This method returns the emoji handler associated with the current object.
-     *
-     * @return the emoji handler.
+     Returns the emoji handler.
+
+     This method returns the emoji handler associated with the current object.
+
+     @return the emoji handler.
      */
     public EmojiHandler getEmojiHandler() {
 
@@ -333,9 +335,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     * Returns the name of the operating system.
-     *
-     * @return the name of the operating system.
+     Returns the name of the operating system.
+
+     @return the name of the operating system.
      */
     public String getOSName() {
 
@@ -343,10 +345,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     * Returns the name of the user's current desktop environment.
-     * The method retrieves the value of the environment variable "XDG_CURRENT_DESKTOP".
-     *
-     * @return the name of the user's current desktop environment or null if the variable is not set.
+     Returns the name of the user's current desktop environment.
+     The method retrieves the value of the environment variable "XDG_CURRENT_DESKTOP".
+
+     @return the name of the user's current desktop environment or null if the variable is not set.
      */
     public String getDesktopEnv() {
 
@@ -384,12 +386,13 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     * Retrieves the version of the JAR file.
-     *
-     * This method reads the version from the "version.properties" file in the JAR file. If the file is not found or if an error occurs while reading the file, it returns a default value of "v.?".
-     *
-     * @return The version of the JAR file, or "v.?" if the version is not found or an error occurs.
-     * @throws RuntimeException If an error occurs while reading the "version.properties" file.
+     Retrieves the version of the JAR file.
+
+     This method reads the version from the "version.properties" file in the JAR file. If the file is not found or if an error occurs while reading the file, it returns a default value of "v.?".
+
+     @return The version of the JAR file, or "v.?" if the version is not found or an error occurs.
+
+     @throws RuntimeException If an error occurs while reading the "version.properties" file.
      */
     String retrieveJarVersion() {
 
@@ -865,6 +868,15 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     protected void thisWindowClosing(final WindowEvent e) {
 
         setState(Frame.ICONIFIED);
+    }
+
+    @Override
+    protected void interruptMenuItemMousePressed(final MouseEvent e) {
+
+        InterruptDialogInterface interruptDialogInterface = new InterruptDialogImpl(this);
+        interruptDialogInterface.populateDialogWithAllRegisteredClients(chatClientPropertiesHashMap);
+        interruptDialogInterface.pack();
+        interruptDialogInterface.setVisible(true);
     }
 
     /**

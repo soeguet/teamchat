@@ -12,7 +12,7 @@ import com.soeguet.model.MessageTypes;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
-import com.soeguet.util.MessageCategory;
+import com.soeguet.util.interfaces.MessageCategory;
 
 import javax.swing.*;
 import java.awt.*;

@@ -28,7 +28,7 @@ import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
 import com.soeguet.properties.CustomUserProperties;
-import com.soeguet.util.MessageCategory;
+import com.soeguet.util.interfaces.MessageCategory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -160,6 +160,10 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         });
     }
 
+    /**
+     Calls the image panel to handle image data dropped onto the text pane.
+     The image panel is responsible for displaying and manipulating the image data.
+     */
     private void callImagePanel() {
 
         ImageInterface imagePanel = new ImagePanelImpl(mainFrame);
@@ -236,25 +240,66 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         return linkDialog;
     }
 
+    /**
+     Sends a message to the socket.
+
+     This method retrieves text input from the user, converts it to JSON format, and sends
+     the message to the socket using the sendMessageToSocket(String) method.
+
+     The user input is retrieved using the getTextFromInput() method. The retrieved text is then
+     converted to JSON format using the convertUserTextToJSON(String) method. Finally, the message
+     is sent to the socket using the sendMessageToSocket(String) method.
+
+     @see #getTextFromInput()
+     @see #convertUserTextToJSON(String)
+     @see #sendMessageToSocket(String)
+     */
     @Override
     public void sendMessageToSocket() {
 
         String userTextInput = getTextFromInput();
         String messageString = convertUserTextToJSON(userTextInput);
         sendMessageToSocket(messageString);
-
     }
 
+    /**
+     Retrieves the text from the input text editor pane.
+
+     This method retrieves the text from the input text editor pane of the main frame.
+
+     @return the text obtained from the input text editor pane
+     */
     private String getTextFromInput() {
 
         return this.mainFrame.getTextEditorPane().getText();
     }
 
+    /**
+     Converts user text input to JSON representation.
+
+     This method takes the user text input and converts it to a MessageModel
+     object using the textToMessageModel method. It then converts the MessageModel
+     object to its JSON representation using the convertToJSON method.
+
+     @param userTextInput the user text input to be converted to JSON
+
+     @return the JSON representation of the user text input
+     */
     private String convertUserTextToJSON(String userTextInput) {
 
         return convertToJSON(textToMessageModel(userTextInput));
     }
 
+    /**
+     Sends a message to the socket.
+
+     This method sends the given message string to the websocket client associated with the main frame.
+     Additionally, it sends a typing status message to indicate that a message is being sent.
+
+     @param messageString the message to be sent
+
+     @since version 1.0
+     */
     private void sendMessageToSocket(String messageString) {
 
         this.mainFrame.getWebsocketClient().send(messageString);
@@ -264,6 +309,17 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         this.mainFrame.getWebsocketClient().send(typingStatus.getBytes());
     }
 
+    /**
+     Converts the given BaseModel object to JSON string.
+
+     This method uses the Jackson ObjectMapper to convert the BaseModel object to JSON.
+     It uses the writerWithDefaultPrettyPrinter() method to format the JSON string with
+     default pretty printer settings.
+
+     @param messageModel the BaseModel object to convert to JSON
+
+     @return the JSON string representation of the messageModel object, or null if an error occurs
+     */
     private String convertToJSON(BaseModel messageModel) {
 
         try {
@@ -290,11 +346,22 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         return new MessageModel((byte) MessageTypes.NORMAL, mainFrame.getUsername(), userTextInput);
     }
 
+    /**
+     Clears the text in the text editor pane.
+
+     This method sets the text in the text editor pane to an empty string, effectively clearing it.
+     */
     public void clearTextPane() {
 
         this.mainFrame.getTextEditorPane().setText("");
     }
 
+    /**
+     Handles internal notifications by converting a message into a base model and calling
+     another internalNotificationHandling method.
+
+     @param message The notification message to handle.
+     */
     @Override
     public synchronized void internalNotificationHandling(String message) {
 
@@ -339,6 +406,11 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         }
     }
 
+    /**
+     Called when a message is received.
+
+     @param message The message received as a byte array.
+     */
     @Override
     public void onMessage(byte[] message) {
 
@@ -363,16 +435,62 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
             }
 
             case "send" -> mainFrame.getTypingLabel().setText(" ");
+
+            case "interrupt" -> {
+
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    JsonNode root = mapper.readTree(message);
+                    JsonNode usernamesNode = root.get("usernames");
+
+                    for (JsonNode username : usernamesNode) {
+
+                        //TODO implement interruption
+                        System.out.println(username.asText());
+                    }
+
+                } catch (IOException e) {
+
+                    throw new RuntimeException(e);
+                }
+            }
+
+            default -> {
+                System.out.println("Unknown message type");
+                System.out.println(new String(message));
+            }
         }
 
     }
 
     /**
-     * Generates the typing label.
-     *
-     * @param textOnTypingLabel The text that is currently on the typing label.
-     * @param parsedJson The parsed JSON containing the username.
-     * @return The StringBuilder containing the updated typing label text.
+     Parses a JSON byte array and returns the corresponding JsonNode object.
+
+     @param message The byte array representing the JSON message.
+
+     @return The JsonNode object representing the parsed JSON message.
+
+     @throws RuntimeException if there is an IOException while parsing the JSON.
+     */
+    private JsonNode parseJsonNode(final byte[] message) {
+
+        try {
+
+            return mainFrame.getObjectMapper().readTree(message);
+
+        } catch (IOException e) {
+
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     Generates the typing label.
+
+     @param textOnTypingLabel The text that is currently on the typing label.
+     @param parsedJson        The parsed JSON containing the username.
+
+     @return The StringBuilder containing the updated typing label text.
      */
     private StringBuilder generateTypingLabel(String textOnTypingLabel, final JsonNode parsedJson) {
 
@@ -396,24 +514,13 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
     }
 
     /**
-     * Parses a JSON byte array and returns the corresponding JsonNode object.
-     *
-     * @param message The byte array representing the JSON message.
-     * @return The JsonNode object representing the parsed JSON message.
-     * @throws RuntimeException if there is an IOException while parsing the JSON.
+     Spams the buffer with a message to be displayed in the GUI chat panel.
+
+     This method writes a message to the chat panel and then adds a brief delay before proceeding.
+     It is recommended to replace this method with a more efficient buffering or caching system in the future.
+
+     @throws RuntimeException if there is an InterruptedException during the delay.
      */
-    private JsonNode parseJsonNode(final byte[] message) {
-
-        try {
-
-            return mainFrame.getObjectMapper().readTree(message);
-
-        } catch (IOException e) {
-
-            throw new RuntimeException(e);
-        }
-    }
-
     private void spamBuffer() {
 
         writeGuiMessageToChatPanel();
@@ -426,6 +533,13 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         }
     }
 
+    /**
+     Creates a desktop notification based on the provided message.
+
+     @param message The message to be displayed in the notification.
+
+     @throws RuntimeException if there is an error while handling the notification.
+     */
     private void createDesktopNotification(final String message) {
 
         //TODO clean this up
@@ -468,11 +582,26 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         }
     }
 
+    /**
+     Compares the sender of a BaseModel object to the username of mainFrame.
+
+     @param baseModel The BaseModel object to compare the sender to.
+
+     @return true if the sender of the baseModel object is equal to the username of mainFrame;
+     false otherwise.
+     */
     private boolean compareSenderToUsername(final BaseModel baseModel) {
 
         return baseModel.getSender().equals(this.mainFrame.getUsername());
     }
 
+    /**
+     Handles external notifications based on the given message.
+
+     @param message The message to be handled.
+
+     @throws RuntimeException if there is an IOException while handling the notification.
+     */
     private void externalNotificationHandling(final String message) {
 
         try {
@@ -513,55 +642,77 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         }
     }
 
-    public synchronized void internalNotificationHandling(String message, BaseModel baseModel) {
+    /**
+     Handles internal notifications by adding them to the active notification queue and creating notifications.
 
-        //TODO clean this mess up..
+     @param message   The message to be handled.
+     @param baseModel The base model associated with the notification.
+
+     @throws RuntimeException if there is an IllegalStateException while adding to the active notification queue.
+     */
+    private synchronized void internalNotificationHandling(String message, BaseModel baseModel) {
+
         if (cacheManager.getCache("ActiveNotificationQueue") instanceof ActiveNotificationQueue activeNotificationQueue) {
 
             //max 3 notification at a time, cache message and bail out
-            if (activeNotificationQueue.getRemainingCapacity() < 1) {
+            if (activeNotificationQueue.getRemainingCapacity() == 0) {
 
                 if (cacheManager.getCache("WaitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
 
                     //add to queue and skip the rest
                     waitingNotificationQueue.addLast(message);
-
                 }
 
             } else {
 
+                //if capacity is left
                 try {
 
                     activeNotificationQueue.addLast(baseModel);
-                    createNotification(baseModel);
 
                 } catch (IllegalStateException e) {
 
                     throw new RuntimeException(e);
                 }
 
+                createNotification(baseModel);
                 handleRemainingCapacityInQueue(activeNotificationQueue);
             }
         }
     }
 
+    /**
+     Handles the remaining capacity in the active notifications queue.
+
+     @param activeNotificationsCache The active notifications cache.
+     */
     private void handleRemainingCapacityInQueue(ActiveNotificationQueue activeNotificationsCache) {
 
-        WaitingNotificationQueue waitingNotificationsCache = (WaitingNotificationQueue) cacheManager.getCache("WaitingNotificationQueue");
+        if (cacheManager.getCache("WaitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
 
-        if (activeNotificationsCache.getRemainingCapacity() > 0 && !waitingNotificationsCache.isEmpty()) {
+            //if less than three active notifications are present and there are waiting notifications
+            if (activeNotificationsCache.getRemainingCapacity() > 0 && !waitingNotificationQueue.isEmpty()) {
 
-            final String queuedNotification = waitingNotificationsCache.pollFirst();
+                final String queuedNotification = waitingNotificationQueue.pollFirst();
 
-            //TODO is this one right?
-            Timer timer = new Timer(250, e -> internalNotificationHandling(queuedNotification));
-            timer.setRepeats(false);
-            timer.start();
+                //TODO is this one right?
+                Timer timer = new Timer(250, e -> internalNotificationHandling(queuedNotification));
+                timer.setRepeats(false);
+                timer.start();
+            }
         }
     }
 
+    /**
+     Creates a notification based on the given BaseModel object.
+
+     @param baseModel The BaseModel object representing the notification content.
+
+     @throws IllegalArgumentException if the BaseModel object is of unknown type.
+     */
     private void createNotification(final BaseModel baseModel) {
 
+        //TODO does this need to be reactivated somewhere?
         switch (baseModel) {
 
             case MessageModel text -> {
@@ -588,7 +739,11 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
                 timer.start();
             }
 
-            default -> LOGGER.info("Unknown message type");
+            default -> {
+
+                LOGGER.info("Unknown message type");
+                throw new IllegalArgumentException();
+            }
         }
     }
 
@@ -625,9 +780,12 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
      */
     private String pollMessageFromCache() {
 
-        MessageQueue messageQueue = (MessageQueue) cacheManager.getCache("messageQueue");
+        if (cacheManager.getCache("messageQueue") instanceof MessageQueue messageQueue) {
 
-        return messageQueue.pollFirst();
+            return messageQueue.pollFirst();
+        }
+
+        return null;
     }
 
     /**
@@ -656,25 +814,37 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         }
     }
 
+    /**
+     Checks if the message queue is empty or if the chat needs to start over.
+     If the message queue is not empty, it sets a timer for displaying new messages.
+     */
     private void checkIfDequeIsEmptyOrStartOver() {
 
-        MessageQueue messageQueue = (MessageQueue) cacheManager.getCache("messageQueue");
+        if (cacheManager.getCache("messageQueue") instanceof MessageQueue messageQueue) {
 
-        repaintMainFrame();
+            repaintMainFrame();
 
-        SwingUtilities.invokeLater(() -> scrollMainPanelDownToLastMessage(this.mainFrame.getMainTextBackgroundScrollPane()));
+            SwingUtilities.invokeLater(() -> scrollMainPanelDownToLastMessage(this.mainFrame.getMainTextBackgroundScrollPane()));
 
-        if (!messageQueue.isEmpty()) {
+            if (!messageQueue.isEmpty()) {
 
-            Timer timer = new Timer(300, e -> {
-
-                writeGuiMessageToChatPanel();
-                scrollMainPanelDownToLastMessage(this.mainFrame.getMainTextBackgroundScrollPane());
-            });
-            timer.setRepeats(false);
-            timer.start();
+                timerForNewMessageToChatPanel();
+            }
         }
+    }
 
+    /**
+     This method sets a timer to periodically update the chat panel with new messages.
+     */
+    private void timerForNewMessageToChatPanel() {
+
+        Timer timer = new Timer(300, e -> {
+
+            writeGuiMessageToChatPanel();
+            scrollMainPanelDownToLastMessage(this.mainFrame.getMainTextBackgroundScrollPane());
+        });
+        timer.setRepeats(false);
+        timer.start();
     }
 
     /**
@@ -724,10 +894,7 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
             if (!this.mainFrame.getChatClientPropertiesHashMap().containsKey("own")) {
 
-                CustomUserProperties customUserProperties = new CustomUserProperties();
-                customUserProperties.setUsername(this.mainFrame.getUsername());
-                customUserProperties.setBorderColor(getRandomRgbIntValue());
-                clientMap.put("own", customUserProperties);
+                addClientToLocalCacheRegister(clientMap, "own");
             }
 
             return;
@@ -735,13 +902,32 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
         if (!clientMap.containsKey(sender)) {
 
-            CustomUserProperties customUserProperties = new CustomUserProperties();
-            customUserProperties.setUsername(sender);
-            customUserProperties.setBorderColor(getRandomRgbIntValue());
-            clientMap.put(sender, customUserProperties);
+            addClientToLocalCacheRegister(clientMap, sender);
         }
     }
 
+    /**
+     Adds a client to the local cache register.
+
+     @param clientMap the map representing the local cache of clients
+     @param sender    the client to be added to the cache
+     */
+    private void addClientToLocalCacheRegister(final HashMap<String, CustomUserProperties> clientMap, final String sender) {
+
+        CustomUserProperties customUserProperties = new CustomUserProperties();
+
+        customUserProperties.setUsername(sender);
+        customUserProperties.setBorderColor(getRandomRgbIntValue());
+        clientMap.put(sender, customUserProperties);
+    }
+
+    /**
+     Checks if the nickname for a given sender is already registered.
+
+     @param sender the sender to check for a registered nickname
+
+     @return the nickname of the sender if it is registered, otherwise null
+     */
     private String checkForNickname(String sender) {
 
         if (this.mainFrame.getChatClientPropertiesHashMap().containsKey(sender) && this.mainFrame.getChatClientPropertiesHashMap().get(sender).getNickname() != null && !this.mainFrame.getChatClientPropertiesHashMap().get(sender).getNickname().isEmpty()) {
@@ -760,11 +946,14 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
      @param scrollPane the scroll pane containing the main panel
      */
-    public void scrollMainPanelDownToLastMessage(JScrollPane scrollPane) {
+    private void scrollMainPanelDownToLastMessage(JScrollPane scrollPane) {
 
-        //EDT check done!
-        repaintMainFrame();
-        scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
+        SwingUtilities.invokeLater(() -> {
+
+            repaintMainFrame();
+            scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
+            repaintMainFrame();
+        });
     }
 
     /**

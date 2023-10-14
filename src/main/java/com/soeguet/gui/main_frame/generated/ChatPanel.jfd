@@ -85,6 +85,14 @@ new FormModel {
 						name: "extraMenu"
 						"text": "extra"
 						add( new FormComponent( "javax.swing.JMenuItem" ) {
+							name: "interruptMenuItem"
+							"text": "interrupt"
+							addEvent( new FormEvent( "java.awt.event.MouseListener", "mousePressed", "interruptMenuItemMousePressed", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JPopupMenu$Separator" ) {
+							name: "separator5"
+						} )
+						add( new FormComponent( "javax.swing.JMenuItem" ) {
 							name: "participantsMenuItem"
 							"text": "participants"
 							"enabled": false
