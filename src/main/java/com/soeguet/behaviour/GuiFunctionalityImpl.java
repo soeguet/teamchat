@@ -6,29 +6,33 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.behaviour.interfaces.GuiFunctionality;
 import com.soeguet.behaviour.interfaces.SocketToGuiInterface;
 import com.soeguet.cache.factory.CacheManagerFactory;
-import com.soeguet.cache.implementations.ActiveNotificationQueue;
 import com.soeguet.cache.implementations.MessageQueue;
-import com.soeguet.cache.implementations.WaitingNotificationQueue;
 import com.soeguet.cache.manager.CacheManager;
+import com.soeguet.gui.comments.CommentManagerImpl;
 import com.soeguet.gui.comments.interfaces.CommentManager;
 import com.soeguet.gui.comments.util.WrapEditorKit;
 import com.soeguet.gui.image_panel.ImagePanelImpl;
 import com.soeguet.gui.image_panel.interfaces.ImageInterface;
+import com.soeguet.gui.interrupt_dialog.handler.InterruptHandler;
+import com.soeguet.gui.interrupt_dialog.interfaces.InterruptHandlerInterface;
 import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
-import com.soeguet.gui.notification_panel.NotificationImpl;
-import com.soeguet.gui.notification_panel.interfaces.NotificationInterface;
+import com.soeguet.gui.main_panel.MessageDisplayHandler;
+import com.soeguet.gui.main_panel.interfaces.MessageDisplayHandlerInterface;
+import com.soeguet.gui.notification_panel.DesktopNotificationHandler;
+import com.soeguet.gui.notification_panel.interfaces.DesktopNotificationHandlerInterface;
 import com.soeguet.gui.option_pane.links.LinkDialogHandler;
 import com.soeguet.gui.option_pane.links.LinkDialogImpl;
 import com.soeguet.gui.option_pane.links.dtos.MetadataStorageRecord;
 import com.soeguet.gui.option_pane.links.interfaces.LinkDialogInterface;
 import com.soeguet.gui.popups.PopupPanelImpl;
 import com.soeguet.gui.popups.interfaces.PopupInterface;
+import com.soeguet.gui.typing_panel.TypingPanelHandler;
+import com.soeguet.gui.typing_panel.interfaces.TypingPanelHandlerInterface;
 import com.soeguet.model.MessageTypes;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
-import com.soeguet.model.jackson.PictureModel;
 import com.soeguet.properties.CustomUserProperties;
-import com.soeguet.util.MessageCategory;
+import com.soeguet.util.NotificationStatus;
 
 import javax.swing.*;
 import java.awt.*;
@@ -49,8 +53,7 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
     private final MainFrameInterface mainFrame;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final CommentManager commentManager;
-    Logger LOGGER = Logger.getLogger(GuiFunctionalityImpl.class.getName());
+    private final Logger logger = Logger.getLogger(GuiFunctionalityImpl.class.getName());
     CacheManager cacheManager = CacheManagerFactory.getCacheManager();
 
     /**
@@ -60,10 +63,9 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
      @param mainFrame      The main frame of the GUI.
      @param commentManager The implementation of the CommentManager interface.
      */
-    public GuiFunctionalityImpl(MainFrameInterface mainFrame, final CommentManager commentManager) {
+    public GuiFunctionalityImpl(MainFrameInterface mainFrame) {
 
         this.mainFrame = mainFrame;
-        this.commentManager = commentManager;
     }
 
     /**
@@ -115,44 +117,64 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
                 if (transferable.isDataFlavorSupported(DataFlavor.imageFlavor)) {
 
+                    //image route
+
                     // image to text pane -> activate image panel
-                    ImageInterface imagePanel = new ImagePanelImpl(mainFrame);
-                    imagePanel.setPosition();
-                    imagePanel.setLayeredPaneLayerPositions();
-                    imagePanel.setupPictureScrollPaneScrollSpeed();
-                    imagePanel.populateImagePanelFromClipboard();
+                    callImagePanel();
 
                     return true;
 
                 } else if (transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
 
+                    //string route
+
+                    String data = "";
+
                     try {
-                        String data = (String) transferable.getTransferData(DataFlavor.stringFlavor);
 
-                        //TODO maybe emoji detection?
-
-                        if (data.startsWith("http://") || data.startsWith("https://")) {
-
-                            //send the link
-                            callLinkConfirmationDialog(data);
-
-                            return false;
-
-                        } else {
-
-                            return originalHandler.importData(jComponent, transferable);
-                        }
+                        data = (String) transferable.getTransferData(DataFlavor.stringFlavor);
 
                     } catch (UnsupportedFlavorException | IOException e) {
 
-                        LOGGER.log(java.util.logging.Level.SEVERE, "Error importing data", e);
+                        logger.log(java.util.logging.Level.SEVERE, "Error importing data", e);
+                        throw new RuntimeException(e);
                     }
 
+                    //TODO maybe emoji detection?
+
+                    //check if link
+                    if (data.startsWith("http://") || data.startsWith("https://")) {
+
+                        //send the link
+                        callLinkConfirmationDialog(data);
+
+                        //don't append the link to the text pane
+                        return false;
+                    }
+
+                    //append what was pasted to the text pane
                     return originalHandler.importData(jComponent, transferable);
                 }
-                return false;
+
+//                return false;
+                //TODO check if this is right or false was the better return value
+                return originalHandler.importData(jComponent, transferable);
             }
         });
+    }
+
+    /**
+     Calls the image panel to handle image data dropped onto the text pane.
+     The image panel is responsible for displaying and manipulating the image data.
+     */
+    private void callImagePanel() {
+
+        ImageInterface imagePanel = new ImagePanelImpl(mainFrame);
+
+        imagePanel.setPosition();
+        imagePanel.setLayeredPaneLayerPositions();
+        imagePanel.setupPictureScrollPaneScrollSpeed();
+        imagePanel.populateImagePanelFromClipboard();
     }
 
     /**
@@ -163,8 +185,6 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
      @param link the link to be confirmed
      */
     private void callLinkConfirmationDialog(String link) {
-
-        //TODO clickable link working, maybe add some kind of JPanel for further editing
 
         final LinkDialogInterface linkDialog = createLinkDialog(link);
         linkDialog.generate();
@@ -223,31 +243,66 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         return linkDialog;
     }
 
+    /**
+     Sends a message to the socket.
+
+     This method retrieves text input from the user, converts it to JSON format, and sends
+     the message to the socket using the sendMessageToSocket(String) method.
+
+     The user input is retrieved using the getTextFromInput() method. The retrieved text is then
+     converted to JSON format using the convertUserTextToJSON(String) method. Finally, the message
+     is sent to the socket using the sendMessageToSocket(String) method.
+
+     @see #getTextFromInput()
+     @see #convertUserTextToJSON(String)
+     @see #sendMessageToSocket(String)
+     */
     @Override
-    public void clearTextPaneAndSendMessageToSocket() {
+    public void sendMessageToSocket() {
 
         String userTextInput = getTextFromInput();
-        clearTextPane();
         String messageString = convertUserTextToJSON(userTextInput);
         sendMessageToSocket(messageString);
-
     }
 
+    /**
+     Retrieves the text from the input text editor pane.
+
+     This method retrieves the text from the input text editor pane of the main frame.
+
+     @return the text obtained from the input text editor pane
+     */
     private String getTextFromInput() {
 
         return this.mainFrame.getTextEditorPane().getText();
     }
 
-    private void clearTextPane() {
+    /**
+     Converts user text input to JSON representation.
 
-        this.mainFrame.getTextEditorPane().setText("");
-    }
+     This method takes the user text input and converts it to a MessageModel
+     object using the textToMessageModel method. It then converts the MessageModel
+     object to its JSON representation using the convertToJSON method.
 
+     @param userTextInput the user text input to be converted to JSON
+
+     @return the JSON representation of the user text input
+     */
     private String convertUserTextToJSON(String userTextInput) {
 
         return convertToJSON(textToMessageModel(userTextInput));
     }
 
+    /**
+     Sends a message to the socket.
+
+     This method sends the given message string to the websocket client associated with the main frame.
+     Additionally, it sends a typing status message to indicate that a message is being sent.
+
+     @param messageString the message to be sent
+
+     @since version 1.0
+     */
     private void sendMessageToSocket(String messageString) {
 
         this.mainFrame.getWebsocketClient().send(messageString);
@@ -257,6 +312,17 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         this.mainFrame.getWebsocketClient().send(typingStatus.getBytes());
     }
 
+    /**
+     Converts the given BaseModel object to JSON string.
+
+     This method uses the Jackson ObjectMapper to convert the BaseModel object to JSON.
+     It uses the writerWithDefaultPrettyPrinter() method to format the JSON string with
+     default pretty printer settings.
+
+     @param messageModel the BaseModel object to convert to JSON
+
+     @return the JSON string representation of the messageModel object, or null if an error occurs
+     */
     private String convertToJSON(BaseModel messageModel) {
 
         try {
@@ -265,10 +331,9 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
         } catch (JsonProcessingException e) {
 
-            LOGGER.log(java.util.logging.Level.SEVERE, "Error converting to JSON", e);
+            logger.log(java.util.logging.Level.SEVERE, "Error converting to JSON", e);
+            throw new RuntimeException(e);
         }
-
-        return null;
     }
 
     /**
@@ -283,12 +348,22 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         return new MessageModel((byte) MessageTypes.NORMAL, mainFrame.getUsername(), userTextInput);
     }
 
-    @Override
-    public synchronized void internalNotificationHandling(String message) {
+    /**
+     Clears the text in the text editor pane.
 
-        //TODO clean this mess up..
-        BaseModel baseModel = convertMessageToBaseModel(message);
-        internalNotificationHandling(message, baseModel);
+     This method sets the text in the text editor pane to an empty string, effectively clearing it.
+     */
+    public void clearTextPane() {
+
+        this.mainFrame.getTextEditorPane().setText("");
+    }
+
+    @Override
+    public void internalNotificationHandling(final String message) {
+
+        DesktopNotificationHandlerInterface desktopNotificationHandler = new DesktopNotificationHandler(mainFrame);
+        final NotificationStatus notificationStatus = desktopNotificationHandler.determineDesktopNotificationStatus();
+        desktopNotificationHandler.createDesktopNotification(message, notificationStatus);
     }
 
     /**
@@ -328,79 +403,113 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         }
     }
 
+    /**
+     Called when a message is received.
+
+     @param message The message received as a byte array.
+     */
     @Override
     public void onMessage(byte[] message) {
 
         //TODO clean this up
 
-        final JLabel typingLabel = mainFrame.getTypingLabel();
+        final JsonNode parsedJson = parseJsonNode(message);
 
-        final JsonNode parsedJson;
+        switch (parsedJson.get("type").asText()) {
+
+            case "typing" -> handleTypingPanel(parsedJson);
+
+            case "send" -> mainFrame.getTypingLabel().setText(" ");
+
+            case "interrupt" -> handleInterruption(message);
+
+            default -> {
+
+                System.out.println("Unknown message type");
+                System.out.println(new String(message));
+            }
+        }
+
+    }
+
+    /**
+     Parses a JSON byte array and returns the corresponding JsonNode object.
+
+     @param message The byte array representing the JSON message.
+
+     @return The JsonNode object representing the parsed JSON message.
+
+     @throws RuntimeException if there is an IOException while parsing the JSON.
+     */
+    private JsonNode parseJsonNode(final byte[] message) {
 
         try {
 
-            parsedJson = mainFrame.getObjectMapper().readTree(message);
+            return mainFrame.getObjectMapper().readTree(message);
 
         } catch (IOException e) {
 
             throw new RuntimeException(e);
         }
-
-        final String eventType = parsedJson.get("type").asText();
-
-        switch (eventType) {
-
-            case "typing" -> {
-
-                final String username = parsedJson.get("username").asText();
-
-                String textOnTypingLabel = typingLabel.getText();
-
-                if (textOnTypingLabel.contains(username)) {
-                    return;
-                }
-
-                StringBuilder stringBuilder = new StringBuilder();
-
-                if (!textOnTypingLabel.isBlank()) {
-
-                    textOnTypingLabel = textOnTypingLabel.replace(" is typing...", "");
-                    stringBuilder.append(textOnTypingLabel);
-                    stringBuilder.append(", ");
-
-                } else {
-
-                    stringBuilder.append("  ");
-                }
-
-                stringBuilder.append(username);
-                stringBuilder.append(" is typing...");
-
-                SwingUtilities.invokeLater(() -> typingLabel.setText(stringBuilder.toString()));
-            }
-
-            case "send" -> typingLabel.setText(" ");
-        }
-
     }
 
+    /**
+     Handles the typing panel based on the provided JSON node.
+
+     @param parsedJson The JSON node representing the parsed JSON message.
+
+     @throws RuntimeException if there is an IOException while handling the typing panel.
+     */
+    private void handleTypingPanel(final JsonNode parsedJson) {
+
+        TypingPanelHandlerInterface typingPanelHandler = new TypingPanelHandler(mainFrame);
+
+        String textOnTypingLabel = typingPanelHandler.retrieveTextOnTypingLabel();
+
+        //if typing client is already present on label -> return!
+        if (textOnTypingLabel.contains(parsedJson.get("username").asText())) {
+
+            return;
+        }
+
+        final StringBuilder stringBuilder = typingPanelHandler.generateTypingLabel(textOnTypingLabel, parsedJson);
+
+        typingPanelHandler.displayUpdatedTypingLabel(stringBuilder);
+    }
+
+    /**
+     Handles the interruption based on the provided message.
+
+     @param message The byte array representing the message.
+
+     @throws RuntimeException if there is an IOException while handling the interruption.
+     */
+    private void handleInterruption(final byte[] message) {
+
+        InterruptHandlerInterface interruptHandler = new InterruptHandler(mainFrame);
+
+        JsonNode userNamesNode = interruptHandler.extractJsonNodeUsernames(message);
+
+        for (JsonNode username : userNamesNode) {
+
+            //force chat gui to front of user
+            interruptHandler.forceChatGuiToFront(username.asText());
+        }
+    }
+
+    /**
+     Spams the buffer with a message to be displayed in the GUI chat panel.
+
+     This method writes a message to the chat panel and then adds a brief delay before proceeding.
+     It is recommended to replace this method with a more efficient buffering or caching system in the future.
+
+     @throws RuntimeException if there is an InterruptedException during the delay.
+     */
     private void spamBuffer() {
-
-        //TODO this does not work at all :( intention: prevent spamming the GUI and making use of a timeout system if messages are flooded in
-        //using time to prevent spamming the GUI and making use of the cached messages
-
-//        if (messageToPanelTimer != null &&  messageToPanelTimer.isRunning()) {
-//
-//            return;
-//        }
-//
-//        messageToPanelTimer = new Timer(1000, e -> writeGuiMessageToChatPanel());
-//        messageToPanelTimer.setRepeats(false);
-//        messageToPanelTimer.start();
 
         writeGuiMessageToChatPanel();
 
-        //TODO remove this part as soon as the buffer is working
+        //TODO replace this with a buffer or caching system
         try {
             Thread.sleep(15);
         } catch (InterruptedException e) {
@@ -408,163 +517,41 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         }
     }
 
+    /**
+     Creates a desktop notification based on the provided message.
+
+     @param message The message to be displayed in the notification.
+
+     @throws RuntimeException if there is an error while handling the notification.
+     */
     private void createDesktopNotification(final String message) {
 
         //TODO clean this up
 
         //convert the message to a java object and return if the message came from this client
-        final BaseModel baseModel = convertMessageToBaseModel(message);
-        if (baseModel.getSender().equals(this.mainFrame.getUsername())) {
+        final BaseModel baseModel = parseMessageToJsonModel(message);
+
+        if (compareSenderToUsername(baseModel)) {
+
             return;
         }
 
-        //check if notifications are even wanted
-        switch (this.mainFrame.getNotificationStatus()) {
-
-            case INTERNAL_ONLY -> {
-
-                internalNotificationHandling(message);
-                Toolkit.getDefaultToolkit().beep();
-            }
-
-            case EXTERNAL_ONLY -> {
-
-                externalNotificationHandling(message);
-                Toolkit.getDefaultToolkit().beep();
-            }
-
-            case ALL_ALLOWED -> {
-
-                internalNotificationHandling(message);
-                externalNotificationHandling(message);
-                Toolkit.getDefaultToolkit().beep();
-            }
-
-            case ALL_DENIED, STARTUP -> {
-                //TODO check if message was even cached which in that case needs to be removed from cache
-                //do nothing, intentionally left blank
-                break;
-            }
-        }
+        DesktopNotificationHandlerInterface desktopNotificationHandler = new DesktopNotificationHandler(mainFrame);
+        NotificationStatus notificationStatus = desktopNotificationHandler.determineDesktopNotificationStatus();
+        desktopNotificationHandler.createDesktopNotification(message, notificationStatus);
     }
 
-    private void externalNotificationHandling(final String message) {
+    /**
+     Compares the sender of a BaseModel object to the username of mainFrame.
 
-        try {
+     @param baseModel The BaseModel object to compare the sender to.
 
-            final BaseModel baseModel = convertJsonToMessageModel(message);
+     @return true if the sender of the baseModel object is equal to the username of mainFrame;
+     false otherwise.
+     */
+    private boolean compareSenderToUsername(final BaseModel baseModel) {
 
-            switch (baseModel) {
-
-                case MessageModel text -> {
-
-                    try {
-
-                        //TODO linux only // windows needed
-                        Runtime.getRuntime().exec(new String[]{"notify-send", "text message", text.getMessage()});
-
-                    } catch (IOException e) {
-
-                        throw new RuntimeException(e);
-                    }
-                }
-
-                case PictureModel picture -> {
-
-                    try {
-
-                        Runtime.getRuntime().exec(new String[]{"notify-send", "picture message", "[picture]" + System.lineSeparator() + picture.getMessage()});
-
-                    } catch (IOException e) {
-
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-
-        } catch (JsonProcessingException e) {
-
-            throw new RuntimeException(e);
-        }
-    }
-
-    public synchronized void internalNotificationHandling(String message, BaseModel baseModel) {
-
-        //TODO clean this mess up..
-        if (cacheManager.getCache("ActiveNotificationQueue") instanceof ActiveNotificationQueue activeNotificationQueue) {
-
-            //max 3 notification at a time, cache message and bail out
-            if (activeNotificationQueue.getRemainingCapacity() < 1) {
-
-                if (cacheManager.getCache("WaitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
-
-                    //add to queue and skip the rest
-                    waitingNotificationQueue.addLast(message);
-
-                }
-
-            } else {
-
-                try {
-
-                    activeNotificationQueue.addLast(baseModel);
-                    createNotification(baseModel);
-
-                } catch (IllegalStateException e) {
-
-                    throw new RuntimeException(e);
-                }
-
-                handleRemainingCapacityInQueue(activeNotificationQueue);
-            }
-        }
-    }
-
-    private void handleRemainingCapacityInQueue(ActiveNotificationQueue activeNotificationsCache) {
-
-        WaitingNotificationQueue waitingNotificationsCache = (WaitingNotificationQueue) cacheManager.getCache("WaitingNotificationQueue");
-
-        if (activeNotificationsCache.getRemainingCapacity() > 0 && !waitingNotificationsCache.isEmpty()) {
-
-            final String queuedNotification = waitingNotificationsCache.pollFirst();
-
-            //TODO is this one right?
-            Timer timer = new Timer(250, e -> internalNotificationHandling(queuedNotification));
-            timer.setRepeats(false);
-            timer.start();
-        }
-    }
-
-    private void createNotification(final BaseModel baseModel) {
-
-        switch (baseModel) {
-
-            case MessageModel text -> {
-
-                Timer timer = new Timer(500, e -> {
-                    NotificationInterface notification = new NotificationImpl(this.mainFrame, text);
-                    notification.setNotificationText();
-                    notification.setMaximumSize(new Dimension(400, 300));
-                });
-                timer.setRepeats(false);
-                timer.start();
-            }
-
-            case PictureModel picture -> {
-
-                Timer timer = new Timer(500, e -> {
-                    NotificationInterface notification = new NotificationImpl(this.mainFrame, picture);
-
-                    notification.setNotificationPicture();
-                    notification.setMaximumSize(new Dimension(400, 300));
-
-                });
-                timer.setRepeats(false);
-                timer.start();
-            }
-
-            default -> LOGGER.info("Unknown message type");
-        }
+        return baseModel.getSender().equals(this.mainFrame.getUsername());
     }
 
     /**
@@ -572,12 +559,15 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
      */
     private synchronized void writeGuiMessageToChatPanel() {
 
+        CommentManager commentManager = new CommentManagerImpl(mainFrame);
+        MessageDisplayHandlerInterface messageDisplayHandler = new MessageDisplayHandler(mainFrame, commentManager);
+
         //retrieve the message from cache
-        final String message = pollMessageFromCache();
+        final String message = messageDisplayHandler.pollMessageFromCache();
         if (message == null) return;
 
         //convert message to java object
-        BaseModel baseModel = convertMessageToBaseModel(message);
+        final BaseModel baseModel = parseMessageToJsonModel(message);
 
         //TODO user name checkup seems off
         //register user from message to local cache if not present yet
@@ -587,69 +577,52 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         String nickname = checkForNickname(baseModel.getSender());
 
         //process and display message
-        processAndDisplayMessage(baseModel, nickname);
+        messageDisplayHandler.processAndDisplayMessage(baseModel, nickname);
 
         //check for remaining messages in the local cache
         checkIfDequeIsEmptyOrStartOver();
     }
 
-    /**
-     This method retrieves and removes the first message from the message queue.
+    private BaseModel parseMessageToJsonModel(final String message) {
 
-     @return The first message in the message queue, or null if the queue is empty.
-     */
-    private String pollMessageFromCache() {
-
-        MessageQueue messageQueue = (MessageQueue) cacheManager.getCache("messageQueue");
-
-        return messageQueue.pollFirst();
-    }
-
-    /**
-     This method processes and displays a message based on the message model, username, and nickname.
-
-     @param baseModel The message model representing the message.
-     @param nickname  The nickname of the client.
-     */
-    private void processAndDisplayMessage(final BaseModel baseModel, final String nickname) {
-
-        int messageCategory = commentManager.categorizeMessageFromSocket(baseModel);
-
-        switch (messageCategory) {
-
-            case MessageCategory.RIGHT_SIDE_TEXT_MESSAGE -> commentManager.setupMessagesRightSide(baseModel, nickname);
-
-            case MessageCategory.RIGHT_SIDE_PICTURE_MESSAGE -> commentManager.setupPicturesRightSide(baseModel, nickname);
-
-            case MessageCategory.RIGHT_SIDE_LINK_MESSAGE -> commentManager.setupLinkRightSite(baseModel);
-
-            case MessageCategory.LEFT_SIDE_TEXT_MESSAGE -> commentManager.setupMessagesLeftSide(baseModel, nickname);
-
-            case MessageCategory.LEFT_SIDE_PICTURE_MESSAGE -> commentManager.setupPicturesLeftSide(baseModel, nickname);
-
-            case MessageCategory.LEFT_SIDE_LINK_MESSAGE -> commentManager.setupLinkLeftSide(baseModel);
+        try {
+            return objectMapper.readValue(message, BaseModel.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 
+    /**
+     Checks if the message queue is empty or if the chat needs to start over.
+     If the message queue is not empty, it sets a timer for displaying new messages.
+     */
     private void checkIfDequeIsEmptyOrStartOver() {
 
-        MessageQueue messageQueue = (MessageQueue) cacheManager.getCache("messageQueue");
+        if (cacheManager.getCache("messageQueue") instanceof MessageQueue messageQueue) {
 
-        repaintMainFrame();
+            repaintMainFrame();
 
-        SwingUtilities.invokeLater(() -> scrollMainPanelDownToLastMessage(this.mainFrame.getMainTextBackgroundScrollPane()));
+            SwingUtilities.invokeLater(() -> scrollMainPanelDownToLastMessage(this.mainFrame.getMainTextBackgroundScrollPane()));
 
-        if (!messageQueue.isEmpty()) {
+            if (!messageQueue.isEmpty()) {
 
-            Timer timer = new Timer(300, e -> {
-
-                writeGuiMessageToChatPanel();
-                scrollMainPanelDownToLastMessage(this.mainFrame.getMainTextBackgroundScrollPane());
-            });
-            timer.setRepeats(false);
-            timer.start();
+                timerForNewMessageToChatPanel();
+            }
         }
+    }
 
+    /**
+     This method sets a timer to periodically update the chat panel with new messages.
+     */
+    private void timerForNewMessageToChatPanel() {
+
+        Timer timer = new Timer(300, e -> {
+
+            writeGuiMessageToChatPanel();
+            scrollMainPanelDownToLastMessage(this.mainFrame.getMainTextBackgroundScrollPane());
+        });
+        timer.setRepeats(false);
+        timer.start();
     }
 
     /**
@@ -666,27 +639,6 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
     }
 
     /**
-     Converts a JSON string to a MessageModel object.
-
-     @param message the JSON string to be converted
-
-     @return the MessageModel object representing the converted JSON string
-
-     @throws IllegalArgumentException if the JSON string is malformed
-     */
-    private BaseModel convertMessageToBaseModel(String message) {
-
-        try {
-
-            return convertJsonToMessageModel(message);
-
-        } catch (JsonProcessingException e) {
-
-            throw new IllegalArgumentException("Malformed message", e);
-        }
-    }
-
-    /**
      Checks if the message sender is already registered in the local cache.
      If not, it adds the sender to the cache with default properties.
 
@@ -699,10 +651,7 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
             if (!this.mainFrame.getChatClientPropertiesHashMap().containsKey("own")) {
 
-                CustomUserProperties customUserProperties = new CustomUserProperties();
-                customUserProperties.setUsername(this.mainFrame.getUsername());
-                customUserProperties.setBorderColor(getRandomRgbIntValue());
-                clientMap.put("own", customUserProperties);
+                addClientToLocalCacheRegister(clientMap, "own");
             }
 
             return;
@@ -710,13 +659,32 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
         if (!clientMap.containsKey(sender)) {
 
-            CustomUserProperties customUserProperties = new CustomUserProperties();
-            customUserProperties.setUsername(sender);
-            customUserProperties.setBorderColor(getRandomRgbIntValue());
-            clientMap.put(sender, customUserProperties);
+            addClientToLocalCacheRegister(clientMap, sender);
         }
     }
 
+    /**
+     Adds a client to the local cache register.
+
+     @param clientMap the map representing the local cache of clients
+     @param sender    the client to be added to the cache
+     */
+    private void addClientToLocalCacheRegister(final HashMap<String, CustomUserProperties> clientMap, final String sender) {
+
+        CustomUserProperties customUserProperties = new CustomUserProperties();
+
+        customUserProperties.setUsername(sender);
+        customUserProperties.setBorderColor(getRandomRgbIntValue());
+        clientMap.put(sender, customUserProperties);
+    }
+
+    /**
+     Checks if the nickname for a given sender is already registered.
+
+     @param sender the sender to check for a registered nickname
+
+     @return the nickname of the sender if it is registered, otherwise null
+     */
     private String checkForNickname(String sender) {
 
         if (this.mainFrame.getChatClientPropertiesHashMap().containsKey(sender) && this.mainFrame.getChatClientPropertiesHashMap().get(sender).getNickname() != null && !this.mainFrame.getChatClientPropertiesHashMap().get(sender).getNickname().isEmpty()) {
@@ -735,24 +703,14 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
      @param scrollPane the scroll pane containing the main panel
      */
-    public void scrollMainPanelDownToLastMessage(JScrollPane scrollPane) {
+    private void scrollMainPanelDownToLastMessage(JScrollPane scrollPane) {
 
-        //EDT check done!
-        repaintMainFrame();
-        scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
+        SwingUtilities.invokeLater(() -> {
+
+            repaintMainFrame();
+            scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
+            repaintMainFrame();
+        });
     }
 
-    /**
-     Converts a JSON message into a MessageModel object.
-
-     @param jsonMessage the JSON message to be converted
-
-     @return the converted MessageModel object
-
-     @throws JsonProcessingException if there is an error processing the JSON message
-     */
-    private BaseModel convertJsonToMessageModel(String jsonMessage) throws JsonProcessingException {
-
-        return this.objectMapper.readValue(jsonMessage, BaseModel.class);
-    }
 }

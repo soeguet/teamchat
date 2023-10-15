@@ -1,4 +1,4 @@
-package com.soeguet.util;
+package com.soeguet.util.interfaces;
 
 public interface MessageCategory {
 

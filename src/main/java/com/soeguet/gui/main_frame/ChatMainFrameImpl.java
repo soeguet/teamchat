@@ -11,11 +11,11 @@ import com.soeguet.emoji.EmojiInitializer;
 import com.soeguet.emoji.EmojiPopUpMenuHandler;
 import com.soeguet.emoji.interfaces.EmojiInitializerInterface;
 import com.soeguet.emoji.interfaces.EmojiPopupInterface;
-import com.soeguet.gui.comments.CommentManagerImpl;
 import com.soeguet.gui.comments.interfaces.CommentInterface;
-import com.soeguet.gui.comments.interfaces.CommentManager;
 import com.soeguet.gui.image_panel.ImagePanelImpl;
 import com.soeguet.gui.image_panel.interfaces.ImageInterface;
+import com.soeguet.gui.interrupt_dialog.InterruptDialogImpl;
+import com.soeguet.gui.interrupt_dialog.interfaces.InterruptDialogInterface;
 import com.soeguet.gui.main_frame.generated.ChatPanel;
 import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.gui.notification_panel.NotificationImpl;
@@ -137,11 +137,26 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         this.envVariables = envVariables;
     }
 
+    /**
+     Constructor for ChatMainFrameImpl.
+     It initializes the main chat frame with default environment variables.
+
+     This constructor is mainly used for testing purposes.
+
+     @see EnvVariables
+     */
     public ChatMainFrameImpl() {
         //for testing
         envVariables = new EnvVariables();
     }
 
+    /**
+     Initializes the client controller.
+
+     This method creates a new instance of the ClientControllerImpl class, passing in the current instance of the ChatMainFrameImpl class
+     and the guiFunctionality object.
+     It then calls the determineWebsocketURI() method and the connectToWebsocket() method on the clientController object.
+     */
     public void initializeClientController() {
 
         clientController = new ClientControllerImpl(this, guiFunctionality);
@@ -210,7 +225,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
     /**
      This method is used to reposition the chat frame for testing purposes.
-     It retrieves the value of the 'chat.x.position' environment variable using System.getenv(),
+     It retrieves the value of the 'chat_x_position' environment variable using System.getenv(),
      which represents the desired x position of the chat frame.
      If the environment variable is not null, it repositions the chat frame on the screen
      by setting the location using the retrieved x position and a fixed y position of 100.
@@ -240,9 +255,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      */
     public void initGuiFunctionality() {
 
-        CommentManager commentManager = new CommentManagerImpl(this);
-
-        this.guiFunctionality = new GuiFunctionalityImpl(this, commentManager);
+        this.guiFunctionality = new GuiFunctionalityImpl(this);
         this.guiFunctionality.fixScrollPaneScrollSpeed();
         this.guiFunctionality.overrideTransferHandlerOfTextPane();
     }
@@ -277,6 +290,13 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         emojiList = emojiInitializer.createEmojiList();
     }
 
+    /**
+     Returns the emoji handler.
+
+     This method returns the emoji handler associated with the current object.
+
+     @return the emoji handler.
+     */
     public EmojiHandler getEmojiHandler() {
 
         return emojiHandler;
@@ -310,11 +330,22 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         }
     }
 
+    /**
+     Returns the name of the operating system.
+
+     @return the name of the operating system.
+     */
     public String getOSName() {
 
         return System.getProperty("os.name");
     }
 
+    /**
+     Returns the name of the user's current desktop environment.
+     The method retrieves the value of the environment variable "XDG_CURRENT_DESKTOP".
+
+     @return the name of the user's current desktop environment or null if the variable is not set.
+     */
     public String getDesktopEnv() {
 
         return System.getenv("XDG_CURRENT_DESKTOP");
@@ -351,7 +382,13 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
+     Retrieves the version of the JAR file.
 
+     This method reads the version from the "version.properties" file in the JAR file. If the file is not found or if an error occurs while reading the file, it returns a default value of "v.?".
+
+     @return The version of the JAR file, or "v.?" if the version is not found or an error occurs.
+
+     @throws RuntimeException If an error occurs while reading the "version.properties" file.
      */
     String retrieveJarVersion() {
 
@@ -371,17 +408,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     * Retrieves the ClassLoader for the current class.
-     *
-     * @return the ClassLoader for the current class
-     */
-    ClassLoader getClassLoader(){
-
-        //make the classloader mockable
-        return getClass().getClassLoader();
-    }
-
-    /**
      Retrieves the username.
 
      @return the username as a String.
@@ -390,6 +416,17 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     public String getUsername() {
 
         return username;
+    }
+
+    /**
+     Retrieves the ClassLoader for the current class.
+
+     @return the ClassLoader for the current class
+     */
+    ClassLoader getClassLoader() {
+
+        //make the classloader mockable
+        return getClass().getClassLoader();
     }
 
     /**
@@ -719,20 +756,25 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      <p>Retrieves the content of the text editor pane, trims any leading or trailing space, and
      checks if it is empty.
      If the content is empty, it clears the text editor pane.
-     Otherwise, it calls the `clearTextPaneAndSendMessageToSocket` method to clear the text pane and send the
+     Otherwise, it calls the `sendMessageToSocket` method to clear the text pane and send the
      current content to a socket.
      */
     private void handleNonShiftEnterKeyPress() {
 
+        //emoji to text -> text extraction
+        emojiHandler.replaceImageIconWithEmojiDescription(form_textEditorPane);
         String textPaneContent = form_textEditorPane.getText().trim();
 
         if (textPaneContent.isEmpty()) {
 
+            //empty -> reset
             form_textEditorPane.setText("");
 
         } else {
 
-            guiFunctionality.clearTextPaneAndSendMessageToSocket();
+            //send
+            guiFunctionality.sendMessageToSocket();
+            guiFunctionality.clearTextPane();
         }
     }
 
@@ -745,6 +787,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     protected void pictureButtonMouseClicked(MouseEvent e) {
 
         ImageInterface imagePanel = new ImagePanelImpl(this);
+
         imagePanel.setPosition();
         imagePanel.setLayeredPaneLayerPositions();
         imagePanel.setupPictureScrollPaneScrollSpeed();
@@ -776,6 +819,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void sendButton(ActionEvent e) {
 
+        //first replace emoji with text
         emojiHandler.replaceImageIconWithEmojiDescription(getTextEditorPane());
 
         if (form_textEditorPane.getText().trim().isEmpty()) {
@@ -783,7 +827,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             return;
         }
 
-        guiFunctionality.clearTextPaneAndSendMessageToSocket();
+        guiFunctionality.sendMessageToSocket();
+        guiFunctionality.clearTextPane();
     }
 
     /**
@@ -821,6 +866,15 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         setState(Frame.ICONIFIED);
     }
 
+    @Override
+    protected void interruptMenuItemMousePressed(final MouseEvent e) {
+
+        InterruptDialogInterface interruptDialogInterface = new InterruptDialogImpl(this);
+        interruptDialogInterface.populateDialogWithAllRegisteredClients(chatClientPropertiesHashMap);
+        interruptDialogInterface.pack();
+        interruptDialogInterface.setVisible(true);
+    }
+
     /**
      Handles the event when the state of the allNotificationsMenuItem changes.
 
@@ -829,40 +883,40 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void allNotificationsMenuItemItemStateChanged(final ItemEvent e) {
 
-        WaitingNotificationQueue waitingNotificationQueue = (WaitingNotificationQueue) cacheManager.getCache("waitingNotificationQueue");
+        if (cacheManager.getCache("waitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
 
-        //any kind of change needs to get rid of an existing timer
-        if (blockTimer != null) {
+            //any kind of change needs to get rid of an existing timer
+            if (blockTimer != null) {
 
-            blockTimer.stop();
-            blockTimer = null;
-        }
+                blockTimer.stop();
+                blockTimer = null;
+            }
 
-        //block all notifications for 5 minutes
-        if (e.getStateChange() == ItemEvent.SELECTED) {
+            //block all notifications for 5 minutes
+            if (e.getStateChange() == ItemEvent.SELECTED) {
 
-            //getter call since this one is synchronized
-            waitingNotificationQueue.removeAll();
+                //getter call since this one is synchronized
+                waitingNotificationQueue.removeAll();
 
-            blockTimer = new Timer(1_000 * 60 * 5, e1 -> {
+                blockTimer = new Timer(1_000 * 60 * 5, e1 -> {
 
-                form_allNotificationsMenuItem.setSelected(false);
+                    form_allNotificationsMenuItem.setSelected(false);
+
+                    PopupInterface popup = new PopupPanelImpl(this);
+                    popup.getMessageTextField().setText("Notifications status" + System.lineSeparator() + "reverted");
+                    popup.configurePopupPanelPlacement();
+                    popup.initiatePopupTimer(3_000);
+                });
+
+                blockTimer.setRepeats(false);
+                blockTimer.start();
 
                 PopupInterface popup = new PopupPanelImpl(this);
-                popup.getMessageTextField().setText("Notifications status" + System.lineSeparator() + "reverted");
+                popup.getMessageTextField().setText("All notifications disabled" + System.lineSeparator() + "for 5 minutes");
                 popup.configurePopupPanelPlacement();
                 popup.initiatePopupTimer(3_000);
-            });
-
-            blockTimer.setRepeats(false);
-            blockTimer.start();
-
-            PopupInterface popup = new PopupPanelImpl(this);
-            popup.getMessageTextField().setText("All notifications disabled" + System.lineSeparator() + "for 5 minutes");
-            popup.configurePopupPanelPlacement();
-            popup.initiatePopupTimer(3_000);
+            }
         }
-
     }
 
     /**
@@ -942,6 +996,17 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         this.lastMessageTimeStamp = lastMessageTimeStamp;
     }
 
+    /**
+     Sets the icons for the buttons in the chat form.
+
+     The icons are obtained from the resources folder and are used to set the icons for the send, emoji, and picture buttons in the chat form.
+
+     The resource URLs for the icons are retrieved using the ChatMainFrameImpl class and the corresponding file paths.
+
+     This method assumes that the required icons exist in the resources folder and will throw an AssertionError if any of the resource URLs are null.
+
+     @throws AssertionError if any of the required resource URLs are null.
+     */
     public void setButtonIcons() {
 
         URL sendUrl = ChatMainFrameImpl.class.getResource("/emojis/$+1f4e8$+.png");

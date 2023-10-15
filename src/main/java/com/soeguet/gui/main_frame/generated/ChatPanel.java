@@ -182,6 +182,12 @@ public abstract class ChatPanel extends JFrame {
 
 	protected abstract void thisWindowClosing(WindowEvent e);
 
+	protected abstract void interruptMenuItemMousePressed(MouseEvent e);
+
+	public JMenuItem getInterruptMenuItem() {
+		return this.form_interruptMenuItem;
+	}
+
 	protected abstract void allNotificationsMenuItemItemStateChanged(ItemEvent e);
 
 	private void initComponents() {
@@ -199,6 +205,7 @@ public abstract class ChatPanel extends JFrame {
 		this.form_resetConnectionMenuItem = new JMenuItem();
 		this.form_exitMenuItem = new JMenuItem();
 		this.form_extraMenu = new JMenu();
+		this.form_interruptMenuItem = new JMenuItem();
 		this.form_participantsMenuItem = new JMenuItem();
 		this.form_panel4 = new JPanel();
 		this.form_westMarginPanel = new JPanel();
@@ -327,6 +334,17 @@ public abstract class ChatPanel extends JFrame {
 				//======== form_extraMenu ========
 				{
 					this.form_extraMenu.setText("extra");
+
+					//---- form_interruptMenuItem ----
+					this.form_interruptMenuItem.setText("interrupt");
+					this.form_interruptMenuItem.addMouseListener(new MouseAdapter() {
+						@Override
+						public void mousePressed(MouseEvent e) {
+							interruptMenuItemMousePressed(e);
+						}
+					});
+					this.form_extraMenu.add(this.form_interruptMenuItem);
+					this.form_extraMenu.addSeparator();
 
 					//---- form_participantsMenuItem ----
 					this.form_participantsMenuItem.setText("participants");
@@ -544,6 +562,7 @@ public abstract class ChatPanel extends JFrame {
 	protected JMenuItem form_resetConnectionMenuItem;
 	protected JMenuItem form_exitMenuItem;
 	protected JMenu form_extraMenu;
+	protected JMenuItem form_interruptMenuItem;
 	protected JMenuItem form_participantsMenuItem;
 	protected JPanel form_panel4;
 	protected JPanel form_westMarginPanel;

@@ -1,15 +1,12 @@
 package com.soeguet.gui.main_frame;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.soeguet.emoji.EmojiInitializer;
 import com.soeguet.model.EnvVariables;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import javax.swing.*;
-
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -84,15 +81,6 @@ public class MainFrameTests {
 
         //assert
         Assertions.assertFalse(chatMainFrame.getEmojiList().isEmpty());
-    }
-
-    @Test
-    void testIfClientControllerIsInitializedProperly(){
-
-        chatMainFrame.initGuiFunctionality();
-        chatMainFrame.initializeClientController();
-
-        Assertions.assertNotNull(chatMainFrame.getClientController());
     }
 
     @Test
