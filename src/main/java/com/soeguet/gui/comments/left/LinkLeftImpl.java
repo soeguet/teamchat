@@ -86,7 +86,15 @@ public class LinkLeftImpl extends PanelLeft implements LinkPanelInterface {
     private LinkCommentRecord extractLinkFromMessageModel(final MessageModel messageModel) {
 
         String[] messageParts = messageModel.getMessage().split("\\{LINK\\}");
-        return new LinkCommentRecord(messageParts[0], messageParts[1]);
+
+        if (messageParts.length != 2) {
+
+            return new LinkCommentRecord(messageParts[0], "");
+
+        } else {
+
+            return new LinkCommentRecord(messageParts[0], messageParts[1]);
+        }
     }
 
     /**

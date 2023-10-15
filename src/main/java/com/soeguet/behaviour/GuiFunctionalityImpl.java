@@ -8,6 +8,7 @@ import com.soeguet.behaviour.interfaces.SocketToGuiInterface;
 import com.soeguet.cache.factory.CacheManagerFactory;
 import com.soeguet.cache.implementations.MessageQueue;
 import com.soeguet.cache.manager.CacheManager;
+import com.soeguet.gui.comments.CommentManagerImpl;
 import com.soeguet.gui.comments.interfaces.CommentManager;
 import com.soeguet.gui.comments.util.WrapEditorKit;
 import com.soeguet.gui.image_panel.ImagePanelImpl;
@@ -15,6 +16,8 @@ import com.soeguet.gui.image_panel.interfaces.ImageInterface;
 import com.soeguet.gui.interrupt_dialog.handler.InterruptHandler;
 import com.soeguet.gui.interrupt_dialog.interfaces.InterruptHandlerInterface;
 import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_panel.MessageDisplayHandler;
+import com.soeguet.gui.main_panel.interfaces.MessageDisplayHandlerInterface;
 import com.soeguet.gui.notification_panel.DesktopNotificationHandler;
 import com.soeguet.gui.notification_panel.interfaces.DesktopNotificationHandlerInterface;
 import com.soeguet.gui.option_pane.links.LinkDialogHandler;
@@ -30,7 +33,6 @@ import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.properties.CustomUserProperties;
 import com.soeguet.util.NotificationStatus;
-import com.soeguet.util.interfaces.MessageCategory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,8 +53,7 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
     private final MainFrameInterface mainFrame;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final CommentManager commentManager;
-    Logger LOGGER = Logger.getLogger(GuiFunctionalityImpl.class.getName());
+    private final Logger logger = Logger.getLogger(GuiFunctionalityImpl.class.getName());
     CacheManager cacheManager = CacheManagerFactory.getCacheManager();
 
     /**
@@ -62,10 +63,9 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
      @param mainFrame      The main frame of the GUI.
      @param commentManager The implementation of the CommentManager interface.
      */
-    public GuiFunctionalityImpl(MainFrameInterface mainFrame, final CommentManager commentManager) {
+    public GuiFunctionalityImpl(MainFrameInterface mainFrame) {
 
         this.mainFrame = mainFrame;
-        this.commentManager = commentManager;
     }
 
     /**
@@ -136,7 +136,8 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
                     } catch (UnsupportedFlavorException | IOException e) {
 
-                        LOGGER.log(java.util.logging.Level.SEVERE, "Error importing data", e);
+                        logger.log(java.util.logging.Level.SEVERE, "Error importing data", e);
+                        throw new RuntimeException(e);
                     }
 
                     //TODO maybe emoji detection?
@@ -330,10 +331,9 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
         } catch (JsonProcessingException e) {
 
-            LOGGER.log(java.util.logging.Level.SEVERE, "Error converting to JSON", e);
+            logger.log(java.util.logging.Level.SEVERE, "Error converting to JSON", e);
+            throw new RuntimeException(e);
         }
-
-        return null;
     }
 
     /**
@@ -559,12 +559,14 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
      */
     private synchronized void writeGuiMessageToChatPanel() {
 
+        CommentManager commentManager = new CommentManagerImpl(mainFrame);
+        MessageDisplayHandlerInterface messageDisplayHandler = new MessageDisplayHandler(mainFrame, commentManager);
+
         //retrieve the message from cache
-        final String message = pollMessageFromCache();
+        final String message = messageDisplayHandler.pollMessageFromCache();
         if (message == null) return;
 
         //convert message to java object
-
         final BaseModel baseModel = parseMessageToJsonModel(message);
 
         //TODO user name checkup seems off
@@ -575,7 +577,7 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         String nickname = checkForNickname(baseModel.getSender());
 
         //process and display message
-        processAndDisplayMessage(baseModel, nickname);
+        messageDisplayHandler.processAndDisplayMessage(baseModel, nickname);
 
         //check for remaining messages in the local cache
         checkIfDequeIsEmptyOrStartOver();
@@ -587,47 +589,6 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
             return objectMapper.readValue(message, BaseModel.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     This method retrieves and removes the first message from the message queue.
-
-     @return The first message in the message queue, or null if the queue is empty.
-     */
-    private String pollMessageFromCache() {
-
-        if (cacheManager.getCache("messageQueue") instanceof MessageQueue messageQueue) {
-
-            return messageQueue.pollFirst();
-        }
-
-        return null;
-    }
-
-    /**
-     This method processes and displays a message based on the message model, username, and nickname.
-
-     @param baseModel The message model representing the message.
-     @param nickname  The nickname of the client.
-     */
-    private void processAndDisplayMessage(final BaseModel baseModel, final String nickname) {
-
-        int messageCategory = commentManager.categorizeMessageFromSocket(baseModel);
-
-        switch (messageCategory) {
-
-            case MessageCategory.RIGHT_SIDE_TEXT_MESSAGE -> commentManager.setupMessagesRightSide(baseModel, nickname);
-
-            case MessageCategory.RIGHT_SIDE_PICTURE_MESSAGE -> commentManager.setupPicturesRightSide(baseModel, nickname);
-
-            case MessageCategory.RIGHT_SIDE_LINK_MESSAGE -> commentManager.setupLinkRightSite(baseModel);
-
-            case MessageCategory.LEFT_SIDE_TEXT_MESSAGE -> commentManager.setupMessagesLeftSide(baseModel, nickname);
-
-            case MessageCategory.LEFT_SIDE_PICTURE_MESSAGE -> commentManager.setupPicturesLeftSide(baseModel, nickname);
-
-            case MessageCategory.LEFT_SIDE_LINK_MESSAGE -> commentManager.setupLinkLeftSide(baseModel);
         }
     }
 

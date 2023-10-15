@@ -80,6 +80,7 @@ public class LinkRightImpl extends PanelRight implements LinkPanelInterface {
     public JEditorPane createEditorPaneForLinks(MessageModel messageModel) {
 
         JEditorPane jEditorPane = new JEditorPane();
+
         jEditorPane.setEditorKit(new LinkWrapEditorKit());
         jEditorPane.setEditable(false);
         jEditorPane.setBackground(Color.WHITE);

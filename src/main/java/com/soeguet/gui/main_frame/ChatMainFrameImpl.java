@@ -11,9 +11,7 @@ import com.soeguet.emoji.EmojiInitializer;
 import com.soeguet.emoji.EmojiPopUpMenuHandler;
 import com.soeguet.emoji.interfaces.EmojiInitializerInterface;
 import com.soeguet.emoji.interfaces.EmojiPopupInterface;
-import com.soeguet.gui.comments.CommentManagerImpl;
 import com.soeguet.gui.comments.interfaces.CommentInterface;
-import com.soeguet.gui.comments.interfaces.CommentManager;
 import com.soeguet.gui.image_panel.ImagePanelImpl;
 import com.soeguet.gui.image_panel.interfaces.ImageInterface;
 import com.soeguet.gui.interrupt_dialog.InterruptDialogImpl;
@@ -257,9 +255,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      */
     public void initGuiFunctionality() {
 
-        CommentManager commentManager = new CommentManagerImpl(this);
-
-        this.guiFunctionality = new GuiFunctionalityImpl(this, commentManager);
+        this.guiFunctionality = new GuiFunctionalityImpl(this);
         this.guiFunctionality.fixScrollPaneScrollSpeed();
         this.guiFunctionality.overrideTransferHandlerOfTextPane();
     }
