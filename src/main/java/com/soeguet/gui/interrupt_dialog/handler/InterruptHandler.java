@@ -1,6 +1,7 @@
 package com.soeguet.gui.interrupt_dialog.handler;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.gui.interrupt_dialog.interfaces.InterruptHandlerInterface;
 import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 
@@ -66,11 +67,12 @@ public class InterruptHandler implements InterruptHandlerInterface {
      * @return the JSON node containing the usernames
      */
     @Override
-    public JsonNode extractJsonNodeUserNames(final byte[] message) {
+    public JsonNode extractJsonNodeUsernames(final byte[] message) {
 
         try {
 
-            final JsonNode jsonNode = mainFrame.getObjectMapper().readTree(message);
+            ObjectMapper objectMapper = new ObjectMapper();
+            final JsonNode jsonNode = objectMapper.readTree(message);
 
             return jsonNode.get("usernames");
 

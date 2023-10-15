@@ -6,9 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.behaviour.interfaces.GuiFunctionality;
 import com.soeguet.behaviour.interfaces.SocketToGuiInterface;
 import com.soeguet.cache.factory.CacheManagerFactory;
-import com.soeguet.cache.implementations.ActiveNotificationQueue;
 import com.soeguet.cache.implementations.MessageQueue;
-import com.soeguet.cache.implementations.WaitingNotificationQueue;
 import com.soeguet.cache.manager.CacheManager;
 import com.soeguet.gui.comments.interfaces.CommentManager;
 import com.soeguet.gui.comments.util.WrapEditorKit;
@@ -17,19 +15,21 @@ import com.soeguet.gui.image_panel.interfaces.ImageInterface;
 import com.soeguet.gui.interrupt_dialog.handler.InterruptHandler;
 import com.soeguet.gui.interrupt_dialog.interfaces.InterruptHandlerInterface;
 import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
-import com.soeguet.gui.notification_panel.NotificationImpl;
-import com.soeguet.gui.notification_panel.interfaces.NotificationInterface;
+import com.soeguet.gui.notification_panel.DesktopNotificationHandler;
+import com.soeguet.gui.notification_panel.interfaces.DesktopNotificationHandlerInterface;
 import com.soeguet.gui.option_pane.links.LinkDialogHandler;
 import com.soeguet.gui.option_pane.links.LinkDialogImpl;
 import com.soeguet.gui.option_pane.links.dtos.MetadataStorageRecord;
 import com.soeguet.gui.option_pane.links.interfaces.LinkDialogInterface;
 import com.soeguet.gui.popups.PopupPanelImpl;
 import com.soeguet.gui.popups.interfaces.PopupInterface;
+import com.soeguet.gui.typing_panel.TypingPanelHandler;
+import com.soeguet.gui.typing_panel.interfaces.TypingPanelHandlerInterface;
 import com.soeguet.model.MessageTypes;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
-import com.soeguet.model.jackson.PictureModel;
 import com.soeguet.properties.CustomUserProperties;
+import com.soeguet.util.NotificationStatus;
 import com.soeguet.util.interfaces.MessageCategory;
 
 import javax.swing.*;
@@ -358,17 +358,12 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         this.mainFrame.getTextEditorPane().setText("");
     }
 
-    /**
-     Handles internal notifications by converting a message into a base model and calling
-     another internalNotificationHandling method.
-
-     @param message The notification message to handle.
-     */
     @Override
-    public synchronized void internalNotificationHandling(String message) {
+    public void internalNotificationHandling(final String message) {
 
-        BaseModel baseModel = convertMessageToBaseModel(message);
-        internalNotificationHandling(message, baseModel);
+        DesktopNotificationHandlerInterface desktopNotificationHandler = new DesktopNotificationHandler(mainFrame);
+        final NotificationStatus notificationStatus = desktopNotificationHandler.determineDesktopNotificationStatus();
+        desktopNotificationHandler.createDesktopNotification(message, notificationStatus);
     }
 
     /**
@@ -422,36 +417,14 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
         switch (parsedJson.get("type").asText()) {
 
-            case "typing" -> {
-
-                String textOnTypingLabel = mainFrame.getTypingLabel().getText();
-
-                //if typing client is already present on label -> return!
-                if (textOnTypingLabel.contains(parsedJson.get("username").asText())) {
-                    return;
-                }
-
-                final StringBuilder stringBuilder = generateTypingLabel(textOnTypingLabel, parsedJson);
-
-                SwingUtilities.invokeLater(() -> mainFrame.getTypingLabel().setText(stringBuilder.toString()));
-            }
+            case "typing" -> handleTypingPanel(parsedJson);
 
             case "send" -> mainFrame.getTypingLabel().setText(" ");
 
-            case "interrupt" -> {
-
-                InterruptHandlerInterface interruptHandler = new InterruptHandler(mainFrame);
-
-                JsonNode userNamesNode = interruptHandler.extractJsonNodeUserNames(message);
-
-                for (JsonNode username : userNamesNode) {
-
-                    //force chat gui to front of user
-                    interruptHandler.forceChatGuiToFront(username.asText());
-                }
-            }
+            case "interrupt" -> handleInterruption(message);
 
             default -> {
+
                 System.out.println("Unknown message type");
                 System.out.println(new String(message));
             }
@@ -481,32 +454,47 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
     }
 
     /**
-     Generates the typing label.
+     Handles the typing panel based on the provided JSON node.
 
-     @param textOnTypingLabel The text that is currently on the typing label.
-     @param parsedJson        The parsed JSON containing the username.
+     @param parsedJson The JSON node representing the parsed JSON message.
 
-     @return The StringBuilder containing the updated typing label text.
+     @throws RuntimeException if there is an IOException while handling the typing panel.
      */
-    private StringBuilder generateTypingLabel(String textOnTypingLabel, final JsonNode parsedJson) {
+    private void handleTypingPanel(final JsonNode parsedJson) {
 
-        StringBuilder stringBuilder = new StringBuilder();
+        TypingPanelHandlerInterface typingPanelHandler = new TypingPanelHandler(mainFrame);
 
-        if (!textOnTypingLabel.isBlank()) {
+        String textOnTypingLabel = typingPanelHandler.retrieveTextOnTypingLabel();
 
-            textOnTypingLabel = textOnTypingLabel.replace(" is typing...", "");
-            stringBuilder.append(textOnTypingLabel);
-            stringBuilder.append(", ");
+        //if typing client is already present on label -> return!
+        if (textOnTypingLabel.contains(parsedJson.get("username").asText())) {
 
-        } else {
-
-            stringBuilder.append("  ");
+            return;
         }
 
-        stringBuilder.append(parsedJson.get("username").asText());
-        stringBuilder.append(" is typing...");
+        final StringBuilder stringBuilder = typingPanelHandler.generateTypingLabel(textOnTypingLabel, parsedJson);
 
-        return stringBuilder;
+        typingPanelHandler.displayUpdatedTypingLabel(stringBuilder);
+    }
+
+    /**
+     Handles the interruption based on the provided message.
+
+     @param message The byte array representing the message.
+
+     @throws RuntimeException if there is an IOException while handling the interruption.
+     */
+    private void handleInterruption(final byte[] message) {
+
+        InterruptHandlerInterface interruptHandler = new InterruptHandler(mainFrame);
+
+        JsonNode userNamesNode = interruptHandler.extractJsonNodeUsernames(message);
+
+        for (JsonNode username : userNamesNode) {
+
+            //force chat gui to front of user
+            interruptHandler.forceChatGuiToFront(username.asText());
+        }
     }
 
     /**
@@ -541,41 +529,16 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         //TODO clean this up
 
         //convert the message to a java object and return if the message came from this client
-        final BaseModel baseModel = convertMessageToBaseModel(message);
+        final BaseModel baseModel = parseMessageToJsonModel(message);
 
         if (compareSenderToUsername(baseModel)) {
 
             return;
         }
 
-        //check if notifications are even wanted
-        switch (this.mainFrame.getNotificationStatus()) {
-
-            case INTERNAL_ONLY -> {
-
-                internalNotificationHandling(message);
-                Toolkit.getDefaultToolkit().beep();
-            }
-
-            case EXTERNAL_ONLY -> {
-
-                externalNotificationHandling(message);
-                Toolkit.getDefaultToolkit().beep();
-            }
-
-            case ALL_ALLOWED -> {
-
-                internalNotificationHandling(message);
-                externalNotificationHandling(message);
-                Toolkit.getDefaultToolkit().beep();
-            }
-
-            case ALL_DENIED, STARTUP -> {
-                //TODO check if message was even cached which in that case needs to be removed from cache
-                //do nothing, intentionally left blank
-                break;
-            }
-        }
+        DesktopNotificationHandlerInterface desktopNotificationHandler = new DesktopNotificationHandler(mainFrame);
+        NotificationStatus notificationStatus = desktopNotificationHandler.determineDesktopNotificationStatus();
+        desktopNotificationHandler.createDesktopNotification(message, notificationStatus);
     }
 
     /**
@@ -592,158 +555,6 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
     }
 
     /**
-     Handles external notifications based on the given message.
-
-     @param message The message to be handled.
-
-     @throws RuntimeException if there is an IOException while handling the notification.
-     */
-    private void externalNotificationHandling(final String message) {
-
-        try {
-
-            final BaseModel baseModel = convertJsonToMessageModel(message);
-
-            switch (baseModel) {
-
-                case MessageModel text -> {
-
-                    try {
-
-                        //TODO linux only // windows needed
-                        Runtime.getRuntime().exec(new String[]{"notify-send", "text message", text.getMessage()});
-
-                    } catch (IOException e) {
-
-                        throw new RuntimeException(e);
-                    }
-                }
-
-                case PictureModel picture -> {
-
-                    try {
-
-                        Runtime.getRuntime().exec(new String[]{"notify-send", "picture message", "[picture]" + System.lineSeparator() + picture.getMessage()});
-
-                    } catch (IOException e) {
-
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-
-        } catch (JsonProcessingException e) {
-
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     Handles internal notifications by adding them to the active notification queue and creating notifications.
-
-     @param message   The message to be handled.
-     @param baseModel The base model associated with the notification.
-
-     @throws RuntimeException if there is an IllegalStateException while adding to the active notification queue.
-     */
-    private synchronized void internalNotificationHandling(String message, BaseModel baseModel) {
-
-        if (cacheManager.getCache("ActiveNotificationQueue") instanceof ActiveNotificationQueue activeNotificationQueue) {
-
-            //max 3 notification at a time, cache message and bail out
-            if (activeNotificationQueue.getRemainingCapacity() == 0) {
-
-                if (cacheManager.getCache("WaitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
-
-                    //add to queue and skip the rest
-                    waitingNotificationQueue.addLast(message);
-                }
-
-            } else {
-
-                //if capacity is left
-                try {
-
-                    activeNotificationQueue.addLast(baseModel);
-
-                } catch (IllegalStateException e) {
-
-                    throw new RuntimeException(e);
-                }
-
-                createNotification(baseModel);
-                handleRemainingCapacityInQueue(activeNotificationQueue);
-            }
-        }
-    }
-
-    /**
-     Handles the remaining capacity in the active notifications queue.
-
-     @param activeNotificationsCache The active notifications cache.
-     */
-    private void handleRemainingCapacityInQueue(ActiveNotificationQueue activeNotificationsCache) {
-
-        if (cacheManager.getCache("WaitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
-
-            //if less than three active notifications are present and there are waiting notifications
-            if (activeNotificationsCache.getRemainingCapacity() > 0 && !waitingNotificationQueue.isEmpty()) {
-
-                final String queuedNotification = waitingNotificationQueue.pollFirst();
-
-                //TODO is this one right?
-                Timer timer = new Timer(250, e -> internalNotificationHandling(queuedNotification));
-                timer.setRepeats(false);
-                timer.start();
-            }
-        }
-    }
-
-    /**
-     Creates a notification based on the given BaseModel object.
-
-     @param baseModel The BaseModel object representing the notification content.
-
-     @throws IllegalArgumentException if the BaseModel object is of unknown type.
-     */
-    private void createNotification(final BaseModel baseModel) {
-
-        //TODO does this need to be reactivated somewhere?
-        switch (baseModel) {
-
-            case MessageModel text -> {
-
-                Timer timer = new Timer(500, e -> {
-                    NotificationInterface notification = new NotificationImpl(this.mainFrame, text);
-                    notification.setNotificationText();
-                    notification.setMaximumSize(new Dimension(400, 300));
-                });
-                timer.setRepeats(false);
-                timer.start();
-            }
-
-            case PictureModel picture -> {
-
-                Timer timer = new Timer(500, e -> {
-                    NotificationInterface notification = new NotificationImpl(this.mainFrame, picture);
-
-                    notification.setNotificationPicture();
-                    notification.setMaximumSize(new Dimension(400, 300));
-
-                });
-                timer.setRepeats(false);
-                timer.start();
-            }
-
-            default -> {
-
-                LOGGER.info("Unknown message type");
-                throw new IllegalArgumentException();
-            }
-        }
-    }
-
-    /**
      This method writes a GUI message to the chat panel and handles all the setup.
      */
     private synchronized void writeGuiMessageToChatPanel() {
@@ -753,7 +564,8 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         if (message == null) return;
 
         //convert message to java object
-        BaseModel baseModel = convertMessageToBaseModel(message);
+
+        final BaseModel baseModel = parseMessageToJsonModel(message);
 
         //TODO user name checkup seems off
         //register user from message to local cache if not present yet
@@ -767,6 +579,15 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
         //check for remaining messages in the local cache
         checkIfDequeIsEmptyOrStartOver();
+    }
+
+    private BaseModel parseMessageToJsonModel(final String message) {
+
+        try {
+            return objectMapper.readValue(message, BaseModel.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -857,27 +678,6 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
     }
 
     /**
-     Converts a JSON string to a MessageModel object.
-
-     @param message the JSON string to be converted
-
-     @return the MessageModel object representing the converted JSON string
-
-     @throws IllegalArgumentException if the JSON string is malformed
-     */
-    private BaseModel convertMessageToBaseModel(String message) {
-
-        try {
-
-            return convertJsonToMessageModel(message);
-
-        } catch (JsonProcessingException e) {
-
-            throw new IllegalArgumentException("Malformed message", e);
-        }
-    }
-
-    /**
      Checks if the message sender is already registered in the local cache.
      If not, it adds the sender to the cache with default properties.
 
@@ -952,17 +752,4 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         });
     }
 
-    /**
-     Converts a JSON message into a MessageModel object.
-
-     @param jsonMessage the JSON message to be converted
-
-     @return the converted MessageModel object
-
-     @throws JsonProcessingException if there is an error processing the JSON message
-     */
-    private BaseModel convertJsonToMessageModel(String jsonMessage) throws JsonProcessingException {
-
-        return this.objectMapper.readValue(jsonMessage, BaseModel.class);
-    }
 }

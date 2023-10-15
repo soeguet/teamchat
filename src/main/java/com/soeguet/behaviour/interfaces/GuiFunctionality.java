@@ -1,5 +1,7 @@
 package com.soeguet.behaviour.interfaces;
 
+import com.soeguet.util.NotificationStatus;
+
 public interface GuiFunctionality {
 
     void fixScrollPaneScrollSpeed();

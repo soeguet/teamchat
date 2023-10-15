@@ -6,5 +6,5 @@ public interface InterruptHandlerInterface {
 
     void forceChatGuiToFront(String text);
 
-    JsonNode extractJsonNodeUserNames(byte[] message);
+    JsonNode extractJsonNodeUsernames(byte[] message);
 }
