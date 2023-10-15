@@ -14,6 +14,8 @@ import com.soeguet.gui.comments.interfaces.CommentManager;
 import com.soeguet.gui.comments.util.WrapEditorKit;
 import com.soeguet.gui.image_panel.ImagePanelImpl;
 import com.soeguet.gui.image_panel.interfaces.ImageInterface;
+import com.soeguet.gui.interrupt_dialog.handler.InterruptHandler;
+import com.soeguet.gui.interrupt_dialog.interfaces.InterruptHandlerInterface;
 import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.gui.notification_panel.NotificationImpl;
 import com.soeguet.gui.notification_panel.interfaces.NotificationInterface;
@@ -438,20 +440,14 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
             case "interrupt" -> {
 
-                try {
-                    ObjectMapper mapper = new ObjectMapper();
-                    JsonNode root = mapper.readTree(message);
-                    JsonNode usernamesNode = root.get("usernames");
+                InterruptHandlerInterface interruptHandler = new InterruptHandler(mainFrame);
 
-                    for (JsonNode username : usernamesNode) {
+                JsonNode userNamesNode = interruptHandler.extractJsonNodeUserNames(message);
 
-                        //TODO implement interruption
-                        System.out.println(username.asText());
-                    }
+                for (JsonNode username : userNamesNode) {
 
-                } catch (IOException e) {
-
-                    throw new RuntimeException(e);
+                    //force chat gui to front of user
+                    interruptHandler.forceChatGuiToFront(username.asText());
                 }
             }
 
