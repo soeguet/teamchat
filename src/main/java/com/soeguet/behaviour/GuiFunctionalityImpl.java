@@ -561,6 +561,7 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
         CommentManager commentManager = new CommentManagerImpl(mainFrame);
         MessageDisplayHandlerInterface messageDisplayHandler = new MessageDisplayHandler(mainFrame, commentManager);
+        messageDisplayHandler.setCacheManager(cacheManager);
 
         //retrieve the message from cache
         final String message = messageDisplayHandler.pollMessageFromCache();

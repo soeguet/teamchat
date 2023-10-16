@@ -1,6 +1,5 @@
 package com.soeguet.gui.main_panel;
 
-import com.soeguet.cache.factory.CacheManagerFactory;
 import com.soeguet.cache.implementations.MessageQueue;
 import com.soeguet.cache.manager.CacheManager;
 import com.soeguet.gui.comments.interfaces.CommentManager;
@@ -13,12 +12,17 @@ public class MessageDisplayHandler implements MessageDisplayHandlerInterface {
 
     private final MainFrameInterface mainFrame;
     private final CommentManager commentManager;
-    private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
+    private CacheManager cacheManager;
 
     public MessageDisplayHandler(final MainFrameInterface mainFrame, final CommentManager commentManager) {
 
         this.mainFrame = mainFrame;
         this.commentManager = commentManager;
+    }
+
+    public void setCacheManager(final CacheManager cacheManager) {
+
+        this.cacheManager = cacheManager;
     }
 
     /**
@@ -43,6 +47,7 @@ public class MessageDisplayHandler implements MessageDisplayHandlerInterface {
      @param baseModel The message model representing the message.
      @param nickname  The nickname of the client.
      */
+    @Override
     public void processAndDisplayMessage(final BaseModel baseModel, final String nickname) {
 
         int messageCategory = commentManager.categorizeMessageFromSocket(baseModel);
