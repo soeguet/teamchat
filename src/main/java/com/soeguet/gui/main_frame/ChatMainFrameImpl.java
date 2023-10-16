@@ -872,6 +872,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         InterruptDialogInterface interruptDialogInterface = new InterruptDialogImpl(this);
         interruptDialogInterface.populateDialogWithAllRegisteredClients(chatClientPropertiesHashMap);
         interruptDialogInterface.pack();
+        interruptDialogInterface.setLocationRelativeTo(this);
         interruptDialogInterface.setVisible(true);
     }
 

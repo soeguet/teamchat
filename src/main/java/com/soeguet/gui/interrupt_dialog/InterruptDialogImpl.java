@@ -2,6 +2,7 @@ package com.soeguet.gui.interrupt_dialog;
 
 import com.soeguet.gui.interrupt_dialog.generated.InterruptDialog;
 import com.soeguet.gui.interrupt_dialog.interfaces.InterruptDialogInterface;
+import com.soeguet.gui.main_frame.ChatMainFrameImpl;
 import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.properties.CustomUserProperties;
 import com.soeguet.util.ByteArrayHandler;

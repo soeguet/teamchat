@@ -191,7 +191,7 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
                 try {
 
                     //TODO linux only // windows needed
-                    Runtime.getRuntime().exec(new String[]{"notify-send", "text message", text.getMessage()});
+                    Runtime.getRuntime().exec(new String[]{"notify-send", text.getSender(), text.getMessage()});
 
                 } catch (IOException e) {
 
@@ -203,7 +203,7 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
 
                 try {
 
-                    Runtime.getRuntime().exec(new String[]{"notify-send", "picture message", "[picture]" + System.lineSeparator() + picture.getMessage()});
+                    Runtime.getRuntime().exec(new String[]{"notify-send", picture.getSender(), "[picture]" + System.lineSeparator() + picture.getMessage()});
 
                 } catch (IOException e) {
 
