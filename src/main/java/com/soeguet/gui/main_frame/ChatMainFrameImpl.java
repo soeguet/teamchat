@@ -866,6 +866,11 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         setState(Frame.ICONIFIED);
     }
 
+    /**
+     * Handles the event when the interrupt menu item is pressed.
+     *
+     * @param e the MouseEvent object that triggered this event
+     */
     @Override
     protected void interruptMenuItemMousePressed(final MouseEvent e) {
 

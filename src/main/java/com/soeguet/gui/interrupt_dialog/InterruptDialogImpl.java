@@ -30,7 +30,6 @@ public class InterruptDialogImpl extends InterruptDialog implements InterruptDia
     @Override
     public void populateDialogWithAllRegisteredClients(HashMap<String, CustomUserProperties> clientPropertiesMap) {
 
-
         clientPropertiesMap.forEach((id, client) -> {
 
             //we don't need this client in the list

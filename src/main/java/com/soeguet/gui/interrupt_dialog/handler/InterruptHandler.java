@@ -12,6 +12,11 @@ public class InterruptHandler implements InterruptHandlerInterface {
 
     private final MainFrameInterface mainFrame;
 
+    /**
+     * Initializes an InterruptHandler object with the provided MainFrameInterface.
+     *
+     * @param mainFrame The MainFrameInterface object used for handling interrupts.
+     */
     public InterruptHandler(final MainFrameInterface mainFrame) {
 
         this.mainFrame = mainFrame;

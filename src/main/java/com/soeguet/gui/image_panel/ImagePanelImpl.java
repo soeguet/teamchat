@@ -29,12 +29,24 @@ public class ImagePanelImpl extends ImagePanel implements ImageInterface {
     private double zoomFactor = 1.0;
     private BufferedImage image;
 
+    /**
+     * Constructs a new instance of ImagePanelImpl.
+     *
+     * @param mainFrame the main frame interface that is used as a reference
+     *                  to the main frame of the application.
+     */
     public ImagePanelImpl(MainFrameInterface mainFrame) {
 
         this.mainFrame = mainFrame;
-
     }
 
+    /**
+     * Sets the position of the ImagePanelImpl within the MainFrameInterface.
+     *
+     * This method calculates the dimensions of the MainTextPanelLayeredPane and
+     * sets the bounds of the ImagePanelImpl accordingly. It then adds the ImagePanelImpl
+     * to the MainTextPanelLayeredPane.
+     */
     @Override
     public void setPosition() {
 
@@ -46,6 +58,13 @@ public class ImagePanelImpl extends ImagePanel implements ImageInterface {
         mainFrame.getMainTextPanelLayeredPane().add(this, JLayeredPane.MODAL_LAYER);
     }
 
+    /**
+     * Sets the layer positions within the LayeredPane of the ImagePanelImpl.
+     *
+     * This method calculates the dimensions of the form_pictureMainPanel and sets
+     * the bounds of the form_pictureScrollPane and form_zoomMotherPanel accordingly.
+     * It then triggers the redrawEverything() method to update the display.
+     */
     @Override
     public void setLayeredPaneLayerPositions() {
 
@@ -60,6 +79,15 @@ public class ImagePanelImpl extends ImagePanel implements ImageInterface {
         redrawEverything();
     }
 
+    /**
+     * Sets the scroll speed of the vertical and horizontal scrollbars in the picture scroll pane.
+     *
+     * This method sets the unit increment of both the vertical and horizontal scrollbars in the
+     * form_pictureScrollPane to 50.
+     * This determines how far the scrollbars move when the user interacts with them.
+     * Increasing the unit increment will make the scrollbars move faster, while decreasing it
+     * will make them move slower.
+     */
     @Override
     public void setupPictureScrollPaneScrollSpeed() {
 
@@ -76,6 +104,9 @@ public class ImagePanelImpl extends ImagePanel implements ImageInterface {
         repaint();
     }
 
+    /**
+     * Populates the image panel with the image from the system clipboard, if available.
+     */
     @Override
     public void populateImagePanelFromClipboard() {
 
@@ -227,6 +258,11 @@ public class ImagePanelImpl extends ImagePanel implements ImageInterface {
         addImageToPanel(zoomFactor);
     }
 
+    /**
+     * Sends the picture to the WebSocket.
+     *
+     * @param e the MouseEvent object representing the event
+     */
     @Override
     protected void sendPictureButtonMouseClicked(MouseEvent e) {
 
@@ -256,14 +292,22 @@ public class ImagePanelImpl extends ImagePanel implements ImageInterface {
         }
     }
 
+    /**
+     * Checks if the image is empty (null).
+     *
+     * @return true if the image is empty, false otherwise
+     */
     private boolean isImageEmpty() {
 
-        if (image == null) {
-            return true;
-        }
-        return false;
+        return image == null;
     }
 
+    /**
+     * Builds a PictureModel object for WebSocket communication based on the provided image byte array.
+     *
+     * @param imageBytesArray the byte array representation of the image
+     * @return a PictureModel object with the image, sender, time, and message information set
+     */
     private PictureModel buildPictureModelForWebSocket(final byte[] imageBytesArray) {
 
         PictureModel pictureModel = new PictureModel();
@@ -276,17 +320,33 @@ public class ImagePanelImpl extends ImagePanel implements ImageInterface {
         return pictureModel;
     }
 
+    /**
+     * Converts a PictureModel object to its JSON representation.
+     *
+     * @param pictureModel the PictureModel object to be converted
+     * @return a JSON string representing the PictureModel object
+     * @throws JsonProcessingException if an error occurs during the JSON processing
+     */
     private String convertPictureModelToJson(final PictureModel pictureModel) throws JsonProcessingException {
 
-        final String imageObjectJson = mainFrame.getObjectMapper().writeValueAsString(pictureModel);
-        return imageObjectJson;
+        return mainFrame.getObjectMapper().writeValueAsString(pictureModel);
     }
 
+    /**
+     * Sends a picture message to a WebSocket server.
+     *
+     * @param imageObjectJson the JSON representation of the picture message
+     */
     private void sendPictureMessageToWebSocket(final String imageObjectJson) {
 
         mainFrame.getWebsocketClient().send(imageObjectJson);
     }
 
+    /**
+     * Handles the mouse click event for the selectPictureButton.
+     *
+     * @param e the MouseEvent object representing the mouse click event
+     */
     @Override
     protected void selectPictureButtonMouseClicked(MouseEvent e) {
 
@@ -387,6 +447,9 @@ public class ImagePanelImpl extends ImagePanel implements ImageInterface {
         }
     }
 
+    /**
+     * Removes all components from the image panel and makes it invisible.
+     */
     private void destructImagePanel() {
 
         this.removeAll();
