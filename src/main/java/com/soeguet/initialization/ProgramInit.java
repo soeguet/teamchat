@@ -8,6 +8,8 @@ import com.soeguet.initialization.interfaces.EnvDataProvider;
 import com.soeguet.initialization.interfaces.UserInteraction;
 import com.soeguet.initialization.themes.interfaces.ThemeManager;
 import com.soeguet.model.EnvVariables;
+import com.soeguet.properties.CustomProperties;
+import com.soeguet.properties.interfaces.CustomPropertiesInterface;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -99,13 +101,18 @@ public class ProgramInit {
             //TODO change this to interface
             ChatMainFrameImpl mainFrame = new ChatMainFrameImpl();
 
+            CustomPropertiesInterface customProperties = new CustomProperties(mainFrame);
+            customProperties.checkIfConfigFileExists();
+            customProperties.loadProperties();
+            customProperties.populateHashMapWithNewValues();
+
             //REMOVE remove later on
             mainFrame.repositionChatFrameForTestingPurposes();
 
             //setup functionality
             mainFrame.setEnvVariables(envVariables);
             mainFrame.loadUsernameFromEnvVariables();
-            mainFrame.loadCustomProperties();
+//            mainFrame.loadCustomProperties();
             mainFrame.initGuiFunctionality();
             mainFrame.initializeClientController();
             mainFrame.initEmojiHandler();
