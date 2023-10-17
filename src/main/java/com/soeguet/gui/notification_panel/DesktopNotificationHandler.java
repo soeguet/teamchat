@@ -8,7 +8,9 @@ import com.soeguet.cache.implementations.WaitingNotificationQueue;
 import com.soeguet.cache.manager.CacheManager;
 import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.gui.notification_panel.interfaces.DesktopNotificationHandlerInterface;
+import com.soeguet.gui.notification_panel.interfaces.NotificationDisplayInterface;
 import com.soeguet.gui.notification_panel.interfaces.NotificationInterface;
+import com.soeguet.gui.notification_panel.interfaces.NotificationStatusHandlerInterface;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
@@ -32,10 +34,10 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
     @Override
     public NotificationStatus determineDesktopNotificationStatus() {
 
-        return this.mainFrame.getNotificationStatus();
+        NotificationStatusHandlerInterface notificationStatusHandler = new NotificationStatusHandler(this.mainFrame);
+
+        return notificationStatusHandler.getNotificationStatus();
     }
-
-
 
     /**
      Handles the remaining capacity in the active notifications queue.
@@ -183,31 +185,43 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
     private void externalNotificationHandling(final String message) {
 
         final BaseModel baseModel = convertMessageToBaseModel(message);
+        NotificationDisplayInterface notificationDisplayInterface;
 
         switch (baseModel) {
 
             case MessageModel text -> {
 
-                try {
+                switch (mainFrame.getOSName()) {
 
-                    //TODO linux only // windows needed
-                    Runtime.getRuntime().exec(new String[]{"notify-send", text.getSender(), text.getMessage()});
+                    case "Linux" -> {
 
-                } catch (IOException e) {
+                            notificationDisplayInterface = new NotificationDisplayLinux();
+                            notificationDisplayInterface.displayNotification(text.getSender(), text.getMessage());
+                    }
 
-                    throw new RuntimeException(e);
+                    case "Windows" -> {
+
+                            notificationDisplayInterface = new NotificationDisplayWindows();
+                            notificationDisplayInterface.displayNotification(text.getSender(), text.getMessage());
+                    }
                 }
             }
 
             case PictureModel picture -> {
 
-                try {
+                switch (mainFrame.getOSName()) {
 
-                    Runtime.getRuntime().exec(new String[]{"notify-send", picture.getSender(), "[picture]" + System.lineSeparator() + picture.getMessage()});
+                    case "Linux" -> {
 
-                } catch (IOException e) {
+                        notificationDisplayInterface = new NotificationDisplayLinux();
+                        notificationDisplayInterface.displayNotification(picture.getSender(), "[picture]" + System.lineSeparator() + picture.getMessage());
+                    }
 
-                    throw new RuntimeException(e);
+                    case "Windows" -> {
+
+                        notificationDisplayInterface = new NotificationDisplayWindows();
+                        notificationDisplayInterface.displayNotification(picture.getSender(), "[picture]" + System.lineSeparator() + picture.getMessage());
+                    }
                 }
             }
         }

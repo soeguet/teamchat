@@ -162,13 +162,6 @@ public interface MainFrameInterface {
     void setStartUp(boolean b);
 
     /**
-     * Returns the notification status.
-     *
-     * @return the current notification status
-     */
-    NotificationStatus getNotificationStatus();
-
-    /**
      * Returns a LinkedHashMap of comments.
      *
      * @return a LinkedHashMap with Long as keys and CommentInterface objects as values representing the comments
@@ -189,4 +182,10 @@ public interface MainFrameInterface {
      */
     JLabel getTypingLabel();
 
+    boolean isStartUp();
+    JCheckBoxMenuItem getAllNotificationMenuItem();
+    JCheckBoxMenuItem getInternalNotificationsMenuItem();
+    JCheckBoxMenuItem getExternalNotificationsMenuItem();
+
+    String getOSName();
 }

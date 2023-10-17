@@ -29,7 +29,6 @@ import com.soeguet.properties.CustomUserProperties;
 import com.soeguet.socket_client.ClientControllerImpl;
 import com.soeguet.socket_client.CustomWebsocketClient;
 import com.soeguet.socket_client.interfaces.ClientController;
-import com.soeguet.util.NotificationStatus;
 
 import javax.swing.Timer;
 import javax.swing.*;
@@ -68,10 +67,16 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      Instance of cache manager primarily storing data structures of the collections api to help cache some data.
      */
     private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
+
+    public void setEnvVariables(final EnvVariables envVariables) {
+
+        this.envVariables = envVariables;
+    }
+
     /**
      Instance of class, holding a few environment variables
      */
-    private final EnvVariables envVariables;
+    private EnvVariables envVariables;
     /**
      Instance of client controller handling everything socket related.
      */
@@ -128,26 +133,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     private Timer blockTimer;
 
     /**
-     Constructor for ChatMainFrameImpl. It initializes the main chat frame and sets up various components and functionalities.
-
-     @param envVariables The environment variables to be used in the chat frame.
-     */
-    public ChatMainFrameImpl(final EnvVariables envVariables) {
-
-        this.envVariables = envVariables;
-    }
-
-    /**
-     Constructor for ChatMainFrameImpl.
-     It initializes the main chat frame with default environment variables.
-
-     This constructor is mainly used for testing purposes.
-
-     @see EnvVariables
+     Creates a new instance of ChatMainFrameImpl.
      */
     public ChatMainFrameImpl() {
-        //for testing
-        envVariables = new EnvVariables();
+
     }
 
     /**
@@ -162,11 +151,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         clientController = new ClientControllerImpl(this, guiFunctionality);
         clientController.determineWebsocketURI();
         clientController.connectToWebsocket();
-    }
-
-    public ClientController getClientController() {
-
-        return clientController;
     }
 
     /**
@@ -341,7 +325,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     Returns the name of the user's current desktop environment.
+     Returns the name of the user's current desktop environment on linux.
      The method retrieves the value of the environment variable "XDG_CURRENT_DESKTOP".
 
      @return the name of the user's current desktop environment or null if the variable is not set.
@@ -384,7 +368,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     /**
      Retrieves the version of the JAR file.
 
-     This method reads the version from the "version.properties" file in the JAR file. If the file is not found or if an error occurs while reading the file, it returns a default value of "v.?".
+     This method reads the version from the "version.properties" file in the JAR file.
+     If the file is not found or if an error occurs while reading the file, it returns a default value of "v.?"
 
      @return The version of the JAR file, or "v.?" if the version is not found or an error occurs.
 
@@ -524,46 +509,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     Retrieves the status of notifications based on the current settings.
-
-     @return the notification status
-     */
-    public NotificationStatus getNotificationStatus() {
-
-        //on program startup
-        if (startUp) {
-
-            return NotificationStatus.ALL_DENIED;
-        }
-
-        //all = no -- needs to be first since it will reset after 5 minutes
-        if (getAllNotificationsMenuItem().isSelected()) {
-
-            return NotificationStatus.ALL_DENIED;
-        }
-
-        //external = yes && internal = yes
-        if (getInternalNotificationsMenuItem().isSelected() && getExternalNotificationsMenuItem().isSelected()) {
-
-            return NotificationStatus.ALL_ALLOWED;
-        }
-
-        //external = yes && internal = no
-        if (getExternalNotificationsMenuItem().isSelected() && !getInternalNotificationsMenuItem().isSelected()) {
-
-            return NotificationStatus.EXTERNAL_ONLY;
-        }
-
-        //external = no && internal = yes
-        if (!getExternalNotificationsMenuItem().isSelected() && getInternalNotificationsMenuItem().isSelected()) {
-
-            return NotificationStatus.INTERNAL_ONLY;
-        }
-
-        return NotificationStatus.ALL_DENIED;
-    }
-
-    /**
      Retrieves the comment hash map.
 
      @return the comments hash map
@@ -598,25 +543,26 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void internalNotificationsMenuItemItemStateChanged(final ItemEvent e) {
 
-        WaitingNotificationQueue waitingNotificationQueue = (WaitingNotificationQueue) cacheManager.getCache("waitingNotificationQueue");
+        if (cacheManager.getCache("waitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
 
-        PopupInterface popup = new PopupPanelImpl(this);
+            PopupInterface popup = new PopupPanelImpl(this);
 
-        //remove all remaining and queued notifications
-        if (e.getStateChange() == ItemEvent.DESELECTED) {
+            //remove all remaining and queued notifications
+            if (e.getStateChange() == ItemEvent.DESELECTED) {
 
-            //getter call since this one is synchronized
-            waitingNotificationQueue.removeAll();
+                //getter call since this one is synchronized
+                waitingNotificationQueue.removeAll();
 
-            popup.getMessageTextField().setText("Internal notifications disabled");
+                popup.getMessageTextField().setText("Internal notifications disabled");
 
-        } else {
+            } else {
 
-            popup.getMessageTextField().setText("Internal notifications enabled");
+                popup.getMessageTextField().setText("Internal notifications enabled");
+            }
+
+            popup.configurePopupPanelPlacement();
+            popup.initiatePopupTimer(2_000);
         }
-
-        popup.configurePopupPanelPlacement();
-        popup.initiatePopupTimer(2_000);
     }
 
     /**
@@ -653,6 +599,12 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         //reconnect to socket
         clientController.connectToWebsocket();
         this.logger.info("Reconnecting websocket client");
+    }
+
+    @Override
+    public boolean isStartUp() {
+
+        return startUp;
     }
 
     /**
@@ -719,6 +671,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         }
 
         e.consume();
+
+        //send message
         handleNonShiftEnterKeyPress();
     }
 
@@ -867,14 +821,15 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     * Handles the event when the interrupt menu item is pressed.
-     *
-     * @param e the MouseEvent object that triggered this event
+     Handles the event when the interrupt menu item is pressed.
+
+     @param e the MouseEvent object that triggered this event
      */
     @Override
     protected void interruptMenuItemMousePressed(final MouseEvent e) {
 
         InterruptDialogInterface interruptDialogInterface = new InterruptDialogImpl(this);
+
         interruptDialogInterface.populateDialogWithAllRegisteredClients(chatClientPropertiesHashMap);
         interruptDialogInterface.pack();
         interruptDialogInterface.setLocationRelativeTo(this);
@@ -908,6 +863,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
                     form_allNotificationsMenuItem.setSelected(false);
 
+                    //show popup
                     PopupInterface popup = new PopupPanelImpl(this);
                     popup.getMessageTextField().setText("Notifications status" + System.lineSeparator() + "reverted");
                     popup.configurePopupPanelPlacement();
@@ -917,6 +873,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
                 blockTimer.setRepeats(false);
                 blockTimer.start();
 
+                //show popup
                 PopupInterface popup = new PopupPanelImpl(this);
                 popup.getMessageTextField().setText("All notifications disabled" + System.lineSeparator() + "for 5 minutes");
                 popup.configurePopupPanelPlacement();
@@ -1005,7 +962,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     /**
      Sets the icons for the buttons in the chat form.
 
-     The icons are obtained from the resources folder and are used to set the icons for the send, emoji, and picture buttons in the chat form.
+     The icons are obtained from the resources folder and are used to set the icons for the emoji, and picture buttons in the chat form.
 
      The resource URLs for the icons are retrieved using the ChatMainFrameImpl class and the corresponding file paths.
 
@@ -1027,5 +984,4 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         form_emojiButton.setIcon(new ImageIcon(emojiUrl));
         form_pictureButton.setIcon(new ImageIcon(pictureUrl));
     }
-
 }

@@ -62,7 +62,7 @@ public abstract class ChatPanel extends JFrame {
 		return this.form_menu1;
 	}
 
-	public JCheckBoxMenuItem getAllNotificationsMenuItem() {
+	public JCheckBoxMenuItem getAllNotificationMenuItem() {
 		return this.form_allNotificationsMenuItem;
 	}
 

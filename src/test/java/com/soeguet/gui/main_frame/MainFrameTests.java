@@ -49,22 +49,24 @@ public class MainFrameTests {
         EnvVariables envVariables = Mockito.spy(EnvVariables.class);
         when(envVariables.getChatUsername()).thenReturn("Paul");
 
-        ChatMainFrameImpl frame = new ChatMainFrameImpl(envVariables);
+        ChatMainFrameImpl frame = new ChatMainFrameImpl();
+        frame.setEnvVariables(envVariables);
 
         frame.loadUsernameFromEnvVariables();
 
-        assertEquals("Paul",frame.getUsername(),"should return \"Paul\" from environment variables");
+        assertEquals("Paul", frame.getUsername(), "should return \"Paul\" from environment variables");
     }
 
     @Test
-    void testIfEmojiHandlerInitializationWorksProperly(){
+    void testIfEmojiHandlerInitializationWorksProperly() {
 
         chatMainFrame.initEmojiHandler();
 
         Assertions.assertNotNull(chatMainFrame.getEmojiHandler());
     }
+
     @Test
-    void testIfEmojiListInitializationWorksProperly(){
+    void testIfEmojiListInitializationWorksProperly() {
 
         //mock dependency
         EmojiInitializer mockEmojiInitializer = mock(EmojiInitializer.class);
@@ -84,7 +86,7 @@ public class MainFrameTests {
     }
 
     @Test
-    void testIfDefaultVersionIsReturned(){
+    void testIfDefaultVersionIsReturned() {
 
         //mock the classloader
         ClassLoader mockClassLoader = mock(ClassLoader.class);

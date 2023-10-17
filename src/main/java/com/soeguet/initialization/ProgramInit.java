@@ -96,12 +96,14 @@ public class ProgramInit {
 
         SwingUtilities.invokeLater(() -> {
 
-            ChatMainFrameImpl mainFrame = new ChatMainFrameImpl(envVariables);
+            //TODO change this to interface
+            ChatMainFrameImpl mainFrame = new ChatMainFrameImpl();
 
             //TODO remove later on
             mainFrame.repositionChatFrameForTestingPurposes();
 
             //setup functionality
+            mainFrame.setEnvVariables(envVariables);
             mainFrame.loadUsernameFromEnvVariables();
             mainFrame.loadCustomProperties();
             mainFrame.initGuiFunctionality();

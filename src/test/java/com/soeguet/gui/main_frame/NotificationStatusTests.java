@@ -1,5 +1,7 @@
 package com.soeguet.gui.main_frame;
 
+import com.soeguet.gui.notification_panel.NotificationStatusHandler;
+import com.soeguet.gui.notification_panel.interfaces.NotificationStatusHandlerInterface;
 import com.soeguet.util.NotificationStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,25 +23,28 @@ public class NotificationStatusTests {
     @Mock
     JCheckBoxMenuItem all;
 
+    @Mock
+    NotificationStatusHandlerInterface notificationStatusHandler;
 
 
     @BeforeEach
     void setUp() {
 
         chatMainFrame = mock(ChatMainFrameImpl.class);
+        notificationStatusHandler = new NotificationStatusHandler(chatMainFrame);
         internal = mock(JCheckBoxMenuItem.class);
         external = mock(JCheckBoxMenuItem.class);
         all = mock(JCheckBoxMenuItem.class);
 
-        doCallRealMethod().when(chatMainFrame).getNotificationStatus();
+//        doCallRealMethod().when(chatMainFrame).getNotificationStatus();
     }
 
     @Test
     void testInternalNotificationOnlyStatus() {
 
         //all notifications no
-        when(chatMainFrame.getAllNotificationsMenuItem()).thenReturn(all);
-        when(chatMainFrame.getAllNotificationsMenuItem().isSelected()).thenReturn(false);
+        when(chatMainFrame.getAllNotificationMenuItem()).thenReturn(all);
+        when(chatMainFrame.getAllNotificationMenuItem().isSelected()).thenReturn(false);
 
         //internal yes
         when(chatMainFrame.getInternalNotificationsMenuItem()).thenReturn(internal);
@@ -49,7 +54,7 @@ public class NotificationStatusTests {
         when(chatMainFrame.getExternalNotificationsMenuItem()).thenReturn(external);
         when(chatMainFrame.getExternalNotificationsMenuItem().isSelected()).thenReturn(false);
 
-        assertEquals(NotificationStatus.INTERNAL_ONLY, chatMainFrame.getNotificationStatus());
+        assertEquals(NotificationStatus.INTERNAL_ONLY, notificationStatusHandler.getNotificationStatus());
     }
 
 
@@ -57,8 +62,8 @@ public class NotificationStatusTests {
     void testExternalNotificationOnlyStatus() {
 
         //all notifications no
-        when(chatMainFrame.getAllNotificationsMenuItem()).thenReturn(all);
-        when(chatMainFrame.getAllNotificationsMenuItem().isSelected()).thenReturn(false);
+        when(chatMainFrame.getAllNotificationMenuItem()).thenReturn(all);
+        when(chatMainFrame.getAllNotificationMenuItem().isSelected()).thenReturn(false);
 
         //internal yes
         when(chatMainFrame.getInternalNotificationsMenuItem()).thenReturn(internal);
@@ -68,7 +73,7 @@ public class NotificationStatusTests {
         when(chatMainFrame.getExternalNotificationsMenuItem()).thenReturn(external);
         when(chatMainFrame.getExternalNotificationsMenuItem().isSelected()).thenReturn(true);
 
-        assertEquals(NotificationStatus.EXTERNAL_ONLY, chatMainFrame.getNotificationStatus());
+        assertEquals(NotificationStatus.EXTERNAL_ONLY, notificationStatusHandler.getNotificationStatus());
     }
 
 
@@ -77,8 +82,8 @@ public class NotificationStatusTests {
     void testNoNotificationStatus() {
 
         //all notifications no
-        when(chatMainFrame.getAllNotificationsMenuItem()).thenReturn(all);
-        when(chatMainFrame.getAllNotificationsMenuItem().isSelected()).thenReturn(false);
+        when(chatMainFrame.getAllNotificationMenuItem()).thenReturn(all);
+        when(chatMainFrame.getAllNotificationMenuItem().isSelected()).thenReturn(false);
 
         //internal yes
         when(chatMainFrame.getInternalNotificationsMenuItem()).thenReturn(internal);
@@ -88,7 +93,7 @@ public class NotificationStatusTests {
         when(chatMainFrame.getExternalNotificationsMenuItem()).thenReturn(external);
         when(chatMainFrame.getExternalNotificationsMenuItem().isSelected()).thenReturn(false);
 
-        assertEquals(NotificationStatus.ALL_DENIED, chatMainFrame.getNotificationStatus());
+        assertEquals(NotificationStatus.ALL_DENIED, notificationStatusHandler.getNotificationStatus());
     }
 
 
@@ -97,8 +102,8 @@ public class NotificationStatusTests {
     void testAllNotificationStatus() {
 
         //all notifications no
-        when(chatMainFrame.getAllNotificationsMenuItem()).thenReturn(all);
-        when(chatMainFrame.getAllNotificationsMenuItem().isSelected()).thenReturn(false);
+        when(chatMainFrame.getAllNotificationMenuItem()).thenReturn(all);
+        when(chatMainFrame.getAllNotificationMenuItem().isSelected()).thenReturn(false);
 
         //internal yes
         when(chatMainFrame.getInternalNotificationsMenuItem()).thenReturn(internal);
@@ -108,7 +113,7 @@ public class NotificationStatusTests {
         when(chatMainFrame.getExternalNotificationsMenuItem()).thenReturn(external);
         when(chatMainFrame.getExternalNotificationsMenuItem().isSelected()).thenReturn(true);
 
-        assertEquals(NotificationStatus.ALL_ALLOWED, chatMainFrame.getNotificationStatus());
+        assertEquals(NotificationStatus.ALL_ALLOWED, notificationStatusHandler.getNotificationStatus());
     }
 
 
@@ -116,8 +121,8 @@ public class NotificationStatusTests {
     void testAllBlockedStatus() {
 
         //all notifications no
-        when(chatMainFrame.getAllNotificationsMenuItem()).thenReturn(all);
-        when(chatMainFrame.getAllNotificationsMenuItem().isSelected()).thenReturn(true);
+        when(chatMainFrame.getAllNotificationMenuItem()).thenReturn(all);
+        when(chatMainFrame.getAllNotificationMenuItem().isSelected()).thenReturn(true);
 
         //internal yes
         when(chatMainFrame.getInternalNotificationsMenuItem()).thenReturn(internal);
@@ -127,6 +132,6 @@ public class NotificationStatusTests {
         when(chatMainFrame.getExternalNotificationsMenuItem()).thenReturn(external);
         when(chatMainFrame.getExternalNotificationsMenuItem().isSelected()).thenReturn(true);
 
-        assertEquals(NotificationStatus.ALL_DENIED, chatMainFrame.getNotificationStatus());
+        assertEquals(NotificationStatus.ALL_DENIED, notificationStatusHandler.getNotificationStatus());
     }
 }
