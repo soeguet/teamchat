@@ -199,7 +199,7 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
                             notificationDisplayInterface.displayNotification(text.getSender(), text.getMessage());
                     }
 
-                    case "Windows" -> {
+                    case "Windows 10" -> {
 
                             notificationDisplayInterface = new NotificationDisplayWindows();
                             notificationDisplayInterface.displayNotification(text.getSender(), text.getMessage());
@@ -217,7 +217,7 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
                         notificationDisplayInterface.displayNotification(picture.getSender(), "[picture]" + System.lineSeparator() + picture.getMessage());
                     }
 
-                    case "Windows" -> {
+                    case "Windows 10" -> {
 
                         notificationDisplayInterface = new NotificationDisplayWindows();
                         notificationDisplayInterface.displayNotification(picture.getSender(), "[picture]" + System.lineSeparator() + picture.getMessage());
