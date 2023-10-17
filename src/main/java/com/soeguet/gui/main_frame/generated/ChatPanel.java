@@ -188,6 +188,10 @@ public abstract class ChatPanel extends JFrame {
 		return this.form_interruptMenuItem;
 	}
 
+	public JCheckBoxMenuItem getAllNotificationsMenuItem() {
+		return this.form_allNotificationsMenuItem;
+	}
+
 	protected abstract void allNotificationsMenuItemItemStateChanged(ItemEvent e);
 
 	private void initComponents() {
@@ -286,12 +290,12 @@ public abstract class ChatPanel extends JFrame {
 
 						//---- form_internalNotificationsMenuItem ----
 						this.form_internalNotificationsMenuItem.setText("internal - on");
-						this.form_internalNotificationsMenuItem.setSelected(true);
 						this.form_internalNotificationsMenuItem.addItemListener(e -> internalNotificationsMenuItemItemStateChanged(e));
 						this.form_menu1.add(this.form_internalNotificationsMenuItem);
 
 						//---- form_externalNotificationsMenuItem ----
 						this.form_externalNotificationsMenuItem.setText("external - on");
+						this.form_externalNotificationsMenuItem.setSelected(true);
 						this.form_externalNotificationsMenuItem.addItemListener(e -> externalNotificationsMenuItemItemStateChanged(e));
 						this.form_menu1.add(this.form_externalNotificationsMenuItem);
 					}

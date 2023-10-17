@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.gui.popups.PopupPanelImpl;
 import com.soeguet.gui.popups.interfaces.PopupInterface;
+import com.soeguet.properties.interfaces.CustomPropertiesInterface;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,7 +15,7 @@ import java.nio.file.Files;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-public class CustomProperties extends Properties {
+public class CustomProperties extends Properties implements CustomPropertiesInterface {
 
     private final MainFrameInterface mainFrame;
     private final Logger logger = Logger.getLogger(CustomProperties.class.getName());
@@ -24,21 +25,12 @@ public class CustomProperties extends Properties {
 
         this.mainFrame = mainFrame;
 
-        checkIfConfigFileExists();
-
-        try {
-
-            loadProperties();
-            populateHashMapWithNewValues();
-
-        } catch (IOException e) {
-
-            throw new RuntimeException(e);
-        }
-
     }
 
-    private void checkIfConfigFileExists() {
+    @Override
+    public void checkIfConfigFileExists() {
+
+        //TEST this
 
         //handle the path in os filesystem
         String userHome = System.getProperty("user.home");
@@ -57,12 +49,18 @@ public class CustomProperties extends Properties {
         }
     }
 
-    private void loadProperties() throws IOException {
+    @Override
+    public void loadProperties() {
 
-        load(Files.newInputStream(new File(configFilePath).toPath()));
+        try {
+            load(Files.newInputStream(new File(configFilePath).toPath()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private void populateHashMapWithNewValues() {
+    @Override
+    public void populateHashMapWithNewValues() {
 
         ObjectMapper mapper = mainFrame.getObjectMapper();
 
@@ -95,6 +93,19 @@ public class CustomProperties extends Properties {
         }
     }
 
+    private void createPropertiesFile(String configFilePath) {
+
+        try (FileOutputStream output = new FileOutputStream(configFilePath)) {
+
+            store(output, null);
+
+        } catch (IOException e) {
+
+            logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not create config file!", e);
+            throw new RuntimeException(e);
+        }
+    }
+
     private boolean loadDataSuccessful() {
 
         try (FileInputStream input = new FileInputStream(configFilePath)) {
@@ -106,19 +117,6 @@ public class CustomProperties extends Properties {
 
             logger.log(java.util.logging.Level.SEVERE, "Could not load config file, creating..", e);
             return false;
-        }
-    }
-
-    private void createPropertiesFile(String configFilePath) {
-
-        try (FileOutputStream output = new FileOutputStream(configFilePath)) {
-
-            store(output, null);
-
-        } catch (IOException e) {
-
-            logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not create config file!", e);
-            throw new RuntimeException(e);
         }
     }
 
@@ -165,7 +163,6 @@ public class CustomProperties extends Properties {
 
             setProperty(key, json);
         });
-
 
         PopupInterface popup = new PopupPanelImpl(mainFrame);
         popup.getMessageTextField().setText("properties saved");

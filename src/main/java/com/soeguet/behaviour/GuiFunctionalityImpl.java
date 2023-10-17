@@ -145,6 +145,7 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
                     //check if link
                     if (data.startsWith("http://") || data.startsWith("https://")) {
 
+                        //FIXME link detection not working properly
                         //send the link
                         final String finalData = data;
 

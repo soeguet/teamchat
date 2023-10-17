@@ -50,12 +50,12 @@ new FormModel {
 							add( new FormComponent( "javax.swing.JCheckBoxMenuItem" ) {
 								name: "internalNotificationsMenuItem"
 								"text": "internal - on"
-								"selected": true
 								addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "internalNotificationsMenuItemItemStateChanged", true ) )
 							} )
 							add( new FormComponent( "javax.swing.JCheckBoxMenuItem" ) {
 								name: "externalNotificationsMenuItem"
 								"text": "external - on"
+								"selected": true
 								addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "externalNotificationsMenuItemItemStateChanged", true ) )
 							} )
 						} )
