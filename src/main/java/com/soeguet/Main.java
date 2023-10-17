@@ -26,7 +26,7 @@ public class Main {
         ProgramInit programInit = new ProgramInit(envDataProvider, userInteraction, themeManager);
         final EnvVariables environmentVariables = programInit.collectEnvVariables();
 
-        //TODO make themes configurable
+        //FEATURE make themes configurable
         programInit.setTheme(Themes.INTELLIJ);
         programInit.initializeGUI(environmentVariables);
     }

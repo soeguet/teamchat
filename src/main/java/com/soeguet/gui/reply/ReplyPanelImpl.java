@@ -151,7 +151,7 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
     @Override
     protected void quotePanelPictureButtonMouseClicked(final MouseEvent e) {
 
-        //TODO: implement picture sending as reply
+        //FEATURE implement picture sending as reply
     }
 
     @Override

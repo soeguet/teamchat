@@ -99,7 +99,7 @@ public class ProgramInit {
             //TODO change this to interface
             ChatMainFrameImpl mainFrame = new ChatMainFrameImpl();
 
-            //TODO remove later on
+            //REMOVE remove later on
             mainFrame.repositionChatFrameForTestingPurposes();
 
             //setup functionality

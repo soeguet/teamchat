@@ -37,7 +37,7 @@ public class CommentManagerImpl implements CommentManager {
     @Override
     public int categorizeMessageFromSocket(final BaseModel baseModel) {
 
-        //TODO test this
+        //TEST this
 
         switch (baseModel) {
 

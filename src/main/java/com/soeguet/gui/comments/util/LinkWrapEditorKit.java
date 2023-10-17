@@ -45,7 +45,7 @@ public class LinkWrapEditorKit extends HTMLEditorKit {
         private final ViewFactory htmlFactory = new HTMLEditorKit().getViewFactory();
 
         public WrapColumnFactory() {
-            //TODO make css work -- not working right now
+            //FIXME make css work -- not working right now
             HTMLEditorKit htmlKit = new HTMLEditorKit();
             StyleSheet styles = htmlKit.getStyleSheet();
             styles.addRule("a { text-decoration: underline; color: red; }");

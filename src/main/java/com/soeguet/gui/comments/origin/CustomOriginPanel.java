@@ -152,66 +152,6 @@ public class CustomOriginPanel extends JPanel {
     }
 
     /**
-     S et s the name field of the base model.
-
-     @param baseModel The base model containing the name to be set.
-
-     @return The name that was set or an empty string if the name is already set to the previous message sender name.
-     */
-    protected String setNameField(BaseModel baseModel) {
-
-        String sender = baseModel.getSender();
-
-        final String previousMessageSenderName = this.mainFrame.getLastMessageSenderName();
-
-        // return no name and don't set a "new" sender
-        if (previousMessageSenderName != null && previousMessageSenderName.equals(sender)) {
-            return "";
-        }
-
-        this.mainFrame.setLastMessageSenderName(sender);
-        return sender;
-    }
-
-    /**
-     Sets the timestamp field of the base model.
-
-     @param baseModel The base model containing the timestamp to be set.
-
-     @return The timestamp that was set, or an empty string if the timestamp is already set to the last message timestamp or if either the previous message sender name or the last message timestamp is null.
-     */
-    protected String setTimestampField(BaseModel baseModel) {
-
-        //TODO quite a mess, needs rework.. maybe?
-
-        String timeStamp = baseModel.getTime();
-
-        final String lastMessageTimestamp = this.mainFrame.getLastMessageTimeStamp();
-        final String previousMessageSenderName = this.mainFrame.getLastMessageSenderName();
-
-        // null value -> time
-        if (previousMessageSenderName == null || lastMessageTimestamp == null) {
-            this.mainFrame.setLastMessageTimeStamp(timeStamp);
-            return timeStamp;
-        }
-
-        // different sender -> time
-        if (!previousMessageSenderName.equals(baseModel.getSender())) {
-            this.mainFrame.setLastMessageTimeStamp(timeStamp);
-            return timeStamp;
-        }
-
-        // same sender, same time -> no time
-        if (lastMessageTimestamp.equals(timeStamp)) {
-            return "";
-        }
-
-        //just in case
-        this.mainFrame.setLastMessageTimeStamp(timeStamp);
-        return timeStamp;
-    }
-
-    /**
      Sets up the time field for a given base model and time label.
 
      @param baseModel The base model containing the time to be set.
@@ -453,9 +393,9 @@ public class CustomOriginPanel extends JPanel {
 
         jPopupMenu.addSeparator();
         createAndAddMenuItem(jPopupMenu, "edit");
-        //TODO add action listener to edit menu item
+        //FEATURE add action listener to edit menu item
         createAndAddMenuItem(jPopupMenu, "delete");
-        //TODO add action listener to delete menu item
+        //FEATURE add action listener to delete menu item
 
         return jPopupMenu;
     }

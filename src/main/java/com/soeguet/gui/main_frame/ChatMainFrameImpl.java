@@ -46,15 +46,11 @@ import java.util.logging.Logger;
  */
 public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
-    //TODO these need to be re-evaluated and maybe moved into the cache manager
-
-    //TODO maybe move to cache manager
+    //FEATURE these need to be re-evaluated and maybe moved into the cache manager
     private final HashMap<String, CustomUserProperties> chatClientPropertiesHashMap = new HashMap<>();
 
-    //TODO cache comments on pane for hot replacements as HashSet -> data structure ready, implementation missing -> add to cache
+    //FEATURE cache comments on pane for hot replacements as HashSet -> data structure ready, implementation missing -> add to cache
     private final LinkedHashMap<Long, CommentInterface> commentsHashMap = new LinkedHashMap<>();
-
-    //TODO add to cache?
     private final List<NotificationImpl> notificationList = new ArrayList<>();
 
     /////////////////////////

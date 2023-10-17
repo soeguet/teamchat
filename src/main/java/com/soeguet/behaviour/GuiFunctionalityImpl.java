@@ -140,7 +140,7 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
                         throw new RuntimeException(e);
                     }
 
-                    //TODO maybe emoji detection?
+                    //FEATURE maybe emoji detection?
 
                     //check if link
                     if (data.startsWith("http://") || data.startsWith("https://")) {
@@ -156,8 +156,8 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
                     return originalHandler.importData(jComponent, transferable);
                 }
 
-//                return false;
                 //TODO check if this is right or false was the better return value
+//                return false;
                 return originalHandler.importData(jComponent, transferable);
             }
         });
@@ -411,8 +411,6 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
     @Override
     public void onMessage(byte[] message) {
 
-        //TODO clean this up
-
         final JsonNode parsedJson = parseJsonNode(message);
 
         switch (parsedJson.get("type").asText()) {
@@ -526,8 +524,6 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
      */
     private void createDesktopNotification(final String message) {
 
-        //TODO clean this up
-
         //convert the message to a java object and return if the message came from this client
         final BaseModel baseModel = parseMessageToJsonModel(message);
 
@@ -570,7 +566,7 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         //convert message to java object
         final BaseModel baseModel = parseMessageToJsonModel(message);
 
-        //TODO user name checkup seems off
+        //FIXME user name checkup seems off
         //register user from message to local cache if not present yet
         checkIfMessageSenderAlreadyRegisteredInLocalCache(mainFrame.getChatClientPropertiesHashMap(), baseModel.getSender());
 

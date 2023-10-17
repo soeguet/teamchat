@@ -192,8 +192,7 @@ public class NotificationImpl extends Notification implements NotificationInterf
 
     private void adjustNotificationPanelHeight(final int factor) {
 
-        //TODO check if this is even needed anymore
-        //please don't ask..
+        //FIXME check if this is even needed anymore //please don't ask..
 
         //some very ugly manual adjustments..
         final int notificationTextHeight = 25 * factor;

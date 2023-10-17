@@ -6,6 +6,12 @@ import java.io.IOException;
 
 public class NotificationDisplayWindows implements NotificationDisplayInterface {
 
+    /**
+     * This method displays a notification using a PowerShell script.
+     *
+     * @param sender the sender of the notification
+     * @param message the content of the notification message
+     */
     @Override
     public void displayNotification(final String sender, final String message) {
 

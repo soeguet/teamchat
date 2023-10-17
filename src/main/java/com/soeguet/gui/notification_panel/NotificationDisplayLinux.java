@@ -6,6 +6,14 @@ import java.io.IOException;
 
 public class NotificationDisplayLinux implements NotificationDisplayInterface {
 
+    /**
+     * Displays a notification with the given sender and message using the `notify-send` command.
+     *
+     * @param sender  The sender of the notification.
+     * @param message The message of the notification.
+     *
+     * @throws RuntimeException If an IO error occurs while executing the `notify-send` command.
+     */
     @Override
     public void displayNotification(final String sender, final String message) {
 

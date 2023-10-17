@@ -53,7 +53,7 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
 
                 final String queuedNotification = waitingNotificationQueue.pollFirst();
 
-                //TODO is this one right?
+                //FIXME is this one right?
                 Timer timer = new Timer(250, e -> internalNotificationHandling(queuedNotification));
                 timer.setRepeats(false);
                 timer.start();
@@ -70,7 +70,7 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
      */
     private void createNotification(final BaseModel baseModel) {
 
-        //TODO does this need to be reactivated somewhere?
+        //FIXME does this need to be reactivated somewhere?
         switch (baseModel) {
 
             case MessageModel text -> {
