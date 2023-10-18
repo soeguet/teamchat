@@ -101,22 +101,13 @@ public class ProgramInit {
             //TODO change this to interface
             ChatMainFrameImpl mainFrame = new ChatMainFrameImpl();
 
-            CustomProperties customProperties = CustomProperties.getProperties();
-            customProperties.setMainFrame(mainFrame);
-            customProperties.checkIfConfigFileExists();
-            customProperties.loadProperties();
-            customProperties.populateHashMapWithNewValues();
+            initializeProperties(mainFrame);
 
             //REMOVE remove later on
             mainFrame.repositionChatFrameForTestingPurposes();
 
             //setup functionality
-            mainFrame.setEnvVariables(envVariables);
-            mainFrame.loadUsernameFromEnvVariables();
-            mainFrame.loadCustomProperties();
-            mainFrame.initGuiFunctionality();
-            mainFrame.initializeClientController();
-            mainFrame.initEmojiHandler();
+            initializeMainFrame(envVariables, mainFrame);
 
             //setup emojis
             EmojiInitializerInterface emojiInitializer = new EmojiInitializer();
@@ -133,6 +124,26 @@ public class ProgramInit {
 
             mainFrame.setVisible(true);
         });
+    }
+
+    private void initializeMainFrame(final EnvVariables envVariables, final ChatMainFrameImpl mainFrame) {
+
+        mainFrame.setEnvVariables(envVariables);
+        mainFrame.loadUsernameFromEnvVariables();
+        //FIXME do I need this
+        mainFrame.loadCustomProperties();
+        mainFrame.initGuiFunctionality();
+        mainFrame.initializeClientController();
+        mainFrame.initEmojiHandler();
+    }
+
+    private void initializeProperties(final ChatMainFrameImpl mainFrame) {
+
+        CustomProperties customProperties = CustomProperties.getProperties();
+        customProperties.setMainFrame(mainFrame);
+        customProperties.checkIfConfigFileExists();
+        customProperties.loadProperties();
+        customProperties.populateHashMapWithNewValues();
     }
 
     private void setMainFrameTitle(final ChatMainFrameImpl mainFrame) {

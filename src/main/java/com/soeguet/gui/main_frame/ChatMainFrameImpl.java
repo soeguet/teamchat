@@ -186,6 +186,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      */
     public void loadCustomProperties() {
 
+        //FIXME do I need this
         CustomProperties customProperties = CustomProperties.getProperties();
 
         CustomUserProperties client = customProperties.loaderThisClientProperties();
