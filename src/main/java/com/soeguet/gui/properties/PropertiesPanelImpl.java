@@ -23,8 +23,6 @@ public class PropertiesPanelImpl extends PropertiesPanel implements PropertiesIn
     public PropertiesPanelImpl(MainFrameInterface mainFrame) {
 
         this.mainFrame = mainFrame;
-
-        setupClientsTabbedPane();
     }
 
     /**

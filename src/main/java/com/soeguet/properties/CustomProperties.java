@@ -22,13 +22,13 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
 
     private static CustomProperties properties;
     private final Logger logger = Logger.getLogger(CustomProperties.class.getName());
-    private final Set<CustomUserProperties> userProperties;
+    private final Set<CustomUserProperties> userPropertiesHashSet;
     private MainFrameInterface mainFrame;
     private String configFilePath;
 
     private CustomProperties() {
 
-        userProperties = new HashSet<>();
+        userPropertiesHashSet = new HashSet<>();
     }
 
     public static CustomProperties getProperties() {
@@ -47,7 +47,7 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
     }
 
     @Override
-    public void checkIfConfigFileExists() {
+    public boolean checkIfConfigFileExists() {
 
         //TEST this
 
@@ -65,7 +65,10 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
 
             //create file if not present
             createPropertiesFile(configFilePath);
+            return true;
         }
+
+        return false;
     }
 
     @Override
@@ -107,19 +110,44 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
     @Override
     public void saveProperties() {
 
-        save();
+        ObjectMapper mapper = mainFrame.getObjectMapper();
+
+
+
+        this.userPropertiesHashSet.forEach(user -> {
+
+            String json = null;
+
+            try {
+
+                json = mapper.writeValueAsString(user);
+
+            } catch (IOException e) {
+
+                logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not save user " + user.getUsername(), e);
+            }
+
+            setProperty(user.getUsername(), json);
+        });
+
+        PopupInterface popup = new PopupPanelImpl(mainFrame);
+        popup.getMessageTextField().setText("properties saved");
+        popup.configurePopupPanelPlacement();
+        popup.initiatePopupTimer(2_000);
+
+        createPropertiesFile(configFilePath);
     }
 
     @Override
     public void addCustomerToHashSet(final CustomUserProperties customUserProperties) {
 
-        userProperties.add(customUserProperties);
+        userPropertiesHashSet.add(customUserProperties);
     }
 
     @Override
     public CustomUserProperties getCustomUserProperties(final String username) {
 
-        final Optional<CustomUserProperties> userProperty = userProperties.stream()
+        final Optional<CustomUserProperties> userProperty = userPropertiesHashSet.stream()
                 .filter(customUserProperties -> customUserProperties.getUsername().equals(username))
                 .findFirst();
 
