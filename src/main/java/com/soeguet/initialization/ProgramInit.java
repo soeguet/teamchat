@@ -101,7 +101,8 @@ public class ProgramInit {
             //TODO change this to interface
             ChatMainFrameImpl mainFrame = new ChatMainFrameImpl();
 
-            CustomPropertiesInterface customProperties = new CustomProperties(mainFrame);
+            CustomProperties customProperties = CustomProperties.getProperties();
+            customProperties.setMainFrame(mainFrame);
             customProperties.checkIfConfigFileExists();
             customProperties.loadProperties();
             customProperties.populateHashMapWithNewValues();
@@ -112,7 +113,7 @@ public class ProgramInit {
             //setup functionality
             mainFrame.setEnvVariables(envVariables);
             mainFrame.loadUsernameFromEnvVariables();
-//            mainFrame.loadCustomProperties();
+            mainFrame.loadCustomProperties();
             mainFrame.initGuiFunctionality();
             mainFrame.initializeClientController();
             mainFrame.initEmojiHandler();

@@ -5,7 +5,6 @@ import com.soeguet.cache.implementations.ActiveNotificationQueue;
 import com.soeguet.cache.implementations.MessageQueue;
 import com.soeguet.cache.implementations.WaitingNotificationQueue;
 
-import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class CacheManager {
@@ -32,6 +31,8 @@ public class CacheManager {
 
                 case "messagequeue" -> cacheList.put(lowercaseCacheName, new MessageQueue());
 
+                case "propertiescache" -> cacheList.put(lowercaseCacheName, new MessageQueue());
+
                 default -> throw new IllegalArgumentException("Cache not found");
             }
         }
@@ -46,6 +47,5 @@ public class CacheManager {
             value.invalidateCache();
         });
     }
-
 
 }

@@ -12,19 +12,38 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.HashSet;
+import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Logger;
 
 public class CustomProperties extends Properties implements CustomPropertiesInterface {
 
-    private final MainFrameInterface mainFrame;
+    private static CustomProperties properties;
     private final Logger logger = Logger.getLogger(CustomProperties.class.getName());
+    private final Set<CustomUserProperties> userProperties;
+    private MainFrameInterface mainFrame;
     private String configFilePath;
 
-    public CustomProperties(MainFrameInterface mainFrame) {
+    private CustomProperties() {
+
+        userProperties = new HashSet<>();
+    }
+
+    public static CustomProperties getProperties() {
+
+        if (properties == null) {
+
+            properties = new CustomProperties();
+        }
+
+        return properties;
+    }
+
+    public void setMainFrame(final MainFrameInterface mainFrame) {
 
         this.mainFrame = mainFrame;
-
     }
 
     @Override
@@ -53,8 +72,11 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
     public void loadProperties() {
 
         try {
+
             load(Files.newInputStream(new File(configFilePath).toPath()));
+
         } catch (IOException e) {
+
             throw new RuntimeException(e);
         }
     }
@@ -76,9 +98,60 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
             } catch (IOException e) {
 
                 logger.log(java.util.logging.Level.SEVERE, "Could not load user " + key, e);
+                throw new RuntimeException(e);
             }
         });
 
+    }
+
+    @Override
+    public void saveProperties() {
+
+        save();
+    }
+
+    @Override
+    public void addCustomerToHashSet(final CustomUserProperties customUserProperties) {
+
+        userProperties.add(customUserProperties);
+    }
+
+    @Override
+    public CustomUserProperties getCustomUserProperties(final String username) {
+
+        final Optional<CustomUserProperties> userProperty = userProperties.stream()
+                .filter(customUserProperties -> customUserProperties.getUsername().equals(username))
+                .findFirst();
+
+        return userProperty.orElseThrow();
+    }
+
+    public void save() {
+
+        ObjectMapper mapper = mainFrame.getObjectMapper();
+
+        mainFrame.getChatClientPropertiesHashMap().forEach((key, value) -> {
+
+            String json = null;
+
+            try {
+
+                json = mapper.writeValueAsString(value);
+
+            } catch (IOException e) {
+
+                logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not save user " + key, e);
+            }
+
+            setProperty(key, json);
+        });
+
+        PopupInterface popup = new PopupPanelImpl(mainFrame);
+        popup.getMessageTextField().setText("properties saved");
+        popup.configurePopupPanelPlacement();
+        popup.initiatePopupTimer(2_000);
+
+        createPropertiesFile(configFilePath);
     }
 
     private void createFolderIfNotPresent(final File appDir) {
@@ -86,6 +159,7 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
         if (!appDir.exists()) {
 
             final boolean mkdir = appDir.mkdir();
+
             if (!mkdir) {
 
                 logger.log(java.util.logging.Level.SEVERE, "ERROR! Could not create app dir!");
@@ -126,6 +200,7 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
 
         //replace "own" preset username
         if (this.mainFrame.getUsername() != null) {
+
             return new CustomUserProperties(this.mainFrame.getUsername());
         }
 
@@ -144,31 +219,5 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
         }
 
         return null;
-    }
-
-    public void save() {
-
-        ObjectMapper mapper = mainFrame.getObjectMapper();
-
-        mainFrame.getChatClientPropertiesHashMap().forEach((key, value) -> {
-
-            String json = null;
-            try {
-                json = mapper.writeValueAsString(value);
-
-            } catch (IOException e) {
-
-                logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not save user " + key, e);
-            }
-
-            setProperty(key, json);
-        });
-
-        PopupInterface popup = new PopupPanelImpl(mainFrame);
-        popup.getMessageTextField().setText("properties saved");
-        popup.configurePopupPanelPlacement();
-        popup.initiatePopupTimer(2_000);
-
-        createPropertiesFile(configFilePath);
     }
 }
