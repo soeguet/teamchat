@@ -4,7 +4,7 @@ import com.soeguet.properties.CustomUserProperties;
 
 public interface CustomPropertiesInterface {
 
-    void checkIfConfigFileExists();
+    boolean checkIfConfigFileExists();
 
     void loadProperties();
 

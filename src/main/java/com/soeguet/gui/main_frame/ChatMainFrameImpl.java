@@ -117,6 +117,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      Timer for blocking all messages.
      */
     private Timer blockTimer;
+
     /**
      Creates a new instance of ChatMainFrameImpl.
      */
@@ -171,7 +172,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         //override username if saved in GUI by user
         if (!envVariables.getChatUsername().isEmpty()) {
 
-            this.username = envVariables.getChatUsername();
+            setUsername(envVariables.getChatUsername());
         }
     }
 
@@ -186,7 +187,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      */
     public void loadCustomProperties() {
 
-        //FIXME do I need this
         CustomProperties customProperties = CustomProperties.getProperties();
 
         CustomUserProperties client = customProperties.loaderThisClientProperties();
@@ -441,6 +441,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     public HashMap<String, CustomUserProperties> getChatClientPropertiesHashMap() {
 
+        //FIXME this needs to be switched out with CustomClientProperties
         return chatClientPropertiesHashMap;
     }
 
@@ -492,15 +493,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         properties.setupClientsTabbedPane();
 
         properties.setVisible(true);
-    }    /**
-     Sets the startUp flag to indicate whether the system is starting up.
-
-     @param startUp the startUp flag
-     */
-    @Override
-    public void setStartUp(final boolean startUp) {
-
-        this.startUp = startUp;
     }
 
     /**
@@ -531,14 +523,17 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             popup.configurePopupPanelPlacement();
             popup.initiatePopupTimer(2_000);
         }
-    }    /**
-     Retrieves the comment hash map.
+    }
 
-     @return the comments hash map
+    /**
+     Sets the startUp flag to indicate whether the system is starting up.
+
+     @param startUp the startUp flag
      */
-    public LinkedHashMap<Long, CommentInterface> getCommentsHashMap() {
+    @Override
+    public void setStartUp(final boolean startUp) {
 
-        return commentsHashMap;
+        this.startUp = startUp;
     }
 
     /**
@@ -575,6 +570,14 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         //reconnect to socket
         clientController.connectToWebsocket();
         this.logger.info("Reconnecting websocket client");
+    }    /**
+     Retrieves the comment hash map.
+
+     @return the comments hash map
+     */
+    public LinkedHashMap<Long, CommentInterface> getCommentsHashMap() {
+
+        return commentsHashMap;
     }
 
     /**
@@ -644,10 +647,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         //send message
         handleNonShiftEnterKeyPress();
-    }    @Override
-    public boolean isStartUp() {
-
-        return startUp;
     }
 
     /**
@@ -704,6 +703,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             guiFunctionality.sendMessageToSocket();
             guiFunctionality.clearTextPane();
         }
+    }    @Override
+    public boolean isStartUp() {
+
+        return startUp;
     }
 
     /**
@@ -958,6 +961,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         form_emojiButton.setIcon(new ImageIcon(emojiUrl));
         form_pictureButton.setIcon(new ImageIcon(pictureUrl));
     }
+
 
 
 

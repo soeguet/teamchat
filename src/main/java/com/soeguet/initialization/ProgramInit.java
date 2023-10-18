@@ -9,7 +9,7 @@ import com.soeguet.initialization.interfaces.UserInteraction;
 import com.soeguet.initialization.themes.interfaces.ThemeManager;
 import com.soeguet.model.EnvVariables;
 import com.soeguet.properties.CustomProperties;
-import com.soeguet.properties.interfaces.CustomPropertiesInterface;
+import com.soeguet.properties.CustomUserProperties;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -101,13 +101,13 @@ public class ProgramInit {
             //TODO change this to interface
             ChatMainFrameImpl mainFrame = new ChatMainFrameImpl();
 
-            initializeProperties(mainFrame);
-
             //REMOVE remove later on
             mainFrame.repositionChatFrameForTestingPurposes();
 
             //setup functionality
-            initializeMainFrame(envVariables, mainFrame);
+            this.initializeProperties(mainFrame,envVariables);
+            this.initializeMainFrame(envVariables, mainFrame);
+            mainFrame.loadUsernameFromEnvVariables();
 
             //setup emojis
             EmojiInitializerInterface emojiInitializer = new EmojiInitializer();
@@ -117,8 +117,8 @@ public class ProgramInit {
             mainFrame.setScrollPaneMargins();
 
             //setup GUI
-            setMainFrameTitle(mainFrame);
-            setGuiIcon(mainFrame);
+            this.setMainFrameTitle(mainFrame);
+            this.setGuiIcon(mainFrame);
 
             mainFrame.setButtonIcons();
 
@@ -126,24 +126,30 @@ public class ProgramInit {
         });
     }
 
+    private void initializeProperties(final ChatMainFrameImpl mainFrame, final EnvVariables envVariables) {
+
+        CustomProperties customProperties = CustomProperties.getProperties();
+
+        customProperties.setMainFrame(mainFrame);
+
+        if (customProperties.checkIfConfigFileExists()) {
+
+            customProperties.addCustomerToHashSet(new CustomUserProperties(envVariables.getChatUsername()));
+
+            customProperties.saveProperties();
+        }
+
+        customProperties.loadProperties();
+        customProperties.populateHashMapWithNewValues();
+    }
+
     private void initializeMainFrame(final EnvVariables envVariables, final ChatMainFrameImpl mainFrame) {
 
         mainFrame.setEnvVariables(envVariables);
-        mainFrame.loadUsernameFromEnvVariables();
-        //FIXME do I need this
         mainFrame.loadCustomProperties();
         mainFrame.initGuiFunctionality();
         mainFrame.initializeClientController();
         mainFrame.initEmojiHandler();
-    }
-
-    private void initializeProperties(final ChatMainFrameImpl mainFrame) {
-
-        CustomProperties customProperties = CustomProperties.getProperties();
-        customProperties.setMainFrame(mainFrame);
-        customProperties.checkIfConfigFileExists();
-        customProperties.loadProperties();
-        customProperties.populateHashMapWithNewValues();
     }
 
     private void setMainFrameTitle(final ChatMainFrameImpl mainFrame) {
