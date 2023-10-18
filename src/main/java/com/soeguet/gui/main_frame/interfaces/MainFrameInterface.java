@@ -127,13 +127,6 @@ public interface MainFrameInterface {
     HashMap<String, CustomUserProperties> getChatClientPropertiesHashMap();
 
     /**
-     Returns the custom properties of the chat client.
-
-     @return the custom properties of the chat client
-     */
-    CustomProperties getCustomProperties();
-
-    /**
      * Returns the Y position of the notification.
      *
      * @return the Y position of the notification

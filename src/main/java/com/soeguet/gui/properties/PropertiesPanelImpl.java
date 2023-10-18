@@ -5,6 +5,7 @@ import com.soeguet.gui.popups.PopupPanelImpl;
 import com.soeguet.gui.popups.interfaces.PopupInterface;
 import com.soeguet.gui.properties.generated.PropertiesPanel;
 import com.soeguet.gui.properties.interfaces.PropertiesInterface;
+import com.soeguet.properties.CustomProperties;
 import com.soeguet.properties.CustomUserProperties;
 
 import javax.swing.*;
@@ -285,7 +286,8 @@ public class PropertiesPanelImpl extends PropertiesPanel implements PropertiesIn
 
         ///
 
-        mainFrame.getCustomProperties().save();
+        CustomProperties customProperties = CustomProperties.getProperties();
+        customProperties.save();
 
         PopupInterface popup = new PopupPanelImpl(mainFrame);
         popup.getMessageTextField().setText("nickname saved");

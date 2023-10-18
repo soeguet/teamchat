@@ -63,12 +63,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      Instance of cache manager primarily storing data structures of the collections api to help cache some data.
      */
     private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
-
-    public void setEnvVariables(final EnvVariables envVariables) {
-
-        this.envVariables = envVariables;
-    }
-
     /**
      Instance of class, holding a few environment variables
      */
@@ -77,10 +71,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      Instance of client controller handling everything socket related.
      */
     private ClientController clientController;
-    /**
-     Instance of custom properties handling everything properties related.
-     */
-    private CustomProperties customProperties;
     /**
      Instance of the gui functionality handler.
      */
@@ -127,12 +117,16 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      Timer for blocking all messages.
      */
     private Timer blockTimer;
-
     /**
      Creates a new instance of ChatMainFrameImpl.
      */
     public ChatMainFrameImpl() {
 
+    }
+
+    public void setEnvVariables(final EnvVariables envVariables) {
+
+        this.envVariables = envVariables;
     }
 
     /**
@@ -192,9 +186,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      */
     public void loadCustomProperties() {
 
-        this.customProperties = new CustomProperties(this);
+        CustomProperties customProperties = CustomProperties.getProperties();
 
-        CustomUserProperties client = this.customProperties.loaderThisClientProperties();
+        CustomUserProperties client = customProperties.loaderThisClientProperties();
 
         //only override username if nothing is set on start up
         if (client != null && username == null) {
@@ -450,17 +444,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     Returns the custom properties object.
-
-     @return the custom properties object.
-     */
-    @Override
-    public CustomProperties getCustomProperties() {
-
-        return customProperties;
-    }
-
-    /**
      Returns the Y position of the notification.
 
      @return the Y position of the notification.
@@ -494,27 +477,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     Sets the startUp flag to indicate whether the system is starting up.
-
-     @param startUp the startUp flag
-     */
-    @Override
-    public void setStartUp(final boolean startUp) {
-
-        this.startUp = startUp;
-    }
-
-    /**
-     Retrieves the comment hash map.
-
-     @return the comments hash map
-     */
-    public LinkedHashMap<Long, CommentInterface> getCommentsHashMap() {
-
-        return commentsHashMap;
-    }
-
-    /**
      Called when the mouse is pressed on the property menu item.
 
      @param e The MouseEvent object representing the event.
@@ -529,6 +491,15 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         properties.setupClientsTabbedPane();
 
         properties.setVisible(true);
+    }    /**
+     Sets the startUp flag to indicate whether the system is starting up.
+
+     @param startUp the startUp flag
+     */
+    @Override
+    public void setStartUp(final boolean startUp) {
+
+        this.startUp = startUp;
     }
 
     /**
@@ -559,6 +530,14 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             popup.configurePopupPanelPlacement();
             popup.initiatePopupTimer(2_000);
         }
+    }    /**
+     Retrieves the comment hash map.
+
+     @return the comments hash map
+     */
+    public LinkedHashMap<Long, CommentInterface> getCommentsHashMap() {
+
+        return commentsHashMap;
     }
 
     /**
@@ -595,12 +574,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         //reconnect to socket
         clientController.connectToWebsocket();
         this.logger.info("Reconnecting websocket client");
-    }
-
-    @Override
-    public boolean isStartUp() {
-
-        return startUp;
     }
 
     /**
@@ -670,6 +643,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
 
         //send message
         handleNonShiftEnterKeyPress();
+    }    @Override
+    public boolean isStartUp() {
+
+        return startUp;
     }
 
     /**
@@ -980,4 +957,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         form_emojiButton.setIcon(new ImageIcon(emojiUrl));
         form_pictureButton.setIcon(new ImageIcon(pictureUrl));
     }
+
+
+
+
+
+
 }
