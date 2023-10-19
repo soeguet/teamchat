@@ -146,7 +146,13 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
                     if (data.startsWith("http://") || data.startsWith("https://")) {
 
                         //send the link
-                        callLinkConfirmationDialog(data);
+                        final String finalData = data;
+
+                        //FIXME display notification with links is off right now "includes {LINK}"
+                        SwingUtilities.invokeLater(()->{
+
+                            callLinkConfirmationDialog(finalData);
+                        });
 
                         //don't append the link to the text pane
                         return false;

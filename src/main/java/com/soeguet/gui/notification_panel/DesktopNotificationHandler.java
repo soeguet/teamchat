@@ -130,6 +130,7 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
             }
 
             case ALL_DENIED, STARTUP -> {
+
                 //TODO check if message was even cached which in that case needs to be removed from cache
                 //do nothing, intentionally left blank
                 break;

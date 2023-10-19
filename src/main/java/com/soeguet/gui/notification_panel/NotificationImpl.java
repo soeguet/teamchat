@@ -4,16 +4,16 @@ import com.soeguet.cache.factory.CacheManagerFactory;
 import com.soeguet.cache.implementations.ActiveNotificationQueue;
 import com.soeguet.cache.implementations.WaitingNotificationQueue;
 import com.soeguet.cache.manager.CacheManager;
+import com.soeguet.emoji.EmojiHandler;
 import com.soeguet.emoji.interfaces.EmojiHandlerInterface;
-import com.soeguet.gui.notification_panel.interfaces.NotificationInterface;
-import com.soeguet.gui.reply.ReplyPanelImpl;
 import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
 import com.soeguet.gui.notification_panel.generated.Notification;
+import com.soeguet.gui.notification_panel.interfaces.NotificationInterface;
+import com.soeguet.gui.reply.ReplyPanelImpl;
 import com.soeguet.gui.reply.interfaces.ReplyInterface;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
-import com.soeguet.emoji.EmojiHandler;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,6 +26,7 @@ public class NotificationImpl extends Notification implements NotificationInterf
     private final MainFrameInterface mainFrame;
     private final int MARGIN_TOP = 10;
     private final BaseModel baseModel;
+    private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
     private Timer timer;
 
     public NotificationImpl(final MainFrameInterface mainFrame, final BaseModel baseModel) {
@@ -42,6 +43,7 @@ public class NotificationImpl extends Notification implements NotificationInterf
 
     @Override
     protected void notificationAllPanelMouseClicked(final MouseEvent e) {
+
         SwingUtilities.invokeLater(this::bringChatGuiToFront);
     }
 
@@ -92,6 +94,7 @@ public class NotificationImpl extends Notification implements NotificationInterf
     public void setNotificationText() {
 
         addMessageToNotificationPanel();
+
         final int screenResolutionWidth = determineScreenWidth();
 
         int newYPosition = this.mainFrame.getNotificationPositionY() + 25;
@@ -110,38 +113,6 @@ public class NotificationImpl extends Notification implements NotificationInterf
         this.form_nameLabel.setText(messageModel.getSender() + " sent a message");
 
         form_notificationMainMessage.setText("");
-
-        replaceEmojiTextToIconOnTextPane(messageModel.getMessage());
-
-        final int messageLength = messageModel.getMessage().length();
-
-        if (messageLength < 30) {
-
-            adjustNotificationPanelHeight(1);
-
-        } else if (messageLength > 90) {
-
-            adjustNotificationPanelHeight(2);
-
-        } else if (messageLength > 60) {
-
-            adjustNotificationPanelHeight(3);
-        }
-    }
-
-    private void replaceEmojiTextToIconOnTextPane(final String message) {
-
-        EmojiHandlerInterface emojiHandler = new EmojiHandler(mainFrame);
-        emojiHandler.replaceEmojiDescriptionWithActualImageIcon(this.form_notificationMainMessage, message);
-    }
-
-    private void addPictureToNotificationPanel() {
-
-        PictureModel messageModel = (PictureModel) this.baseModel;
-
-        this.form_nameLabel.setText(messageModel.getSender() + " sent a message");
-
-        form_notificationMainMessage.setText("[picture]\n");
 
         replaceEmojiTextToIconOnTextPane(messageModel.getMessage());
 
@@ -188,6 +159,12 @@ public class NotificationImpl extends Notification implements NotificationInterf
         this.timer = new Timer(5000, e -> processNotificationQueue());
         this.timer.setRepeats(false);
         this.timer.start();
+    }
+
+    private void replaceEmojiTextToIconOnTextPane(final String message) {
+
+        EmojiHandlerInterface emojiHandler = new EmojiHandler(mainFrame);
+        emojiHandler.replaceEmojiDescriptionWithActualImageIcon(this.form_notificationMainMessage, message);
     }
 
     private void adjustNotificationPanelHeight(final int factor) {
@@ -242,8 +219,6 @@ public class NotificationImpl extends Notification implements NotificationInterf
         this.repaint();
     }
 
-    private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
-
     private void processNotificationQueue() {
 
         setVisible(false);
@@ -267,7 +242,7 @@ public class NotificationImpl extends Notification implements NotificationInterf
 
         if (waitingNotificationsCache.isEmpty()) {
 
-                this.mainFrame.setNotificationPositionY(0);
+            this.mainFrame.setNotificationPositionY(0);
         }
     }
 
@@ -284,5 +259,31 @@ public class NotificationImpl extends Notification implements NotificationInterf
         retainInformationAboutThisNotification(newYPosition);
 
         addNotificationTimer();
+    }
+
+    private void addPictureToNotificationPanel() {
+
+        PictureModel messageModel = (PictureModel) this.baseModel;
+
+        this.form_nameLabel.setText(messageModel.getSender() + " sent a message");
+
+        form_notificationMainMessage.setText("[picture]\n");
+
+        replaceEmojiTextToIconOnTextPane(messageModel.getMessage());
+
+        final int messageLength = messageModel.getMessage().length();
+
+        if (messageLength < 30) {
+
+            adjustNotificationPanelHeight(1);
+
+        } else if (messageLength > 90) {
+
+            adjustNotificationPanelHeight(2);
+
+        } else if (messageLength > 60) {
+
+            adjustNotificationPanelHeight(3);
+        }
     }
 }
