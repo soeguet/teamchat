@@ -4,7 +4,7 @@ import com.soeguet.gui.comments.dtos.LinkCommentRecord;
 import com.soeguet.gui.comments.interfaces.LinkPanelInterface;
 import com.soeguet.gui.comments.right.generated.PanelRight;
 import com.soeguet.gui.comments.util.LinkWrapEditorKit;
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 
@@ -20,7 +20,7 @@ import java.awt.event.MouseEvent;
 
 public class LinkRightImpl extends PanelRight implements LinkPanelInterface {
 
-    public LinkRightImpl(final MainFrameInterface mainFrame) {
+    public LinkRightImpl(final MainFrameGuiInterface mainFrame) {
 
         super(mainFrame);
     }

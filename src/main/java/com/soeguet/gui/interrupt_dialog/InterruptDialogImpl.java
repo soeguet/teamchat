@@ -2,9 +2,9 @@ package com.soeguet.gui.interrupt_dialog;
 
 import com.soeguet.gui.interrupt_dialog.generated.InterruptDialog;
 import com.soeguet.gui.interrupt_dialog.interfaces.InterruptDialogInterface;
-import com.soeguet.gui.main_frame.ChatMainFrameImpl;
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.properties.CustomUserProperties;
+import com.soeguet.properties.dto.CustomUserPropertiesDTO;
 import com.soeguet.util.ByteArrayHandler;
 import com.soeguet.util.interfaces.ByteArrayHandlerInterface;
 
@@ -17,27 +17,27 @@ import java.util.List;
 
 public class InterruptDialogImpl extends InterruptDialog implements InterruptDialogInterface {
 
-    private final MainFrameInterface mainFrame;
+    private final MainFrameGuiInterface mainFrame;
     private final List<JCheckBox> clientCheckBoxList;
 
     public InterruptDialogImpl(final Window owner) {
 
         super(owner);
-        this.mainFrame = (MainFrameInterface) owner;
+        this.mainFrame = (MainFrameGuiInterface) owner;
         clientCheckBoxList = new ArrayList<>();
     }
 
     @Override
-    public void populateDialogWithAllRegisteredClients(HashMap<String, CustomUserProperties> clientPropertiesMap) {
+    public void populateDialogWithAllRegisteredClients(HashMap<String, CustomUserPropertiesDTO> clientPropertiesMap) {
 
         clientPropertiesMap.forEach((id, client) -> {
 
             //we don't need this client in the list
-            if (!client.getUsername().equals("own")) {
+            if (!client.username().equals("own")) {
 
                 JCheckBox clientCheckBox = new JCheckBox();
 
-                clientCheckBox.setText(client.getUsername());
+                clientCheckBox.setText(client.username());
 
                 clientCheckBoxList.add(clientCheckBox);
                 form_checkBoxPanel.add(clientCheckBox,-1);

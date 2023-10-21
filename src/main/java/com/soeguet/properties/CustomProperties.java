@@ -2,43 +2,63 @@ package com.soeguet.properties;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.popups.PopupPanelImpl;
 import com.soeguet.gui.popups.interfaces.PopupInterface;
+import com.soeguet.initialization.interfaces.MainFrameInitInterface;
+import com.soeguet.properties.dto.CustomUserPropertiesDTO;
+import com.soeguet.properties.interfaces.CustomPropertiesInterface;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.HashSet;
+import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Logger;
 
-public class CustomProperties extends Properties {
+public class CustomProperties extends Properties implements CustomPropertiesInterface {
 
-    private final MainFrameInterface mainFrame;
+    private static CustomProperties properties;
     private final Logger logger = Logger.getLogger(CustomProperties.class.getName());
+    private final Set<CustomUserPropertiesDTO> userPropertiesHashSet;
+    private MainFrameGuiInterface mainFrame;
     private String configFilePath;
 
-    public CustomProperties(MainFrameInterface mainFrame) {
+    private CustomProperties() {
 
-        this.mainFrame = mainFrame;
-
-        checkIfConfigFileExists();
-
-        try {
-
-            loadProperties();
-            populateHashMapWithNewValues();
-
-        } catch (IOException e) {
-
-            throw new RuntimeException(e);
-        }
-
+        userPropertiesHashSet = new HashSet<>();
     }
 
-    private void checkIfConfigFileExists() {
+    public static CustomProperties getProperties() {
+
+        if (properties == null) {
+
+            properties = new CustomProperties();
+        }
+
+        return properties;
+    }
+
+    public void setMainFrame(final MainFrameInitInterface mainFrame) {
+
+        if (mainFrame instanceof MainFrameGuiInterface mainFrameGui) {
+
+            this.mainFrame = mainFrameGui;
+
+        } else {
+
+            throw new IllegalArgumentException("ERROR: MainFrameInitInterface must be of type MainFrameGuiInterface!");
+        }
+    }
+
+    @Override
+    public boolean checkIfConfigFileExists() {
+
+        //TEST this
 
         //handle the path in os filesystem
         String userHome = System.getProperty("user.home");
@@ -54,15 +74,27 @@ public class CustomProperties extends Properties {
 
             //create file if not present
             createPropertiesFile(configFilePath);
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public void loadProperties() {
+
+        try {
+
+            load(Files.newInputStream(new File(configFilePath).toPath()));
+
+        } catch (IOException e) {
+
+            throw new RuntimeException(e);
         }
     }
 
-    private void loadProperties() throws IOException {
-
-        load(Files.newInputStream(new File(configFilePath).toPath()));
-    }
-
-    private void populateHashMapWithNewValues() {
+    @Override
+    public void populateHashMapWithNewValues() {
 
         ObjectMapper mapper = mainFrame.getObjectMapper();
 
@@ -70,17 +102,61 @@ public class CustomProperties extends Properties {
 
             try {
 
-                CustomUserProperties userProperties = mapper.readValue(getProperty(key), CustomUserProperties.class);
+                CustomUserPropertiesDTO userProperties = mapper.readValue(getProperty(key), CustomUserPropertiesDTO.class);
 
-                mainFrame.getChatClientPropertiesHashMap().remove(key);
-                mainFrame.getChatClientPropertiesHashMap().put(key, userProperties);
+                mainFrame.getChatClientPropertiesHashMap().replace(key, userProperties);
 
             } catch (IOException e) {
 
                 logger.log(java.util.logging.Level.SEVERE, "Could not load user " + key, e);
+                throw new RuntimeException(e);
             }
         });
 
+    }
+
+    @Override
+    public void saveProperties() {
+
+        ObjectMapper mapper = mainFrame.getObjectMapper();
+
+        this.userPropertiesHashSet.forEach(user -> {
+
+            String json = null;
+
+            try {
+
+                json = mapper.writeValueAsString(user);
+
+            } catch (IOException e) {
+
+                logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not save user " + user.username(), e);
+            }
+
+            setProperty(user.username(), json);
+        });
+
+        PopupInterface popup = new PopupPanelImpl(mainFrame);
+        popup.getMessageTextField().setText("properties saved");
+        popup.configurePopupPanelPlacement();
+        popup.initiatePopupTimer(2_000);
+
+        createPropertiesFile(configFilePath);
+    }
+
+    @Override
+    public void addCustomerToHashSet(final CustomUserPropertiesDTO customUserProperties) {
+
+        userPropertiesHashSet.add(customUserProperties);
+    }
+
+    @Override
+    public CustomUserPropertiesDTO getCustomUserProperties(final String username) {
+
+        final Optional<CustomUserPropertiesDTO> userProperty =
+                userPropertiesHashSet.stream().filter(customUserProperties -> customUserProperties.username().equals(username)).findFirst();
+
+        return userProperty.orElseThrow();
     }
 
     private void createFolderIfNotPresent(final File appDir) {
@@ -88,24 +164,11 @@ public class CustomProperties extends Properties {
         if (!appDir.exists()) {
 
             final boolean mkdir = appDir.mkdir();
+
             if (!mkdir) {
 
                 logger.log(java.util.logging.Level.SEVERE, "ERROR! Could not create app dir!");
             }
-        }
-    }
-
-    private boolean loadDataSuccessful() {
-
-        try (FileInputStream input = new FileInputStream(configFilePath)) {
-
-            load(input);
-            return true;
-
-        } catch (IOException e) {
-
-            logger.log(java.util.logging.Level.SEVERE, "Could not load config file, creating..", e);
-            return false;
         }
     }
 
@@ -122,32 +185,6 @@ public class CustomProperties extends Properties {
         }
     }
 
-    public CustomUserProperties loaderThisClientProperties() {
-
-        final String clientProperties = getProperty("own");
-
-        //replace "own" preset username
-        if (this.mainFrame.getUsername() != null) {
-            return new CustomUserProperties(this.mainFrame.getUsername());
-        }
-
-        if (clientProperties == null || clientProperties.isEmpty()) {
-
-            return null;
-        }
-
-        try {
-
-            return this.mainFrame.getObjectMapper().readValue(clientProperties, CustomUserProperties.class);
-
-        } catch (JsonProcessingException e) {
-
-            logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not load own properties!", e);
-        }
-
-        return null;
-    }
-
     public void save() {
 
         ObjectMapper mapper = mainFrame.getObjectMapper();
@@ -155,7 +192,9 @@ public class CustomProperties extends Properties {
         mainFrame.getChatClientPropertiesHashMap().forEach((key, value) -> {
 
             String json = null;
+
             try {
+
                 json = mapper.writeValueAsString(value);
 
             } catch (IOException e) {
@@ -166,12 +205,52 @@ public class CustomProperties extends Properties {
             setProperty(key, json);
         });
 
-
         PopupInterface popup = new PopupPanelImpl(mainFrame);
         popup.getMessageTextField().setText("properties saved");
         popup.configurePopupPanelPlacement();
         popup.initiatePopupTimer(2_000);
 
         createPropertiesFile(configFilePath);
+    }
+
+    private boolean loadDataSuccessful() {
+
+        try (FileInputStream input = new FileInputStream(configFilePath)) {
+
+            load(input);
+            return true;
+
+        } catch (IOException e) {
+
+            logger.log(java.util.logging.Level.SEVERE, "Could not load config file, creating..", e);
+            return false;
+        }
+    }
+
+    public CustomUserPropertiesDTO loaderThisClientProperties() {
+
+        final String clientProperties = getProperty("own");
+
+        //replace "own" preset username
+        if (this.mainFrame.getUsername() != null) {
+
+            return new CustomUserPropertiesDTO(this.mainFrame.getUsername(), null, null);
+        }
+
+        if (clientProperties == null || clientProperties.isEmpty()) {
+
+            return null;
+        }
+
+        try {
+
+            return this.mainFrame.getObjectMapper().readValue(clientProperties, CustomUserPropertiesDTO.class);
+
+        } catch (JsonProcessingException e) {
+
+            logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not load own properties!", e);
+        }
+
+        return null;
     }
 }

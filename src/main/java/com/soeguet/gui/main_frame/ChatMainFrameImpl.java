@@ -17,15 +17,16 @@ import com.soeguet.gui.image_panel.interfaces.ImageInterface;
 import com.soeguet.gui.interrupt_dialog.InterruptDialogImpl;
 import com.soeguet.gui.interrupt_dialog.interfaces.InterruptDialogInterface;
 import com.soeguet.gui.main_frame.generated.ChatPanel;
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.notification_panel.NotificationImpl;
 import com.soeguet.gui.popups.PopupPanelImpl;
 import com.soeguet.gui.popups.interfaces.PopupInterface;
 import com.soeguet.gui.properties.PropertiesPanelImpl;
 import com.soeguet.gui.properties.interfaces.PropertiesInterface;
+import com.soeguet.initialization.interfaces.MainFrameInitInterface;
 import com.soeguet.model.EnvVariables;
 import com.soeguet.properties.CustomProperties;
-import com.soeguet.properties.CustomUserProperties;
+import com.soeguet.properties.dto.CustomUserPropertiesDTO;
 import com.soeguet.socket_client.ClientControllerImpl;
 import com.soeguet.socket_client.CustomWebsocketClient;
 import com.soeguet.socket_client.interfaces.ClientController;
@@ -44,10 +45,10 @@ import java.util.logging.Logger;
 /**
  Main GUI method
  */
-public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
+public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterface, MainFrameInitInterface {
 
     //FEATURE these need to be re-evaluated and maybe moved into the cache manager
-    private final HashMap<String, CustomUserProperties> chatClientPropertiesHashMap = new HashMap<>();
+    private final HashMap<String, CustomUserPropertiesDTO> chatClientPropertiesHashMap = new HashMap<>();
 
     //FEATURE cache comments on pane for hot replacements as HashSet -> data structure ready, implementation missing -> add to cache
     private final LinkedHashMap<Long, CommentInterface> commentsHashMap = new LinkedHashMap<>();
@@ -63,12 +64,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      Instance of cache manager primarily storing data structures of the collections api to help cache some data.
      */
     private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
-
-    public void setEnvVariables(final EnvVariables envVariables) {
-
-        this.envVariables = envVariables;
-    }
-
     /**
      Instance of class, holding a few environment variables
      */
@@ -77,10 +72,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      Instance of client controller handling everything socket related.
      */
     private ClientController clientController;
-    /**
-     Instance of custom properties handling everything properties related.
-     */
-    private CustomProperties customProperties;
     /**
      Instance of the gui functionality handler.
      */
@@ -132,7 +123,11 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      Creates a new instance of ChatMainFrameImpl.
      */
     public ChatMainFrameImpl() {
+    }
 
+    public void setEnvVariables(final EnvVariables envVariables) {
+
+        this.envVariables = envVariables;
     }
 
     /**
@@ -172,12 +167,14 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     /**
      Loads the username from the environment variables and assigns it to the appropriate field.
      */
-    public void loadUsernameFromEnvVariables() {
+    public void loadUsernameFromEnvVariables(final EnvVariables envVariables) {
+
+        this.envVariables = envVariables;
 
         //override username if saved in GUI by user
-        if (!envVariables.getChatUsername().isEmpty()) {
+        if (!this.envVariables.getChatUsername().isEmpty()) {
 
-            this.username = envVariables.getChatUsername();
+            setUsername(this.envVariables.getChatUsername());
         }
     }
 
@@ -192,14 +189,14 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      */
     public void loadCustomProperties() {
 
-        this.customProperties = new CustomProperties(this);
+        CustomProperties customProperties = CustomProperties.getProperties();
 
-        CustomUserProperties client = this.customProperties.loaderThisClientProperties();
+        CustomUserPropertiesDTO client = customProperties.loaderThisClientProperties();
 
         //only override username if nothing is set on start up
         if (client != null && username == null) {
 
-            this.username = client.getUsername();
+            this.username = client.username();
         }
     }
 
@@ -444,20 +441,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      @return the HashMap containing the chat client properties
      */
     @Override
-    public HashMap<String, CustomUserProperties> getChatClientPropertiesHashMap() {
+    public HashMap<String, CustomUserPropertiesDTO> getChatClientPropertiesHashMap() {
 
         return chatClientPropertiesHashMap;
-    }
-
-    /**
-     Returns the custom properties object.
-
-     @return the custom properties object.
-     */
-    @Override
-    public CustomProperties getCustomProperties() {
-
-        return customProperties;
     }
 
     /**
@@ -494,27 +480,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     }
 
     /**
-     Sets the startUp flag to indicate whether the system is starting up.
-
-     @param startUp the startUp flag
-     */
-    @Override
-    public void setStartUp(final boolean startUp) {
-
-        this.startUp = startUp;
-    }
-
-    /**
-     Retrieves the comment hash map.
-
-     @return the comments hash map
-     */
-    public LinkedHashMap<Long, CommentInterface> getCommentsHashMap() {
-
-        return commentsHashMap;
-    }
-
-    /**
      Called when the mouse is pressed on the property menu item.
 
      @param e The MouseEvent object representing the event.
@@ -522,13 +487,15 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     @Override
     protected void propertiesMenuItemMousePressed(MouseEvent e) {
 
-        PropertiesInterface properties = new PropertiesPanelImpl(this);
+        SwingUtilities.invokeLater(()->{
 
-        properties.setPosition();
-        properties.setupOwnTabbedPane();
-        properties.setupClientsTabbedPane();
+            PropertiesInterface properties = new PropertiesPanelImpl(this);
+            properties.setPosition();
+            properties.setupOwnTabbedPane();
+            properties.setupClientsTabbedPane();
 
-        properties.setVisible(true);
+            properties.setVisible(true);
+        });
     }
 
     /**
@@ -559,6 +526,17 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             popup.configurePopupPanelPlacement();
             popup.initiatePopupTimer(2_000);
         }
+    }
+
+    /**
+     Sets the startUp flag to indicate whether the system is starting up.
+
+     @param startUp the startUp flag
+     */
+    @Override
+    public void setStartUp(final boolean startUp) {
+
+        this.startUp = startUp;
     }
 
     /**
@@ -595,12 +573,14 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         //reconnect to socket
         clientController.connectToWebsocket();
         this.logger.info("Reconnecting websocket client");
-    }
+    }    /**
+     Retrieves the comment hash map.
 
-    @Override
-    public boolean isStartUp() {
+     @return the comments hash map
+     */
+    public LinkedHashMap<Long, CommentInterface> getCommentsHashMap() {
 
-        return startUp;
+        return commentsHashMap;
     }
 
     /**
@@ -726,6 +706,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
             guiFunctionality.sendMessageToSocket();
             guiFunctionality.clearTextPane();
         }
+    }    @Override
+    public boolean isStartUp() {
+
+        return startUp;
     }
 
     /**
@@ -979,5 +963,43 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         form_sendButton.setIcon(new ImageIcon(sendUrl));
         form_emojiButton.setIcon(new ImageIcon(emojiUrl));
         form_pictureButton.setIcon(new ImageIcon(pictureUrl));
+    }
+
+    public void setGuiIcon() {
+        URL iconURL = ChatMainFrameImpl.class.getResource("/icon.png");
+        assert iconURL != null;
+        ImageIcon icon = new ImageIcon(iconURL);
+        setIconImage(icon.getImage());
+    }
+
+    public void setMainFrameTitle() {
+
+        final String title = "teamchat" + " - " +
+                this.chatVersion() +
+                "username: " + getUsername();
+
+        setTitle(title);
+    }
+    private String chatVersion() {
+
+        Properties properties = new Properties();
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("version.properties");
+
+        if (inputStream != null) {
+
+            try {
+
+                properties.load(inputStream);
+                return properties.getProperty("version") + " - ";
+
+            } catch (IOException e) {
+
+                throw new RuntimeException(e);
+            }
+
+        } else {
+
+            return "";
+        }
     }
 }

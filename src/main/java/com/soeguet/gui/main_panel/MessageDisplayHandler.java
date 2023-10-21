@@ -3,18 +3,18 @@ package com.soeguet.gui.main_panel;
 import com.soeguet.cache.implementations.MessageQueue;
 import com.soeguet.cache.manager.CacheManager;
 import com.soeguet.gui.comments.interfaces.CommentManager;
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.main_panel.interfaces.MessageDisplayHandlerInterface;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.util.interfaces.MessageCategory;
 
 public class MessageDisplayHandler implements MessageDisplayHandlerInterface {
 
-    private final MainFrameInterface mainFrame;
+    private final MainFrameGuiInterface mainFrame;
     private final CommentManager commentManager;
     private CacheManager cacheManager;
 
-    public MessageDisplayHandler(final MainFrameInterface mainFrame, final CommentManager commentManager) {
+    public MessageDisplayHandler(final MainFrameGuiInterface mainFrame, final CommentManager commentManager) {
 
         this.mainFrame = mainFrame;
         this.commentManager = commentManager;

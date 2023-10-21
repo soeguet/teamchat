@@ -6,7 +6,7 @@ import com.soeguet.cache.factory.CacheManagerFactory;
 import com.soeguet.cache.implementations.ActiveNotificationQueue;
 import com.soeguet.cache.implementations.WaitingNotificationQueue;
 import com.soeguet.cache.manager.CacheManager;
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.notification_panel.interfaces.DesktopNotificationHandlerInterface;
 import com.soeguet.gui.notification_panel.interfaces.NotificationDisplayInterface;
 import com.soeguet.gui.notification_panel.interfaces.NotificationInterface;
@@ -18,15 +18,14 @@ import com.soeguet.util.NotificationStatus;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 import java.util.logging.Logger;
 
 public class DesktopNotificationHandler implements DesktopNotificationHandlerInterface {
 
     private final Logger logger = Logger.getLogger(DesktopNotificationHandler.class.getName());
-    private final MainFrameInterface mainFrame;
+    private final MainFrameGuiInterface mainFrame;
     CacheManager cacheManager = CacheManagerFactory.getCacheManager();
-    public DesktopNotificationHandler(final MainFrameInterface mainFrame) {
+    public DesktopNotificationHandler(final MainFrameGuiInterface mainFrame) {
 
         this.mainFrame = mainFrame;
     }

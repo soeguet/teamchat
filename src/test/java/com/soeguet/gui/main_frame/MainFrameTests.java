@@ -52,7 +52,7 @@ public class MainFrameTests {
         ChatMainFrameImpl frame = new ChatMainFrameImpl();
         frame.setEnvVariables(envVariables);
 
-        frame.loadUsernameFromEnvVariables();
+        frame.loadUsernameFromEnvVariables(envVariables);
 
         assertEquals("Paul", frame.getUsername(), "should return \"Paul\" from environment variables");
     }

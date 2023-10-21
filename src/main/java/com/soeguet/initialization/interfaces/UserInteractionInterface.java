@@ -4,7 +4,7 @@ package com.soeguet.initialization.interfaces;
  Represents a user interaction interface.
  This interface provides methods for prompting the user to enter a username and displaying error messages.
  */
-public interface UserInteraction {
+public interface UserInteractionInterface {
 
     /**
      Prompts the user to enter a username.

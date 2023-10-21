@@ -1,7 +1,7 @@
 package com.soeguet.socket_client;
 
 import com.soeguet.behaviour.interfaces.GuiFunctionality;
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.socket_client.interfaces.ClientController;
 import net.miginfocom.swing.MigLayout;
 
@@ -14,12 +14,12 @@ import java.util.logging.Logger;
 public class ClientControllerImpl implements ClientController {
 
     private final Logger logger = Logger.getLogger(ClientControllerImpl.class.getName());
-    private final MainFrameInterface mainFrame;
+    private final MainFrameGuiInterface mainFrame;
     private final GuiFunctionality guiFunctionality;
     private URI serverUri;
     private CustomWebsocketClient websocketClient;
 
-    public ClientControllerImpl(final MainFrameInterface mainFrame, final GuiFunctionality guiFunctionality) {
+    public ClientControllerImpl(final MainFrameGuiInterface mainFrame, final GuiFunctionality guiFunctionality) {
 
         this.mainFrame = mainFrame;
         this.guiFunctionality = guiFunctionality;

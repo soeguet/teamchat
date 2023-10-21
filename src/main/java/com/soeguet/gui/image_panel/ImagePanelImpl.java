@@ -3,7 +3,7 @@ package com.soeguet.gui.image_panel;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.soeguet.gui.image_panel.generated.ImagePanel;
 import com.soeguet.gui.image_panel.interfaces.ImageInterface;
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.PictureModel;
 
 import javax.imageio.ImageIO;
@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 public class ImagePanelImpl extends ImagePanel implements ImageInterface {
 
     private final Logger LOGGER = Logger.getLogger(ImagePanelImpl.class.getName());
-    private final MainFrameInterface mainFrame;
+    private final MainFrameGuiInterface mainFrame;
     private final Point offset = new Point();
     private double zoomFactor = 1.0;
     private BufferedImage image;
@@ -35,7 +35,7 @@ public class ImagePanelImpl extends ImagePanel implements ImageInterface {
      * @param mainFrame the main frame interface that is used as a reference
      *                  to the main frame of the application.
      */
-    public ImagePanelImpl(MainFrameInterface mainFrame) {
+    public ImagePanelImpl(MainFrameGuiInterface mainFrame) {
 
         this.mainFrame = mainFrame;
     }

@@ -7,16 +7,16 @@ public class CustomUserProperties {
     private String borderColor;
 
     /**
-     * Creates a new instance of the CustomUserProperties class.
+     Creates a new instance of the CustomUserProperties class.
      */
     public CustomUserProperties() {
 
     }
 
     /**
-     * Constructs an instance of the CustomUserProperties class with the specified username.
-     *
-     * @param username the username of the user
+     Constructs an instance of the CustomUserProperties class with the specified username.
+
+     @param username the username of the user
      */
     public CustomUserProperties(String username) {
 
@@ -24,29 +24,9 @@ public class CustomUserProperties {
     }
 
     /**
-     * Returns the border color as an integer value.
-     *
-     * @return the border color as an integer value. If the border color is null, returns -1.
-     */
-    public int getBorderColor() {
+     Gets the username of the user.
 
-        return borderColor == null ? -1 : Integer.parseInt(borderColor);
-    }
-
-    /**
-     * Sets the border color to the specified integer value.
-     *
-     * @param borderColor the border color to set as an integer value.
-     */
-    public void setBorderColor(int borderColor) {
-
-        this.borderColor = String.valueOf(borderColor);
-    }
-
-    /**
-     * Gets the username of the user.
-     *
-     * @return the username of the user as a string.
+     @return the username of the user as a string.
      */
     public String getUsername() {
 
@@ -54,9 +34,9 @@ public class CustomUserProperties {
     }
 
     /**
-     * Sets the username of the user.
-     *
-     * @param username the new username to be set for the user.
+     Sets the username of the user.
+
+     @param username the new username to be set for the user.
      */
     public void setUsername(String username) {
 
@@ -64,9 +44,9 @@ public class CustomUserProperties {
     }
 
     /**
-     * Returns the nickname of the user.
-     *
-     * @return the nickname of the user.
+     Returns the nickname of the user.
+
+     @return the nickname of the user.
      */
     public String getNickname() {
 
@@ -74,9 +54,9 @@ public class CustomUserProperties {
     }
 
     /**
-     * Sets the nickname of the user.
-     *
-     * @param nickname the nickname to be set.
+     Sets the nickname of the user.
+
+     @param nickname the nickname to be set.
      */
     public void setNickname(String nickname) {
 

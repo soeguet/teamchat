@@ -6,7 +6,7 @@ import com.soeguet.cache.implementations.WaitingNotificationQueue;
 import com.soeguet.cache.manager.CacheManager;
 import com.soeguet.emoji.EmojiHandler;
 import com.soeguet.emoji.interfaces.EmojiHandlerInterface;
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.notification_panel.generated.Notification;
 import com.soeguet.gui.notification_panel.interfaces.NotificationInterface;
 import com.soeguet.gui.reply.ReplyPanelImpl;
@@ -23,13 +23,13 @@ import java.awt.event.WindowEvent;
 
 public class NotificationImpl extends Notification implements NotificationInterface {
 
-    private final MainFrameInterface mainFrame;
+    private final MainFrameGuiInterface mainFrame;
     private final int MARGIN_TOP = 10;
     private final BaseModel baseModel;
     private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
     private Timer timer;
 
-    public NotificationImpl(final MainFrameInterface mainFrame, final BaseModel baseModel) {
+    public NotificationImpl(final MainFrameGuiInterface mainFrame, final BaseModel baseModel) {
 
         super(null);
         this.baseModel = baseModel;

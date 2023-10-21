@@ -1,7 +1,7 @@
 package com.soeguet.emoji;
 
 import com.soeguet.emoji.interfaces.EmojiHandlerInterface;
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -10,10 +10,10 @@ import java.util.logging.Logger;
 
 public class EmojiHandler implements EmojiHandlerInterface {
 
-    private final MainFrameInterface mainFrame;
+    private final MainFrameGuiInterface mainFrame;
     private final Logger logger = Logger.getLogger(EmojiHandler.class.getName());
 
-    public EmojiHandler(MainFrameInterface mainFrame) {
+    public EmojiHandler(MainFrameGuiInterface mainFrame) {
 
         this.mainFrame = mainFrame;
     }
@@ -91,7 +91,7 @@ public class EmojiHandler implements EmojiHandlerInterface {
     /**
 
      */
-    private void processEmoji(JTextPane actualTextPane, MainFrameInterface gui, StyledDocument doc, String word) {
+    private void processEmoji(JTextPane actualTextPane, MainFrameGuiInterface gui, StyledDocument doc, String word) {
 
         Style style = createImageStyle(actualTextPane, gui, word);
 
@@ -114,7 +114,7 @@ public class EmojiHandler implements EmojiHandlerInterface {
 
      @return the created style with the image icon
      */
-    private static Style createImageStyle(JTextPane actualTextPane, MainFrameInterface gui, String word) {
+    private static Style createImageStyle(JTextPane actualTextPane, MainFrameGuiInterface gui, String word) {
 
         Style style = actualTextPane.addStyle("Image", null);
 

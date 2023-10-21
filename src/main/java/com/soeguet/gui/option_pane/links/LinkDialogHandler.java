@@ -1,7 +1,7 @@
 package com.soeguet.gui.option_pane.links;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.option_pane.links.dtos.AbsoluteLinkRecord;
 import com.soeguet.gui.option_pane.links.dtos.MetadataStorageRecord;
 import com.soeguet.model.MessageTypes;
@@ -164,7 +164,7 @@ public class LinkDialogHandler {
      @param mainFrame the main frame interface
      @param message the message to send
      */
-    public void sendLinkToWebsocket(final MainFrameInterface mainFrame, final String message) {
+    public void sendLinkToWebsocket(final MainFrameGuiInterface mainFrame, final String message) {
 
         MessageModel messageModel = new MessageModel((byte) MessageTypes.LINK, mainFrame.getUsername(), message);
 

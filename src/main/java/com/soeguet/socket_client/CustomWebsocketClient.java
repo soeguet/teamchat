@@ -2,7 +2,7 @@ package com.soeguet.socket_client;
 
 import com.soeguet.behaviour.interfaces.GuiFunctionality;
 import com.soeguet.behaviour.interfaces.SocketToGuiInterface;
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.popups.PopupPanelImpl;
 import com.soeguet.gui.popups.interfaces.PopupInterface;
 import org.java_websocket.WebSocket;
@@ -17,10 +17,10 @@ import java.util.logging.Logger;
 public class CustomWebsocketClient extends WebSocketClient {
 
     private final Logger logger = Logger.getLogger(CustomWebsocketClient.class.getName());
-    private final MainFrameInterface mainFrame;
+    private final MainFrameGuiInterface mainFrame;
     private final SocketToGuiInterface socketToGuiInterface;
 
-    public CustomWebsocketClient(URI serverUri, MainFrameInterface mainFrame, final GuiFunctionality guiFunctionality) {
+    public CustomWebsocketClient(URI serverUri, MainFrameGuiInterface mainFrame, final GuiFunctionality guiFunctionality) {
 
         super(serverUri);
         this.mainFrame = mainFrame;

@@ -15,7 +15,7 @@ import com.soeguet.gui.image_panel.ImagePanelImpl;
 import com.soeguet.gui.image_panel.interfaces.ImageInterface;
 import com.soeguet.gui.interrupt_dialog.handler.InterruptHandler;
 import com.soeguet.gui.interrupt_dialog.interfaces.InterruptHandlerInterface;
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.main_panel.MessageDisplayHandler;
 import com.soeguet.gui.main_panel.interfaces.MessageDisplayHandlerInterface;
 import com.soeguet.gui.notification_panel.DesktopNotificationHandler;
@@ -31,7 +31,7 @@ import com.soeguet.gui.typing_panel.interfaces.TypingPanelHandlerInterface;
 import com.soeguet.model.MessageTypes;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
-import com.soeguet.properties.CustomUserProperties;
+import com.soeguet.properties.dto.CustomUserPropertiesDTO;
 import com.soeguet.util.NotificationStatus;
 
 import javax.swing.*;
@@ -51,19 +51,17 @@ import java.util.logging.Logger;
  */
 public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterface {
 
-    private final MainFrameInterface mainFrame;
+    private final MainFrameGuiInterface mainFrame;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Logger logger = Logger.getLogger(GuiFunctionalityImpl.class.getName());
     CacheManager cacheManager = CacheManagerFactory.getCacheManager();
 
     /**
-     Constructor for the GuiFunctionality class.
-     Initializes the mainFrame and commentManager properties.
+     Constructor for the GuiFunctionalityImpl class.
 
-     @param mainFrame      The main frame of the GUI.
-     @param commentManager The implementation of the CommentManager interface.
+     @param mainFrame the MainFrameGuiInterface object used to interact with the main frame GUI.
      */
-    public GuiFunctionalityImpl(MainFrameInterface mainFrame) {
+    public GuiFunctionalityImpl(MainFrameGuiInterface mainFrame) {
 
         this.mainFrame = mainFrame;
     }
@@ -134,7 +132,8 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
                         data = (String) transferable.getTransferData(DataFlavor.stringFlavor);
 
-                    } catch (UnsupportedFlavorException | IOException e) {
+                    } catch (UnsupportedFlavorException |
+                             IOException e) {
 
                         logger.log(java.util.logging.Level.SEVERE, "Error importing data", e);
                         throw new RuntimeException(e);
@@ -145,11 +144,12 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
                     //check if link
                     if (data.startsWith("http://") || data.startsWith("https://")) {
 
+                        //FIXME link detection not working properly
                         //send the link
                         final String finalData = data;
 
                         //FIXME display notification with links is off right now "includes {LINK}"
-                        SwingUtilities.invokeLater(()->{
+                        SwingUtilities.invokeLater(() -> {
 
                             callLinkConfirmationDialog(finalData);
                         });
@@ -163,7 +163,7 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
                 }
 
                 //TODO check if this is right or false was the better return value
-//                return false;
+                //                return false;
                 return originalHandler.importData(jComponent, transferable);
             }
         });
@@ -567,12 +567,11 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
         //retrieve the message from cache
         final String message = messageDisplayHandler.pollMessageFromCache();
-        if (message == null) return;
+        if (message == null) {return;}
 
         //convert message to java object
         final BaseModel baseModel = parseMessageToJsonModel(message);
 
-        //FIXME user name checkup seems off
         //register user from message to local cache if not present yet
         checkIfMessageSenderAlreadyRegisteredInLocalCache(mainFrame.getChatClientPropertiesHashMap(), baseModel.getSender());
 
@@ -648,7 +647,7 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
      @param clientMap the map representing the local cache of message senders
      @param sender    the sender to be checked and possibly added to the cache
      */
-    private void checkIfMessageSenderAlreadyRegisteredInLocalCache(HashMap<String, CustomUserProperties> clientMap, String sender) {
+    private void checkIfMessageSenderAlreadyRegisteredInLocalCache(HashMap<String, CustomUserPropertiesDTO> clientMap, String sender) {
 
         if (sender.equals(this.mainFrame.getUsername())) {
 
@@ -672,13 +671,23 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
      @param clientMap the map representing the local cache of clients
      @param sender    the client to be added to the cache
      */
-    private void addClientToLocalCacheRegister(final HashMap<String, CustomUserProperties> clientMap, final String sender) {
+    private void addClientToLocalCacheRegister(final HashMap<String, CustomUserPropertiesDTO> clientMap, final String sender) {
 
-        CustomUserProperties customUserProperties = new CustomUserProperties();
+        final CustomUserPropertiesDTO userPropertiesDTO = clientMap.get(sender);
 
-        customUserProperties.setUsername(sender);
-        customUserProperties.setBorderColor(getRandomRgbIntValue());
-        clientMap.put(sender, customUserProperties);
+        // 1) username
+        String username = userPropertiesDTO != null ? userPropertiesDTO.username() : sender;
+
+        if (username.equals("own")) {
+
+            username = this.mainFrame.getUsername();
+        }
+
+        // 2) nickname and 3) border color
+        final String nickname = userPropertiesDTO != null ? userPropertiesDTO.nickname() : null;
+        final String borderColor = String.valueOf(getRandomRgbIntValue());
+
+        clientMap.put(sender, new CustomUserPropertiesDTO(username, nickname, borderColor));
     }
 
     /**
@@ -690,9 +699,9 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
      */
     private String checkForNickname(String sender) {
 
-        if (this.mainFrame.getChatClientPropertiesHashMap().containsKey(sender) && this.mainFrame.getChatClientPropertiesHashMap().get(sender).getNickname() != null && !this.mainFrame.getChatClientPropertiesHashMap().get(sender).getNickname().isEmpty()) {
+        if (this.mainFrame.getChatClientPropertiesHashMap().containsKey(sender) && this.mainFrame.getChatClientPropertiesHashMap().get(sender).nickname() != null && !this.mainFrame.getChatClientPropertiesHashMap().get(sender).nickname().isEmpty()) {
 
-            return this.mainFrame.getChatClientPropertiesHashMap().get(sender).getNickname();
+            return this.mainFrame.getChatClientPropertiesHashMap().get(sender).nickname();
         }
 
         return null;

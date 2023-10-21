@@ -3,21 +3,21 @@ package com.soeguet.gui.interrupt_dialog.handler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.gui.interrupt_dialog.interfaces.InterruptHandlerInterface;
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 
 import javax.swing.*;
 import java.io.IOException;
 
 public class InterruptHandler implements InterruptHandlerInterface {
 
-    private final MainFrameInterface mainFrame;
+    private final MainFrameGuiInterface mainFrame;
 
     /**
      * Initializes an InterruptHandler object with the provided MainFrameInterface.
      *
      * @param mainFrame The MainFrameInterface object used for handling interrupts.
      */
-    public InterruptHandler(final MainFrameInterface mainFrame) {
+    public InterruptHandler(final MainFrameGuiInterface mainFrame) {
 
         this.mainFrame = mainFrame;
     }
