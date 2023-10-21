@@ -23,6 +23,8 @@ public class Main {
         //set up dependencies
         final ThemeSetter themeSetter = new ThemeSetterImpl();
         final ThemeManager themeManager = new ThemeManagerImpl(themeSetter);
+        //FEATURE make themes configurable
+        themeManager.applyTheme(Themes.INTELLIJ);
 
         final UserInteractionInterface userInteraction = new UserInteractionImpl();
         final EnvDataProviderInterface envDataProvider = new EnvDataProviderImpl();
@@ -33,10 +35,8 @@ public class Main {
 
         //initialize program and pass dependencies
         final MainFrameInitInterface mainFrame = new ChatMainFrameImpl();
-        final ProgramInit programInit = new ProgramInit(mainFrame, themeManager);
+        final ProgramInit programInit = new ProgramInit(mainFrame);
 
-        //FEATURE make themes configurable
-        programInit.setTheme(Themes.INTELLIJ);
         programInit.initializeGUI(environmentVariables);
     }
 }

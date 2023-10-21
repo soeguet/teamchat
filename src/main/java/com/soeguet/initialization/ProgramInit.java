@@ -13,18 +13,11 @@ import javax.swing.*;
 
 public class ProgramInit {
 
-    private final ThemeManager themeManager;
     private final MainFrameInitInterface mainFrame;
 
-    /**
-     Initializes the program with the provided theme manager.
-
-     @param themeManager The theme manager to be used by the program.
-     */
-    public ProgramInit(final MainFrameInitInterface mainFrame, final ThemeManager themeManager) {
+    public ProgramInit(final MainFrameInitInterface mainFrame) {
 
         this.mainFrame = mainFrame;
-        this.themeManager = themeManager;
     }
 
     /**
@@ -92,22 +85,5 @@ public class ProgramInit {
         this.mainFrame.initGuiFunctionality();
         this.mainFrame.initializeClientController();
         this.mainFrame.initEmojiHandler();
-    }
-
-    /**
-     Sets the theme of the graphical user interface.
-
-     This method applies the specified theme to the GUI using the ThemeManager.
-     The themeSetting parameter should be a valid theme identifier supported
-     by the application's ThemeManager. If an invalid or unsupported theme identifier
-     is provided, the behavior of this method is undefined.
-
-     @param themeSetting the theme identifier to be applied to the GUI.
-     This should be a valid theme identifier supported by the application.
-     It is up to the caller to provide a valid theme identifier.
-     */
-    public void setTheme(final Themes themeSetting) {
-
-        themeManager.applyTheme(themeSetting);
     }
 }
