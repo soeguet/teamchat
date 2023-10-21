@@ -57,10 +57,9 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
     CacheManager cacheManager = CacheManagerFactory.getCacheManager();
 
     /**
-     *
-     * Constructor for the GuiFunctionalityImpl class.
-     *
-     * @param mainFrame the MainFrameGuiInterface object used to interact with the main frame GUI.
+     Constructor for the GuiFunctionalityImpl class.
+
+     @param mainFrame the MainFrameGuiInterface object used to interact with the main frame GUI.
      */
     public GuiFunctionalityImpl(MainFrameGuiInterface mainFrame) {
 
@@ -133,7 +132,8 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
                         data = (String) transferable.getTransferData(DataFlavor.stringFlavor);
 
-                    } catch (UnsupportedFlavorException | IOException e) {
+                    } catch (UnsupportedFlavorException |
+                             IOException e) {
 
                         logger.log(java.util.logging.Level.SEVERE, "Error importing data", e);
                         throw new RuntimeException(e);
@@ -163,7 +163,7 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
                 }
 
                 //TODO check if this is right or false was the better return value
-//                return false;
+                //                return false;
                 return originalHandler.importData(jComponent, transferable);
             }
         });
@@ -567,12 +567,11 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
         //retrieve the message from cache
         final String message = messageDisplayHandler.pollMessageFromCache();
-        if (message == null) return;
+        if (message == null) {return;}
 
         //convert message to java object
         final BaseModel baseModel = parseMessageToJsonModel(message);
 
-        //FIXME user name checkup seems off
         //register user from message to local cache if not present yet
         checkIfMessageSenderAlreadyRegisteredInLocalCache(mainFrame.getChatClientPropertiesHashMap(), baseModel.getSender());
 
@@ -674,8 +673,21 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
      */
     private void addClientToLocalCacheRegister(final HashMap<String, CustomUserPropertiesDTO> clientMap, final String sender) {
 
-        CustomUserPropertiesDTO customUserProperties = new CustomUserPropertiesDTO(sender, null, String.valueOf(getRandomRgbIntValue()));
-        clientMap.put(sender, customUserProperties);
+        final CustomUserPropertiesDTO userPropertiesDTO = clientMap.get(sender);
+
+        // 1) username
+        String username = userPropertiesDTO != null ? userPropertiesDTO.username() : sender;
+
+        if (username.equals("own")) {
+
+            username = this.mainFrame.getUsername();
+        }
+
+        // 2) nickname and 3) border color
+        final String nickname = userPropertiesDTO != null ? userPropertiesDTO.nickname() : null;
+        final String borderColor = String.valueOf(getRandomRgbIntValue());
+
+        clientMap.put(sender, new CustomUserPropertiesDTO(username, nickname, borderColor));
     }
 
     /**

@@ -26,7 +26,6 @@ import com.soeguet.gui.properties.interfaces.PropertiesInterface;
 import com.soeguet.initialization.interfaces.MainFrameInitInterface;
 import com.soeguet.model.EnvVariables;
 import com.soeguet.properties.CustomProperties;
-import com.soeguet.properties.CustomUserProperties;
 import com.soeguet.properties.dto.CustomUserPropertiesDTO;
 import com.soeguet.socket_client.ClientControllerImpl;
 import com.soeguet.socket_client.CustomWebsocketClient;
@@ -192,12 +191,12 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
 
         CustomProperties customProperties = CustomProperties.getProperties();
 
-        CustomUserProperties client = customProperties.loaderThisClientProperties();
+        CustomUserPropertiesDTO client = customProperties.loaderThisClientProperties();
 
         //only override username if nothing is set on start up
         if (client != null && username == null) {
 
-            this.username = client.getUsername();
+            this.username = client.username();
         }
     }
 
@@ -444,7 +443,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     @Override
     public HashMap<String, CustomUserPropertiesDTO> getChatClientPropertiesHashMap() {
 
-        //FIXME this needs to be switched out with CustomClientProperties
         return chatClientPropertiesHashMap;
     }
 
@@ -489,13 +487,15 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     @Override
     protected void propertiesMenuItemMousePressed(MouseEvent e) {
 
-        PropertiesInterface properties = new PropertiesPanelImpl(this);
+        SwingUtilities.invokeLater(()->{
 
-        properties.setPosition();
-        properties.setupOwnTabbedPane();
-        properties.setupClientsTabbedPane();
+            PropertiesInterface properties = new PropertiesPanelImpl(this);
+            properties.setPosition();
+            properties.setupOwnTabbedPane();
+            properties.setupClientsTabbedPane();
 
-        properties.setVisible(true);
+            properties.setVisible(true);
+        });
     }
 
     /**

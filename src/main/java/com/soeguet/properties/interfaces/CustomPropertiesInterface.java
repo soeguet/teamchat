@@ -1,6 +1,6 @@
 package com.soeguet.properties.interfaces;
 
-import com.soeguet.properties.CustomUserProperties;
+import com.soeguet.properties.dto.CustomUserPropertiesDTO;
 
 public interface CustomPropertiesInterface {
 
@@ -12,7 +12,7 @@ public interface CustomPropertiesInterface {
 
     void saveProperties();
 
-    void addCustomerToHashSet(final CustomUserProperties customUserProperties);
+    void addCustomerToHashSet(final CustomUserPropertiesDTO customUserProperties);
 
-    CustomUserProperties getCustomUserProperties(final String username);
+    CustomUserPropertiesDTO getCustomUserProperties(final String username);
 }

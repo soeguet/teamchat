@@ -185,9 +185,6 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
 
     private boolean isTextPaneBlank() {
 
-        if (this.form_replyTextPane.getText().isBlank()) {
-            return true;
-        }
-        return false;
+        return this.form_replyTextPane.getText().isBlank();
     }
 }

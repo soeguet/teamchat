@@ -24,7 +24,7 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
 
     private static CustomProperties properties;
     private final Logger logger = Logger.getLogger(CustomProperties.class.getName());
-    private final Set<CustomUserProperties> userPropertiesHashSet;
+    private final Set<CustomUserPropertiesDTO> userPropertiesHashSet;
     private MainFrameGuiInterface mainFrame;
     private String configFilePath;
 
@@ -49,8 +49,7 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
 
             this.mainFrame = mainFrameGui;
 
-        }
-        else {
+        } else {
 
             throw new IllegalArgumentException("ERROR: MainFrameInitInterface must be of type MainFrameGuiInterface!");
         }
@@ -105,8 +104,7 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
 
                 CustomUserPropertiesDTO userProperties = mapper.readValue(getProperty(key), CustomUserPropertiesDTO.class);
 
-                mainFrame.getChatClientPropertiesHashMap().remove(key);
-                mainFrame.getChatClientPropertiesHashMap().put(key, userProperties);
+                mainFrame.getChatClientPropertiesHashMap().replace(key, userProperties);
 
             } catch (IOException e) {
 
@@ -122,8 +120,6 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
 
         ObjectMapper mapper = mainFrame.getObjectMapper();
 
-
-
         this.userPropertiesHashSet.forEach(user -> {
 
             String json = null;
@@ -134,10 +130,10 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
 
             } catch (IOException e) {
 
-                logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not save user " + user.getUsername(), e);
+                logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not save user " + user.username(), e);
             }
 
-            setProperty(user.getUsername(), json);
+            setProperty(user.username(), json);
         });
 
         PopupInterface popup = new PopupPanelImpl(mainFrame);
@@ -149,19 +145,44 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
     }
 
     @Override
-    public void addCustomerToHashSet(final CustomUserProperties customUserProperties) {
+    public void addCustomerToHashSet(final CustomUserPropertiesDTO customUserProperties) {
 
         userPropertiesHashSet.add(customUserProperties);
     }
 
     @Override
-    public CustomUserProperties getCustomUserProperties(final String username) {
+    public CustomUserPropertiesDTO getCustomUserProperties(final String username) {
 
-        final Optional<CustomUserProperties> userProperty = userPropertiesHashSet.stream()
-                .filter(customUserProperties -> customUserProperties.getUsername().equals(username))
-                .findFirst();
+        final Optional<CustomUserPropertiesDTO> userProperty =
+                userPropertiesHashSet.stream().filter(customUserProperties -> customUserProperties.username().equals(username)).findFirst();
 
         return userProperty.orElseThrow();
+    }
+
+    private void createFolderIfNotPresent(final File appDir) {
+
+        if (!appDir.exists()) {
+
+            final boolean mkdir = appDir.mkdir();
+
+            if (!mkdir) {
+
+                logger.log(java.util.logging.Level.SEVERE, "ERROR! Could not create app dir!");
+            }
+        }
+    }
+
+    private void createPropertiesFile(String configFilePath) {
+
+        try (FileOutputStream output = new FileOutputStream(configFilePath)) {
+
+            store(output, null);
+
+        } catch (IOException e) {
+
+            logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not create config file!", e);
+            throw new RuntimeException(e);
+        }
     }
 
     public void save() {
@@ -192,32 +213,6 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
         createPropertiesFile(configFilePath);
     }
 
-    private void createFolderIfNotPresent(final File appDir) {
-
-        if (!appDir.exists()) {
-
-            final boolean mkdir = appDir.mkdir();
-
-            if (!mkdir) {
-
-                logger.log(java.util.logging.Level.SEVERE, "ERROR! Could not create app dir!");
-            }
-        }
-    }
-
-    private void createPropertiesFile(String configFilePath) {
-
-        try (FileOutputStream output = new FileOutputStream(configFilePath)) {
-
-            store(output, null);
-
-        } catch (IOException e) {
-
-            logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not create config file!", e);
-            throw new RuntimeException(e);
-        }
-    }
-
     private boolean loadDataSuccessful() {
 
         try (FileInputStream input = new FileInputStream(configFilePath)) {
@@ -232,14 +227,14 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
         }
     }
 
-    public CustomUserProperties loaderThisClientProperties() {
+    public CustomUserPropertiesDTO loaderThisClientProperties() {
 
         final String clientProperties = getProperty("own");
 
         //replace "own" preset username
         if (this.mainFrame.getUsername() != null) {
 
-            return new CustomUserProperties(this.mainFrame.getUsername());
+            return new CustomUserPropertiesDTO(this.mainFrame.getUsername(), null, null);
         }
 
         if (clientProperties == null || clientProperties.isEmpty()) {
@@ -249,7 +244,7 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
 
         try {
 
-            return this.mainFrame.getObjectMapper().readValue(clientProperties, CustomUserProperties.class);
+            return this.mainFrame.getObjectMapper().readValue(clientProperties, CustomUserPropertiesDTO.class);
 
         } catch (JsonProcessingException e) {
 

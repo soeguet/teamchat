@@ -2,12 +2,10 @@ package com.soeguet.initialization;
 
 import com.soeguet.emoji.EmojiInitializer;
 import com.soeguet.emoji.interfaces.EmojiInitializerInterface;
-import com.soeguet.initialization.enums.Themes;
 import com.soeguet.initialization.interfaces.MainFrameInitInterface;
-import com.soeguet.initialization.themes.interfaces.ThemeManager;
 import com.soeguet.model.EnvVariables;
 import com.soeguet.properties.CustomProperties;
-import com.soeguet.properties.CustomUserProperties;
+import com.soeguet.properties.dto.CustomUserPropertiesDTO;
 
 import javax.swing.*;
 
@@ -70,7 +68,7 @@ public class ProgramInit {
 
         if (customProperties.checkIfConfigFileExists()) {
 
-            customProperties.addCustomerToHashSet(new CustomUserProperties(envVariables.getChatUsername()));
+            customProperties.addCustomerToHashSet(new CustomUserPropertiesDTO(envVariables.getChatUsername(), null, null));
 
             customProperties.saveProperties();
         }

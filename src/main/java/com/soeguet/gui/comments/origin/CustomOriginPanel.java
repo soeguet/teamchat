@@ -192,12 +192,9 @@ public class CustomOriginPanel extends JPanel {
         }
 
         // same sender, same time -> remove time
-        if (lastMessageTimestamp.equals(timeStamp)) {
-            return true;
-        }
+        return lastMessageTimestamp.equals(timeStamp);
 
         //just in case
-        return false;
     }
 
     /**
