@@ -2,40 +2,34 @@ package com.soeguet.initialization;
 
 import com.soeguet.emoji.EmojiInitializer;
 import com.soeguet.emoji.interfaces.EmojiInitializerInterface;
-import com.soeguet.gui.main_frame.ChatMainFrameImpl;
 import com.soeguet.initialization.enums.Themes;
-import com.soeguet.initialization.interfaces.EnvDataProviderInterface;
-import com.soeguet.initialization.interfaces.UserInteractionInterface;
+import com.soeguet.initialization.interfaces.MainFrameInitInterface;
 import com.soeguet.initialization.themes.interfaces.ThemeManager;
 import com.soeguet.model.EnvVariables;
 import com.soeguet.properties.CustomProperties;
 import com.soeguet.properties.CustomUserProperties;
 
 import javax.swing.*;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Properties;
 
 public class ProgramInit {
 
     private final ThemeManager themeManager;
+    private final MainFrameInitInterface mainFrame;
 
     /**
-     Initializes the ProgramInit object with the given EnvDataProvider and UserInteraction objects.
+     Initializes the program with the provided theme manager.
 
-     @param envDataProvider The object responsible for providing environmental data.
-     @param userInteraction The object responsible for interacting with the user.
-     @param themeManager    The object responsible for managing themes.
+     @param themeManager The theme manager to be used by the program.
      */
-    public ProgramInit(final ThemeManager themeManager) {
+    public ProgramInit(final MainFrameInitInterface mainFrame, final ThemeManager themeManager) {
 
+        this.mainFrame = mainFrame;
         this.themeManager = themeManager;
     }
 
     /**
      Initializes the graphical user interface of the application.
-     This method creates a new instance of the ChatMainFrameImpl class,
+     This method creates a new instance of the Chatthis.mainFrameImpl class,
      which represents the main frame of the chat application.
      The creation of the main frame is performed on the Event Dispatch Thread
      using the SwingUtilities.invokeLater() method, ensuring that the GUI is
@@ -50,39 +44,36 @@ public class ProgramInit {
 
         SwingUtilities.invokeLater(() -> {
 
-            //TODO change this to interface
-            ChatMainFrameImpl mainFrame = new ChatMainFrameImpl();
-
             //REMOVE remove later on
-            mainFrame.repositionChatFrameForTestingPurposes();
+            this.mainFrame.repositionChatFrameForTestingPurposes();
 
             //setup functionality
-            this.initializeProperties(mainFrame,envVariables);
-            this.initializeMainFrame(envVariables, mainFrame);
-            mainFrame.loadUsernameFromEnvVariables();
+            this.initializeProperties(envVariables);
+            this.initiliazeMainFrame();
+            this.mainFrame.loadUsernameFromEnvVariables(envVariables);
 
             //setup emojis
-            EmojiInitializerInterface emojiInitializer = new EmojiInitializer();
-            mainFrame.initEmojiList(emojiInitializer);
+            final EmojiInitializerInterface emojiInitializer = new EmojiInitializer();
+            this.mainFrame.initEmojiList(emojiInitializer);
 
             //operating system specific settings
-            mainFrame.setScrollPaneMargins();
+            this.mainFrame.setScrollPaneMargins();
 
             //setup GUI
-            this.setMainFrameTitle(mainFrame);
-            this.setGuiIcon(mainFrame);
+            this.mainFrame.setMainFrameTitle();
+            this.mainFrame.setGuiIcon();
 
-            mainFrame.setButtonIcons();
+            this.mainFrame.setButtonIcons();
 
-            mainFrame.setVisible(true);
+            this.mainFrame.setVisible(true);
         });
     }
 
-    private void initializeProperties(final ChatMainFrameImpl mainFrame, final EnvVariables envVariables) {
+    private void initializeProperties(final EnvVariables envVariables) {
 
         CustomProperties customProperties = CustomProperties.getProperties();
 
-        customProperties.setMainFrame(mainFrame);
+        customProperties.setMainFrame(this.mainFrame);
 
         if (customProperties.checkIfConfigFileExists()) {
 
@@ -95,68 +86,12 @@ public class ProgramInit {
         customProperties.populateHashMapWithNewValues();
     }
 
-    private void initializeMainFrame(final EnvVariables envVariables, final ChatMainFrameImpl mainFrame) {
+    private void initiliazeMainFrame() {
 
-        mainFrame.setEnvVariables(envVariables);
-        mainFrame.loadCustomProperties();
-        mainFrame.initGuiFunctionality();
-        mainFrame.initializeClientController();
-        mainFrame.initEmojiHandler();
-    }
-
-    private void setMainFrameTitle(final ChatMainFrameImpl mainFrame) {
-
-        final String title = "teamchat" + " - " +
-                chatVersion() +
-                "username: " +
-                mainFrame.getUsername();
-
-        mainFrame.setTitle(title);
-    }
-
-    /**
-     Sets the icon of the main frame in the graphical user interface.
-
-     @param mainFrame the instance of ChatMainFrameImpl representing the main frame of the application.
-     It is up to the caller to provide a valid instance of ChatMainFrameImpl.
-     */
-    private void setGuiIcon(final ChatMainFrameImpl mainFrame) {
-
-        URL iconURL = ChatMainFrameImpl.class.getResource("/icon.png");
-        assert iconURL != null;
-        ImageIcon icon = new ImageIcon(iconURL);
-        mainFrame.setIconImage(icon.getImage());
-    }
-
-    /**
-     Retrieves the version information of the chat application.
-
-     @return a string representing the version information of the chat application.
-     If the version information is available in the "version.properties" file,
-     it is retrieved and returned along with a suffix "- ". If the file is not found or an error occurs while reading the property,
-     an empty string is returned.
-     */
-    private String chatVersion() {
-
-        Properties properties = new Properties();
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("version.properties");
-
-        if (inputStream != null) {
-
-            try {
-
-                properties.load(inputStream);
-                return properties.getProperty("version") + " - ";
-
-            } catch (IOException e) {
-
-                throw new RuntimeException(e);
-            }
-
-        } else {
-
-            return "";
-        }
+        this.mainFrame.loadCustomProperties();
+        this.mainFrame.initGuiFunctionality();
+        this.mainFrame.initializeClientController();
+        this.mainFrame.initEmojiHandler();
     }
 
     /**

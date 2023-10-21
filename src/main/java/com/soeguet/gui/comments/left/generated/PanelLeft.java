@@ -4,7 +4,7 @@
 
 package com.soeguet.gui.comments.left.generated;
 
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.comments.origin.CustomOriginPanel;
 import net.miginfocom.swing.MigLayout;
 
@@ -17,7 +17,7 @@ public abstract class PanelLeft extends CustomOriginPanel {
 
 	protected Color borderColor;
 
-	public PanelLeft(MainFrameInterface mainFrame) {
+	public PanelLeft(MainFrameGuiInterface mainFrame) {
 		super(mainFrame);
 		initComponents();
 	}

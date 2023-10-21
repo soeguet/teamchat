@@ -5,7 +5,7 @@ import com.soeguet.emoji.EmojiHandler;
 import com.soeguet.emoji.EmojiPopUpMenuHandler;
 import com.soeguet.emoji.interfaces.EmojiPopupInterface;
 import com.soeguet.gui.comments.util.WrapEditorKit;
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.reply.generated.ReplyPanel;
 import com.soeguet.gui.reply.interfaces.ReplyInterface;
 import com.soeguet.model.MessageTypes;
@@ -23,11 +23,11 @@ import java.awt.event.MouseEvent;
 public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
 
     private final Point offset = new Point();
-    private final MainFrameInterface mainFrame;
+    private final MainFrameGuiInterface mainFrame;
     private final BaseModel messageModel;
     private final Border border = this.getBorder();
 
-    public ReplyPanelImpl(MainFrameInterface mainFrame, BaseModel messageModel) {
+    public ReplyPanelImpl(MainFrameGuiInterface mainFrame, BaseModel messageModel) {
 
         this.mainFrame = mainFrame;
         this.messageModel = messageModel;

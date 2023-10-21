@@ -2,9 +2,11 @@ package com.soeguet.properties;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.popups.PopupPanelImpl;
 import com.soeguet.gui.popups.interfaces.PopupInterface;
+import com.soeguet.initialization.interfaces.MainFrameInitInterface;
+import com.soeguet.properties.dto.CustomUserPropertiesDTO;
 import com.soeguet.properties.interfaces.CustomPropertiesInterface;
 
 import java.io.File;
@@ -23,7 +25,7 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
     private static CustomProperties properties;
     private final Logger logger = Logger.getLogger(CustomProperties.class.getName());
     private final Set<CustomUserProperties> userPropertiesHashSet;
-    private MainFrameInterface mainFrame;
+    private MainFrameGuiInterface mainFrame;
     private String configFilePath;
 
     private CustomProperties() {
@@ -41,9 +43,17 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
         return properties;
     }
 
-    public void setMainFrame(final MainFrameInterface mainFrame) {
+    public void setMainFrame(final MainFrameInitInterface mainFrame) {
 
-        this.mainFrame = mainFrame;
+        if (mainFrame instanceof MainFrameGuiInterface mainFrameGui) {
+
+            this.mainFrame = mainFrameGui;
+
+        }
+        else {
+
+            throw new IllegalArgumentException("ERROR: MainFrameInitInterface must be of type MainFrameGuiInterface!");
+        }
     }
 
     @Override
@@ -93,7 +103,7 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
 
             try {
 
-                CustomUserProperties userProperties = mapper.readValue(getProperty(key), CustomUserProperties.class);
+                CustomUserPropertiesDTO userProperties = mapper.readValue(getProperty(key), CustomUserPropertiesDTO.class);
 
                 mainFrame.getChatClientPropertiesHashMap().remove(key);
                 mainFrame.getChatClientPropertiesHashMap().put(key, userProperties);

@@ -1,6 +1,6 @@
 package com.soeguet.gui.comments.left;
 
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.left.generated.PanelLeft;
 import com.soeguet.gui.comments.util.QuotePanelImpl;
@@ -31,7 +31,7 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
      @param mainFrame the MainFrameInterface object to associate with the panel
      @param baseModel the BaseModel object to use for data access
      */
-    public PanelLeftImpl(MainFrameInterface mainFrame, BaseModel baseModel) {
+    public PanelLeftImpl(MainFrameGuiInterface mainFrame, BaseModel baseModel) {
 
         super(mainFrame);
 

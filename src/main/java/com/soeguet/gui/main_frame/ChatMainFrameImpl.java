@@ -17,15 +17,17 @@ import com.soeguet.gui.image_panel.interfaces.ImageInterface;
 import com.soeguet.gui.interrupt_dialog.InterruptDialogImpl;
 import com.soeguet.gui.interrupt_dialog.interfaces.InterruptDialogInterface;
 import com.soeguet.gui.main_frame.generated.ChatPanel;
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.notification_panel.NotificationImpl;
 import com.soeguet.gui.popups.PopupPanelImpl;
 import com.soeguet.gui.popups.interfaces.PopupInterface;
 import com.soeguet.gui.properties.PropertiesPanelImpl;
 import com.soeguet.gui.properties.interfaces.PropertiesInterface;
+import com.soeguet.initialization.interfaces.MainFrameInitInterface;
 import com.soeguet.model.EnvVariables;
 import com.soeguet.properties.CustomProperties;
 import com.soeguet.properties.CustomUserProperties;
+import com.soeguet.properties.dto.CustomUserPropertiesDTO;
 import com.soeguet.socket_client.ClientControllerImpl;
 import com.soeguet.socket_client.CustomWebsocketClient;
 import com.soeguet.socket_client.interfaces.ClientController;
@@ -44,10 +46,10 @@ import java.util.logging.Logger;
 /**
  Main GUI method
  */
-public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
+public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterface, MainFrameInitInterface {
 
     //FEATURE these need to be re-evaluated and maybe moved into the cache manager
-    private final HashMap<String, CustomUserProperties> chatClientPropertiesHashMap = new HashMap<>();
+    private final HashMap<String, CustomUserPropertiesDTO> chatClientPropertiesHashMap = new HashMap<>();
 
     //FEATURE cache comments on pane for hot replacements as HashSet -> data structure ready, implementation missing -> add to cache
     private final LinkedHashMap<Long, CommentInterface> commentsHashMap = new LinkedHashMap<>();
@@ -122,7 +124,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      Creates a new instance of ChatMainFrameImpl.
      */
     public ChatMainFrameImpl() {
-
     }
 
     public void setEnvVariables(final EnvVariables envVariables) {
@@ -167,12 +168,14 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
     /**
      Loads the username from the environment variables and assigns it to the appropriate field.
      */
-    public void loadUsernameFromEnvVariables() {
+    public void loadUsernameFromEnvVariables(final EnvVariables envVariables) {
+
+        this.envVariables = envVariables;
 
         //override username if saved in GUI by user
-        if (!envVariables.getChatUsername().isEmpty()) {
+        if (!this.envVariables.getChatUsername().isEmpty()) {
 
-            setUsername(envVariables.getChatUsername());
+            setUsername(this.envVariables.getChatUsername());
         }
     }
 
@@ -439,7 +442,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
      @return the HashMap containing the chat client properties
      */
     @Override
-    public HashMap<String, CustomUserProperties> getChatClientPropertiesHashMap() {
+    public HashMap<String, CustomUserPropertiesDTO> getChatClientPropertiesHashMap() {
 
         //FIXME this needs to be switched out with CustomClientProperties
         return chatClientPropertiesHashMap;
@@ -962,10 +965,41 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameInterface {
         form_pictureButton.setIcon(new ImageIcon(pictureUrl));
     }
 
+    public void setGuiIcon() {
+        URL iconURL = ChatMainFrameImpl.class.getResource("/icon.png");
+        assert iconURL != null;
+        ImageIcon icon = new ImageIcon(iconURL);
+        setIconImage(icon.getImage());
+    }
 
+    public void setMainFrameTitle() {
 
+        final String title = "teamchat" + " - " +
+                this.chatVersion() +
+                "username: " + getUsername();
 
+        setTitle(title);
+    }
+    private String chatVersion() {
 
+        Properties properties = new Properties();
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("version.properties");
 
+        if (inputStream != null) {
 
+            try {
+
+                properties.load(inputStream);
+                return properties.getProperty("version") + " - ";
+
+            } catch (IOException e) {
+
+                throw new RuntimeException(e);
+            }
+
+        } else {
+
+            return "";
+        }
+    }
 }

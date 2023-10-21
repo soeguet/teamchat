@@ -7,7 +7,7 @@ import com.soeguet.gui.comments.left.LinkLeftImpl;
 import com.soeguet.gui.comments.left.PanelLeftImpl;
 import com.soeguet.gui.comments.right.LinkRightImpl;
 import com.soeguet.gui.comments.right.PanelRightImpl;
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.MessageTypes;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
@@ -20,9 +20,9 @@ import java.util.Random;
 
 public class CommentManagerImpl implements CommentManager {
 
-    private final MainFrameInterface mainFrame;
+    private final MainFrameGuiInterface mainFrame;
 
-    public CommentManagerImpl(final MainFrameInterface mainFrame) {
+    public CommentManagerImpl(final MainFrameGuiInterface mainFrame) {
 
         this.mainFrame = mainFrame;
     }

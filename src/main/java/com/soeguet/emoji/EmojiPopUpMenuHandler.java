@@ -1,7 +1,7 @@
 package com.soeguet.emoji;
 
 import com.soeguet.emoji.interfaces.EmojiPopupInterface;
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -15,13 +15,13 @@ import java.util.logging.Logger;
 
 public class EmojiPopUpMenuHandler implements EmojiPopupInterface {
 
-    private final MainFrameInterface mainFrame;
+    private final MainFrameGuiInterface mainFrame;
     private final JTextPane textPane;
     private final JButton emojiButton;
 
     private final Logger logger = Logger.getLogger(EmojiPopUpMenuHandler.class.getName());
 
-    public EmojiPopUpMenuHandler(MainFrameInterface mainFrame, JTextPane textPane, JButton emojiButton) {
+    public EmojiPopUpMenuHandler(MainFrameGuiInterface mainFrame, JTextPane textPane, JButton emojiButton) {
 
         this.mainFrame = mainFrame;
         this.textPane = textPane;

@@ -1,6 +1,6 @@
 package com.soeguet.gui.option_pane.links;
 
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.option_pane.links.dtos.MetadataStorageRecord;
 import com.soeguet.gui.option_pane.links.generated.LinkDialog;
 import com.soeguet.gui.option_pane.links.interfaces.LinkDialogInterface;
@@ -13,7 +13,7 @@ import java.awt.image.BufferedImage;
 
 public class LinkDialogImpl extends LinkDialog implements LinkDialogInterface {
 
-    private final MainFrameInterface mainFrame;
+    private final MainFrameGuiInterface mainFrame;
     private final LinkDialogHandler linkDialogHandler;
 
     /**
@@ -22,7 +22,7 @@ public class LinkDialogImpl extends LinkDialog implements LinkDialogInterface {
      @param mainFrame         The MainFrameInterface object representing the main frame.
      @param linkDialogHandler The LinkDialogHandler object used to handle dialog events.
      */
-    public LinkDialogImpl(MainFrameInterface mainFrame, LinkDialogHandler linkDialogHandler) {
+    public LinkDialogImpl(MainFrameGuiInterface mainFrame, LinkDialogHandler linkDialogHandler) {
 
         super((Window) mainFrame);
         this.mainFrame = mainFrame;

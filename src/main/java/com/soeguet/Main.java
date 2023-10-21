@@ -1,5 +1,6 @@
 package com.soeguet;
 
+import com.soeguet.gui.main_frame.ChatMainFrameImpl;
 import com.soeguet.initialization.ProgramInit;
 import com.soeguet.initialization.enums.Themes;
 import com.soeguet.initialization.implementations.EnvDataProviderImpl;
@@ -7,6 +8,7 @@ import com.soeguet.initialization.implementations.EnvVarHandler;
 import com.soeguet.initialization.implementations.UserInteractionImpl;
 import com.soeguet.initialization.interfaces.EnvDataProviderInterface;
 import com.soeguet.initialization.interfaces.EnvVarHandlerInterface;
+import com.soeguet.initialization.interfaces.MainFrameInitInterface;
 import com.soeguet.initialization.interfaces.UserInteractionInterface;
 import com.soeguet.initialization.themes.implementations.ThemeManagerImpl;
 import com.soeguet.initialization.themes.implementations.ThemeSetterImpl;
@@ -24,11 +26,14 @@ public class Main {
 
         final UserInteractionInterface userInteraction = new UserInteractionImpl();
         final EnvDataProviderInterface envDataProvider = new EnvDataProviderImpl();
-        EnvVarHandlerInterface envVarHandler = new EnvVarHandler(envDataProvider, userInteraction);
+        final EnvVarHandlerInterface envVarHandler = new EnvVarHandler(envDataProvider, userInteraction);
+
+        //collect environment variables from system or user input
         final EnvVariables environmentVariables = envVarHandler.collectEnvVariables();
 
         //initialize program and pass dependencies
-        ProgramInit programInit = new ProgramInit( themeManager);
+        final MainFrameInitInterface mainFrame = new ChatMainFrameImpl();
+        final ProgramInit programInit = new ProgramInit(mainFrame, themeManager);
 
         //FEATURE make themes configurable
         programInit.setTheme(Themes.INTELLIJ);

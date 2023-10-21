@@ -2,7 +2,7 @@ package com.soeguet.gui.comments.origin;
 
 import com.soeguet.gui.comments.util.QuotePanelImpl;
 import com.soeguet.gui.comments.util.WrapEditorKit;
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.reply.ReplyPanelImpl;
 import com.soeguet.gui.reply.interfaces.ReplyInterface;
 import com.soeguet.model.jackson.BaseModel;
@@ -28,7 +28,7 @@ import java.util.logging.Logger;
  */
 public class CustomOriginPanel extends JPanel {
 
-    private final MainFrameInterface mainFrame;
+    private final MainFrameGuiInterface mainFrame;
     protected Logger LOGGER = Logger.getLogger(CustomOriginPanel.class.getName());
 
     /**
@@ -36,7 +36,7 @@ public class CustomOriginPanel extends JPanel {
 
      @param mainFrame the MainFrameInterface object that will be used by the CustomOriginPanel
      */
-    public CustomOriginPanel(MainFrameInterface mainFrame) {
+    public CustomOriginPanel(MainFrameGuiInterface mainFrame) {
 
         this.mainFrame = mainFrame;
     }

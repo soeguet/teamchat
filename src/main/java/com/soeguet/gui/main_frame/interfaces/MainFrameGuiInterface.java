@@ -4,10 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.behaviour.interfaces.GuiFunctionality;
 import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.notification_panel.NotificationImpl;
-import com.soeguet.properties.CustomProperties;
 import com.soeguet.properties.CustomUserProperties;
+import com.soeguet.properties.dto.CustomUserPropertiesDTO;
 import com.soeguet.socket_client.CustomWebsocketClient;
-import com.soeguet.util.NotificationStatus;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
@@ -18,7 +17,7 @@ import java.util.List;
 /**
  This interface defines the main GUI elements and functionality that can be accessed and manipulated by other classes.
  */
-public interface MainFrameInterface {
+public interface MainFrameGuiInterface {
 
     /**
      Retrieves the JTextPane component of the text editor.
@@ -124,7 +123,7 @@ public interface MainFrameInterface {
 
      @return the HashMap containing the chat client properties
      */
-    HashMap<String, CustomUserProperties> getChatClientPropertiesHashMap();
+    HashMap<String, CustomUserPropertiesDTO> getChatClientPropertiesHashMap();
 
     /**
      * Returns the Y position of the notification.

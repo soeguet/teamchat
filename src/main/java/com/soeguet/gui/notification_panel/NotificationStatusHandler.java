@@ -1,13 +1,13 @@
 package com.soeguet.gui.notification_panel;
 
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.notification_panel.interfaces.NotificationStatusHandlerInterface;
 import com.soeguet.util.NotificationStatus;
 
 public class NotificationStatusHandler implements NotificationStatusHandlerInterface {
-    private final MainFrameInterface mainFrame;
+    private final MainFrameGuiInterface mainFrame;
 
-    public NotificationStatusHandler(final MainFrameInterface mainFrame) {
+    public NotificationStatusHandler(final MainFrameGuiInterface mainFrame) {
 
         this.mainFrame = mainFrame;
     }

@@ -1,6 +1,6 @@
 package com.soeguet.gui.comments.util;
 
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.comments.util.generated.QuotePanel;
 
 import javax.swing.*;
@@ -14,9 +14,9 @@ import java.util.logging.Logger;
 public class QuotePanelImpl extends QuotePanel {
 
     private final Logger logger = Logger.getLogger(QuotePanelImpl.class.getName());
-    private final MainFrameInterface mainFrame;
+    private final MainFrameGuiInterface mainFrame;
 
-    public QuotePanelImpl(MainFrameInterface mainFrame, String text, String sender, String time) {
+    public QuotePanelImpl(MainFrameGuiInterface mainFrame, String text, String sender, String time) {
 
         this.mainFrame = mainFrame;
 
@@ -34,7 +34,7 @@ public class QuotePanelImpl extends QuotePanel {
         processText(actualTextPane, mainFrame, doc,text);
     }
 
-    private void processText(JTextPane actualTextPane, MainFrameInterface gui, StyledDocument doc, String text) {
+    private void processText(JTextPane actualTextPane, MainFrameGuiInterface gui, StyledDocument doc, String text) {
 
         try {
             for (String word : text.split(" ")) {
@@ -63,7 +63,7 @@ public class QuotePanelImpl extends QuotePanel {
      * @param doc The StyledDocument where the emoji image will be inserted.
      * @param word The word associated with the emoji image.
      */
-    private void processEmoji(JTextPane actualTextPane, MainFrameInterface gui, StyledDocument doc, String word) {
+    private void processEmoji(JTextPane actualTextPane, MainFrameGuiInterface gui, StyledDocument doc, String word) {
 
         Style style = createImageStyle(actualTextPane, gui, word);
 
@@ -85,7 +85,7 @@ public class QuotePanelImpl extends QuotePanel {
      * @param word the word associated with the image to be inserted
      * @return the Style with the icon set for the image
      */
-    private static Style createImageStyle(JTextPane actualTextPane, MainFrameInterface gui, String word) {
+    private static Style createImageStyle(JTextPane actualTextPane, MainFrameGuiInterface gui, String word) {
 
         Style style = actualTextPane.addStyle("Image", null);
 

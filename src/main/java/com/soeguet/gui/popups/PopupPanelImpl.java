@@ -3,7 +3,7 @@ package com.soeguet.gui.popups;
 import com.soeguet.cache.factory.CacheManagerFactory;
 import com.soeguet.cache.implementations.MessageQueue;
 import com.soeguet.cache.manager.CacheManager;
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.popups.generated.PopupPanel;
 import com.soeguet.gui.popups.interfaces.PopupInterface;
 
@@ -12,10 +12,10 @@ import java.awt.event.MouseEvent;
 
 public class PopupPanelImpl extends PopupPanel implements PopupInterface {
 
-    private final MainFrameInterface mainFrame;
+    private final MainFrameGuiInterface mainFrame;
     private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
 
-    public PopupPanelImpl(MainFrameInterface mainFrame) {
+    public PopupPanelImpl(MainFrameGuiInterface mainFrame) {
 
         this.mainFrame = mainFrame;
     }

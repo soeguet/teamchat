@@ -1,12 +1,12 @@
 package com.soeguet.gui.properties;
 
-import com.soeguet.gui.main_frame.interfaces.MainFrameInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.popups.PopupPanelImpl;
 import com.soeguet.gui.popups.interfaces.PopupInterface;
 import com.soeguet.gui.properties.generated.PropertiesPanel;
 import com.soeguet.gui.properties.interfaces.PropertiesInterface;
 import com.soeguet.properties.CustomProperties;
-import com.soeguet.properties.CustomUserProperties;
+import com.soeguet.properties.dto.CustomUserPropertiesDTO;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,13 +16,72 @@ import java.awt.event.MouseEvent;
 
 public class PropertiesPanelImpl extends PropertiesPanel implements PropertiesInterface {
 
-    private final MainFrameInterface mainFrame;
+    private final MainFrameGuiInterface mainFrame;
     private final Point offset = new Point();
-    private CustomUserProperties selectedClientInComboBox;
+    private CustomUserPropertiesDTO selectedClientInComboBox;
 
-    public PropertiesPanelImpl(MainFrameInterface mainFrame) {
+    public PropertiesPanelImpl(MainFrameGuiInterface mainFrame) {
 
         this.mainFrame = mainFrame;
+    }
+
+    /**
+     This method sets the position of the current element.
+     It sets the bounds of the element based on the size of the main text panel in the GUI.
+     The element is added to the main text panel layered pane with a modal layer.
+
+     Preconditions:
+     - The main frame must be set in the GUI.
+
+     Postconditions:
+     - The position of the element is set.
+     - The element is added to the main text panel layered pane.
+     */
+    @Override
+    public void setPosition() {
+
+        int textPaneWidth = mainFrame.getMainTextPanelLayeredPane().getWidth();
+        int textPaneHeight = mainFrame.getMainTextPanelLayeredPane().getHeight();
+
+        this.setBounds(20, 20, textPaneWidth - 40, textPaneHeight - 40);
+
+        mainFrame.getMainTextPanelLayeredPane().add(this, JLayeredPane.MODAL_LAYER);
+    }
+
+    /**
+     This method sets up the own tabbed pane with the custom user properties.
+     It sets the username text field with the username from the own client properties.
+     It sets the background color of the border color panel with the border color from the own client properties.
+
+     Preconditions:
+     - The main frame must be set in the GUI.
+     - The "own" chat client properties must exist in the chat client properties hash map.
+
+     Postconditions:
+     - The own tabbed pane is set up with the custom user properties.
+     - The username text field is set with the username from the own client properties.
+     - The background color of the border color panel is set with the border color from the own client properties.
+     */
+    @Override
+    public void setupOwnTabbedPane() {
+
+        CustomUserPropertiesDTO ownClient = mainFrame.getChatClientPropertiesHashMap().get("own");
+
+        if (ownClient == null) {
+
+            throw new RuntimeException("own client properties not found");
+        }
+
+        if (ownClient.username() == null) {
+
+            getOwnUserNameTextField().setText("me");
+            ownClient = new CustomUserPropertiesDTO("me", ownClient.nickname(), new Color(ownClient.getBorderColor()).toString());
+        } else {
+
+            getOwnUserNameTextField().setText(ownClient.username());
+        }
+
+        getOwnBorderColorPanel().setBackground(new Color(ownClient.getBorderColor()));
     }
 
     /**
@@ -85,75 +144,16 @@ public class PropertiesPanelImpl extends PropertiesPanel implements PropertiesIn
      Postconditions:
      - The components on the properties panel are set up with the values from the CustomUserProperties object.
      */
-    private void setUpComponentsOnPropertiesPanel(CustomUserProperties client) {
+    private void setUpComponentsOnPropertiesPanel(CustomUserPropertiesDTO client) {
 
         if (client == null) {
 
             return;
         }
 
-        form_usernameTextField.setText(client.getUsername());
-        form_nicknameTextField.setText(client.getNickname());
+        form_usernameTextField.setText(client.username());
+        form_nicknameTextField.setText(client.nickname());
         form_colorPickerPanel.setBackground(new Color(client.getBorderColor()));
-    }
-
-    /**
-     This method sets the position of the current element.
-     It sets the bounds of the element based on the size of the main text panel in the GUI.
-     The element is added to the main text panel layered pane with a modal layer.
-
-     Preconditions:
-     - The main frame must be set in the GUI.
-
-     Postconditions:
-     - The position of the element is set.
-     - The element is added to the main text panel layered pane.
-     */
-    @Override
-    public void setPosition() {
-
-        int textPaneWidth = mainFrame.getMainTextPanelLayeredPane().getWidth();
-        int textPaneHeight = mainFrame.getMainTextPanelLayeredPane().getHeight();
-
-        this.setBounds(20, 20, textPaneWidth - 40, textPaneHeight - 40);
-
-        mainFrame.getMainTextPanelLayeredPane().add(this, JLayeredPane.MODAL_LAYER);
-    }
-
-    /**
-     This method sets up the own tabbed pane with the custom user properties.
-     It sets the username text field with the username from the own client properties.
-     It sets the background color of the border color panel with the border color from the own client properties.
-
-     Preconditions:
-     - The main frame must be set in the GUI.
-     - The "own" chat client properties must exist in the chat client properties hash map.
-
-     Postconditions:
-     - The own tabbed pane is set up with the custom user properties.
-     - The username text field is set with the username from the own client properties.
-     - The background color of the border color panel is set with the border color from the own client properties.
-     */
-    @Override
-    public void setupOwnTabbedPane() {
-
-        CustomUserProperties ownClient = mainFrame.getChatClientPropertiesHashMap().get("own");
-
-        if (ownClient == null) {
-
-            ownClient = new CustomUserProperties();
-        }
-
-        if (ownClient.getUsername() == null) {
-
-            getOwnUserNameTextField().setText("me");
-
-        } else {
-
-            getOwnUserNameTextField().setText(ownClient.getUsername());
-        }
-
-        getOwnBorderColorPanel().setBackground(new Color(ownClient.getBorderColor()));
     }
 
     @Override
@@ -230,7 +230,7 @@ public class PropertiesPanelImpl extends PropertiesPanel implements PropertiesIn
     @Override
     protected void ownBorderColorPanelMouseClicked(MouseEvent e) {
 
-        CustomUserProperties ownProperties = mainFrame.getChatClientPropertiesHashMap().get("own");
+        CustomUserPropertiesDTO ownProperties = mainFrame.getChatClientPropertiesHashMap().get("own");
         Color borderColor = null;
 
         if (ownProperties != null) {
@@ -241,8 +241,8 @@ public class PropertiesPanelImpl extends PropertiesPanel implements PropertiesIn
 
             final String username = mainFrame.getUsername() != null ? mainFrame.getUsername() : "own";
             mainFrame.setUsername(username);
-            ownProperties = new CustomUserProperties(username);
-            mainFrame.getChatClientPropertiesHashMap().put("own", ownProperties);
+            CustomUserPropertiesDTO updatedOwnProperties = new CustomUserPropertiesDTO(username, ownProperties.nickname() == null ? null : ownProperties.nickname(), ownProperties.borderColor());
+            mainFrame.getChatClientPropertiesHashMap().replace("own", updatedOwnProperties);
         }
 
         Color color = JColorChooser.showDialog(this, "Choose a color", (borderColor != null ? borderColor : Color.BLACK));
@@ -250,7 +250,8 @@ public class PropertiesPanelImpl extends PropertiesPanel implements PropertiesIn
         if (color != null) {
 
             getOwnBorderColorPanel().setBackground(color);
-            ownProperties.setBorderColor(color.getRGB());
+            CustomUserPropertiesDTO updatedOwnProperties = new CustomUserPropertiesDTO(ownProperties.username(), ownProperties.nickname() == null ? null : ownProperties.nickname(), String.valueOf(color.getRGB()));
+            mainFrame.getChatClientPropertiesHashMap().replace("own", updatedOwnProperties);
         }
     }
 
@@ -260,13 +261,14 @@ public class PropertiesPanelImpl extends PropertiesPanel implements PropertiesIn
         //TODO clean up this part
         String ownName = getOwnUserNameTextField().getText();
 
-        mainFrame.getChatClientPropertiesHashMap().get("own").setUsername(ownName);
+        final CustomUserPropertiesDTO ownPropertiesDTO = mainFrame.getChatClientPropertiesHashMap().get("own");
+        mainFrame.getChatClientPropertiesHashMap().replace("own", new CustomUserPropertiesDTO(ownName, ownPropertiesDTO.nickname(), ownPropertiesDTO.borderColor()));
         mainFrame.setUsername(ownName);
 
 ///
         if (form_clientSelectorComboBox.getItemCount() > 0) {
 
-            final String selectedUsername = selectedClientInComboBox.getUsername();
+            final String selectedUsername = selectedClientInComboBox.username();
             selectedClientInComboBox = mainFrame.getChatClientPropertiesHashMap().get(selectedUsername);
         }
 
@@ -280,7 +282,8 @@ public class PropertiesPanelImpl extends PropertiesPanel implements PropertiesIn
         String nickname = getNicknameTextField().getText();
         String username = getUsernameTextField().getText();
 
-        mainFrame.getChatClientPropertiesHashMap().get(username).setNickname(nickname);
+        final CustomUserPropertiesDTO customUserPropertiesDTO = mainFrame.getChatClientPropertiesHashMap().get(username);
+        mainFrame.getChatClientPropertiesHashMap().replace(username, new CustomUserPropertiesDTO(username, nickname, customUserPropertiesDTO.borderColor()));
 
         ///
 
@@ -324,7 +327,8 @@ public class PropertiesPanelImpl extends PropertiesPanel implements PropertiesIn
         if (color != null) {
 
             getColorPickerPanel().setBackground(color);
-            mainFrame.getChatClientPropertiesHashMap().get(selectedItem).setBorderColor(color.getRGB());
+            final CustomUserPropertiesDTO customUserPropertiesDTO = mainFrame.getChatClientPropertiesHashMap().get(selectedItem);
+            mainFrame.getChatClientPropertiesHashMap().replace(selectedItem, new CustomUserPropertiesDTO(customUserPropertiesDTO.username(), customUserPropertiesDTO.nickname(), String.valueOf(color.getRGB())));
         }
     }
 }
