@@ -3,7 +3,7 @@ package com.soeguet.initialization.interfaces;
 /**
  Interface for retrieving environment data based on a given key.
  */
-public interface EnvDataProvider {
+public interface EnvDataProviderInterface {
 
     /**
      Retrieve environment data for a given key.

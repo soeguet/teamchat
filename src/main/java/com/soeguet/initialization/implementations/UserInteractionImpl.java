@@ -1,6 +1,6 @@
 package com.soeguet.initialization.implementations;
 
-import com.soeguet.initialization.interfaces.UserInteraction;
+import com.soeguet.initialization.interfaces.UserInteractionInterface;
 
 import javax.swing.*;
 
@@ -8,7 +8,7 @@ import javax.swing.*;
  Implementation of the UserInteraction interface.
  Provides methods for user interaction in a graphical user interface (GUI) using JOptionPane.
  */
-public class UserInteractionImpl implements UserInteraction {
+public class UserInteractionImpl implements UserInteractionInterface {
 
     /**
      Asks the user to enter their username.

@@ -4,8 +4,8 @@ import com.soeguet.emoji.EmojiInitializer;
 import com.soeguet.emoji.interfaces.EmojiInitializerInterface;
 import com.soeguet.gui.main_frame.ChatMainFrameImpl;
 import com.soeguet.initialization.enums.Themes;
-import com.soeguet.initialization.interfaces.EnvDataProvider;
-import com.soeguet.initialization.interfaces.UserInteraction;
+import com.soeguet.initialization.interfaces.EnvDataProviderInterface;
+import com.soeguet.initialization.interfaces.UserInteractionInterface;
 import com.soeguet.initialization.themes.interfaces.ThemeManager;
 import com.soeguet.model.EnvVariables;
 import com.soeguet.properties.CustomProperties;
@@ -19,8 +19,6 @@ import java.util.Properties;
 
 public class ProgramInit {
 
-    private final EnvDataProvider envDataProvider;
-    private final UserInteraction userInteraction;
     private final ThemeManager themeManager;
 
     /**
@@ -30,55 +28,9 @@ public class ProgramInit {
      @param userInteraction The object responsible for interacting with the user.
      @param themeManager    The object responsible for managing themes.
      */
-    public ProgramInit(EnvDataProvider envDataProvider, UserInteraction userInteraction, final ThemeManager themeManager) {
+    public ProgramInit(final ThemeManager themeManager) {
 
-        this.envDataProvider = envDataProvider;
-        this.userInteraction = userInteraction;
         this.themeManager = themeManager;
-    }
-
-    /**
-     Collects the environment variables needed for program initialization.
-
-     @return An EnvVariables object containing the collected environment variables.
-     */
-    public EnvVariables collectEnvVariables() {
-
-        //username
-        final String username = retrieveUsername();
-        validateUsernameInput(username);
-
-        //chat ip and port
-        final String chatIp = envDataProvider.getEnvData("CHAT_IP");
-        final String chatPort = envDataProvider.getEnvData("CHAT_PORT");
-
-        return new EnvVariables(username, chatIp, chatPort);
-    }
-
-    /**
-     Retrieves the username for the chat.
-
-     @return The username for the chat.
-     */
-    private String retrieveUsername() {
-
-        String chatUsername = envDataProvider.getEnvData("CHAT_USERNAME");
-
-        return (chatUsername != null && !chatUsername.isEmpty()) ? chatUsername : userInteraction.askForUsername();
-    }
-
-    /**
-     Validates the username input.
-     If the given username is null or empty, an error message is shown.
-
-     @param username The username to validate.
-     */
-    private void validateUsernameInput(String username) {
-
-        if (username == null || username.isEmpty()) {
-
-            userInteraction.showError("Username must not be empty");
-        }
     }
 
     /**

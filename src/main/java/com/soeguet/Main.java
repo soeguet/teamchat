@@ -3,9 +3,11 @@ package com.soeguet;
 import com.soeguet.initialization.ProgramInit;
 import com.soeguet.initialization.enums.Themes;
 import com.soeguet.initialization.implementations.EnvDataProviderImpl;
+import com.soeguet.initialization.implementations.EnvVarHandler;
 import com.soeguet.initialization.implementations.UserInteractionImpl;
-import com.soeguet.initialization.interfaces.EnvDataProvider;
-import com.soeguet.initialization.interfaces.UserInteraction;
+import com.soeguet.initialization.interfaces.EnvDataProviderInterface;
+import com.soeguet.initialization.interfaces.EnvVarHandlerInterface;
+import com.soeguet.initialization.interfaces.UserInteractionInterface;
 import com.soeguet.initialization.themes.implementations.ThemeManagerImpl;
 import com.soeguet.initialization.themes.implementations.ThemeSetterImpl;
 import com.soeguet.initialization.themes.interfaces.ThemeManager;
@@ -19,12 +21,14 @@ public class Main {
         //set up dependencies
         final ThemeSetter themeSetter = new ThemeSetterImpl();
         final ThemeManager themeManager = new ThemeManagerImpl(themeSetter);
-        final UserInteraction userInteraction = new UserInteractionImpl();
-        final EnvDataProvider envDataProvider = new EnvDataProviderImpl();
+
+        final UserInteractionInterface userInteraction = new UserInteractionImpl();
+        final EnvDataProviderInterface envDataProvider = new EnvDataProviderImpl();
+        EnvVarHandlerInterface envVarHandler = new EnvVarHandler(envDataProvider, userInteraction);
+        final EnvVariables environmentVariables = envVarHandler.collectEnvVariables();
 
         //initialize program and pass dependencies
-        ProgramInit programInit = new ProgramInit(envDataProvider, userInteraction, themeManager);
-        final EnvVariables environmentVariables = programInit.collectEnvVariables();
+        ProgramInit programInit = new ProgramInit( themeManager);
 
         //FEATURE make themes configurable
         programInit.setTheme(Themes.INTELLIJ);

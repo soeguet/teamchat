@@ -1,11 +1,11 @@
 package com.soeguet.initialization.implementations;
 
-import com.soeguet.initialization.interfaces.EnvDataProvider;
+import com.soeguet.initialization.interfaces.EnvDataProviderInterface;
 
 /**
  Implementation of the EnvDataProvider interface for retrieving environment variable values.
  */
-public class EnvDataProviderImpl implements EnvDataProvider {
+public class EnvDataProviderImpl implements EnvDataProviderInterface {
 
     /**
      Retrieves the value of the specified environment variable.
