@@ -1,5 +1,5 @@
 # TeamChat
-### v1.0.3
+### v1.0.4
 
 <div style="text-align: center;">
 <img src="pictures/img.png" alt="img" height="600"/>
