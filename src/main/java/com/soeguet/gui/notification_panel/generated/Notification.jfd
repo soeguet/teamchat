@@ -91,8 +91,8 @@ new FormModel {
 								add( new FormComponent( "javax.swing.JTextPane" ) {
 									name: "notificationMainMessage"
 									"text": "text"
-									"minimumSize": new java.awt.Dimension( 62, 72 )
-									"preferredSize": new java.awt.Dimension( 62, 72 )
+									"minimumSize": new java.awt.Dimension( 62, 35 )
+									"preferredSize": new java.awt.Dimension( 62, 35 )
 								} )
 							}, new FormLayoutConstraints( class java.lang.String ) {
 								"value": "Center"

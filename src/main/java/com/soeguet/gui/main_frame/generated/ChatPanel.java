@@ -290,6 +290,7 @@ public abstract class ChatPanel extends JFrame {
 
 						//---- form_internalNotificationsMenuItem ----
 						this.form_internalNotificationsMenuItem.setText("internal - on");
+						this.form_internalNotificationsMenuItem.setSelected(true);
 						this.form_internalNotificationsMenuItem.addItemListener(e -> internalNotificationsMenuItemItemStateChanged(e));
 						this.form_menu1.add(this.form_internalNotificationsMenuItem);
 

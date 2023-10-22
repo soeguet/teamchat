@@ -146,11 +146,9 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
                     //check if link
                     if (data.startsWith("http://") || data.startsWith("https://")) {
 
-                        //FIXME link detection not working properly
                         //send the link
                         final String finalData = data;
 
-                        //FIXME display notification with links is off right now "includes {LINK}"
                         SwingUtilities.invokeLater(() -> {
 
                             callLinkConfirmationDialog(finalData);
@@ -164,8 +162,6 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
                     return originalHandler.importData(jComponent, transferable);
                 }
 
-                //TODO check if this is right or false was the better return value
-                //                return false;
                 return originalHandler.importData(jComponent, transferable);
             }
         });

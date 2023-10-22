@@ -215,8 +215,8 @@ public abstract class Notification extends JDialog {
 
 							//---- form_notificationMainMessage ----
 							this.form_notificationMainMessage.setText("text");
-							this.form_notificationMainMessage.setMinimumSize(new Dimension(62, 72));
-							this.form_notificationMainMessage.setPreferredSize(new Dimension(62, 72));
+							this.form_notificationMainMessage.setMinimumSize(new Dimension(62, 35));
+							this.form_notificationMainMessage.setPreferredSize(new Dimension(62, 35));
 							this.form_scrollPane1.setViewportView(this.form_notificationMainMessage);
 						}
 						this.form_panel10.add(this.form_scrollPane1, BorderLayout.CENTER);

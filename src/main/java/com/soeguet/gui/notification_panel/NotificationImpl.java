@@ -116,20 +116,20 @@ public class NotificationImpl extends Notification implements NotificationInterf
 
         replaceEmojiTextToIconOnTextPane(messageModel.getMessage());
 
-        final int messageLength = messageModel.getMessage().length();
+//        final int messageLength = messageModel.getMessage().length();
 
-        if (messageLength < 30) {
-
-            adjustNotificationPanelHeight(1);
-
-        } else if (messageLength > 90) {
-
-            adjustNotificationPanelHeight(2);
-
-        } else if (messageLength > 60) {
-
-            adjustNotificationPanelHeight(3);
-        }
+//        if (messageLength < 30) {
+//
+//            adjustNotificationPanelHeight(1);
+//
+//        } else if (messageLength > 90) {
+//
+//            adjustNotificationPanelHeight(2);
+//
+//        } else if (messageLength > 60) {
+//
+//            adjustNotificationPanelHeight(3);
+//        }
     }
 
     private int determineScreenWidth() {
@@ -271,19 +271,19 @@ public class NotificationImpl extends Notification implements NotificationInterf
 
         replaceEmojiTextToIconOnTextPane(messageModel.getMessage());
 
-        final int messageLength = messageModel.getMessage().length();
+//        final int messageLength = messageModel.getMessage().length();
 
-        if (messageLength < 30) {
-
-            adjustNotificationPanelHeight(1);
-
-        } else if (messageLength > 90) {
-
-            adjustNotificationPanelHeight(2);
-
-        } else if (messageLength > 60) {
-
-            adjustNotificationPanelHeight(3);
-        }
+//        if (messageLength < 30) {
+//
+//            adjustNotificationPanelHeight(1);
+//
+//        } else if (messageLength > 90) {
+//
+//            adjustNotificationPanelHeight(2);
+//
+//        } else if (messageLength > 60) {
+//
+//            adjustNotificationPanelHeight(3);
+//        }
     }
 }

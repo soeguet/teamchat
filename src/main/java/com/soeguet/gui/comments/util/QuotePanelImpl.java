@@ -1,7 +1,7 @@
 package com.soeguet.gui.comments.util;
 
-import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.comments.util.generated.QuotePanel;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
@@ -22,7 +22,7 @@ public class QuotePanelImpl extends QuotePanel {
 
         this.getQuoteText().setEditorKit(new WrapEditorKit());
 
-        createTextOnPane(this.getQuoteText(),text);
+        createTextOnPane(this.getQuoteText(), text);
         this.getQuoteSender().setText(sender);
         this.getQuoteTime().setText(time);
     }
@@ -31,20 +31,20 @@ public class QuotePanelImpl extends QuotePanel {
 
         StyledDocument doc = actualTextPane.getStyledDocument();
 
-        processText(actualTextPane, mainFrame, doc,text);
+        processText(actualTextPane, doc, text);
     }
 
-    private void processText(JTextPane actualTextPane, MainFrameGuiInterface gui, StyledDocument doc, String text) {
+    private void processText(JTextPane actualTextPane, StyledDocument styledDocument, String text) {
 
         try {
             for (String word : text.split(" ")) {
 
-                if (gui.getEmojiList().containsKey(word)) {
-                    processEmoji(actualTextPane, gui, doc, word);
+                if (mainFrame.getEmojiList().containsKey(word)) {
+                    processEmoji(actualTextPane, styledDocument, word);
 
                 } else {
 
-                    doc.insertString(doc.getLength(), word + " ", null);
+                    styledDocument.insertString(styledDocument.getLength(), word + " ", null);
                 }
 
             }
@@ -57,16 +57,20 @@ public class QuotePanelImpl extends QuotePanel {
     }
 
     /**
-     * Processes and inserts an emoji image into a styled document.
-     *
-     * @param actualTextPane The JTextPane where the emoji image will be inserted.
-     * @param gui The MainFrameInterface that provides the necessary GUI functionalities.
-     * @param doc The StyledDocument where the emoji image will be inserted.
-     * @param word The word associated with the emoji image.
-     */
-    private void processEmoji(JTextPane actualTextPane, MainFrameGuiInterface gui, StyledDocument doc, String word) {
+     Processes and inserts an emoji image into a styled document.
 
-        Style style = createImageStyle(actualTextPane, gui, word);
+     @param actualTextPane
+     The JTextPane where the emoji image will be inserted.
+     @param gui
+     The MainFrameInterface that provides the necessary GUI functionalities.
+     @param doc
+     The StyledDocument where the emoji image will be inserted.
+     @param word
+     The word associated with the emoji image.
+     */
+    private void processEmoji(JTextPane actualTextPane, StyledDocument doc, String word) {
+
+        Style style = createImageStyle(actualTextPane, word);
 
         try {
 
@@ -80,18 +84,22 @@ public class QuotePanelImpl extends QuotePanel {
     }
 
     /**
-     * Creates a Style with an icon for inserting an image in a JTextPane.
-     *
-     * @param actualTextPane the JTextPane in which the image should be inserted
-     * @param gui the MainFrameInterface implementation providing GUI elements
-     * @param word the word associated with the image to be inserted
-     * @return the Style with the icon set for the image
+     Creates a Style with an icon for inserting an image in a JTextPane.
+
+     @param actualTextPane
+     the JTextPane in which the image should be inserted
+     @param gui
+     the MainFrameInterface implementation providing GUI elements
+     @param word
+     the word associated with the image to be inserted
+
+     @return the Style with the icon set for the image
      */
-    private Style createImageStyle(JTextPane actualTextPane, MainFrameGuiInterface gui, String word) {
+    private Style createImageStyle(JTextPane actualTextPane, String word) {
 
         Style style = actualTextPane.addStyle("Image", null);
 
-        ImageIcon emojiImage = gui.getEmojiList().get(word);
+        ImageIcon emojiImage = mainFrame.getEmojiList().get(word);
         ImageIcon imageIcon = new ImageIcon(emojiImage.getImage());
         imageIcon.setDescription(emojiImage.getDescription());
         StyleConstants.setIcon(style, imageIcon);
