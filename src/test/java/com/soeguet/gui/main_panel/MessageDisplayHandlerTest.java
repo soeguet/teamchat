@@ -3,7 +3,7 @@ package com.soeguet.gui.main_panel;
 import com.soeguet.cache.implementations.MessageQueue;
 import com.soeguet.cache.manager.CacheManager;
 import com.soeguet.gui.main_panel.interfaces.MessageDisplayHandlerInterface;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
