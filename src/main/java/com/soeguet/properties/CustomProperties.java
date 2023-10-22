@@ -131,6 +131,7 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
             } catch (IOException e) {
 
                 logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not save user " + user.username(), e);
+                throw new RuntimeException();
             }
 
             setProperty(user.username(), json);
@@ -168,6 +169,7 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
             if (!mkdir) {
 
                 logger.log(java.util.logging.Level.SEVERE, "ERROR! Could not create app dir!");
+                throw new RuntimeException();
             }
         }
     }
@@ -200,6 +202,7 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
             } catch (IOException e) {
 
                 logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not save user " + key, e);
+                throw new RuntimeException();
             }
 
             setProperty(key, json);
@@ -223,6 +226,8 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
         } catch (IOException e) {
 
             logger.log(java.util.logging.Level.SEVERE, "Could not load config file, creating..", e);
+            logger.log(java.util.logging.Level.SEVERE, "CustomProperties > loadDataSuccessful()", e);
+
             return false;
         }
     }
@@ -249,6 +254,7 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
         } catch (JsonProcessingException e) {
 
             logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not load own properties!", e);
+            logger.log(java.util.logging.Level.SEVERE, "CustomProperties > loaderThisClientProperties()", e);
         }
 
         return null;

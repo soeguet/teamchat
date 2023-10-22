@@ -41,8 +41,15 @@ public class LinkDialogHandler {
 
                 Document doc = loadDocumentForLink(absoluteLinkRecord.link());
 
-                //fetch metadata -> title and preview image
-                return fetchMetaDataFromLink(doc);
+                if (doc == null) {
+
+                    return null;
+
+                } else {
+
+                    //fetch metadata -> title and preview image
+                    return fetchMetaDataFromLink(doc);
+                }
             }
         }
         return null;
@@ -110,7 +117,7 @@ public class LinkDialogHandler {
 
         } catch (IOException e) {
 
-            throw new RuntimeException(e);
+            return null;
         }
     }
 

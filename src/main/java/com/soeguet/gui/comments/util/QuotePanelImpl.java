@@ -52,6 +52,7 @@ public class QuotePanelImpl extends QuotePanel {
         } catch (Exception e) {
 
             logger.log(Level.WARNING, e.getMessage(), e);
+            throw new RuntimeException();
         }
     }
 
@@ -74,6 +75,7 @@ public class QuotePanelImpl extends QuotePanel {
         } catch (BadLocationException ex) {
 
             logger.log(Level.WARNING, ex.getMessage(), ex);
+            throw new RuntimeException();
         }
     }
 
@@ -85,7 +87,7 @@ public class QuotePanelImpl extends QuotePanel {
      * @param word the word associated with the image to be inserted
      * @return the Style with the icon set for the image
      */
-    private static Style createImageStyle(JTextPane actualTextPane, MainFrameGuiInterface gui, String word) {
+    private Style createImageStyle(JTextPane actualTextPane, MainFrameGuiInterface gui, String word) {
 
         Style style = actualTextPane.addStyle("Image", null);
 

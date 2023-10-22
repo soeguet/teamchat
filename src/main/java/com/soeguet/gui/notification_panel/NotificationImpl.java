@@ -132,7 +132,7 @@ public class NotificationImpl extends Notification implements NotificationInterf
         }
     }
 
-    private static int determineScreenWidth() {
+    private int determineScreenWidth() {
 
         final Dimension primaryScreenSize = Toolkit.getDefaultToolkit().getScreenSize();
 

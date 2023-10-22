@@ -41,6 +41,7 @@ public class EmojiInitializer implements EmojiInitializerInterface {
             } catch (IOException e) {
 
                 logger.log(Level.WARNING, e.getMessage(), e);
+                throw new RuntimeException();
             }
         }
 

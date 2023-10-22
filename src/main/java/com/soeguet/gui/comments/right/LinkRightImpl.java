@@ -84,13 +84,15 @@ public class LinkRightImpl extends PanelRight implements LinkPanelInterface {
 
     public JEditorPane createEditorPaneForLinks(MessageModel messageModel) {
 
+        //TODO implement an abstract class for this method and the one in LinkLeftImpl
+
         JEditorPane jEditorPane = new JEditorPane();
         jEditorPane.setEditorKit(new LinkWrapEditorKit());
         jEditorPane.setEditable(false);
         jEditorPane.setBackground(Color.WHITE);
         LinkTransferDTO linkCommentRecord = extractLinkFromMessageModel(messageModel);
         final String hyperlinkHtml =
-                "<a href=\"" + linkCommentRecord.link() + "\" style=\"text-decoration:underline; color:blue; font-size:15;\">" + linkCommentRecord.link() + "</a>" + "<p style=\"font-size:15;\">" + linkCommentRecord.comment() + "</p>";
+                "<a href=\"" + linkCommentRecord.link() + "\" style=\"text-decoration:underline; color:blue; font-size:15;\">" + linkCommentRecord.link() + "</a><p style=\"font-size:15;\">" + linkCommentRecord.comment() + "</p>";
         jEditorPane.setText(hyperlinkHtml);
         return jEditorPane;
     }

@@ -83,7 +83,7 @@ public class LinkLeftImpl extends PanelLeft implements LinkPanelInterface {
         jEditorPane.setBackground(Color.WHITE);
         LinkTransferDTO linkCommentRecord = extractLinkFromMessageModel(messageModel);
         final String hyperlinkHtml =
-                "<a href=\"" + linkCommentRecord.link() + "\" style=\"text-decoration:underline; color:blue; font-size:15;\">" + linkCommentRecord.link() + "</a>" + "<p style=\"font-size:15;\">" + linkCommentRecord.comment() + "</p>";
+                "<a href=\"" + linkCommentRecord.link() + "\" style=\"text-decoration:underline; color:blue; font-size:15;\">" + linkCommentRecord.link() + "</a><p style=\"font-size:15;\">" + linkCommentRecord.comment() + "</p>";
         jEditorPane.setText(hyperlinkHtml);
         return jEditorPane;
     }
