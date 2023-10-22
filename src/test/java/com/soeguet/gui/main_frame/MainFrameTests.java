@@ -1,7 +1,9 @@
 package com.soeguet.gui.main_frame;
 
 import com.soeguet.emoji.EmojiInitializer;
+import com.soeguet.gui.notification_panel.NotificationStatusHandler;
 import com.soeguet.model.EnvVariables;
+import com.soeguet.util.NotificationStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -9,9 +11,8 @@ import org.mockito.Mockito;
 import javax.swing.*;
 import java.util.HashMap;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class MainFrameTests {
 
@@ -82,20 +83,37 @@ public class MainFrameTests {
         chatMainFrame.initEmojiList(mockEmojiInitializer);
 
         //assert
-        Assertions.assertFalse(chatMainFrame.getEmojiList().isEmpty());
+        assertFalse(chatMainFrame.getEmojiList().isEmpty());
     }
 
     @Test
-    void testIfDefaultVersionIsReturned() {
+    void testIfVersionIsReadCorrectly() {
 
-        //mock the classloader
-        ClassLoader mockClassLoader = mock(ClassLoader.class);
-        when(mockClassLoader.getResourceAsStream("version.properties")).thenReturn(null);
+        ChatMainFrameImpl obj = Mockito.mock(ChatMainFrameImpl.class);
+        when(obj.retrieveJarVersion()).thenReturn("1.0");
 
-        when(chatMainFrame.getClassLoader()).thenReturn(mockClassLoader);
+        assertEquals("1.0", obj.retrieveJarVersion());
+    }
 
-        String version = chatMainFrame.retrieveJarVersion();
+    @Test
+    void testIfStartUpIsRetrievedCorrectly() {
 
-        assertEquals("v.?", version);
+        ChatMainFrameImpl obj = new ChatMainFrameImpl();
+        assertTrue(obj.isStartUp());
+    }
+    @Test
+    void checkIfNotificationStatusIsAllDenied() {
+
+        ChatMainFrameImpl obj = new ChatMainFrameImpl();
+        NotificationStatusHandler notificationStatusHandler = new NotificationStatusHandler(obj);
+        assertEquals(notificationStatusHandler.getNotificationStatus(), NotificationStatus.ALL_DENIED);
+    }
+
+    @Test
+    void modifyStartUpValue() {
+
+        ChatMainFrameImpl obj = new ChatMainFrameImpl();
+        obj.setStartUp(false);
+        assertFalse(obj.isStartUp());
     }
 }

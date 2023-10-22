@@ -8,6 +8,7 @@ import com.soeguet.behaviour.interfaces.SocketToGuiInterface;
 import com.soeguet.cache.factory.CacheManagerFactory;
 import com.soeguet.cache.implementations.MessageQueue;
 import com.soeguet.cache.manager.CacheManager;
+import com.soeguet.dtos.StatusTransferDTO;
 import com.soeguet.gui.comments.CommentManagerImpl;
 import com.soeguet.gui.comments.interfaces.CommentManager;
 import com.soeguet.gui.comments.util.WrapEditorKit;
@@ -32,6 +33,7 @@ import com.soeguet.model.MessageTypes;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.properties.dto.CustomUserPropertiesDTO;
+import com.soeguet.socket_client.CustomWebsocketClient;
 import com.soeguet.util.NotificationStatus;
 
 import javax.swing.*;
@@ -40,6 +42,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.logging.Logger;
@@ -306,16 +309,24 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
      Additionally, it sends a typing status message to indicate that a message is being sent.
 
      @param messageString the message to be sent
-
-     @since version 1.0
      */
     private void sendMessageToSocket(String messageString) {
 
-        this.mainFrame.getWebsocketClient().send(messageString);
+        final CustomWebsocketClient websocketClient = this.mainFrame.getWebsocketClient();
 
-        final String typingStatus = "{\"type\":\"send\"}";
+        //normal message
+        websocketClient.send(messageString);
 
-        this.mainFrame.getWebsocketClient().send(typingStatus.getBytes());
+        //sending status
+        try {
+
+            StatusTransferDTO statusTransferDTO = new StatusTransferDTO("send");
+            websocketClient.send(objectMapper.writeValueAsBytes(statusTransferDTO));
+
+        } catch (JsonProcessingException e) {
+
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -419,13 +430,15 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
         final JsonNode parsedJson = parseJsonNode(message);
 
-        switch (parsedJson.get("type").asText()) {
+        StatusTransferDTO statusTransferDTO = objectMapper.convertValue(parsedJson, StatusTransferDTO.class);
 
-            case "typing" -> handleTypingPanel(parsedJson);
+        switch (statusTransferDTO.type()) {
+
+            case "typing" -> handleTypingPanel(statusTransferDTO);
 
             case "send" -> mainFrame.getTypingLabel().setText(" ");
 
-            case "interrupt" -> handleInterruption(message);
+            case "interrupt" -> handleInterruption(statusTransferDTO);
 
             default -> {
 
@@ -464,19 +477,22 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
      @throws RuntimeException if there is an IOException while handling the typing panel.
      */
-    private void handleTypingPanel(final JsonNode parsedJson) {
+    private void handleTypingPanel(StatusTransferDTO typingStatus) {
 
         TypingPanelHandlerInterface typingPanelHandler = new TypingPanelHandler(mainFrame);
 
         String textOnTypingLabel = typingPanelHandler.retrieveTextOnTypingLabel();
 
         //if typing client is already present on label -> return!
-        if (textOnTypingLabel.contains(parsedJson.get("username").asText())) {
+        //typingStatus.statusArray()[0] array with only one value, always!
+        final String typingUsername = typingStatus.statusArray()[0];
+
+        if (textOnTypingLabel.contains(typingUsername)) {
 
             return;
         }
 
-        final StringBuilder stringBuilder = typingPanelHandler.generateTypingLabel(textOnTypingLabel, parsedJson);
+        final StringBuilder stringBuilder = typingPanelHandler.generateTypingLabel(textOnTypingLabel, typingUsername);
 
         typingPanelHandler.displayUpdatedTypingLabel(stringBuilder);
     }
@@ -488,17 +504,11 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
      @throws RuntimeException if there is an IOException while handling the interruption.
      */
-    private void handleInterruption(final byte[] message) {
+    private void handleInterruption(StatusTransferDTO clientInterruptDTO) {
 
         InterruptHandlerInterface interruptHandler = new InterruptHandler(mainFrame);
 
-        JsonNode userNamesNode = interruptHandler.extractJsonNodeUsernames(message);
-
-        for (JsonNode username : userNamesNode) {
-
-            //force chat gui to front of user
-            interruptHandler.forceChatGuiToFront(username.asText());
-        }
+        Arrays.stream(clientInterruptDTO.statusArray()).forEach(interruptHandler::forceChatGuiToFront);
     }
 
     /**
@@ -675,7 +685,7 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
         final CustomUserPropertiesDTO userPropertiesDTO = clientMap.get(sender);
 
-        // 1) username
+        // 1) statusArray
         String username = userPropertiesDTO != null ? userPropertiesDTO.username() : sender;
 
         if (username.equals("own")) {

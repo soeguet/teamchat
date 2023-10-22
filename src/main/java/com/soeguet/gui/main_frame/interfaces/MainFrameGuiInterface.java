@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.behaviour.interfaces.GuiFunctionality;
 import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.notification_panel.NotificationImpl;
-import com.soeguet.properties.CustomUserProperties;
 import com.soeguet.properties.dto.CustomUserPropertiesDTO;
 import com.soeguet.socket_client.CustomWebsocketClient;
 
@@ -126,58 +125,65 @@ public interface MainFrameGuiInterface {
     HashMap<String, CustomUserPropertiesDTO> getChatClientPropertiesHashMap();
 
     /**
-     * Returns the Y position of the notification.
-     *
-     * @return the Y position of the notification
+     Returns the Y position of the notification.
+
+     @return the Y position of the notification
      */
     int getNotificationPositionY();
 
     /**
-     * Sets the Y position of the notification.
-     *
-     * @param notificationPositionY the new Y position of the notification
+     Sets the Y position of the notification.
+
+     @param notificationPositionY the new Y position of the notification
      */
     void setNotificationPositionY(int notificationPositionY);
 
     /**
-     * Retrieves the list of notification objects.
-     *
-     * @return the list of NotificationImpl objects
+     Retrieves the list of notification objects.
+
+     @return the list of NotificationImpl objects
      */
     List<NotificationImpl> getNotificationList();
 
     /**
-     * Sets the start up flag.
-     *
-     * @param b the boolean value to set the start up flag
-     */
-    void setStartUp(boolean b);
+     Returns a LinkedHashMap of comments.
 
-    /**
-     * Returns a LinkedHashMap of comments.
-     *
-     * @return a LinkedHashMap with Long as keys and CommentInterface objects as values representing the comments
+     @return a LinkedHashMap with Long as keys and CommentInterface objects as values representing the comments
      */
     LinkedHashMap<Long, CommentInterface> getCommentsHashMap();
 
     /**
-     * Resets the connection when the reset connection menu item is pressed.
-     *
-     * @param e the MouseEvent object representing the mouse press event
+     Resets the connection when the reset connection menu item is pressed.
+
+     @param e the MouseEvent object representing the mouse press event
      */
     void resetConnectionMenuItemMousePressed(MouseEvent e);
 
     /**
-     * Returns the JLabel used for displaying typing animation.
-     *
-     * @return the JLabel for typing animation
+     Returns the JLabel used for displaying typing animation.
+
+     @return the JLabel for typing animation
      */
     JLabel getTypingLabel();
 
     boolean isStartUp();
+
+    /**
+     Sets the start up flag.
+
+     @param b the boolean value to set the start up flag
+     */
+    void setStartUp(boolean b);
+
     JCheckBoxMenuItem getAllNotificationMenuItem();
+
     JCheckBoxMenuItem getInternalNotificationsMenuItem();
+
     JCheckBoxMenuItem getExternalNotificationsMenuItem();
 
     String getOSName();
+
+    void revalidate();
+
+    void repaint();
 }

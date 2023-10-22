@@ -21,15 +21,9 @@ public class TypingPanelHandler implements TypingPanelHandlerInterface {
         return mainFrame.getTypingLabel().getText();
     }
 
-    /**
-     * Generate a typing label based on the given text and parsed JSON object.
-     *
-     * @param textOnTypingLabel The text to be displayed on the typing label.
-     * @param parsedJson The parsed JSON object containing additional information.
-     * @return A StringBuilder object representing the generated typing label.
-     */
+
     @Override
-    public StringBuilder generateTypingLabel(final String textOnTypingLabel, final JsonNode parsedJson) {
+    public StringBuilder generateTypingLabel(final String textOnTypingLabel, final String typingUsername) {
 
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -44,7 +38,7 @@ public class TypingPanelHandler implements TypingPanelHandlerInterface {
             stringBuilder.append("  ");
         }
 
-        stringBuilder.append(parsedJson.get("username").asText());
+        stringBuilder.append(typingUsername);
         stringBuilder.append(" is typing...");
 
         return stringBuilder;

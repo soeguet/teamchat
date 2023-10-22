@@ -2,6 +2,10 @@ plugins {
     id 'application'
 }
 
+mainClassName = 'com.soeguet.Main'
+group 'com.soeguet'
+version = 'v1.0.5'
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
@@ -41,7 +45,10 @@ compileTestJava {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'com.soeguet.Main'
+        attributes('Main-Class': mainClassName,
+                'Implementation-Version': version,
+                'Implementation-Title': 'teamchat',
+                'Implementation-Vendor': 'com.soeguet',)
     }
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
