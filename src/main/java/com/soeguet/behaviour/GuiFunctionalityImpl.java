@@ -538,6 +538,7 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         //convert the message to a java object and return if the message came from this client
         final BaseModel baseModel = parseMessageToJsonModel(message);
 
+        //return if the message was sent by this client (no notification for own messages)
         if (compareSenderToUsername(baseModel)) {
 
             return;

@@ -66,9 +66,7 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
 
             case ALL_DENIED, STARTUP -> {
 
-                //TODO check if message was even cached which in that case needs to be removed from cache
-                //do nothing, intentionally left blank
-                break;
+                return;
             }
         }
     }
@@ -83,10 +81,13 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
 
         if (cacheManager.getCache("WaitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
 
-            //if less than three active notifications are present and there are waiting notifications
+            //if there is still space in the active notifications queue and there are still notifications in the waiting queue
             if (activeNotificationsCache.getRemainingCapacity() > 0 && !waitingNotificationQueue.isEmpty()) {
 
-                internalNotificationHandling(waitingNotificationQueue.pollFirst());
+                final String nextNotification = waitingNotificationQueue.pollFirst();
+                final BaseModel baseModel = convertMessageToBaseModel(nextNotification);
+
+                displayUpToThreeNotifications(baseModel, activeNotificationsCache);
             }
         }
     }
@@ -102,7 +103,6 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
      */
     private void createNotification(final BaseModel baseModel) {
 
-        //FIXME does this need to be reactivated somewhere?
         switch (baseModel) {
 
             case MessageModel text -> {
@@ -152,25 +152,52 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
 
         if (cacheManager.getCache("ActiveNotificationQueue") instanceof ActiveNotificationQueue activeNotificationQueue) {
 
-            //FIXME notification are wonky
+            //only post notification if there is no active notification -> trying to fix the wonky behavior
+            if (activeNotificationQueue.getRemainingCapacity() < 3) {
 
-            //max 3 notification at a time, cache message and bail out
-            if (activeNotificationQueue.getRemainingCapacity() == 0) {
-
-                if (cacheManager.getCache("WaitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
-
-                    //add to queue and skip the rest
-                    waitingNotificationQueue.addLast(message);
-                }
+                addIncomingNotificationToQueue(message);
 
             } else {
 
-                //if capacity is left
-                activeNotificationQueue.addLast(baseModel);
-                createNotification(baseModel);
-                handleRemainingCapacityInQueue(activeNotificationQueue);
+                displayUpToThreeNotifications(baseModel, activeNotificationQueue);
             }
         }
+    }
+
+    /**
+     Adds an incoming notification to the waiting notification queue.
+
+     @param message
+     The message of the incoming notification.
+
+     @throws RuntimeException
+     if there is an IllegalStateException while adding to the waiting notification queue.
+     */
+    private void addIncomingNotificationToQueue(final String message) {
+
+        if (cacheManager.getCache("WaitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
+
+            //add to queue and skip the rest
+            waitingNotificationQueue.addLast(message);
+        }
+    }
+
+    /**
+     Displays up to three notifications.
+
+     @param baseModel
+     The BaseModel object representing the notification to display.
+     @param activeNotificationQueue
+     The ActiveNotificationQueue object to add the notification to.
+
+     @throws RuntimeException
+     if there is an IllegalStateException while adding to the active notification queue.
+     */
+    private void displayUpToThreeNotifications(final BaseModel baseModel, final ActiveNotificationQueue activeNotificationQueue) {
+
+        activeNotificationQueue.addLast(baseModel);
+        createNotification(baseModel);
+        handleRemainingCapacityInQueue(activeNotificationQueue);
     }
 
     /**
