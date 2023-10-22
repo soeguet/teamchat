@@ -1,10 +1,11 @@
 package com.soeguet.gui.comments.right;
 
-import com.soeguet.gui.comments.dtos.LinkCommentRecord;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.soeguet.gui.comments.interfaces.LinkPanelInterface;
 import com.soeguet.gui.comments.right.generated.PanelRight;
 import com.soeguet.gui.comments.util.LinkWrapEditorKit;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
+import com.soeguet.gui.option_pane.links.dtos.LinkTransferDTO;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 
@@ -20,9 +21,12 @@ import java.awt.event.MouseEvent;
 
 public class LinkRightImpl extends PanelRight implements LinkPanelInterface {
 
+    private final MainFrameGuiInterface mainFrame;
+
     public LinkRightImpl(final MainFrameGuiInterface mainFrame) {
 
         super(mainFrame);
+        this.mainFrame = mainFrame;
     }
 
     @Override
@@ -35,7 +39,8 @@ public class LinkRightImpl extends PanelRight implements LinkPanelInterface {
     /**
      Adds the given component to the form container.
 
-     @param component the component to be added to the form container
+     @param component
+     the component to be added to the form container
      */
     @Override
     public void implementComment(Component component) {
@@ -44,11 +49,11 @@ public class LinkRightImpl extends PanelRight implements LinkPanelInterface {
     }
 
     /**
-     Adds a hyperlink listener to the given component.
-     When the hyperlink is clicked, the URL is opened in the default external browser,
-     and the link color is changed from blue to violet.
+     Adds a hyperlink listener to the given component. When the hyperlink is clicked, the URL is opened in the default external browser, and the link
+     color is changed from blue to violet.
 
-     @param component the component to add the hyperlink listener to
+     @param component
+     the component to add the hyperlink listener to
      */
     @Override
     public void addHyperlinkListener(final Component component) {
@@ -80,34 +85,33 @@ public class LinkRightImpl extends PanelRight implements LinkPanelInterface {
     public JEditorPane createEditorPaneForLinks(MessageModel messageModel) {
 
         JEditorPane jEditorPane = new JEditorPane();
-
         jEditorPane.setEditorKit(new LinkWrapEditorKit());
         jEditorPane.setEditable(false);
         jEditorPane.setBackground(Color.WHITE);
-        LinkCommentRecord linkCommentRecord = extractLinkFromMessageModel(messageModel);
-        final String hyperlinkHtml = "<a href=\"" + linkCommentRecord.link() + "\" style=\"text-decoration:underline; color:blue; font-size:15;\">" + linkCommentRecord.link() + "</a><br><br>";
-        jEditorPane.setText(hyperlinkHtml + linkCommentRecord.comment());
+        LinkTransferDTO linkCommentRecord = extractLinkFromMessageModel(messageModel);
+        final String hyperlinkHtml =
+                "<a href=\"" + linkCommentRecord.link() + "\" style=\"text-decoration:underline; color:blue; font-size:15;\">" + linkCommentRecord.link() + "</a>" + "<p style=\"font-size:15;\">" + linkCommentRecord.comment() + "</p>";
+        jEditorPane.setText(hyperlinkHtml);
         return jEditorPane;
     }
 
-    private LinkCommentRecord extractLinkFromMessageModel(final MessageModel messageModel) {
+    private LinkTransferDTO extractLinkFromMessageModel(final MessageModel messageModel) {
 
-        String[] messageParts = messageModel.getMessage().split("\\{LINK\\}");
+        try {
 
-        if (messageParts.length != 2) {
+            return this.mainFrame.getObjectMapper().readValue(messageModel.getMessage(), LinkTransferDTO.class);
 
-            return new LinkCommentRecord(messageParts[0], "");
+        } catch (JsonProcessingException e) {
 
-        } else {
-
-            return new LinkCommentRecord(messageParts[0], messageParts[1]);
+            throw new RuntimeException(e);
         }
     }
 
     /**
      Sets up a time field for the given base model.
 
-     @param baseModel the base model to set up the time field for
+     @param baseModel
+     the base model to set up the time field for
      */
     @Override
     public void setupTimeField(final BaseModel baseModel) {
@@ -118,7 +122,8 @@ public class LinkRightImpl extends PanelRight implements LinkPanelInterface {
     /**
      Sets up the name field for the given base model.
 
-     @param baseModel the base model to set up the name field for
+     @param baseModel
+     the base model to set up the name field for
      */
     @Override
     public void setupNameField(final BaseModel baseModel) {
@@ -129,7 +134,8 @@ public class LinkRightImpl extends PanelRight implements LinkPanelInterface {
     /**
      Prepares the style for a clicked link in the JEditorPane.
 
-     @param jEditorPane the JEditorPane to apply the clicked link style to
+     @param jEditorPane
+     the JEditorPane to apply the clicked link style to
      */
     private void prepareClickedLinkStyle(final JEditorPane jEditorPane) {
 
@@ -142,15 +148,18 @@ public class LinkRightImpl extends PanelRight implements LinkPanelInterface {
     /**
      Changes the color of the clicked link to violet in the given JEditorPane.
 
-     @param jEditorPane    the JEditorPane in which the link is clicked
-     @param hyperlinkEvent the HyperlinkEvent containing the information of the clicked link
+     @param jEditorPane
+     the JEditorPane in which the link is clicked
+     @param hyperlinkEvent
+     the HyperlinkEvent containing the information of the clicked link
      */
     private void changeLinkColorToVioletAfterClickingOnIt(final JEditorPane jEditorPane, final HyperlinkEvent hyperlinkEvent) {
 
         try {
 
             Document doc = jEditorPane.getDocument();
-            ((HTMLDocument) doc).setCharacterAttributes(hyperlinkEvent.getSourceElement().getStartOffset(), hyperlinkEvent.getSourceElement().getEndOffset() - hyperlinkEvent.getSourceElement().getStartOffset(), ((HTMLDocument) doc).getStyle("visited"), false);
+            ((HTMLDocument) doc).setCharacterAttributes(hyperlinkEvent.getSourceElement().getStartOffset(),
+                                                        hyperlinkEvent.getSourceElement().getEndOffset() - hyperlinkEvent.getSourceElement().getStartOffset(), ((HTMLDocument) doc).getStyle("visited"), false);
 
         } catch (Exception ex) {
 

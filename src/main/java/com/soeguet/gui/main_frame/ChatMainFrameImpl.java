@@ -95,13 +95,11 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
      */
     private EmojiHandler emojiHandler;
     /**
-     Variable representing the username of this pc's client.
-     The username on the right side
+     Variable representing the username of this pc's client. The username on the right side
      */
     private String username;
     /**
-     Represents the Y position of a notification.
-     Will be updated everytime a notification is generated
+     Represents the Y position of a notification. Will be updated everytime a notification is generated
      */
     private volatile int notificationPositionY = 0;
     /**
@@ -149,13 +147,11 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     }
 
     /**
-     This method is used to reposition the chat frame for testing purposes.
-     It retrieves the value of the 'chat_x_position' environment variable using System.getenv(),
-     which represents the desired x position of the chat frame.
-     If the environment variable is not null, it repositions the chat frame on the screen
-     by setting the location using the retrieved x position and a fixed y position of 100.
-     This operation is performed asynchronously using SwingUtilities.invokeLater()
-     to ensure compatibility with Swing's event dispatching thread.
+     This method is used to reposition the chat frame for testing purposes. It retrieves the value of the 'chat_x_position' environment variable using
+     System.getenv(), which represents the desired x position of the chat frame. If the environment variable is not null, it repositions the chat
+     frame
+     on the screen by setting the location using the retrieved x position and a fixed y position of 100. This operation is performed asynchronously
+     using SwingUtilities.invokeLater() to ensure compatibility with Swing's event dispatching thread.
      */
     public void repositionChatFrameForTestingPurposes() {
 
@@ -187,11 +183,11 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
 
     /**
      Initializes the emoji list.
-
-     This method initializes the emoji list by creating a new instance of the EmojiInitializer class
-     and calling the createEmojiList() method to obtain the list of emojis. The emoji list is then
-     assigned to the emojiList instance variable of the current object.
-
+     <p>
+     This method initializes the emoji list by creating a new instance of the EmojiInitializer class and calling the createEmojiList() method to
+     obtain
+     the list of emojis. The emoji list is then assigned to the emojiList instance variable of the current object.
+     <p>
      The EmojiInitializer class is responsible for creating and initializing the list of emojis.
 
      @see EmojiInitializer
@@ -204,7 +200,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
 
     /**
      Sets the scroll pane margins.
-
+     <p>
      This method determines the appropriate margin values for the scroll pane based on the operating system and desktop environment.
      */
     public void setScrollPaneMargins() {
@@ -241,8 +237,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     }
 
     /**
-     Returns the name of the user's current desktop environment on linux.
-     The method retrieves the value of the environment variable "XDG_CURRENT_DESKTOP".
+     Returns the name of the user's current desktop environment on linux. The method retrieves the value of the environment variable
+     "XDG_CURRENT_DESKTOP".
 
      @return the name of the user's current desktop environment or null if the variable is not set.
      */
@@ -268,14 +264,15 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
 
     /**
      Sets the icons for the buttons in the chat form.
-
+     <p>
      The icons are obtained from the resources folder and are used to set the icons for the emoji, and picture buttons in the chat form.
-
+     <p>
      The resource URLs for the icons are retrieved using the ChatMainFrameImpl class and the corresponding file paths.
-
+     <p>
      This method assumes that the required icons exist in the resources folder and will throw an AssertionError if any of the resource URLs are null.
 
-     @throws AssertionError if any of the required resource URLs are null.
+     @throws AssertionError
+     if any of the required resource URLs are null.
      */
     public void setButtonIcons() {
 
@@ -305,12 +302,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     }
 
     /**
-     This method is used to load custom properties for a specific client.
-     It initializes the customProperties object with a new instance of CustomProperties,
-     passing the current instance as a parameter.
-     It then calls the loaderThisClientProperties() method of the customProperties object
-     to load the properties for the current client.
-     If the client properties are successfully loaded, the method sets the statusArray property
+     This method is used to load custom properties for a specific client. It initializes the customProperties object with a new instance of
+     CustomProperties, passing the current instance as a parameter. It then calls the loaderThisClientProperties() method of the customProperties
+     object to load the properties for the current client. If the client properties are successfully loaded, the method sets the statusArray property
      to the statusArray obtained from the CustomUserProperties object.
      */
     public void loadCustomProperties() {
@@ -328,10 +322,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
 
     /**
      Initializes the GUI functionality.
-
-     This method creates a new instance of the GuiFunctionality class, passing
-     a reference to the current object as a constructor argument. The GuiFunctionality
-     object is then assigned to the guiFunctionality instance variable of the current object.
+     <p>
+     This method creates a new instance of the GuiFunctionality class, passing a reference to the current object as a constructor argument. The
+     GuiFunctionality object is then assigned to the guiFunctionality instance variable of the current object.
      */
     public void initGuiFunctionality() {
 
@@ -342,10 +335,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
 
     /**
      Initializes the client controller.
-
-     This method creates a new instance of the ClientControllerImpl class, passing in the current instance of the ChatMainFrameImpl class
-     and the guiFunctionality object.
-     It then calls the determineWebsocketURI() method and the connectToWebsocket() method on the clientController object.
+     <p>
+     This method creates a new instance of the ClientControllerImpl class, passing in the current instance of the ChatMainFrameImpl class and the
+     guiFunctionality object. It then calls the determineWebsocketURI() method and the connectToWebsocket() method on the clientController object.
      */
     public void initializeClientController() {
 
@@ -356,10 +348,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
 
     /**
      Initializes the emoji handler.
-
-     This method creates a new instance of the EmojiHandler class and assigns it to the
-     emojiHandler instance variable of the current object.
-
+     <p>
+     This method creates a new instance of the EmojiHandler class and assigns it to the emojiHandler instance variable of the current object.
+     <p>
      The EmojiHandler class handles emoji functionality within the application.
      */
     public void initEmojiHandler() {
@@ -404,7 +395,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     /**
      Sets the username.
 
-     @param username the username to set.
+     @param username
+     the username to set.
      */
     @Override
     public void setUsername(String username) {
@@ -454,7 +446,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     /**
      Sets the Y position of the notification.
 
-     @param notificationPositionY the Y position of the notification.
+     @param notificationPositionY
+     the Y position of the notification.
      */
     @Override
     public synchronized void setNotificationPositionY(int notificationPositionY) {
@@ -492,7 +485,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     /**
      Sets the startUp flag to indicate whether the system is starting up.
 
-     @param startUp the startUp flag
+     @param startUp
+     the startUp flag
      */
     @Override
     public void setStartUp(final boolean startUp) {
@@ -502,7 +496,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
 
     /**
      Returns the emoji handler.
-
+     <p>
      This method returns the emoji handler associated with the current object.
 
      @return the emoji handler.
@@ -515,7 +509,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     /**
      Method called when the component is resized.
 
-     @param e The ComponentEvent object representing the resize event.
+     @param e
+     The ComponentEvent object representing the resize event.
      */
     @Override
     protected void thisComponentResized(ComponentEvent e) {
@@ -530,9 +525,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
 
     /**
      Method used to repaint the main frame.
-
-     This method revalidates and repaints the main frame component, ensuring that any changes to its layout or appearance are correctly displayed
-     on the screen.
+     <p>
+     This method revalidates and repaints the main frame component, ensuring that any changes to its layout or appearance are correctly displayed on
+     the screen.
      */
     private void repaintMainFrame() {
 
@@ -545,10 +540,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
 
     /**
      Method used to retrieve the version of the JAR file.
-
+     <p>
      This method uses reflection to get the implementation version of the JAR file containing the class. It is assumed that the JAR file has its
-     version
-     specified in its manifest file.
+     version specified in its manifest file.
 
      @return The version of the JAR file as a string, or null if the version cannot be determined.
      */
@@ -560,7 +554,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     /**
      Called when the mouse is pressed on the property menu item.
 
-     @param e The MouseEvent object representing the event.
+     @param e
+     The MouseEvent object representing the event.
      */
     @Override
     protected void propertiesMenuItemMousePressed(MouseEvent e) {
@@ -579,7 +574,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     /**
      Called when the state of internal notifications menu item is changed.
 
-     @param e The ItemEvent object representing the event.
+     @param e
+     The ItemEvent object representing the event.
      */
     @Override
     protected void internalNotificationsMenuItemItemStateChanged(final ItemEvent e) {
@@ -609,7 +605,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     /**
      Called when the connection details button is pressed.
 
-     @param e The MouseEvent object representing the event.
+     @param e
+     The MouseEvent object representing the event.
      */
     @Override
     protected void connectionDetailsButtonMousePressed(final MouseEvent e) {
@@ -620,7 +617,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     /**
      Resets the connection when the reset connection menu item is pressed.
 
-     @param e The mouse event that triggered the method.
+     @param e
+     The mouse event that triggered the method.
      */
     @Override
     public void resetConnectionMenuItemMousePressed(MouseEvent e) {
@@ -644,14 +642,12 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
 
     /**
      Removes all messages from the chat panel.
-
-     The method uses `SwingUtilities.invokeLater()` to ensure that the removal of messages
-     is performed on the event dispatch thread, as it involves modifications to the GUI.
-
-     Within the method, the `form_mainTextPanel.removeAll()` is called to remove all
-     components from the chat panel. Additionally, the `repaintMainFrame()` method is
-     called to repaint the main frame, ensuring that the changes are immediately visible
-     to the user.
+     <p>
+     The method uses `SwingUtilities.invokeLater()` to ensure that the removal of messages is performed on the event dispatch thread, as it involves
+     modifications to the GUI.
+     <p>
+     Within the method, the `form_mainTextPanel.removeAll()` is called to remove all components from the chat panel. Additionally, the
+     `repaintMainFrame()` method is called to repaint the main frame, ensuring that the changes are immediately visible to the user.
      */
     private void removeAllMessagesOnChatPanel() {
 
@@ -663,10 +659,12 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     }
 
     /**
-     Handles the event when the mouse presses the exit menu item. Sets the default close operation
-     for the current JFrame to EXIT_ON_CLOSE and disposes of the current JFrame.
+     Handles the event when the mouse presses the exit menu item. Sets the default close operation for the current JFrame to EXIT_ON_CLOSE and
+     disposes
+     of the current JFrame.
 
-     @param e the MouseEvent object that triggered this event
+     @param e
+     the MouseEvent object that triggered this event
      */
     @Override
     protected void exitMenuItemMousePressed(MouseEvent e) {
@@ -682,11 +680,11 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     }
 
     /**
-     Called when a key is pressed in the text editor pane. If the pressed key is not the Enter key,
-     the method simply returns. If the pressed key is the Enter key, it consumes the event and
-     performs the appropriate action based on whether the Shift key is pressed or not.
+     Called when a key is pressed in the text editor pane. If the pressed key is not the Enter key, the method simply returns. If the pressed key is
+     the Enter key, it consumes the event and performs the appropriate action based on whether the Shift key is pressed or not.
 
-     @param e The KeyEvent object representing the key press event.
+     @param e
+     The KeyEvent object representing the key press event.
      */
     @Override
     protected void textEditorPaneKeyPressed(KeyEvent e) {
@@ -712,10 +710,12 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     }
 
     /**
-     Sends a typing status message to the websocket server. The method forms a JSON object representing the typing status
-     and sends it to the websocket client. If an error occurs while processing the JSON, a RuntimeException is thrown.
+     Sends a typing status message to the websocket server. The method forms a JSON object representing the typing status and sends it to the
+     websocket
+     client. If an error occurs while processing the JSON, a RuntimeException is thrown.
 
-     @throws RuntimeException if an error occurs while processing the JSON.
+     @throws RuntimeException
+     if an error occurs while processing the JSON.
      */
     private void sendIsTypingStatusToWebsocket() {
 
@@ -753,10 +753,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
      Handles a key press event when the enter key is pressed without pressing the shift key.
 
      <p>Retrieves the content of the text editor pane, trims any leading or trailing space, and
-     checks if it is empty.
-     If the content is empty, it clears the text editor pane.
-     Otherwise, it calls the `sendMessageToSocket` method to clear the text pane and send the
-     current content to a socket.
+     checks if it is empty. If the content is empty, it clears the text editor pane. Otherwise, it calls the `sendMessageToSocket` method to clear the
+     text pane and send the current content to a socket.
      */
     private void handleNonShiftEnterKeyPress() {
 
@@ -780,7 +778,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     /**
      Handles the event when the mouse clicks the picture button in the current JFrame.
 
-     @param e the MouseEvent object that triggered this event
+     @param e
+     the MouseEvent object that triggered this event
      */
     @Override
     protected void pictureButtonMouseClicked(MouseEvent e) {
@@ -799,7 +798,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
      <p>This method is an override of the emojiButton method from the superclass. It is called when
      the emoji button is clicked.
 
-     @param e the ActionEvent object generated when the emoji button is clicked
+     @param e
+     the ActionEvent object generated when the emoji button is clicked
      */
     @Override
     protected void emojiButton(ActionEvent e) {
@@ -809,11 +809,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     }
 
     /**
-     Handles the event when the send-button is clicked.
-     Clears the text pane in the GUI and sends
-     the message to the socket.
+     Handles the event when the send-button is clicked. Clears the text pane in the GUI and sends the message to the socket.
 
-     @param e the ActionEvent object that triggered this event
+     @param e
+     the ActionEvent object that triggered this event
      */
     @Override
     protected void sendButton(ActionEvent e) {
@@ -831,10 +830,11 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     }
 
     /**
-     Handles the item state change event of the external notifications menu item.
-     Updates the state of the external notifications and displays a popup message accordingly.
+     Handles the item state change event of the external notifications menu item. Updates the state of the external notifications and displays a popup
+     message accordingly.
 
-     @param e the ItemEvent object that triggered this event
+     @param e
+     the ItemEvent object that triggered this event
      */
     @Override
     protected void externalNotificationsMenuItemItemStateChanged(final ItemEvent e) {
@@ -857,7 +857,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     /**
      Handles the event when the window is closed.
 
-     @param e the WindowEvent object that triggered this event
+     @param e
+     the WindowEvent object that triggered this event
      */
     @Override
     protected void thisWindowClosing(final WindowEvent e) {
@@ -868,7 +869,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     /**
      Handles the event when the interrupt menu item is pressed.
 
-     @param e the MouseEvent object that triggered this event
+     @param e
+     the MouseEvent object that triggered this event
      */
     @Override
     protected void interruptMenuItemMousePressed(final MouseEvent e) {
@@ -884,7 +886,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     /**
      Handles the event when the state of the allNotificationsMenuItem changes.
 
-     @param e the ItemEvent object that triggered this event
+     @param e
+     the ItemEvent object that triggered this event
      */
     @Override
     protected void allNotificationsMenuItemItemStateChanged(final ItemEvent e) {
@@ -925,17 +928,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
                 popup.initiatePopupTimer(3_000);
             }
         }
-    }
-
-    /**
-     Retrieves the ClassLoader for the current class.
-
-     @return the ClassLoader for the current class
-     */
-    ClassLoader getClassLoader() {
-
-        //make the classloader mockable
-        return getClass().getClassLoader();
     }
 
     /**
@@ -985,7 +977,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     /**
      Sets the name of the last message.
 
-     @param lastMessageSenderName the name of the last message.
+     @param lastMessageSenderName
+     the name of the last message.
      */
     @Override
     public void setLastMessageSenderName(final String lastMessageSenderName) {
@@ -1007,7 +1000,8 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     /**
      Sets the timestamp of the last message.
 
-     @param lastMessageTimeStamp the timestamp of the last message to be set.
+     @param lastMessageTimeStamp
+     the timestamp of the last message to be set.
      */
     @Override
     public void setLastMessageTimeStamp(final String lastMessageTimeStamp) {
