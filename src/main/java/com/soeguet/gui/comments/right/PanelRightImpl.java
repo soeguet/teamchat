@@ -27,6 +27,42 @@ import java.util.logging.Logger;
  */
 public class PanelRightImpl extends PanelRight implements CommentInterface {
 
+    @Override
+    protected void layeredContainerMouseEntered(final MouseEvent e) {
+
+        borderColorCache = borderColor;
+        setBorderColor(Color.RED);
+    }
+
+    private Color borderColorCache;
+    @Override
+    protected void layeredContainerMouseExited(final MouseEvent e) {
+
+        setBorderColor(borderColorCache);
+    }
+
+    @Override
+    protected void layeredContainerMousePressed(final MouseEvent e) {
+
+        passMouseEventToJTextPane(e, form_layeredContainer, form_container);
+    }
+
+
+
+    @Override
+    protected void layeredContainerMouseDragged(final MouseEvent e) {
+
+        passMouseEventToJTextPane(e, form_layeredContainer, form_container);
+    }
+
+    @Override
+    protected void layeredContainerMouseClicked(final MouseEvent e) {
+        Component target = SwingUtilities.getDeepestComponentAt(form_layeredContainer.getParent(), e.getX(), e.getY());
+        if (!(target instanceof JTextPane)) {
+            // Ihr Code
+        }
+    }
+
     private final Logger LOGGER = Logger.getLogger(PanelRightImpl.class.getName());
     private final BaseModel baseModel;
     private JPopupMenu jPopupMenu;

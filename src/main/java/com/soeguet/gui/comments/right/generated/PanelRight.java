@@ -122,6 +122,16 @@ public abstract class PanelRight extends CustomOriginPanel {
 		return this.form_hSpacer1;
 	}
 
+	protected abstract void layeredContainerMouseEntered(MouseEvent e);
+
+	protected abstract void layeredContainerMouseExited(MouseEvent e);
+
+	protected abstract void layeredContainerMouseClicked(MouseEvent e);
+
+	protected abstract void layeredContainerMousePressed(MouseEvent e);
+
+	protected abstract void layeredContainerMouseDragged(MouseEvent e);
+
 	protected abstract void thisComponentResized(ComponentEvent e);
 
 	private void initComponents() {
@@ -167,6 +177,30 @@ public abstract class PanelRight extends CustomOriginPanel {
 			this.form_layeredContainer.setMinimumSize(null);
 			this.form_layeredContainer.setPreferredSize(null);
 			this.form_layeredContainer.setBackground(null);
+			this.form_layeredContainer.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					layeredContainerMouseClicked(e);
+				}
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					layeredContainerMouseEntered(e);
+				}
+				@Override
+				public void mouseExited(MouseEvent e) {
+					layeredContainerMouseExited(e);
+				}
+				@Override
+				public void mousePressed(MouseEvent e) {
+					layeredContainerMousePressed(e);
+				}
+			});
+			this.form_layeredContainer.addMouseMotionListener(new MouseMotionAdapter() {
+				@Override
+				public void mouseDragged(MouseEvent e) {
+					layeredContainerMouseDragged(e);
+				}
+			});
 		}
 		add(this.form_layeredContainer, "cell 1 1 2 2,grow");
 

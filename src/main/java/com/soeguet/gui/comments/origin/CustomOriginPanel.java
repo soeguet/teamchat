@@ -27,7 +27,18 @@ import java.util.logging.Logger;
  The CustomOriginPanel class extends JPanel and provides additional functionality for displaying custom origin panels.
  */
 public class CustomOriginPanel extends JPanel {
+    protected void passMouseEventToJTextPane(final MouseEvent e, JComponent source, JComponent destination) {
 
+        //pass event through to the text pane, else you cannot select the text
+        Point point = SwingUtilities.convertPoint(source, e.getPoint(), destination);
+        Component target = SwingUtilities.getDeepestComponentAt(destination, point.x, point.y);
+
+        if (target instanceof JTextPane) {
+
+            MouseEvent convertedEvent = SwingUtilities.convertMouseEvent(source, e, target);
+            target.dispatchEvent(convertedEvent);
+        }
+    }
     private final MainFrameGuiInterface mainFrame;
     protected Logger LOGGER = Logger.getLogger(CustomOriginPanel.class.getName());
 
