@@ -55,6 +55,8 @@ jar {
     }
     duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
     dependsOn copyResources
+    archiveBaseName.set('teamchat')
+    archiveFileName.set('teamchat.jar')
 }
 
 application {
