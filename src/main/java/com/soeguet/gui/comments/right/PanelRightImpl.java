@@ -2,6 +2,7 @@ package com.soeguet.gui.comments.right;
 
 import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.interfaces.LinkPanelInterface;
+import com.soeguet.gui.comments.reaction_panel.ReactionPanelImpl;
 import com.soeguet.gui.comments.right.generated.PanelRight;
 import com.soeguet.gui.comments.util.LinkWrapEditorKit;
 import com.soeguet.gui.comments.util.QuotePanelImpl;
@@ -27,50 +28,21 @@ import java.util.logging.Logger;
  */
 public class PanelRightImpl extends PanelRight implements CommentInterface {
 
-    @Override
-    protected void layeredContainerMouseEntered(final MouseEvent e) {
-
-        borderColorCache = borderColor;
-        setBorderColor(Color.RED);
-    }
-
-    private Color borderColorCache;
-    @Override
-    protected void layeredContainerMouseExited(final MouseEvent e) {
-
-        setBorderColor(borderColorCache);
-    }
-
-    @Override
-    protected void layeredContainerMousePressed(final MouseEvent e) {
-
-        passMouseEventToJTextPane(e, form_layeredContainer, form_container);
-    }
-
-
-
-    @Override
-    protected void layeredContainerMouseDragged(final MouseEvent e) {
-
-        passMouseEventToJTextPane(e, form_layeredContainer, form_container);
-    }
-
-    @Override
-    protected void layeredContainerMouseClicked(final MouseEvent e) {
-        Component target = SwingUtilities.getDeepestComponentAt(form_layeredContainer.getParent(), e.getX(), e.getY());
-        if (!(target instanceof JTextPane)) {
-            // Ihr Code
-        }
-    }
-
     private final Logger LOGGER = Logger.getLogger(PanelRightImpl.class.getName());
     private final BaseModel baseModel;
+    /**
+     The color used to cache the border color. This variable represents the color applied to the border of an element.
+     */
+    private final MainFrameGuiInterface mainFrame;
+    private Color borderColorCache;
     private JPopupMenu jPopupMenu;
     private BufferedImage image;
+    private JPanel reactionPanel;
 
     public PanelRightImpl(MainFrameGuiInterface mainFrame, BaseModel baseModel) {
 
         super(mainFrame);
+        this.mainFrame = mainFrame;
 
         this.baseModel = baseModel;
     }
@@ -88,7 +60,8 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     /**
      Prepares the style for a clicked link in the JEditorPane.
 
-     @param jEditorPane the JEditorPane to apply the clicked link style to
+     @param jEditorPane
+     the JEditorPane to apply the clicked link style to
      */
     private void prepareClickedLinkStyle(final JEditorPane jEditorPane) {
 
@@ -101,8 +74,10 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     /**
      Changes the color of the clicked link to violet in the given JEditorPane.
 
-     @param jEditorPane    the JEditorPane in which the link is clicked
-     @param hyperlinkEvent the HyperlinkEvent containing the information of the clicked link
+     @param jEditorPane
+     the JEditorPane in which the link is clicked
+     @param hyperlinkEvent
+     the HyperlinkEvent containing the information of the clicked link
      */
     private void changeLinkColorToVioletAfterClickingOnIt(final JEditorPane jEditorPane, final HyperlinkEvent hyperlinkEvent) {
 
@@ -110,8 +85,7 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
 
             Document doc = jEditorPane.getDocument();
             ((HTMLDocument) doc).setCharacterAttributes(hyperlinkEvent.getSourceElement().getStartOffset(),
-                    hyperlinkEvent.getSourceElement().getEndOffset() - hyperlinkEvent.getSourceElement().getStartOffset(),
-                    ((HTMLDocument) doc).getStyle("visited"), false);
+                                                        hyperlinkEvent.getSourceElement().getEndOffset() - hyperlinkEvent.getSourceElement().getStartOffset(), ((HTMLDocument) doc).getStyle("visited"), false);
 
         } catch (Exception ex) {
 
@@ -176,7 +150,7 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
             SwingUtilities.invokeLater(() -> {
 
                 //handle image extraction and return, if null
-                if (handleImageExtraction(pictureModel)) return;
+                if (handleImageExtraction(pictureModel)) {return;}
 
                 //handle image and max sizing of image on the main panel
                 setImageOnChatPanel();
@@ -193,7 +167,8 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     /**
      Handles the extraction of an image from a {@link PictureModel} object.
 
-     @param pictureModel The {@code PictureModel} object from which to extract the image.
+     @param pictureModel
+     The {@code PictureModel} object from which to extract the image.
 
      @return {@code true} if the extracted image is {@code null}, indicating an error occurred. Otherwise, {@code false}.
      */
@@ -224,7 +199,8 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     /**
      Handles the image caption for the given PictureModel.
 
-     @param pictureModel The PictureModel containing the image caption information.
+     @param pictureModel
+     The PictureModel containing the image caption information.
      */
     private void handleImageCaption(final PictureModel pictureModel) {
 
@@ -238,7 +214,8 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     /**
      Handles the image caption for the given PictureModel.
 
-     @param pictureModel The PictureModel containing the image caption information.
+     @param pictureModel
+     The PictureModel containing the image caption information.
      */
     private void setupCommentEssentials(final PictureModel pictureModel) {
 
@@ -255,7 +232,8 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     /**
      Called when the reply button is clicked.
 
-     @param e The MouseEvent that triggered the reply button click.
+     @param e
+     The MouseEvent that triggered the reply button click.
      */
     @Override
     protected void replyButtonClicked(MouseEvent e) {
@@ -266,7 +244,8 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     /**
      Called when the mouse hovers over the action label.
 
-     @param e The MouseEvent that triggered the mouse enter event.
+     @param e
+     The MouseEvent that triggered the mouse enter event.
      */
     @Override
     protected void actionLabelMouseEntered(MouseEvent e) {
@@ -276,7 +255,8 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     /**
      Called when the mouse clicks the action label.
 
-     @param e The MouseEvent that triggered the mouse click event.
+     @param e
+     The MouseEvent that triggered the mouse click event.
      */
     @Override
     protected void actionLabelMouseClicked(MouseEvent e) {
@@ -286,7 +266,8 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     /**
      Called when the mouse pointer exits the area of the action label.
 
-     @param e The MouseEvent that triggered the mouse exit event.
+     @param e
+     The MouseEvent that triggered the mouse exit event.
      */
     @Override
     protected void actionLabelMouseExited(MouseEvent e) {
@@ -299,10 +280,47 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
         return super.getContainer();
     }
 
+    @Override
+    protected void layeredContainerMouseEntered(final MouseEvent e) {
+
+        borderColorCache = borderColor;
+        super.setBorderColor(Color.RED);
+
+        reactionPanel = new ReactionPanelImpl(mainFrame, form_layeredContainer).createReactionPanel();
+        form_layeredContainer.add(reactionPanel);
+        reactionPanel.setVisible(true);
+    }
+
+    @Override
+    protected void layeredContainerMouseExited(final MouseEvent e) {
+
+        super.setBorderColor(borderColorCache);
+        reactionPanel.setVisible(false);
+        reactionPanel = null;
+    }
+
+    @Override
+    protected void layeredContainerMouseClicked(final MouseEvent e) {
+
+    }
+
+    @Override
+    protected void layeredContainerMousePressed(final MouseEvent e) {
+
+        super.passMouseEventToJTextPane(e, form_layeredContainer, form_container);
+    }
+
+    @Override
+    protected void layeredContainerMouseDragged(final MouseEvent e) {
+
+        super.passMouseEventToJTextPane(e, form_layeredContainer, form_container);
+    }
+
     /**
      Called when the component is resized.
 
-     @param e The ComponentEvent that triggered the resize event.
+     @param e
+     The ComponentEvent that triggered the resize event.
      */
     @Override
     protected void thisComponentResized(ComponentEvent e) {
