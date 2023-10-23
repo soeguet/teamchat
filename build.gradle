@@ -1,0 +1,64 @@
+plugins {
+    id 'application'
+}
+
+mainClassName = 'com.soeguet.Main'
+group 'com.soeguet'
+version = 'v1.0.5'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.java-websocket:Java-WebSocket:1.5.4'
+    implementation 'com.formdev:flatlaf:3.2.2'
+    implementation 'com.miglayout:miglayout-swing:11.2'
+    implementation 'org.jsoup:jsoup:1.16.2'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.3'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.3'
+
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+    testImplementation 'org.mockito:mockito-core:5.6.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.6.0'
+}
+
+tasks.register('copyResources', Copy) {
+    from 'resources'
+    into 'build/resources'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+compileTestJava {
+    dependsOn copyResources
+}
+
+jar {
+    manifest {
+        attributes('Main-Class': mainClassName,
+                'Implementation-Version': version,
+                'Implementation-Title': 'teamchat',
+                'Implementation-Vendor': 'com.soeguet',)
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+    dependsOn copyResources
+    archiveBaseName.set('teamchat')
+    archiveFileName.set('teamchat.jar')
+}
+
+application {
+    mainClass = 'com.soeguet.Main'
+}

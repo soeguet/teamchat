@@ -135,6 +135,7 @@ public class EmojiPopUpMenuHandler implements EmojiPopupInterface {
         } catch (BadLocationException e) {
 
             logger.log(java.util.logging.Level.WARNING, e.getMessage(), e);
+            throw new RuntimeException();
 
         }
     }

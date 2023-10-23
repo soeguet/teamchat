@@ -21,9 +21,16 @@ public class ActiveNotificationQueue implements CustomCache<BaseModel> {
     }
 
     @Override
-    public void addLast(BaseModel baseModel) throws IllegalStateException {
+    public void addLast(BaseModel baseModel) {
 
-        activeNotificationQueue.addLast(baseModel);
+        try {
+
+            activeNotificationQueue.addLast(baseModel);
+
+        } catch (Exception e) {
+
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

@@ -1,5 +1,5 @@
 # TeamChat
-### v1.0.4
+### v1.0.5 - reverted back to Gradle since 8.4 -- partial JDK-21 support was announced
 
 <div style="text-align: center;">
 <img src="pictures/img.png" alt="img" height="600"/>
@@ -14,7 +14,7 @@ facilitate communication within a local network via WebSocket.
 ## Requirements
 
 - Java 21
-- Maven 3.9.4
+- Gradle 8.4
 - [Websocket Backend](https://github.com/soeguet/teamsocket)
 
 ## Foundation
@@ -55,7 +55,7 @@ git clone https://github.com/soeguet/teamchat
 2. Navigate to the folder and type
 
 ```bash
-./mvnw clean install
+./gradlew build
 ``` 
 
 in the terminal.
@@ -65,7 +65,7 @@ in the terminal.
 3b. Run the application by typing
 
 ```bash
-java -jar target/teamchat.jar
+java -jar build/libs/teamchat.jar
 ```
 
 ## Environment Variables

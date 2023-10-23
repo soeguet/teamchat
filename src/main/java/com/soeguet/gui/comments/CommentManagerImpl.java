@@ -200,8 +200,8 @@ public class CommentManagerImpl implements CommentManager {
 
     private void repaintMainFrame() {
 
-        ((JFrame) this.mainFrame).revalidate();
-        ((JFrame) this.mainFrame).repaint();
+        this.mainFrame.revalidate();
+        this.mainFrame.repaint();
     }
 
     private Color determineBorderColor(String sender) {

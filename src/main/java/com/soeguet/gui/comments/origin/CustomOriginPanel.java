@@ -57,6 +57,7 @@ public class CustomOriginPanel extends JPanel {
         } catch (IOException e) {
 
             LOGGER.log(java.util.logging.Level.SEVERE, "Error reading image", e);
+            LOGGER.log(java.util.logging.Level.SEVERE,"CustomOriginPanel > extractImageFromMessage()");
         }
 
         return null;
@@ -99,7 +100,7 @@ public class CustomOriginPanel extends JPanel {
         });
     }
 
-    private static JMenuItem buildPopupMenu(final MouseEvent e, final JLabel imageLabel) {
+    private JMenuItem buildPopupMenu(final MouseEvent e, final JLabel imageLabel) {
 
         JPopupMenu popupMenu = new JPopupMenu();
         JMenuItem menuItem = new JMenuItem("maximize");
@@ -134,6 +135,7 @@ public class CustomOriginPanel extends JPanel {
         } catch (IOException ex) {
 
             LOGGER.log(java.util.logging.Level.SEVERE, "Error opening image", ex);
+            throw new RuntimeException();
         }
     }
 

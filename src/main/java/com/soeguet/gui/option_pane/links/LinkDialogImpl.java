@@ -1,6 +1,8 @@
 package com.soeguet.gui.option_pane.links;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
+import com.soeguet.gui.option_pane.links.dtos.LinkTransferDTO;
 import com.soeguet.gui.option_pane.links.dtos.MetadataStorageRecord;
 import com.soeguet.gui.option_pane.links.generated.LinkDialog;
 import com.soeguet.gui.option_pane.links.interfaces.LinkDialogInterface;
@@ -19,8 +21,10 @@ public class LinkDialogImpl extends LinkDialog implements LinkDialogInterface {
     /**
      Constructs a new LinkDialogImpl object.
 
-     @param mainFrame         The MainFrameInterface object representing the main frame.
-     @param linkDialogHandler The LinkDialogHandler object used to handle dialog events.
+     @param mainFrame
+     The MainFrameInterface object representing the main frame.
+     @param linkDialogHandler
+     The LinkDialogHandler object used to handle dialog events.
      */
     public LinkDialogImpl(MainFrameGuiInterface mainFrame, LinkDialogHandler linkDialogHandler) {
 
@@ -32,7 +36,8 @@ public class LinkDialogImpl extends LinkDialog implements LinkDialogInterface {
     /**
      Checks for metadata for a given link.
 
-     @param link the link to check for metadata
+     @param link
+     the link to check for metadata
 
      @return the metadata storage record if metadata is found, else null
      */
@@ -45,10 +50,10 @@ public class LinkDialogImpl extends LinkDialog implements LinkDialogInterface {
     /**
      Creates a metadata panel based on the provided metadata storage record.
 
-     @param metadataStorageRecord The metadata storage record containing the information for the panel.
+     @param metadataStorageRecord
+     The metadata storage record containing the information for the panel.
 
-     @return The created metadata panel.
-     Returns null if no image is available.
+     @return The created metadata panel. Returns null if no image is available.
      */
     @Override
     public JPanel createMetadataPanel(final MetadataStorageRecord metadataStorageRecord) {
@@ -84,17 +89,16 @@ public class LinkDialogImpl extends LinkDialog implements LinkDialogInterface {
 
     /**
      Generates and displays the GUI.
-
+     <p>
      This method is called to generate and display the graphical user interface (GUI).
-
-     This method performs the following steps:
-     1. Packs the components of the GUI, ensuring they are laid out and sized correctly.
-     2. Sets the location of the GUI relative to the mainFrame.
-     3. Sets the visibility of the GUI to true, making it visible to the user.
-     4. Requests focus for the commentTextPane component, allowing user input.
-
+     <p>
+     This method performs the following steps: 1. Packs the components of the GUI, ensuring they are laid out and sized correctly. 2. Sets the
+     location
+     of the GUI relative to the mainFrame. 3. Sets the visibility of the GUI to true, making it visible to the user. 4. Requests focus for the
+     commentTextPane component, allowing user input.
+     <p>
      There are no input parameters for this method.
-
+     <p>
      There is no return value for this method.
 
      @see JFrame
@@ -110,7 +114,7 @@ public class LinkDialogImpl extends LinkDialog implements LinkDialogInterface {
 
     /**
      Generates a metadata panel.
-
+     <p>
      This method is called to generate a JPanel which acts as a metadata panel.
 
      @return A JPanel representing the metadata panel.
@@ -124,11 +128,12 @@ public class LinkDialogImpl extends LinkDialog implements LinkDialogInterface {
 
     /**
      Creates a title label.
+     <p>
+     This method is called to create and customize a JTextPane component to be used as a title label. The title label displays the title of a metadata
+     storage record.
 
-     This method is called to create and customize a JTextPane component to be used as a title label.
-     The title label displays the title of a metadata storage record.
-
-     @param metadataStorageRecord The metadata storage record containing the title to be displayed.
+     @param metadataStorageRecord
+     The metadata storage record containing the title to be displayed.
 
      @return The JTextPane component representing the title label.
 
@@ -147,10 +152,10 @@ public class LinkDialogImpl extends LinkDialog implements LinkDialogInterface {
 
     /**
      Creates a vertical spacer panel.
-
-     This method creates a JPanel that acts as a vertical spacer.
-     The panel has a preferred size and minimum size of width 0 and height 10, effectively creating a vertical space
-     of 10 pixels between components.
+     <p>
+     This method creates a JPanel that acts as a vertical spacer. The panel has a preferred size and minimum size of width 0 and height 10,
+     effectively
+     creating a vertical space of 10 pixels between components.
 
      @return The created JPanel acting as a vertical spacer.
 
@@ -168,7 +173,8 @@ public class LinkDialogImpl extends LinkDialog implements LinkDialogInterface {
     /**
      Performs an action when the OK button is clicked. Sends links to Websocket.
 
-     @param e The ActionEvent object that triggered the method call.
+     @param e
+     The ActionEvent object that triggered the method call.
      */
     @Override
     protected void okButtonActionPerformed(final ActionEvent e) {
@@ -177,21 +183,30 @@ public class LinkDialogImpl extends LinkDialog implements LinkDialogInterface {
         String comment = getCommentTextPane().getText();
 
         //TODO find maybe a better method instead of separating this via regex
-        String message = link + "{LINK}" + comment;
+        LinkTransferDTO linkTransferDTO = new LinkTransferDTO(link, comment);
 
-        linkDialogHandler.sendLinkToWebsocket(mainFrame, message);
+        try {
+
+            final String serializedLinkTransferDTO = mainFrame.getObjectMapper().writeValueAsString(linkTransferDTO);
+            linkDialogHandler.sendLinkToWebsocket(mainFrame, serializedLinkTransferDTO);
+
+        } catch (JsonProcessingException ex) {
+
+            throw new RuntimeException(ex);
+        }
 
         this.cancelButtonActionPerformed(e);
     }
 
     /**
      Performs the action when the cancel button is clicked.
+     <p>
+     This method is called when the cancel button is clicked and performs the following actions: 1. Disposes the current dialog. 2. Sets the
+     visibility
+     of the current dialog to false.
 
-     This method is called when the cancel button is clicked and performs the following actions:
-     1. Disposes the current dialog.
-     2. Sets the visibility of the current dialog to false.
-
-     @param e The ActionEvent that triggered the method.
+     @param e
+     The ActionEvent that triggered the method.
      */
     @Override
     protected void cancelButtonActionPerformed(final ActionEvent e) {

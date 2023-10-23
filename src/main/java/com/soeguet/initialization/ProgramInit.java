@@ -40,7 +40,7 @@ public class ProgramInit {
 
             //setup functionality
             this.initializeProperties(envVariables);
-            this.initiliazeMainFrame();
+            this.initializeMainFrame();
             this.mainFrame.loadUsernameFromEnvVariables(envVariables);
 
             //setup emojis
@@ -77,7 +77,7 @@ public class ProgramInit {
         customProperties.populateHashMapWithNewValues();
     }
 
-    private void initiliazeMainFrame() {
+    private void initializeMainFrame() {
 
         this.mainFrame.loadCustomProperties();
         this.mainFrame.initGuiFunctionality();

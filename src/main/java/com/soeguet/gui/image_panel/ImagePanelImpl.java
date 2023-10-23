@@ -127,12 +127,14 @@ public class ImagePanelImpl extends ImagePanel implements ImageInterface {
             } catch (UnsupportedFlavorException | IOException ex) {
 
                 LOGGER.log(java.util.logging.Level.SEVERE, "Could not load image from clipboard", ex);
+                throw new RuntimeException();
 
             }
 
         } else {
 
             LOGGER.log(java.util.logging.Level.SEVERE, "Clipboard does not contain an image");
+            throw new RuntimeException();
         }
     }
 
@@ -143,7 +145,7 @@ public class ImagePanelImpl extends ImagePanel implements ImageInterface {
 
      @return a new JLabel with the specified image as its content
      */
-    private static JLabel createImageLabel(ImageIcon newImage) {
+    private JLabel createImageLabel(ImageIcon newImage) {
 
         return new JLabel(newImage);
     }
@@ -289,6 +291,7 @@ public class ImagePanelImpl extends ImagePanel implements ImageInterface {
         } catch (IOException ex) {
 
             LOGGER.log(java.util.logging.Level.SEVERE, "Could not convert image to byte array", ex);
+            throw new RuntimeException();
         }
     }
 
@@ -390,7 +393,9 @@ public class ImagePanelImpl extends ImagePanel implements ImageInterface {
                 redrawEverything();
 
             } catch (IOException ex) {
+
                 LOGGER.log(java.util.logging.Level.SEVERE, "Could not load image from file", ex);
+                throw new RuntimeException();
             }
         }
     }

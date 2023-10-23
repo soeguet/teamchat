@@ -19,7 +19,6 @@ public abstract class Notification extends JDialog {
 		initComponents();
 	}
 
-	protected abstract void thisWindowGainedFocus(WindowEvent e);
 
 	protected abstract void notificationAllPanelMouseClicked(MouseEvent e);
 
@@ -132,16 +131,10 @@ public abstract class Notification extends JDialog {
 		setAutoRequestFocus(false);
 		setBackground(null);
 		setType(Window.Type.POPUP);
-		setMinimumSize(new Dimension(400, 170));
-		setPreferredSize(new Dimension(400, 170));
+		setMinimumSize(new Dimension(400, 100));
+		setPreferredSize(new Dimension(400, 100));
 		setFocusableWindowState(false);
 		setFocusable(false);
-		addWindowFocusListener(new WindowAdapter() {
-			@Override
-			public void windowGainedFocus(WindowEvent e) {
-				thisWindowGainedFocus(e);
-			}
-		});
 		Container contentPane = getContentPane();
 		contentPane.setLayout(new BorderLayout());
 
@@ -215,8 +208,8 @@ public abstract class Notification extends JDialog {
 
 							//---- form_notificationMainMessage ----
 							this.form_notificationMainMessage.setText("text");
-							this.form_notificationMainMessage.setMinimumSize(new Dimension(62, 72));
-							this.form_notificationMainMessage.setPreferredSize(new Dimension(62, 72));
+							this.form_notificationMainMessage.setMinimumSize(new Dimension(62, 35));
+							this.form_notificationMainMessage.setPreferredSize(new Dimension(62, 35));
 							this.form_scrollPane1.setViewportView(this.form_notificationMainMessage);
 						}
 						this.form_panel10.add(this.form_scrollPane1, BorderLayout.CENTER);

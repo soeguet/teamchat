@@ -85,6 +85,7 @@ public class EmojiHandler implements EmojiHandlerInterface {
         } catch (Exception e) {
 
             logger.log(Level.WARNING, e.getMessage(), e);
+            throw new RuntimeException();
         }
     }
 
@@ -102,6 +103,7 @@ public class EmojiHandler implements EmojiHandlerInterface {
         } catch (BadLocationException ex) {
 
             logger.log(Level.WARNING, ex.getMessage(), ex);
+            throw new RuntimeException();
         }
     }
 
@@ -114,7 +116,7 @@ public class EmojiHandler implements EmojiHandlerInterface {
 
      @return the created style with the image icon
      */
-    private static Style createImageStyle(JTextPane actualTextPane, MainFrameGuiInterface gui, String word) {
+    private Style createImageStyle(JTextPane actualTextPane, MainFrameGuiInterface gui, String word) {
 
         Style style = actualTextPane.addStyle("Image", null);
 

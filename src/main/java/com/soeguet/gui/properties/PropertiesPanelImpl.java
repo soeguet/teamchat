@@ -59,7 +59,7 @@ public class PropertiesPanelImpl extends PropertiesPanel implements PropertiesIn
         if (ownClient.username() == null) {
 
             getOwnUserNameTextField().setText(mainFrame.getUsername());
-            ownClient = new CustomUserPropertiesDTO(mainFrame.getUsername(), ownClient.nickname(), new Color(ownClient.getBorderColor()).toString());
+            ownClient = ownClient.withUsername(mainFrame.getUsername());
 
         } else {
 
@@ -194,6 +194,8 @@ public class PropertiesPanelImpl extends PropertiesPanel implements PropertiesIn
     @Override
     protected void ownBorderColorPanelMouseClicked(MouseEvent e) {
 
+        //TODO wow this is some overkill bullshit
+
         CustomUserPropertiesDTO ownProperties = mainFrame.getChatClientPropertiesHashMap().get("own");
         Color borderColor = null;
 
@@ -204,7 +206,6 @@ public class PropertiesPanelImpl extends PropertiesPanel implements PropertiesIn
         } else {
 
             final String username = mainFrame.getUsername() != null ? mainFrame.getUsername() : "own";
-            mainFrame.setUsername(username);
             CustomUserPropertiesDTO updatedOwnProperties = new CustomUserPropertiesDTO(username, ownProperties.nickname() == null ? null :
                                                                                                  ownProperties.nickname(),
                                                                                        ownProperties.borderColor());
@@ -230,8 +231,7 @@ public class PropertiesPanelImpl extends PropertiesPanel implements PropertiesIn
         String ownName = getOwnUserNameTextField().getText();
 
         final CustomUserPropertiesDTO ownPropertiesDTO = mainFrame.getChatClientPropertiesHashMap().get("own");
-        final CustomUserPropertiesDTO updatedPropertiesDTO = new CustomUserPropertiesDTO(ownName, ownPropertiesDTO.nickname(),
-                                                                                         ownPropertiesDTO.borderColor());
+        final CustomUserPropertiesDTO updatedPropertiesDTO = ownPropertiesDTO.withUsername(ownName);
         mainFrame.getChatClientPropertiesHashMap().replace("own", updatedPropertiesDTO);
         mainFrame.setUsername(ownName);
 
@@ -299,9 +299,7 @@ public class PropertiesPanelImpl extends PropertiesPanel implements PropertiesIn
 
             getColorPickerPanel().setBackground(color);
             final CustomUserPropertiesDTO customUserPropertiesDTO = mainFrame.getChatClientPropertiesHashMap().get(selectedItem);
-            mainFrame.getChatClientPropertiesHashMap().replace(selectedItem, new CustomUserPropertiesDTO(customUserPropertiesDTO.username(),
-                                                                                                         customUserPropertiesDTO.nickname(),
-                                                                                                         String.valueOf(color.getRGB())));
+            mainFrame.getChatClientPropertiesHashMap().replace(selectedItem, customUserPropertiesDTO.withBorderColor(String.valueOf(color.getRGB())));
         }
     }
 }

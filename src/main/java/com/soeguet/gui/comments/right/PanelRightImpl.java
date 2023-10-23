@@ -164,10 +164,14 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     private boolean handleImageExtraction(final PictureModel pictureModel) {
 
         this.image = extractImageFromMessage(pictureModel);
+
         if (image == null) {
+
             LOGGER.log(java.util.logging.Level.SEVERE, "Buffered image is null");
+            LOGGER.log(java.util.logging.Level.SEVERE, "PanelRightImpl > handleImageExtraction()");
             return true;
         }
+
         return false;
     }
 

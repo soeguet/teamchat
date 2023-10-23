@@ -1,8 +1,5 @@
 .gradle
 build/
-!gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
@@ -41,6 +38,8 @@ bin/
 ### Mac OS ###
 .DS_Store
 /.idea/
-/gradle/
 /target/
 /dependency-reduced-pom.xml
+
+# Ignore Gradle build output directory
+build

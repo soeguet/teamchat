@@ -17,11 +17,10 @@ new FormModel {
 			"autoRequestFocus": false
 			"background": sfield com.jformdesigner.model.FormObject NULL_VALUE
 			"type": enum java.awt.Window$Type POPUP
-			"minimumSize": new java.awt.Dimension( 400, 170 )
-			"preferredSize": new java.awt.Dimension( 400, 170 )
+			"minimumSize": new java.awt.Dimension( 400, 100 )
+			"preferredSize": new java.awt.Dimension( 400, 100 )
 			"focusableWindowState": false
 			"focusable": false
-			addEvent( new FormEvent( "java.awt.event.WindowFocusListener", "windowGainedFocus", "thisWindowGainedFocus", true ) )
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) {
 				"hgap": 5
 				"vgap": 5
@@ -91,8 +90,8 @@ new FormModel {
 								add( new FormComponent( "javax.swing.JTextPane" ) {
 									name: "notificationMainMessage"
 									"text": "text"
-									"minimumSize": new java.awt.Dimension( 62, 72 )
-									"preferredSize": new java.awt.Dimension( 62, 72 )
+									"minimumSize": new java.awt.Dimension( 62, 35 )
+									"preferredSize": new java.awt.Dimension( 62, 35 )
 								} )
 							}, new FormLayoutConstraints( class java.lang.String ) {
 								"value": "Center"
