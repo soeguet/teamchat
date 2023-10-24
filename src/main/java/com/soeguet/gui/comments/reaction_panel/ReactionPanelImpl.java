@@ -11,6 +11,8 @@ public class ReactionPanelImpl extends JPanel implements ReactionPanelInterface 
 
     private final MainFrameGuiInterface mainFrame;
     private final JLayeredPane parentPane;
+    private int width = 400;
+    private int height = 100;
     private ReactionHandlerInterface reactionHandler;
     private float opacity = 0.0f;
     private Timer animationTimer;
@@ -19,10 +21,29 @@ public class ReactionPanelImpl extends JPanel implements ReactionPanelInterface 
 
         this.mainFrame = mainFrame;
         this.parentPane = parentPane;
+    }
 
-        setBackground(Color.RED);
-        setBounds(0, 0, 100, 100);
-        parentPane.add(this, JLayeredPane.POPUP_LAYER);
+    @Override
+    public void initializeReactionHandler() {
+
+        reactionHandler = new ReactionHandlerImpl(mainFrame, this);
+    }
+
+    public void startAnimation() {
+
+        animationTimer = reactionHandler.increaseOpacity();
+        setOpaque(true);
+    }
+
+    @Override
+    public void stopAnimation() {
+
+        if (animationTimer.isRunning()) {
+
+            animationTimer.stop();
+        }
+
+        animationTimer = null;
     }
 
     public float getOpacity() {
@@ -42,26 +63,32 @@ public class ReactionPanelImpl extends JPanel implements ReactionPanelInterface 
     }
 
     @Override
-    public void initializeReactionHandler() {
+    public void setReactionPanelUp() {
 
-        reactionHandler = new ReactionHandlerImpl(mainFrame,this);
-    }
-
-    public void startAnimation() {
-
-        animationTimer = reactionHandler.increaseOpacity();
-        setOpaque(true);
+        setBackground(Color.RED);
+        setBounds(parentPane.getWidth() / 2 - width / 2, parentPane.getHeight() / 2 - height / 2, width, height);
     }
 
     @Override
-    public void stopAnimation() {
+    public int getWidth() {
 
-        if (animationTimer.isRunning()) {
+        return width;
+    }
 
-                animationTimer.stop();
-        }
-//
-        animationTimer = null;
+    public void setWidth(final int width) {
+
+        this.width = width;
+    }
+
+    @Override
+    public int getHeight() {
+
+        return height;
+    }
+
+    public void setHeight(final int height) {
+
+        this.height = height;
     }
 
     @Override

@@ -92,7 +92,6 @@ public class CommentManagerImpl implements CommentManager {
 
             CommentInterface panelRight = new PanelRightImpl(this.mainFrame, messageModel);
             panelRight.initializeBorderHandler(borderColor);
-            panelRight.initializeReactionPanel();
 
             this.mainFrame.getCommentsHashMap().put(messageModel.getId(), panelRight);
             panelRight.setupTextPanelWrapper();

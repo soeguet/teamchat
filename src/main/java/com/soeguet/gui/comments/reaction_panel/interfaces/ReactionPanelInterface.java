@@ -1,7 +1,5 @@
 package com.soeguet.gui.comments.reaction_panel.interfaces;
 
-import javax.swing.*;
-
 public interface ReactionPanelInterface {
 
     void setVisible(boolean b);
@@ -11,7 +9,12 @@ public interface ReactionPanelInterface {
     void startAnimation();
 
     void stopAnimation();
+
     float getOpacity();
 
     void addOpacity(float v);
+
+    void setReactionPanelUp();
+
+    void setBounds(int x, int y, int width, int height);
 }
