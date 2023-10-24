@@ -1,8 +1,12 @@
 package com.soeguet.gui.comments.right;
 
+import com.soeguet.gui.comments.border.BorderHandlerImpl;
+import com.soeguet.gui.comments.border.interfaces.BorderHandlerInterface;
+import com.soeguet.gui.comments.border.interfaces.BorderInterface;
 import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.interfaces.LinkPanelInterface;
 import com.soeguet.gui.comments.reaction_panel.ReactionPanelImpl;
+import com.soeguet.gui.comments.reaction_panel.interfaces.ReactionPanelInterface;
 import com.soeguet.gui.comments.right.generated.PanelRight;
 import com.soeguet.gui.comments.util.LinkWrapEditorKit;
 import com.soeguet.gui.comments.util.QuotePanelImpl;
@@ -26,18 +30,17 @@ import java.util.logging.Logger;
 /**
  This class represents a right panel implementation that extends PanelRight and implements CommentInterface.
  */
-public class PanelRightImpl extends PanelRight implements CommentInterface {
+public class PanelRightImpl extends PanelRight implements CommentInterface, BorderInterface {
 
     private final Logger LOGGER = Logger.getLogger(PanelRightImpl.class.getName());
     private final BaseModel baseModel;
-    /**
-     The color used to cache the border color. This variable represents the color applied to the border of an element.
-     */
     private final MainFrameGuiInterface mainFrame;
     private Color borderColorCache;
     private JPopupMenu jPopupMenu;
     private BufferedImage image;
-    private JPanel reactionPanel;
+    private ReactionPanelInterface reactionPanel;
+    private Timer opacityTimer;
+    private BorderHandlerInterface borderHandler;
 
     public PanelRightImpl(MainFrameGuiInterface mainFrame, BaseModel baseModel) {
 
@@ -283,22 +286,25 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     @Override
     protected void layeredContainerMouseEntered(final MouseEvent e) {
 
-        borderColorCache = borderColor;
-        super.setBorderColor(Color.RED);
+        borderHandler.highlightBorder();
 
-        reactionPanel = new ReactionPanelImpl(mainFrame, form_layeredContainer).createReactionPanel();
-        form_layeredContainer.add(reactionPanel);
-        reactionPanel.setVisible(true);
+        reactionPanel.startAnimation();
     }
 
     @Override
     protected void layeredContainerMouseExited(final MouseEvent e) {
 
-        super.setBorderColor(borderColorCache);
-        reactionPanel.setVisible(false);
-        reactionPanel = null;
-    }
+        borderHandler.revertBorderColor();
 
+        reactionPanel.stopAnimation();
+
+//        reactionPanel.setVisible(false);
+//        reactionPanel = null;
+//        if (opacityTimer.isRunning()) {
+//            opacityTimer.stop();
+//        }
+//        opacityTimer = null;
+    }
     @Override
     protected void layeredContainerMouseClicked(final MouseEvent e) {
 
@@ -325,5 +331,23 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     @Override
     protected void thisComponentResized(ComponentEvent e) {
 
+    }
+
+    /**
+     * Initializes the border handler for the component.
+     *
+     * @param borderColor
+     *     The border color to be saved and used by the border handler.
+     */
+    public void initializeBorderHandler(final Color borderColor) {
+
+        borderHandler = new BorderHandlerImpl(mainFrame, this);
+        borderHandler.saveBorderColor(borderColor);
+    }
+
+    public void initializeReactionPanel() {
+
+        reactionPanel = new ReactionPanelImpl(mainFrame, form_layeredContainer);
+        reactionPanel.initializeReactionHandler();
     }
 }

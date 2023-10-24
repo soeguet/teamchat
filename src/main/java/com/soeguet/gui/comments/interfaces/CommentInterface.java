@@ -7,8 +7,13 @@ public interface CommentInterface {
 
     JLabel getNameLabel();
 
-    JPanel getContainer();
     void setupTextPanelWrapper();
+
     void setupPicturePanelWrapper();
+
     void setBorderColor(Color borderColor);
+
+    void initializeBorderHandler(final Color borderColor);
+
+    void initializeReactionPanel();
 }

@@ -91,6 +91,9 @@ public class CommentManagerImpl implements CommentManager {
             Color borderColor = determineBorderColor("own");
 
             CommentInterface panelRight = new PanelRightImpl(this.mainFrame, messageModel);
+            panelRight.initializeBorderHandler(borderColor);
+            panelRight.initializeReactionPanel();
+
             this.mainFrame.getCommentsHashMap().put(messageModel.getId(), panelRight);
             panelRight.setupTextPanelWrapper();
             panelRight.setBorderColor(borderColor);

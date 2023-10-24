@@ -19,6 +19,11 @@ public abstract class PanelRight extends CustomOriginPanel {
 
 	protected Color borderColor;
 
+	public Color getBorderColor() {
+
+		return borderColor;
+	}
+
 	public PanelRight(MainFrameGuiInterface mainFrame) {
 		super(mainFrame);
 		initComponents();
@@ -33,9 +38,6 @@ public abstract class PanelRight extends CustomOriginPanel {
 	protected abstract void actionLabelMouseEntered(MouseEvent e);
 	protected abstract void actionLabelMouseClicked(MouseEvent e);
 	protected abstract void actionLabelMouseExited(MouseEvent e);
-
-
-
 
 	private void createUIComponents() {
 

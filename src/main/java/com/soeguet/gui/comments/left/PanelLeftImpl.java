@@ -1,21 +1,22 @@
 package com.soeguet.gui.comments.left;
 
-import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.left.generated.PanelLeft;
 import com.soeguet.gui.comments.util.QuotePanelImpl;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.logging.Logger;
 
 /**
- This class represents an implementation of the PanelLeft interface and implements the CommentInterface.
- It provides methods for setting up a left panel in a graphical user interface.
+ This class represents an implementation of the PanelLeft interface and implements the CommentInterface. It provides methods for setting up a left
+ panel in a graphical user interface.
  */
 public class PanelLeftImpl extends PanelLeft implements CommentInterface {
 
@@ -28,8 +29,10 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     /**
      Constructs a new PanelLeftImpl object.
 
-     @param mainFrame the MainFrameInterface object to associate with the panel
-     @param baseModel the BaseModel object to use for data access
+     @param mainFrame
+     the MainFrameInterface object to associate with the panel
+     @param baseModel
+     the BaseModel object to use for data access
      */
     public PanelLeftImpl(MainFrameGuiInterface mainFrame, BaseModel baseModel) {
 
@@ -38,21 +41,14 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
         this.baseModel = baseModel;
     }
 
-    @Override
-    public JPanel getContainer() {
-
-        return null;
-    }
-
     /**
-     Set up the text panel wrapper for displaying messages.
-     This method is called to initialize the text panel with the necessary components and settings.
-
-     If the baseModel is an instance of MessageModel, the following actions are taken:
-     1. Invoke the setupTextPanelWrapper method on the Swing event dispatch thread.
-     2. Handle the extraction of messages containing quotes.
-     3. Set the text message on the chat panel and add a right-click option to the text pane.
-     4. Set up the remaining needed fields, such as name, time, and popup menu.
+     Set up the text panel wrapper for displaying messages. This method is called to initialize the text panel with the necessary components and
+     settings.
+     <p>
+     If the baseModel is an instance of MessageModel, the following actions are taken: 1. Invoke the setupTextPanelWrapper method on the Swing event
+     dispatch thread. 2. Handle the extraction of messages containing quotes. 3. Set the text message on the chat panel and add a right-click
+     option to
+     the text pane. 4. Set up the remaining needed fields, such as name, time, and popup menu.
      */
     @Override
     public void setupTextPanelWrapper() {
@@ -74,10 +70,11 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     }
 
     /**
-     Handle the extraction of messages containing quotes.
-     If the given message model contains quotes, a quote panel is created and added to the form panel.
+     Handle the extraction of messages containing quotes. If the given message model contains quotes, a quote panel is created and added to the form
+     panel.
 
-     @param messageModel the message model containing the message to handle
+     @param messageModel
+     the message model containing the message to handle
      */
     private void handleTextMessageExtraction(final MessageModel messageModel) {
 
@@ -90,7 +87,8 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     /**
      Sets the text message on the chat panel.
 
-     @param messageModel the message model containing the message to be set
+     @param messageModel
+     the message model containing the message to be set
      */
     private void setTextMessageOnChatPanel(final MessageModel messageModel) {
 
@@ -102,12 +100,13 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     /**
      Sets up the essentials for comments.
 
-     @param messageModel the message model containing the comment information
+     @param messageModel
+     the message model containing the comment information
      */
     private void setupCommentEssentials(final MessageModel messageModel) {
 
         //setup time
-        setupTimeField( messageModel, form_timeLabel);
+        setupTimeField(messageModel, form_timeLabel);
 
         //setup name
         setupNameField(messageModel, form_nameLabel);
@@ -117,10 +116,10 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     }
 
     /**
-     Sets up the picture panel wrapper.
-     This method is responsible for setting up the necessary components and behavior for displaying a picture in the chat panel.
-     It handles image extraction, resizing, caption, and right-click functionality.
-     After setting up the picture, it also calls the setupCommentEssentials method to set up the remaining needed fields.
+     Sets up the picture panel wrapper. This method is responsible for setting up the necessary components and behavior for displaying a picture in
+     the
+     chat panel. It handles image extraction, resizing, caption, and right-click functionality. After setting up the picture, it also calls the
+     setupCommentEssentials method to set up the remaining needed fields.
      */
     @Override
     public void setupPicturePanelWrapper() {
@@ -130,7 +129,7 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
             SwingUtilities.invokeLater(() -> {
 
                 //handle image extraction and return, if null
-                if (handleImageExtraction(pictureModel)) return;
+                if (handleImageExtraction(pictureModel)) {return;}
 
                 //handle image and max sizing of image on the main panel
                 setImageOnChatPanel();
@@ -144,15 +143,23 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
         }
     }
 
+    @Override
+    public void initializeBorderHandler(final Color borderColor) {
 
+    }
+
+    @Override
+    public void initializeReactionPanel() {
+
+    }
 
     /**
-     Handles image extraction from the given PictureModel.
-     It extracts the image from the message and sets the extracted image to the instance variable 'image'.
-     If the extracted image is null, it logs a severe level message and returns true.
-     Otherwise, it returns false.
+     Handles image extraction from the given PictureModel. It extracts the image from the message and sets the extracted image to the instance
+     variable
+     'image'. If the extracted image is null, it logs a severe level message and returns true. Otherwise, it returns false.
 
-     @param pictureModel The PictureModel containing the image message.
+     @param pictureModel
+     The PictureModel containing the image message.
 
      @return True if the extracted image is null, false otherwise.
      */
@@ -171,9 +178,8 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     }
 
     /**
-     Sets the image on the chat panel.
-     It creates a JLabel with the scaled image and adds it to the form_panel1.
-     It also adds a click listener to the image label to support maximizing the image.
+     Sets the image on the chat panel. It creates a JLabel with the scaled image and adds it to the form_panel1. It also adds a click listener to the
+     image label to support maximizing the image.
 
      @see #scaleImageIfTooBig(BufferedImage)
      @see #addMaximizePictureOnClick(JLabel, BufferedImage)
@@ -186,11 +192,11 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     }
 
     /**
-     Handles the image caption for the given PictureModel.
-     It creates a JTextPane with the caption text and adds it to the form_panel1 if the imageCaptionTextPane is not null.
-     It also adds a right-click option to the image caption to support additional functionalities.
+     Handles the image caption for the given PictureModel. It creates a JTextPane with the caption text and adds it to the form_panel1 if the
+     imageCaptionTextPane is not null. It also adds a right-click option to the image caption to support additional functionalities.
 
-     @param pictureModel The PictureModel object containing the image caption.
+     @param pictureModel
+     The PictureModel object containing the image caption.
      */
     private void handleImageCaption(final PictureModel pictureModel) {
 
@@ -202,15 +208,15 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     }
 
     /**
-     Sets up the essential comment fields for the given PictureModel.
-     It sets the name field, timestamp field, and the editor popup menu.
+     Sets up the essential comment fields for the given PictureModel. It sets the name field, timestamp field, and the editor popup menu.
 
-     @param pictureModel The PictureModel object for which to set up the comment essentials.
+     @param pictureModel
+     The PictureModel object for which to set up the comment essentials.
      */
     private void setupCommentEssentials(final PictureModel pictureModel) {
 
         //setup time
-        setupTimeField( pictureModel, form_timeLabel);
+        setupTimeField(pictureModel, form_timeLabel);
 
         //setup name
         setupNameField(pictureModel, form_nameLabel);
@@ -222,7 +228,8 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     /**
      Handler for when the action label is mouse entered.
 
-     @param e The MouseEvent object representing the mouse enter event.
+     @param e
+     The MouseEvent object representing the mouse enter event.
      */
     @Override
     protected void actionLabelMouseEntered(MouseEvent e) {
@@ -232,7 +239,8 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     /**
      Handler for when the mouse pointer exits the action label.
 
-     @param e The MouseEvent object representing the mouse exit event.
+     @param e
+     The MouseEvent object representing the mouse exit event.
      */
     @Override
     protected void actionLabelMouseExited(MouseEvent e) {
@@ -240,10 +248,10 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     }
 
     /**
-     Handler for when the reply button is clicked.
-     Displays the editor popup menu at the position of the mouse click.
+     Handler for when the reply button is clicked. Displays the editor popup menu at the position of the mouse click.
 
-     @param e The MouseEvent object representing the mouse click event.
+     @param e
+     The MouseEvent object representing the mouse click event.
      */
     @Override
     protected void replyButtonClicked(MouseEvent e) {
@@ -254,7 +262,8 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     /**
      Handler for when the action label is clicked.
 
-     @param e The MouseEvent object representing the mouse click event.
+     @param e
+     The MouseEvent object representing the mouse click event.
      */
     @Override
     protected void actionLabelMouseClicked(MouseEvent e) {
