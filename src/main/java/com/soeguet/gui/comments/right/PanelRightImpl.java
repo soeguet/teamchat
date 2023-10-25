@@ -5,7 +5,6 @@ import com.soeguet.gui.comments.border.interfaces.BorderHandlerInterface;
 import com.soeguet.gui.comments.border.interfaces.BorderInterface;
 import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.interfaces.LinkPanelInterface;
-import com.soeguet.gui.comments.reaction_panel.ReactionPanelImpl;
 import com.soeguet.gui.comments.reaction_panel.ReactionPopupMenuImpl;
 import com.soeguet.gui.comments.reaction_panel.interfaces.ReactionPanelInterface;
 import com.soeguet.gui.comments.right.generated.PanelRight;
@@ -26,7 +25,6 @@ import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.util.Objects;
 import java.util.logging.Logger;
 
 /**
@@ -43,6 +41,7 @@ public class PanelRightImpl extends PanelRight implements CommentInterface, Bord
     private ReactionPanelInterface reactionPanel;
     private Timer opacityTimer;
     private BorderHandlerInterface borderHandler;
+    private ReactionPopupMenuImpl popupMenu;
 
     public PanelRightImpl(MainFrameGuiInterface mainFrame, BaseModel baseModel) {
 
@@ -247,15 +246,6 @@ public class PanelRightImpl extends PanelRight implements CommentInterface, Bord
         borderHandler.saveBorderColor(borderColor);
     }
 
-    @Override
-    public void initializeReactionPanel() {
-
-        reactionPanel = new ReactionPanelImpl(mainFrame, form_layeredContainer);
-        reactionPanel.initializeReactionHandler();
-        reactionPanel.setReactionPanelUp();
-        form_layeredContainer.add((Component) reactionPanel, JLayeredPane.POPUP_LAYER);
-    }
-
     /**
      Called when the reply button is clicked.
 
@@ -312,14 +302,14 @@ public class PanelRightImpl extends PanelRight implements CommentInterface, Bord
 
         borderHandler.highlightBorder();
 
-        ReactionPopupMenuImpl popupMenu = new ReactionPopupMenuImpl();
-        JPanel jPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        popupMenu.addItemToMenu(jPanel,"/emojis/$+1f4ac$+.png");
-        popupMenu.addItemToMenu(jPanel,"/emojis/$+1f4b3$+.png");
-        popupMenu.addItemToMenu(jPanel,"/emojis/$+1f4af$+.png");
-        popupMenu.addItemToMenu(jPanel,"/emojis/$+1f4b8$+.png");
-        popupMenu.add(jPanel);
-        popupMenu.show(form_layeredContainer, e.getX()+100, e.getY()+100);
+        if (popupMenu == null) {
+
+            popupMenu = new ReactionPopupMenuImpl();
+            popupMenu.setPopupMenuUp();
+            popupMenu.initializePopupHandler(form_layeredContainer);
+        }
+
+        popupMenu.startAnimation();
     }
 
     @Override
@@ -327,7 +317,12 @@ public class PanelRightImpl extends PanelRight implements CommentInterface, Bord
 
         borderHandler.revertBorderColor();
 
-//        reactionPanel.stopAnimation();
+        if (!popupMenu.isVisible() || popupMenu.mouseLeftContainerCompletely(e)) {
+
+            popupMenu.dispose(e);
+        }
+        popupMenu.stopAnimation();
+
     }
 
     @Override

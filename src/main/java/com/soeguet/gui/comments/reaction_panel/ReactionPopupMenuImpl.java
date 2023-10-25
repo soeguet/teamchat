@@ -1,14 +1,30 @@
 package com.soeguet.gui.comments.reaction_panel;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.net.URL;
 
 public class ReactionPopupMenuImpl extends JPopupMenu {
 
+    private ReactionPopupHandler reactionPopupHandler;
+
+
     public ReactionPopupMenuImpl() {
+
     }
 
-    public void addItemToMenu(final JPanel jPanel, final String item) {
+    public void setPopupMenuUp() {
+
+        JPanel jPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        addItemToMenu(jPanel, "/emojis/$+1f4ac$+.png");
+        addItemToMenu(jPanel, "/emojis/$+1f4b3$+.png");
+        addItemToMenu(jPanel, "/emojis/$+1f4af$+.png");
+        addItemToMenu(jPanel, "/emojis/$+1f4b8$+.png");
+        add(jPanel);
+    }
+
+    private void addItemToMenu(final JPanel jPanel, final String item) {
 
         URL url = getClass().getResource(item);
         if (url != null) {
@@ -19,13 +35,36 @@ public class ReactionPopupMenuImpl extends JPopupMenu {
         }
     }
 
-    public void addImageIconToMenu(final ImageIcon imageIcon) {
+    public void startAnimation() {
 
-        add(new JMenuItem(imageIcon));
+        if (!isVisible() ) {
+
+            reactionPopupHandler.initializePopupTimer();
+        }
     }
 
-    public void show(final JComponent component, final int x, final int y) {
+    public void initializePopupHandler(final JLayeredPane layeredPane) {
 
-        super.show(component, x, y);
+        reactionPopupHandler = new ReactionPopupHandler(this, layeredPane);
+    }
+
+    public void stopAnimation() {
+
+        reactionPopupHandler.stopPopupTimer();
+
+    }
+
+    public void dispose(final MouseEvent e) {
+
+        if (isVisible()) {
+
+            setVisible(false);
+            dispose(e);
+        }
+    }
+
+    public boolean mouseLeftContainerCompletely(final MouseEvent e) {
+
+        return e.getX() <= 0 || e.getX() >= e.getComponent().getWidth() || e.getY() <= 0 || e.getY() >= e.getComponent().getHeight();
     }
 }

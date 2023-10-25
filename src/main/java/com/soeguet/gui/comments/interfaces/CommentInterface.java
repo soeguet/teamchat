@@ -14,6 +14,4 @@ public interface CommentInterface {
     void setBorderColor(Color borderColor);
 
     void initializeBorderHandler(final Color borderColor);
-
-    void initializeReactionPanel();
 }

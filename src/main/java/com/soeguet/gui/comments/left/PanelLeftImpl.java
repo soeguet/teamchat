@@ -148,11 +148,6 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
 
     }
 
-    @Override
-    public void initializeReactionPanel() {
-
-    }
-
     /**
      Handles image extraction from the given PictureModel. It extracts the image from the message and sets the extracted image to the instance
      variable
