@@ -50,14 +50,6 @@ public class LinkRightImpl extends PanelRight implements LinkPanelInterface {
     }
 
     @Override
-    protected void layeredContainerMouseClicked(final MouseEvent e) {
-        Component target = SwingUtilities.getDeepestComponentAt(form_layeredContainer.getParent(), e.getX(), e.getY());
-        if (!(target instanceof JTextPane)) {
-            // Ihr Code
-        }
-    }
-
-    @Override
     public void setCursorOnLink(final Cursor cursor) {
 
         form_container.setCursor(cursor);
@@ -214,11 +206,6 @@ public class LinkRightImpl extends PanelRight implements LinkPanelInterface {
 
     @Override
     protected void actionLabelMouseExited(final MouseEvent e) {
-
-    }
-
-    @Override
-    protected void thisComponentResized(final ComponentEvent e) {
 
     }
 }

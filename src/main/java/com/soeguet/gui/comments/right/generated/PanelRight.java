@@ -68,24 +68,6 @@ public abstract class PanelRight extends CustomOriginPanel {
 			}
 
 		};
-
-		form_actionLabel = new JLabel() {
-
-			@Override
-			protected void paintComponent(Graphics g) {
-
-				int x = 7;
-
-				Graphics2D g2d = (Graphics2D) g;
-				g2d.setColor(getForeground());
-				g2d.setRenderingHints(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
-				g2d.drawRoundRect(3, 3, 18, 18, 50, 50);
-
-				g2d.fillRect(x, 12, 2, 2);
-				g2d.fillRect(x + 4, 12, 2, 2);
-				g2d.fillRect(x + 8, 12, 2, 2);
-			}
-		};
 	}
 
 	public JLayeredPane getLayeredContainer() {
@@ -112,14 +94,6 @@ public abstract class PanelRight extends CustomOriginPanel {
 		return this.form_panel2;
 	}
 
-	public JLayeredPane getLayeredPane2() {
-		return this.form_layeredPane2;
-	}
-
-	public JLabel getActionLabel() {
-		return this.form_actionLabel;
-	}
-
 	public JPanel getHSpacer1() {
 		return this.form_hSpacer1;
 	}
@@ -128,13 +102,9 @@ public abstract class PanelRight extends CustomOriginPanel {
 
 	protected abstract void layeredContainerMouseExited(MouseEvent e);
 
-	protected abstract void layeredContainerMouseClicked(MouseEvent e);
-
 	protected abstract void layeredContainerMousePressed(MouseEvent e);
 
 	protected abstract void layeredContainerMouseDragged(MouseEvent e);
-
-	protected abstract void thisComponentResized(ComponentEvent e);
 
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
@@ -142,7 +112,6 @@ public abstract class PanelRight extends CustomOriginPanel {
 		createUIComponents();
 
 		this.form_layeredContainer = new JLayeredPane();
-		this.form_layeredPane2 = new JLayeredPane();
 		this.form_hSpacer1 = new JPanel(null);
 		this.form_panel2 = new JPanel();
 		this.form_timeLabel = new JLabel();
@@ -154,12 +123,6 @@ public abstract class PanelRight extends CustomOriginPanel {
 		setMinimumSize(null);
 		setMaximumSize(null);
 		setOpaque(false);
-		addComponentListener(new ComponentAdapter() {
-			@Override
-			public void componentResized(ComponentEvent e) {
-				thisComponentResized(e);
-			}
-		});
 		setLayout(new MigLayout(
 			"insets 0,align trailing bottom",
 			// columns
@@ -180,10 +143,6 @@ public abstract class PanelRight extends CustomOriginPanel {
 			this.form_layeredContainer.setPreferredSize(null);
 			this.form_layeredContainer.setBackground(null);
 			this.form_layeredContainer.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					layeredContainerMouseClicked(e);
-				}
 				@Override
 				public void mouseEntered(MouseEvent e) {
 					layeredContainerMouseEntered(e);
@@ -223,38 +182,6 @@ public abstract class PanelRight extends CustomOriginPanel {
 				"[]"));
 		}
 		add(this.form_container, "pad 0,cell 2 0 1 2,aligny bottom,growy 0");
-
-		//======== form_layeredPane2 ========
-		{
-			this.form_layeredPane2.setMinimumSize(new Dimension(25, 25));
-			this.form_layeredPane2.setForeground(null);
-			this.form_layeredPane2.setBackground(null);
-
-			//---- form_actionLabel ----
-			this.form_actionLabel.setHorizontalAlignment(SwingConstants.CENTER);
-			this.form_actionLabel.setFont(this.form_actionLabel.getFont().deriveFont(this.form_actionLabel.getFont().getSize() + 5f));
-			this.form_actionLabel.setPreferredSize(new Dimension(25, 25));
-			this.form_actionLabel.setMaximumSize(null);
-			this.form_actionLabel.setMinimumSize(null);
-			this.form_actionLabel.setForeground(new Color(0x00000000, true));
-			this.form_actionLabel.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					actionLabelMouseClicked(e);
-				}
-				@Override
-				public void mouseEntered(MouseEvent e) {
-					actionLabelMouseEntered(e);
-				}
-				@Override
-				public void mouseExited(MouseEvent e) {
-					actionLabelMouseExited(e);
-				}
-			});
-			this.form_layeredPane2.add(this.form_actionLabel, JLayeredPane.DEFAULT_LAYER);
-			this.form_actionLabel.setBounds(new Rectangle(new Point(0, 0), this.form_actionLabel.getPreferredSize()));
-		}
-		add(this.form_layeredPane2, "cell 0 0 1 2");
 
 		//---- form_hSpacer1 ----
 		this.form_hSpacer1.setMaximumSize(new Dimension(10, 10));
@@ -312,8 +239,6 @@ public abstract class PanelRight extends CustomOriginPanel {
 	// Generated using JFormDesigner non-commercial license
 	protected JLayeredPane form_layeredContainer;
 	protected JPanel form_container;
-	protected JLayeredPane form_layeredPane2;
-	protected JLabel form_actionLabel;
 	protected JPanel form_hSpacer1;
 	protected JPanel form_panel2;
 	protected JLabel form_timeLabel;

@@ -6,6 +6,7 @@ import com.soeguet.gui.comments.border.interfaces.BorderInterface;
 import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.interfaces.LinkPanelInterface;
 import com.soeguet.gui.comments.reaction_panel.ReactionPopupMenuImpl;
+import com.soeguet.gui.comments.reaction_panel.dtos.ReactionPanelDTO;
 import com.soeguet.gui.comments.reaction_panel.interfaces.ReactionPanelInterface;
 import com.soeguet.gui.comments.right.generated.PanelRight;
 import com.soeguet.gui.comments.util.LinkWrapEditorKit;
@@ -35,11 +36,8 @@ public class PanelRightImpl extends PanelRight implements CommentInterface, Bord
     private final Logger LOGGER = Logger.getLogger(PanelRightImpl.class.getName());
     private final BaseModel baseModel;
     private final MainFrameGuiInterface mainFrame;
-    private Color borderColorCache;
     private JPopupMenu jPopupMenu;
     private BufferedImage image;
-    private ReactionPanelInterface reactionPanel;
-    private Timer opacityTimer;
     private BorderHandlerInterface borderHandler;
     private ReactionPopupMenuImpl popupMenu;
 
@@ -300,56 +298,50 @@ public class PanelRightImpl extends PanelRight implements CommentInterface, Bord
     @Override
     protected void layeredContainerMouseEntered(final MouseEvent e) {
 
+        //border
         borderHandler.highlightBorder();
 
+        //popup menu
         if (popupMenu == null) {
 
-            popupMenu = new ReactionPopupMenuImpl();
+            ReactionPanelDTO reactionPanelDTO = new ReactionPanelDTO(baseModel.getId(), mainFrame.getUsername(), mainFrame.getWebsocketClient(),
+                                                                     mainFrame.getObjectMapper());
+
+            popupMenu = new ReactionPopupMenuImpl(reactionPanelDTO);
             popupMenu.setPopupMenuUp();
             popupMenu.initializePopupHandler(form_layeredContainer);
         }
 
+        //start timer and show popup menu
         popupMenu.startAnimation();
     }
 
     @Override
     protected void layeredContainerMouseExited(final MouseEvent e) {
 
+        //border
         borderHandler.revertBorderColor();
 
+        //popup menu
         if (!popupMenu.isVisible() || popupMenu.mouseLeftContainerCompletely(e)) {
 
             popupMenu.dispose(e);
         }
+
         popupMenu.stopAnimation();
-
-    }
-
-    @Override
-    protected void layeredContainerMouseClicked(final MouseEvent e) {
-
     }
 
     @Override
     protected void layeredContainerMousePressed(final MouseEvent e) {
 
+        //make text beneath popup menu selectable
         super.passMouseEventToJTextPane(e, form_layeredContainer, form_container);
     }
 
     @Override
     protected void layeredContainerMouseDragged(final MouseEvent e) {
 
+        //make text beneath popup menu selectable
         super.passMouseEventToJTextPane(e, form_layeredContainer, form_container);
-    }
-
-    /**
-     Called when the component is resized.
-
-     @param e
-     The ComponentEvent that triggered the resize event.
-     */
-    @Override
-    protected void thisComponentResized(ComponentEvent e) {
-
     }
 }
