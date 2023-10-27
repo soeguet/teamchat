@@ -591,10 +591,27 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         String nickname = checkForNickname(baseModel.getSender());
 
         //process and display message
-        messageDisplayHandler.processAndDisplayMessage(baseModel, nickname);
+
+        switch (retrieveMessageType(baseModel)) {
+
+            case MessageTypes.INTERACTED -> messageDisplayHandler.updateExistingMessage(baseModel);
+
+            default -> messageDisplayHandler.processAndDisplayMessage(baseModel, nickname);
+        }
+
 
         //check for remaining messages in the local cache
         checkIfDequeIsEmptyOrStartOver();
+    }
+
+    private byte retrieveMessageType(final BaseModel baseModel) {
+
+        if (mainFrame.isStartUp()) {
+
+            return MessageTypes.NORMAL;
+        }
+
+        return baseModel.getMessageType();
     }
 
     private BaseModel parseMessageToJsonModel(final String message) {

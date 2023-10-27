@@ -155,6 +155,17 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
 
     }
 
+    @Override
+    public BaseModel getBaseModel() {
+
+        return baseModel;
+    }
+
+    @Override
+    public void setBaseModel(final BaseModel baseModel) {
+
+    }
+
     /**
      Handles image extraction from the given PictureModel. It extracts the image from the message and sets the extracted image to the instance
      variable

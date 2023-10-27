@@ -2,11 +2,23 @@ package com.soeguet.gui.main_panel;
 
 import com.soeguet.cache.implementations.MessageQueue;
 import com.soeguet.cache.manager.CacheManager;
+import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.interfaces.CommentManager;
+import com.soeguet.gui.comments.origin.CustomOriginPanel;
+import com.soeguet.gui.comments.right.PanelRightImpl;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.main_panel.interfaces.MessageDisplayHandlerInterface;
+import com.soeguet.gui.notification_panel.NotificationImpl;
+import com.soeguet.gui.notification_panel.interfaces.NotificationInterface;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.util.interfaces.MessageCategory;
+
+import javax.swing.table.TableCellEditor;
+import java.awt.*;
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 public class MessageDisplayHandler implements MessageDisplayHandlerInterface {
 
@@ -23,6 +35,31 @@ public class MessageDisplayHandler implements MessageDisplayHandlerInterface {
     public void setCacheManager(final CacheManager cacheManager) {
 
         this.cacheManager = cacheManager;
+    }
+
+    @Override
+    public void updateExistingMessage(final BaseModel baseModel) {
+
+        final Component[] mainTextPanelComponents = mainFrame.getMainTextPanel().getComponents();
+
+        for (int i = 0; i < mainTextPanelComponents.length; i++) {
+
+            if (mainTextPanelComponents[i] instanceof CommentInterface commentInterface) {
+
+                if (commentInterface.getBaseModel().getId().equals(baseModel.getId())) {
+
+                    commentInterface.setBaseModel(baseModel);
+
+                    commentInterface.initializeReactionStickerHandler(baseModel.getUserInteractions());
+
+                    //TODO implement notification for client
+                    Toolkit.getDefaultToolkit().beep();
+
+                    mainFrame.revalidate();
+                    mainFrame.repaint();
+                }
+            }
+        }
     }
 
     /**

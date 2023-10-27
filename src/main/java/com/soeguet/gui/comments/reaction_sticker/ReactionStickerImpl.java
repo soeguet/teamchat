@@ -55,4 +55,22 @@ public class ReactionStickerImpl {
             setStickerPanelBounds();
         }
     }
+
+    /**
+     Revalidates the sticker count based on the maximum number of slots for emotes and the number of available slots in the sticker panel container.
+     This is determined by the width of the container divided by the width of the emote slot. This method hides or shows the components in the sticker
+     panel based on the maximum number of slots for emotes.
+     */
+    public void revalidateStickerCount() {
+
+        final Component[] components = stickerPanel.getComponents();
+
+        int maxSlotsForEmotes = container.getWidth() / 40;
+
+        for (int i = 0; i < components.length; i++) {
+
+            final boolean b = i < maxSlotsForEmotes;
+            components[i].setVisible(b);
+        }
+    }
 }

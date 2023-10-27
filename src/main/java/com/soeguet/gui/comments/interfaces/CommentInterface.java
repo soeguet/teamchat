@@ -1,6 +1,7 @@
 package com.soeguet.gui.comments.interfaces;
 
 import com.soeguet.model.UserInteraction;
+import com.soeguet.model.jackson.BaseModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,4 +20,7 @@ public interface CommentInterface {
     void initializeBorderHandler(final Color borderColor);
 
     void initializeReactionStickerHandler(List<UserInteraction> userInteractions);
+
+    BaseModel getBaseModel();
+    void setBaseModel(BaseModel baseModel);
 }

@@ -7,7 +7,6 @@ import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.interfaces.LinkPanelInterface;
 import com.soeguet.gui.comments.reaction_panel.ReactionPopupMenuImpl;
 import com.soeguet.gui.comments.reaction_panel.dtos.ReactionPanelDTO;
-import com.soeguet.gui.comments.reaction_sticker.CustomStickerContainer;
 import com.soeguet.gui.comments.reaction_sticker.ReactionStickerImpl;
 import com.soeguet.gui.comments.right.generated.PanelRight;
 import com.soeguet.gui.comments.util.LinkWrapEditorKit;
@@ -37,8 +36,8 @@ import java.util.logging.Logger;
 public class PanelRightImpl extends PanelRight implements CommentInterface, BorderInterface {
 
     private final Logger LOGGER = Logger.getLogger(PanelRightImpl.class.getName());
-    private final BaseModel baseModel;
     private final MainFrameGuiInterface mainFrame;
+    private BaseModel baseModel;
     private JPopupMenu jPopupMenu;
     private BufferedImage image;
     private BorderHandlerInterface borderHandler;
@@ -255,6 +254,16 @@ public class PanelRightImpl extends PanelRight implements CommentInterface, Bord
         reactionSticker.pasteStickerToContainer();
     }
 
+    public BaseModel getBaseModel() {
+
+        return baseModel;
+    }
+
+    public void setBaseModel(final BaseModel baseModel) {
+
+        this.baseModel = baseModel;
+    }
+
     /**
      Called when the reply button is clicked.
 
@@ -354,7 +363,11 @@ public class PanelRightImpl extends PanelRight implements CommentInterface, Bord
 
         if (reactionSticker != null) {
 
+            reactionSticker.revalidateStickerCount();
             reactionSticker.repositionSticker();
+
+            revalidate();
+            repaint();
         }
     }
 

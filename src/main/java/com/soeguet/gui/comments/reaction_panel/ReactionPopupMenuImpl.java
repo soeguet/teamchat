@@ -101,7 +101,8 @@ public class ReactionPopupMenuImpl extends JPopupMenu {
 
                         baseModel.getUserInteractions().add(userInteraction);
 
-                        String serializedBaseModel = null;
+                        String serializedBaseModel;
+
                         try {
 
                             serializedBaseModel = reactionPanelDTO.objectMapper().writeValueAsString(baseModel);

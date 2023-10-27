@@ -10,4 +10,6 @@ public interface MessageDisplayHandlerInterface {
     void processAndDisplayMessage(BaseModel baseModel, String nickname);
 
     void setCacheManager(CacheManager cacheManager);
+
+    void updateExistingMessage(BaseModel baseModel);
 }
