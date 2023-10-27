@@ -42,7 +42,7 @@ public class MessageDisplayHandler implements MessageDisplayHandlerInterface {
     }
 
     /**
-     This method processes and displays a message based on the message model, username, and nickname.
+     This method processes and displays a message based on the message model, timeAndUsername, and nickname.
 
      @param baseModel The message model representing the message.
      @param nickname  The nickname of the client.

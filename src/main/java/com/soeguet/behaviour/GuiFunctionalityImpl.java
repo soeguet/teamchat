@@ -358,7 +358,13 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
      */
     private MessageModel textToMessageModel(String userTextInput) {
 
-        return new MessageModel((byte) MessageTypes.NORMAL, mainFrame.getUsername(), userTextInput);
+        final MessageModel messageModel = new MessageModel();
+
+        messageModel.setMessageType(MessageTypes.NORMAL);
+        messageModel.setSender(mainFrame.getUsername());
+        messageModel.setMessage(userTextInput);
+
+        return messageModel;
     }
 
     /**
@@ -518,7 +524,7 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
         //TODO replace this with a buffer or caching system
         try {
-            Thread.sleep(20);
+            Thread.sleep(50);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -550,12 +556,12 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
     }
 
     /**
-     Compares the sender of a BaseModel object to the username of mainFrame.
+     Compares the sender of a BaseModel object to the timeAndUsername of mainFrame.
 
      @param baseModel
      The BaseModel object to compare the sender to.
 
-     @return true if the sender of the baseModel object is equal to the username of mainFrame; false otherwise.
+     @return true if the sender of the baseModel object is equal to the timeAndUsername of mainFrame; false otherwise.
      */
     private boolean compareSenderToUsername(final BaseModel baseModel) {
 
@@ -581,7 +587,7 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
         //register user from message to local cache if not present yet
         checkIfMessageSenderAlreadyRegisteredInLocalCache(mainFrame.getChatClientPropertiesHashMap(), baseModel.getSender());
 
-        //handle displayed message name - nickname as well as username
+        //handle displayed message name - nickname as well as timeAndUsername
         String nickname = checkForNickname(baseModel.getSender());
 
         //process and display message

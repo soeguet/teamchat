@@ -2,7 +2,9 @@ package com.soeguet.gui.comments.reaction_panel;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.soeguet.gui.comments.reaction_panel.dtos.ReactionPanelDTO;
-import com.soeguet.gui.comments.reaction_panel.dtos.ReactionToSocketDTO;
+import com.soeguet.model.MessageTypes;
+import com.soeguet.model.UserInteraction;
+import com.soeguet.model.jackson.BaseModel;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -10,10 +12,14 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.logging.Logger;
 
 public class ReactionPopupMenuImpl extends JPopupMenu {
 
     private final ReactionPanelDTO reactionPanelDTO;
+    Logger logger = Logger.getLogger(ReactionPopupMenuImpl.class.getName());
     private ReactionPopupHandler reactionPopupHandler;
 
     /**
@@ -85,18 +91,29 @@ public class ReactionPopupMenuImpl extends JPopupMenu {
                         ImageIcon icon = (ImageIcon) ((JLabel) component).getIcon();
                         String description = icon.getDescription();
 
-                        ReactionToSocketDTO reactionToSocketDTO = new ReactionToSocketDTO(reactionPanelDTO.id(), description,
-                                                                                          reactionPanelDTO.clientName());
+                        BaseModel baseModel = reactionPanelDTO.baseModel();
 
+                        baseModel.setMessageType(MessageTypes.INTERACTED);
+
+                        final String timeAndUsername =
+                                LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")) + " - " + reactionPanelDTO.username();
+                        UserInteraction userInteraction = new UserInteraction(timeAndUsername, description);
+
+                        baseModel.getUserInteractions().add(userInteraction);
+
+                        String serializedBaseModel = null;
                         try {
 
-                            final byte[] serializedReactionToSocketDTO = reactionPanelDTO.objectMapper().writeValueAsBytes(reactionToSocketDTO);
-                            reactionPanelDTO.websocketClient().send(serializedReactionToSocketDTO);
+                            serializedBaseModel = reactionPanelDTO.objectMapper().writeValueAsString(baseModel);
 
-                        } catch (JsonProcessingException ex) {
+                        } catch (JsonProcessingException jsonProcessingException) {
 
-                            throw new RuntimeException(ex);
+                            logger.log(java.util.logging.Level.SEVERE, "PLACE: ReactionPopupMenuImpl > createReactionEmojiPanel");
+                            logger.log(java.util.logging.Level.SEVERE, jsonProcessingException.getMessage(), e);
+                            throw new RuntimeException(jsonProcessingException);
                         }
+
+                        reactionPanelDTO.websocketClient().send(serializedBaseModel);
                     }
                 }
 

@@ -92,6 +92,7 @@ public class CommentManagerImpl implements CommentManager {
 
             CommentInterface panelRight = new PanelRightImpl(this.mainFrame, messageModel);
             panelRight.initializeBorderHandler(borderColor);
+            panelRight.initializeReactionStickerHandler(messageModel.getUserInteractions());
 
             this.mainFrame.getCommentsHashMap().put(messageModel.getId(), panelRight);
             panelRight.setupTextPanelWrapper();
@@ -217,7 +218,7 @@ public class CommentManagerImpl implements CommentManager {
     }
 
     /**
-     Displays the nickname instead of the username in a comment.
+     Displays the nickname instead of the timeAndUsername in a comment.
 
      If the nickname parameter is not null and not empty after trimming,
      it sets the text of the name label in the comment to the nickname.

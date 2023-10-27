@@ -2,14 +2,14 @@ package com.soeguet.initialization.interfaces;
 
 /**
  Represents a user interaction interface.
- This interface provides methods for prompting the user to enter a username and displaying error messages.
+ This interface provides methods for prompting the user to enter a timeAndUsername and displaying error messages.
  */
 public interface UserInteractionInterface {
 
     /**
-     Prompts the user to enter a username.
+     Prompts the user to enter a timeAndUsername.
 
-     @return The username entered by the user as a String.
+     @return The timeAndUsername entered by the user as a String.
      */
     String askForUsername();
 

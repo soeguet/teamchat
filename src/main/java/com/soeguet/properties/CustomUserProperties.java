@@ -14,9 +14,9 @@ public class CustomUserProperties {
     }
 
     /**
-     Constructs an instance of the CustomUserProperties class with the specified username.
+     Constructs an instance of the CustomUserProperties class with the specified timeAndUsername.
 
-     @param username the username of the user
+     @param username the timeAndUsername of the user
      */
     public CustomUserProperties(String username) {
 
@@ -24,9 +24,9 @@ public class CustomUserProperties {
     }
 
     /**
-     Gets the username of the user.
+     Gets the timeAndUsername of the user.
 
-     @return the username of the user as a string.
+     @return the timeAndUsername of the user as a string.
      */
     public String getUsername() {
 
@@ -34,9 +34,9 @@ public class CustomUserProperties {
     }
 
     /**
-     Sets the username of the user.
+     Sets the timeAndUsername of the user.
 
-     @param username the new username to be set for the user.
+     @param username the new timeAndUsername to be set for the user.
      */
     public void setUsername(String username) {
 

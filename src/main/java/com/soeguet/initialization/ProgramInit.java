@@ -38,14 +38,14 @@ public class ProgramInit {
             //REMOVE remove later on
             this.mainFrame.repositionChatFrameForTestingPurposes();
 
+            //setup emojis
+            final EmojiInitializerInterface emojiInitializer = new EmojiInitializer();
+            this.mainFrame.initEmojiList(emojiInitializer);
+
             //setup functionality
             this.initializeProperties(envVariables);
             this.initializeMainFrame();
             this.mainFrame.loadUsernameFromEnvVariables(envVariables);
-
-            //setup emojis
-            final EmojiInitializerInterface emojiInitializer = new EmojiInitializer();
-            this.mainFrame.initEmojiList(emojiInitializer);
 
             //operating system specific settings
             this.mainFrame.setScrollPaneMargins();

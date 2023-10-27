@@ -7,11 +7,13 @@ import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.interfaces.LinkPanelInterface;
 import com.soeguet.gui.comments.reaction_panel.ReactionPopupMenuImpl;
 import com.soeguet.gui.comments.reaction_panel.dtos.ReactionPanelDTO;
-import com.soeguet.gui.comments.reaction_panel.interfaces.ReactionPanelInterface;
+import com.soeguet.gui.comments.reaction_sticker.CustomStickerContainer;
+import com.soeguet.gui.comments.reaction_sticker.ReactionStickerImpl;
 import com.soeguet.gui.comments.right.generated.PanelRight;
 import com.soeguet.gui.comments.util.LinkWrapEditorKit;
 import com.soeguet.gui.comments.util.QuotePanelImpl;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
+import com.soeguet.model.UserInteraction;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
@@ -26,6 +28,7 @@ import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -40,6 +43,7 @@ public class PanelRightImpl extends PanelRight implements CommentInterface, Bord
     private BufferedImage image;
     private BorderHandlerInterface borderHandler;
     private ReactionPopupMenuImpl popupMenu;
+    private ReactionStickerImpl reactionSticker;
 
     public PanelRightImpl(MainFrameGuiInterface mainFrame, BaseModel baseModel) {
 
@@ -244,6 +248,13 @@ public class PanelRightImpl extends PanelRight implements CommentInterface, Bord
         borderHandler.saveBorderColor(borderColor);
     }
 
+    @Override
+    public void initializeReactionStickerHandler(final List<UserInteraction> userInteractions) {
+
+        reactionSticker = new ReactionStickerImpl(this.mainFrame, this.form_layeredContainer, userInteractions);
+        reactionSticker.pasteStickerToContainer();
+    }
+
     /**
      Called when the reply button is clicked.
 
@@ -304,7 +315,7 @@ public class PanelRightImpl extends PanelRight implements CommentInterface, Bord
         //popup menu
         if (popupMenu == null) {
 
-            ReactionPanelDTO reactionPanelDTO = new ReactionPanelDTO(baseModel.getId(), mainFrame.getUsername(), mainFrame.getWebsocketClient(),
+            ReactionPanelDTO reactionPanelDTO = new ReactionPanelDTO(baseModel, mainFrame.getUsername(), mainFrame.getWebsocketClient(),
                                                                      mainFrame.getObjectMapper());
 
             popupMenu = new ReactionPopupMenuImpl(reactionPanelDTO);
@@ -334,14 +345,23 @@ public class PanelRightImpl extends PanelRight implements CommentInterface, Bord
     @Override
     protected void layeredContainerMousePressed(final MouseEvent e) {
 
-        //make text beneath popup menu selectable
+        //make text beneath the popup menu selectable
         super.passMouseEventToJTextPane(e, form_layeredContainer, form_container);
+    }
+
+    @Override
+    protected void layeredContainerComponentResized(final ComponentEvent e) {
+
+        if (reactionSticker != null) {
+
+            reactionSticker.repositionSticker();
+        }
     }
 
     @Override
     protected void layeredContainerMouseDragged(final MouseEvent e) {
 
-        //make text beneath popup menu selectable
+        //make text beneath the popup menu selectable
         super.passMouseEventToJTextPane(e, form_layeredContainer, form_container);
     }
 }

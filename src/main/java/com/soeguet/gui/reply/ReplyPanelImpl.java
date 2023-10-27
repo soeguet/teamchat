@@ -19,6 +19,8 @@ import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
 
@@ -166,9 +168,21 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
 
         new EmojiHandler(mainFrame).replaceImageIconWithEmojiDescription(this.getReplyTextPane());
 
-        if (isTextPaneBlank()) return;
+        //FIXME is this right?
+        if (isTextPaneBlank()) {return;}
 
-        MessageModel sendModel = new MessageModel((byte) MessageTypes.NORMAL, mainFrame.getUsername(), this.getReplyTextPane().getText(), messageModel.getSender(), messageModel.getTime(), messageModel.getMessage());
+        MessageModel sendModel = new MessageModel();
+
+        //type
+        sendModel.setMessageType(MessageTypes.NORMAL);
+        //quoted message
+        sendModel.setQuotedMessageSender(this.mainFrame.getUsername());
+        sendModel.setQuotedMessageText(this.getReplyTextPane().getText());
+        sendModel.setQuotedMessageTime(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
+        //this client
+        sendModel.setSender(this.messageModel.getSender());
+        sendModel.setMessage(messageModel.getMessage());
+        sendModel.setTime(messageModel.getTime());
 
         try {
 

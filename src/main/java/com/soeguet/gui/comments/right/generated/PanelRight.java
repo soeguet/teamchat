@@ -104,6 +104,12 @@ public abstract class PanelRight extends CustomOriginPanel {
 
 	protected abstract void layeredContainerMousePressed(MouseEvent e);
 
+	public JPanel getVSpacer1() {
+		return this.form_vSpacer1;
+	}
+
+	protected abstract void layeredContainerComponentResized(ComponentEvent e);
+
 	protected abstract void layeredContainerMouseDragged(MouseEvent e);
 
 	private void initComponents() {
@@ -117,6 +123,7 @@ public abstract class PanelRight extends CustomOriginPanel {
 		this.form_timeLabel = new JLabel();
 		this.form_button1 = new JButton();
 		this.form_nameLabel = new JLabel();
+		this.form_vSpacer1 = new JPanel(null);
 
 		//======== this ========
 		setPreferredSize(null);
@@ -160,6 +167,12 @@ public abstract class PanelRight extends CustomOriginPanel {
 				@Override
 				public void mouseDragged(MouseEvent e) {
 					layeredContainerMouseDragged(e);
+				}
+			});
+			this.form_layeredContainer.addComponentListener(new ComponentAdapter() {
+				@Override
+				public void componentResized(ComponentEvent e) {
+					layeredContainerComponentResized(e);
 				}
 			});
 		}
@@ -232,6 +245,12 @@ public abstract class PanelRight extends CustomOriginPanel {
 			this.form_panel2.add(this.form_nameLabel, "cell 0 0 2 1");
 		}
 		add(this.form_panel2, "cell 4 1,aligny bottom,growy 0");
+
+		//---- form_vSpacer1 ----
+		this.form_vSpacer1.setMinimumSize(new Dimension(12, 15));
+		this.form_vSpacer1.setPreferredSize(new Dimension(10, 15));
+		this.form_vSpacer1.setMaximumSize(new Dimension(32767, 15));
+		add(this.form_vSpacer1, "cell 4 2");
 		// JFormDesigner - End of component initialization  //GEN-END:initComponents  @formatter:on
 	}
 
@@ -244,5 +263,6 @@ public abstract class PanelRight extends CustomOriginPanel {
 	protected JLabel form_timeLabel;
 	protected JButton form_button1;
 	protected JLabel form_nameLabel;
+	protected JPanel form_vSpacer1;
 	// JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }

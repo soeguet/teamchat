@@ -95,7 +95,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
      */
     private EmojiHandler emojiHandler;
     /**
-     Variable representing the username of this pc's client. The username on the right side
+     Variable representing the timeAndUsername of this pc's client. The timeAndUsername on the right side
      */
     private String username;
     /**
@@ -382,9 +382,9 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     }
 
     /**
-     Retrieves the username.
+     Retrieves the timeAndUsername.
 
-     @return the username as a String.
+     @return the timeAndUsername as a String.
      */
     @Override
     public String getUsername() {
@@ -393,10 +393,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     }
 
     /**
-     Sets the username.
+     Sets the timeAndUsername.
 
      @param username
-     the username to set.
+     the timeAndUsername to set.
      */
     @Override
     public void setUsername(String username) {

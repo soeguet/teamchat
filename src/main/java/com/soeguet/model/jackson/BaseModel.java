@@ -4,11 +4,12 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.soeguet.model.UserInteraction;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "messageType")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "messageType")
 @JsonSubTypes({@JsonSubTypes.Type(value = MessageModel.class, name = "text"), @JsonSubTypes.Type(value = PictureModel.class, name = "image")})
-public abstract sealed class BaseModel permits MessageModel, PictureModel{
+public abstract sealed class BaseModel permits MessageModel, PictureModel {
 
     Long id;
     List<UserInteraction> userInteractions;
@@ -16,23 +17,40 @@ public abstract sealed class BaseModel permits MessageModel, PictureModel{
     String sender;
     String time;
     String message;
+    private byte messageType;
 
     public Long getId() {
 
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
 
         this.id = id;
     }
 
+    public byte getMessageType() {
+
+        return messageType;
+    }
+
+    public void setMessageType(final byte messageType) {
+
+        this.messageType = messageType;
+    }
+
     public List<UserInteraction> getUserInteractions() {
+
+        //lazy initialization
+        if (userInteractions == null) {
+
+            userInteractions = new ArrayList<>();
+        }
 
         return userInteractions;
     }
 
-    public void setUserInteractions(List<UserInteraction> userInteractions) {
+    public void setUserInteractions(final List<UserInteraction> userInteractions) {
 
         this.userInteractions = userInteractions;
     }
@@ -42,7 +60,7 @@ public abstract sealed class BaseModel permits MessageModel, PictureModel{
         return localIp;
     }
 
-    public void setLocalIp(String localIp) {
+    public void setLocalIp(final String localIp) {
 
         this.localIp = localIp;
     }
@@ -52,7 +70,7 @@ public abstract sealed class BaseModel permits MessageModel, PictureModel{
         return sender;
     }
 
-    public void setSender(String sender) {
+    public void setSender(final String sender) {
 
         this.sender = sender;
     }
@@ -62,7 +80,7 @@ public abstract sealed class BaseModel permits MessageModel, PictureModel{
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(final String time) {
 
         this.time = time;
     }
@@ -72,21 +90,14 @@ public abstract sealed class BaseModel permits MessageModel, PictureModel{
         return message;
     }
 
+    public void setMessage(final String message) {
+
+        this.message = message;
+    }
+
     @Override
     public String toString() {
 
-        return "BaseModel{" +
-                "id=" + id +
-                ", userInteractions=" + userInteractions +
-                ", localIp='" + localIp + '\'' +
-                ", sender='" + sender + '\'' +
-                ", time='" + time + '\'' +
-                ", message='" + message + '\'' +
-                '}';
-    }
-
-    public void setMessage(String message) {
-
-        this.message = message;
+        return "BaseModel{" + "id=" + id + ", messageType=" + messageType + ", userInteractions=" + userInteractions + ", localIp='" + localIp + '\'' + ", sender='" + sender + '\'' + ", time='" + time + '\'' + ", message='" + message + '\'' + '}';
     }
 }

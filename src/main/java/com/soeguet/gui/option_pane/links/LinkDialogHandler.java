@@ -173,7 +173,10 @@ public class LinkDialogHandler {
      */
     public void sendLinkToWebsocket(final MainFrameGuiInterface mainFrame, final String message) {
 
-        MessageModel messageModel = new MessageModel((byte) MessageTypes.LINK, mainFrame.getUsername(), message);
+        MessageModel messageModel = new MessageModel();
+        messageModel.setMessageType(MessageTypes.LINK);
+        messageModel.setSender(mainFrame.getUsername());
+        messageModel.setMessage(message);
 
         try {
 

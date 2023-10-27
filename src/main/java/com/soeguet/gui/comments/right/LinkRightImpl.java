@@ -21,32 +21,12 @@ import java.awt.event.MouseEvent;
 
 public class LinkRightImpl extends PanelRight implements LinkPanelInterface {
 
-    @Override
-    protected void layeredContainerMouseDragged(final MouseEvent e) {
-
-    }
-
     private final MainFrameGuiInterface mainFrame;
 
     public LinkRightImpl(final MainFrameGuiInterface mainFrame) {
 
         super(mainFrame);
         this.mainFrame = mainFrame;
-    }
-
-    @Override
-    protected void layeredContainerMouseEntered(final MouseEvent e) {
-
-    }
-
-    @Override
-    protected void layeredContainerMousePressed(final MouseEvent e) {
-
-    }
-
-    @Override
-    protected void layeredContainerMouseExited(final MouseEvent e) {
-
     }
 
     @Override
@@ -206,6 +186,31 @@ public class LinkRightImpl extends PanelRight implements LinkPanelInterface {
 
     @Override
     protected void actionLabelMouseExited(final MouseEvent e) {
+
+    }
+
+    @Override
+    protected void layeredContainerMouseEntered(final MouseEvent e) {
+
+    }
+
+    @Override
+    protected void layeredContainerMouseExited(final MouseEvent e) {
+
+    }
+
+    @Override
+    protected void layeredContainerMousePressed(final MouseEvent e) {
+
+    }
+
+    @Override
+    protected void layeredContainerComponentResized(final ComponentEvent e) {
+
+    }
+
+    @Override
+    protected void layeredContainerMouseDragged(final MouseEvent e) {
 
     }
 }

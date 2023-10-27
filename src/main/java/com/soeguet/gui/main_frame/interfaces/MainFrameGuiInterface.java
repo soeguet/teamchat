@@ -97,16 +97,16 @@ public interface MainFrameGuiInterface {
     JLayeredPane getMainTextPanelLayeredPane();
 
     /**
-     Returns the username associated with the current user.
+     Returns the timeAndUsername associated with the current user.
 
-     @return the username as a String
+     @return the timeAndUsername as a String
      */
     String getUsername();
 
     /**
-     Sets the username for the current user.
+     Sets the timeAndUsername for the current user.
 
-     @param username the new username to be set
+     @param username the new timeAndUsername to be set
      */
     void setUsername(String username);
 

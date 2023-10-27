@@ -4,6 +4,7 @@ import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.left.generated.PanelLeft;
 import com.soeguet.gui.comments.util.QuotePanelImpl;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
+import com.soeguet.model.UserInteraction;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
@@ -12,6 +13,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -145,6 +147,11 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
 
     @Override
     public void initializeBorderHandler(final Color borderColor) {
+
+    }
+
+    @Override
+    public void initializeReactionStickerHandler(final List<UserInteraction> userInteractions) {
 
     }
 

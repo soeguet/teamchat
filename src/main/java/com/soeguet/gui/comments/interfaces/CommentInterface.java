@@ -1,7 +1,10 @@
 package com.soeguet.gui.comments.interfaces;
 
+import com.soeguet.model.UserInteraction;
+
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public interface CommentInterface {
 
@@ -14,4 +17,6 @@ public interface CommentInterface {
     void setBorderColor(Color borderColor);
 
     void initializeBorderHandler(final Color borderColor);
+
+    void initializeReactionStickerHandler(List<UserInteraction> userInteractions);
 }

@@ -43,7 +43,7 @@ public class PropertiesPanelImpl extends PropertiesPanel implements PropertiesIn
 
     /**
      This method sets up the own tabbed pane with the custom user properties.
-     It sets the username text field with the username from the own client properties.
+     It sets the timeAndUsername text field with the timeAndUsername from the own client properties.
      It sets the background color of the border color panel with the border color from the own client properties.
      */
     @Override
@@ -104,7 +104,7 @@ public class PropertiesPanelImpl extends PropertiesPanel implements PropertiesIn
 
     /**
      This method sets up the components on the properties panel using the given CustomUserProperties object.
-     It sets the username text field with the username from the CustomUserProperties object.
+     It sets the timeAndUsername text field with the timeAndUsername from the CustomUserProperties object.
      It sets the nickname text field with the nickname from the CustomUserProperties object.
      It sets the background color of the color picker panel with the border color from the CustomUserProperties object.
      */

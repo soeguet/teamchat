@@ -236,7 +236,7 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
 
         final String clientProperties = getProperty("own");
 
-        //replace "own" preset username
+        //replace "own" preset timeAndUsername
         if (this.mainFrame.getUsername() != null) {
 
             return new CustomUserPropertiesDTO(this.mainFrame.getUsername(), null, null);

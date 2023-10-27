@@ -19,7 +19,7 @@ public class EnvVarHandler implements EnvVarHandlerInterface {
     @Override
     public EnvVariables collectEnvVariables() {
 
-        //username
+        //timeAndUsername
         final String username = retrieveUsername();
         validateUsernameInput(username);
 
