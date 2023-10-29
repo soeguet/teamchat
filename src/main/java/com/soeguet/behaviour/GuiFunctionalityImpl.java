@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.behaviour.interfaces.GuiFunctionalityInterface;
 import com.soeguet.behaviour.interfaces.SocketToGuiInterface;
+import com.soeguet.behaviour.util.CustomTransferHandler;
 import com.soeguet.cache.factory.CacheManagerFactory;
 import com.soeguet.cache.implementations.MessageQueue;
 import com.soeguet.cache.manager.CacheManager;
@@ -89,199 +90,41 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
     }
 
     /**
-     Overrides the transfer handler of the text pane in the GUI. This method is responsible for handling dropped data onto the text pane,
-     distinguishing between image, normal text data as well as links and triggering the appropriate actions.
-     <p>
-     The original transfer handler is preserved before overriding it with a new transfer handler.
+     * Overrides the transfer handler of the text pane.
+     * <p>
+     * This method sets a custom transfer handler for the text pane of the main frame.
+     * The custom transfer handler is created using the main frame object.
+     *
+     * @see CustomTransferHandler
      */
     @Override
     public void overrideTransferHandlerOfTextPane() {
 
-        //preserve the original transfer handler, otherwise clunky behavior
-        TransferHandler originalHandler = this.mainFrame.getTextEditorPane().getTransferHandler();
-
-        this.mainFrame.getTextEditorPane().setTransferHandler(new TransferHandler() {
-
-            @Override
-            public boolean importData(JComponent jComponent, Transferable transferable) {
-
-                if (transferable.isDataFlavorSupported(DataFlavor.imageFlavor)) {
-
-                    //image route
-
-                    // image to text pane -> activate image panel
-                    callImagePanel();
-
-                    return true;
-
-                } else if (transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-
-                    //string route
-
-                    String data = "";
-
-                    try {
-
-                        data = (String) transferable.getTransferData(DataFlavor.stringFlavor);
-
-                    } catch (UnsupportedFlavorException |
-                             IOException e) {
-
-                        logger.log(java.util.logging.Level.SEVERE, "Error importing data", e);
-                        throw new RuntimeException(e);
-                    }
-
-                    //FEATURE maybe emoji detection?
-
-                    //check if link
-                    if (data.startsWith("http://") || data.startsWith("https://")) {
-
-                        //send the link
-                        final String finalData = data;
-
-                        SwingUtilities.invokeLater(() -> {
-
-                            callLinkConfirmationDialog(finalData);
-                        });
-
-                        //don't append the link to the text pane
-                        return false;
-                    }
-
-                    //append what was pasted to the text pane
-                    return originalHandler.importData(jComponent, transferable);
-                }
-
-                return originalHandler.importData(jComponent, transferable);
-            }
-        });
+        this.mainFrame.getTextEditorPane().setTransferHandler(new CustomTransferHandler(mainFrame));
     }
 
-    /**
-     Calls the image panel to handle image data dropped onto the text pane. The image panel is responsible for displaying and manipulating the image
-     data.
-     */
-    private void callImagePanel() {
 
-        ImageInterface imagePanel = new ImagePanelImpl(mainFrame);
-
-        imagePanel.setPosition();
-        imagePanel.setLayeredPaneLayerPositions();
-        imagePanel.setupPictureScrollPaneScrollSpeed();
-        imagePanel.populateImagePanelFromClipboard();
-    }
 
     /**
-     Calls the link confirmation dialog for the given link.
-     <p>
-     This method is responsible for displaying a link confirmation dialog with the given link.
+     Retrieves text input from the main frame's text editor pane.
 
-     @param link
-     the link to be confirmed
-     */
-    private void callLinkConfirmationDialog(String link) {
-
-        final LinkDialogInterface linkDialog = createLinkDialog(link);
-        linkDialog.generate();
-    }
-
-    /**
-     Creates a link confirmation dialog for the given link.
-     <p>
-     This method is responsible for creating and initializing a link confirmation dialog with the given link. If metadata for the link exists, it adds
-     a metadata panel to the dialog's content panel.
-
-     @param link
-     the link to be confirmed
-
-     @return the initialized link dialog
-     */
-    private LinkDialogInterface createLinkDialog(final String link) {
-
-        final LinkDialogInterface linkDialog = initializeLinkDialog(link);
-
-        MetadataStorageRecord metadataStorageRecord = linkDialog.checkForMetaData(link);
-
-        if (metadataStorageRecord != null) {
-
-            JPanel metaDataPanel = linkDialog.createMetadataPanel(metadataStorageRecord);
-
-            if (metaDataPanel != null) {
-
-                linkDialog.getContentPanel().add(metaDataPanel, BorderLayout.CENTER);
-            }
-        }
-
-        return linkDialog;
-    }
-
-    /**
-     Creates and initializes a link confirmation dialog with the given link.
-     <p>
-     This method creates a new instance of the LinkDialogImpl class and initializes it by setting the editor kits for the link and comment text panes.
-     The link text pane is populated with the given link.
-
-     @param link
-     the link to be confirmed
-
-     @return the initialized link dialog
-     */
-    private LinkDialogInterface initializeLinkDialog(final String link) {
-
-        LinkDialogInterface linkDialog = new LinkDialogImpl(mainFrame, new LinkDialogHandler());
-
-        linkDialog.getLinkTextPane().setEditorKit(new WrapEditorKit());
-        linkDialog.getLinkTextPane().setText(link);
-        linkDialog.getCommentTextPane().setEditorKit(new WrapEditorKit());
-
-        return linkDialog;
-    }
-
-    /**
-     Sends a message to the socket.
-     <p>
-     This method retrieves text input from the user, converts it to JSON format, and sends the message to the socket using the
-     sendMessageToSocket(String) method.
-     <p>
-     The user input is retrieved using the getTextFromInput() method. The retrieved text is then converted to JSON format using the
-     convertUserTextToJSON(String) method. Finally, the message is sent to the socket using the sendMessageToSocket(String) method.
-
-     @see #getTextFromInput()
-     @see #convertUserTextToJSON(String)
-     @see #sendMessageToSocket(String)
+     @return the text input retrieved from the main frame's text editor pane
      */
     @Override
-    public void sendMessageToSocket() {
-
-        String userTextInput = getTextFromInput();
-        String messageString = convertUserTextToJSON(userTextInput);
-        sendMessageToSocket(messageString);
-    }
-
-    /**
-     Retrieves the text from the input text editor pane.
-     <p>
-     This method retrieves the text from the input text editor pane of the main frame.
-
-     @return the text obtained from the input text editor pane
-     */
-    private String getTextFromInput() {
+    public String getTextFromInput() {
 
         return this.mainFrame.getTextEditorPane().getText();
     }
 
+
     /**
-     Converts user text input to JSON representation.
-     <p>
-     This method takes the user text input and converts it to a MessageModel object using the textToMessageModel method. It then converts the
-     MessageModel object to its JSON representation using the convertToJSON method.
+     Converts the user text input to a JSON format.
 
-     @param userTextInput
-     the user text input to be converted to JSON
-
-     @return the JSON representation of the user text input
+     @param userTextInput the text input provided by the user
+     @return a JSON representation of the user text input
      */
-    private String convertUserTextToJSON(String userTextInput) {
+    @Override
+    public String convertUserTextToJSON(String userTextInput) {
 
         return convertToJSON(textToMessageModel(userTextInput));
     }
@@ -295,7 +138,8 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
      @param messageString
      the message to be sent
      */
-    private void sendMessageToSocket(String messageString) {
+    @Override
+    public void sendMessageToSocket(String messageString) {
 
         final CustomWebsocketClient websocketClient = this.mainFrame.getWebsocketClient();
 

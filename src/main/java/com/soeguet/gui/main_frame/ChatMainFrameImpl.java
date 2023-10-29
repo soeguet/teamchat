@@ -774,9 +774,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
 
         } else {
 
-            //send
-            guiFunctionality.sendMessageToSocket();
-            guiFunctionality.clearTextPane();
+            this.sendMessageToSocket();
         }
     }
 
@@ -830,7 +828,14 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
             return;
         }
 
-        guiFunctionality.sendMessageToSocket();
+        this.sendMessageToSocket();
+    }
+
+    private void sendMessageToSocket() {
+
+        String textFromInput = guiFunctionality.getTextFromInput();
+        String serializedTextFromInput = guiFunctionality.convertUserTextToJSON(textFromInput);
+        guiFunctionality.sendMessageToSocket(serializedTextFromInput);
         guiFunctionality.clearTextPane();
     }
 
