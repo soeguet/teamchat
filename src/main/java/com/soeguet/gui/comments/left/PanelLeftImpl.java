@@ -2,6 +2,7 @@ package com.soeguet.gui.comments.left;
 
 import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.left.generated.PanelLeft;
+import com.soeguet.gui.comments.util.CustomFormContainer;
 import com.soeguet.gui.comments.util.QuotePanelImpl;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.UserInteraction;
@@ -14,6 +15,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 /**
@@ -164,6 +166,17 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     @Override
     public void setBaseModel(final BaseModel baseModel) {
 
+    }
+
+    @Override
+    public void setCustomPaint(final Consumer<Graphics> customPaint) {
+
+    }
+
+    @Override
+    public CustomFormContainer getFormContainer() {
+
+        return null;
     }
 
     /**

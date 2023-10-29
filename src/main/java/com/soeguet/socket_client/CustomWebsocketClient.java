@@ -12,6 +12,7 @@ import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class CustomWebsocketClient extends WebSocketClient {
@@ -94,6 +95,9 @@ public class CustomWebsocketClient extends WebSocketClient {
         popup.getMessageTextField().setText("Error: " + ex.getMessage());
         popup.configurePopupPanelPlacement();
         popup.initiatePopupTimer(2_000);
+
+
+        throw new RuntimeException(Arrays.toString(ex.getStackTrace()));
     }
 
     @Override

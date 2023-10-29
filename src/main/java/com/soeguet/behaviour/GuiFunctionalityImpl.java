@@ -12,9 +12,6 @@ import com.soeguet.cache.manager.CacheManager;
 import com.soeguet.dtos.StatusTransferDTO;
 import com.soeguet.gui.comments.CommentManagerImpl;
 import com.soeguet.gui.comments.interfaces.CommentManager;
-import com.soeguet.gui.comments.util.WrapEditorKit;
-import com.soeguet.gui.image_panel.ImagePanelImpl;
-import com.soeguet.gui.image_panel.interfaces.ImageInterface;
 import com.soeguet.gui.interrupt_dialog.handler.InterruptHandler;
 import com.soeguet.gui.interrupt_dialog.interfaces.InterruptHandlerInterface;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
@@ -22,10 +19,6 @@ import com.soeguet.gui.main_panel.MessageDisplayHandler;
 import com.soeguet.gui.main_panel.interfaces.MessageDisplayHandlerInterface;
 import com.soeguet.gui.notification_panel.DesktopNotificationHandler;
 import com.soeguet.gui.notification_panel.interfaces.DesktopNotificationHandlerInterface;
-import com.soeguet.gui.option_pane.links.LinkDialogHandler;
-import com.soeguet.gui.option_pane.links.LinkDialogImpl;
-import com.soeguet.gui.option_pane.links.dtos.MetadataStorageRecord;
-import com.soeguet.gui.option_pane.links.interfaces.LinkDialogInterface;
 import com.soeguet.gui.popups.PopupPanelImpl;
 import com.soeguet.gui.popups.interfaces.PopupInterface;
 import com.soeguet.gui.typing_panel.TypingPanelHandler;
@@ -39,9 +32,6 @@ import com.soeguet.util.NotificationStatus;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -90,20 +80,18 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
     }
 
     /**
-     * Overrides the transfer handler of the text pane.
-     * <p>
-     * This method sets a custom transfer handler for the text pane of the main frame.
-     * The custom transfer handler is created using the main frame object.
-     *
-     * @see CustomTransferHandler
+     Overrides the transfer handler of the text pane.
+     <p>
+     This method sets a custom transfer handler for the text pane of the main frame. The custom transfer handler is created using the main frame
+     object.
+
+     @see CustomTransferHandler
      */
     @Override
     public void overrideTransferHandlerOfTextPane() {
 
         this.mainFrame.getTextEditorPane().setTransferHandler(new CustomTransferHandler(mainFrame));
     }
-
-
 
     /**
      Retrieves text input from the main frame's text editor pane.
@@ -116,17 +104,31 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
         return this.mainFrame.getTextEditorPane().getText();
     }
 
-
     /**
-     Converts the user text input to a JSON format.
+     Convert the given user text input to JSON format.
 
-     @param userTextInput the text input provided by the user
-     @return a JSON representation of the user text input
+     @param userTextInput
+     the user's text input to convert to JSON
+
+     @return the JSON representation of the user text input, or null if there was an error converting to JSON
      */
     @Override
     public String convertUserTextToJSON(String userTextInput) {
 
-        return convertToJSON(textToMessageModel(userTextInput));
+        final MessageModel messageModel = textToMessageModel(userTextInput);
+
+        try {
+
+            return this.mainFrame.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(messageModel);
+
+        } catch (JsonProcessingException e) {
+
+            logger.log(java.util.logging.Level.SEVERE, "Error converting to JSON", e);
+
+            JOptionPane.showMessageDialog((Component) this.mainFrame, "Your message could not be processed. Try again please.", "Error",
+                                          JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
     }
 
     /**
@@ -141,10 +143,14 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
     @Override
     public void sendMessageToSocket(String messageString) {
 
-        final CustomWebsocketClient websocketClient = this.mainFrame.getWebsocketClient();
-
         //normal message
-        websocketClient.send(messageString);
+        this.mainFrame.getWebsocketClient().send(messageString);
+    }
+
+    @Override
+    public void notifyClientsSendStatus() {
+
+        final CustomWebsocketClient websocketClient = this.mainFrame.getWebsocketClient();
 
         //sending status
         try {
@@ -154,32 +160,22 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
 
         } catch (JsonProcessingException e) {
 
+            logger.log(java.util.logging.Level.SEVERE, "GuiFunctionalityImpl > notifyClientsSendStatus", e);
+            logger.log(java.util.logging.Level.SEVERE, "Status \"SEND\" could not be sent.", e);
             throw new RuntimeException(e);
         }
     }
 
     /**
-     Converts the given BaseModel object to JSON string.
+     Clears the text pane.
+
      <p>
-     This method uses the Jackson ObjectMapper to convert the BaseModel object to JSON. It uses the writerWithDefaultPrettyPrinter() method to format
-     the JSON string with default pretty printer settings.
-
-     @param messageModel
-     the BaseModel object to convert to JSON
-
-     @return the JSON string representation of the messageModel object, or null if an error occurs
+     This method clears the content of the text editor pane associated with the main frame. The text pane will be empty after calling this method.
      */
-    private String convertToJSON(BaseModel messageModel) {
+    @Override
+    public void clearTextPane() {
 
-        try {
-
-            return this.mainFrame.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(messageModel);
-
-        } catch (JsonProcessingException e) {
-
-            logger.log(java.util.logging.Level.SEVERE, "Error converting to JSON", e);
-            throw new RuntimeException(e);
-        }
+        this.mainFrame.getTextEditorPane().setText("");
     }
 
     /**
@@ -192,23 +188,13 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
      */
     private MessageModel textToMessageModel(String userTextInput) {
 
-        final MessageModel messageModel = new MessageModel();
+        MessageModel messageModel = new MessageModel();
 
         messageModel.setMessageType(MessageTypes.NORMAL);
         messageModel.setSender(mainFrame.getUsername());
         messageModel.setMessage(userTextInput);
 
         return messageModel;
-    }
-
-    /**
-     Clears the text in the text editor pane.
-     <p>
-     This method sets the text in the text editor pane to an empty string, effectively clearing it.
-     */
-    public void clearTextPane() {
-
-        this.mainFrame.getTextEditorPane().setText("");
     }
 
     @Override
@@ -399,7 +385,7 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
      */
     private boolean compareSenderToUsername(final BaseModel baseModel) {
 
-        return baseModel.getSender().equals(this.mainFrame.getUsername());
+        return baseModel.getSender().equals(fetchUsernameFromCache());
     }
 
     /**
@@ -413,7 +399,9 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
 
         //retrieve the message from cache
         final String message = messageDisplayHandler.pollMessageFromCache();
-        if (message == null) {return;}
+        if (message == null) {
+            return;
+        }
 
         //convert message to java object
         final BaseModel baseModel = parseMessageToJsonModel(message);
@@ -425,7 +413,6 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
         String nickname = checkForNickname(baseModel.getSender());
 
         //process and display message
-
         switch (retrieveMessageType(baseModel)) {
 
             case MessageTypes.INTERACTED -> messageDisplayHandler.updateExistingMessage(baseModel);
@@ -515,9 +502,9 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
      */
     private void checkIfMessageSenderAlreadyRegisteredInLocalCache(HashMap<String, CustomUserPropertiesDTO> clientMap, String sender) {
 
-        if (sender.equals(this.mainFrame.getUsername())) {
+        if (sender.equals(fetchUsernameFromCache())) {
 
-            if (!this.mainFrame.getChatClientPropertiesHashMap().containsKey("own")) {
+            if (!checkIfSenderIsRegistered("own")) {
 
                 addClientToLocalCacheRegister(clientMap, "own");
             }
@@ -541,21 +528,78 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
      */
     private void addClientToLocalCacheRegister(final HashMap<String, CustomUserPropertiesDTO> clientMap, final String sender) {
 
-        final CustomUserPropertiesDTO userPropertiesDTO = clientMap.get(sender);
+        String username;
+        String nickname;
+
+        if (clientMap.containsKey(sender)) {
+
+            final CustomUserPropertiesDTO userPropertiesDTO = clientMap.get(sender);
+            username = userPropertiesDTO.username();
+            nickname = retrieveNicknameFromUserPropertiesDTO(userPropertiesDTO);
+
+        } else {
+
+            username = sender;
+            nickname = null;
+        }
 
         // 1) statusArray
-        String username = userPropertiesDTO != null ? userPropertiesDTO.username() : sender;
 
-        if (username.equals("own")) {
+        final boolean senderIsThisClient = checkIfSenderIsThisClient(username);
 
-            username = this.mainFrame.getUsername();
+        if (senderIsThisClient) {
+
+            username = fetchUsernameFromCache();
         }
 
         // 2) nickname and 3) border color
-        final String nickname = userPropertiesDTO != null ? userPropertiesDTO.nickname() : null;
         final String borderColor = String.valueOf(getRandomRgbIntValue());
 
         clientMap.put(sender, new CustomUserPropertiesDTO(username, nickname, borderColor));
+    }
+
+    /**
+     Retrieves the nickname from the given CustomUserPropertiesDTO object.
+
+     @param userPropertiesDTO
+     the CustomUserPropertiesDTO object from which to retrieve the nickname
+
+     @return the nickname retrieved from the CustomUserPropertiesDTO object, or null if the object is null
+     */
+    private String retrieveNicknameFromUserPropertiesDTO(final CustomUserPropertiesDTO userPropertiesDTO) {
+
+        if (userPropertiesDTO == null) {
+
+            return null;
+        }
+        if (userPropertiesDTO.nickname() != null && !userPropertiesDTO.nickname().isEmpty()) {
+
+            return userPropertiesDTO.nickname();
+        }
+        return null;
+    }
+
+    /**
+     Retrieves the username from the cache.
+
+     @return the username retrieved from the cache, or null if it does not exist
+     */
+    private String fetchUsernameFromCache() {
+
+        return this.mainFrame.getUsername();
+    }
+
+    /**
+     Checks whether the given username belongs to the current client.
+
+     @param username
+     the username to be checked
+
+     @return true if the username belongs to the current client, false otherwise
+     */
+    private boolean checkIfSenderIsThisClient(final String username) {
+
+        return username.equals("own");
     }
 
     /**
@@ -568,12 +612,39 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
      */
     private String checkForNickname(String sender) {
 
-        if (this.mainFrame.getChatClientPropertiesHashMap().containsKey(sender) && this.mainFrame.getChatClientPropertiesHashMap().get(sender).nickname() != null && !this.mainFrame.getChatClientPropertiesHashMap().get(sender).nickname().isEmpty()) {
+        //TODO this is a mess, clean it up
+        final HashMap<String, CustomUserPropertiesDTO> chatClientPropertiesHashMap = this.mainFrame.getChatClientPropertiesHashMap();
 
-            return this.mainFrame.getChatClientPropertiesHashMap().get(sender).nickname();
+        if (!chatClientPropertiesHashMap.containsKey(sender)) {
+            return null;
+        }
+
+        final CustomUserPropertiesDTO customUserPropertiesDTO = chatClientPropertiesHashMap.get(sender);
+
+        if (customUserPropertiesDTO.nickname() == null) {
+            return null;
+        }
+
+        final String senderNickname = customUserPropertiesDTO.nickname();
+        if (checkIfSenderIsRegistered(sender) && !senderNickname.isEmpty()) {
+
+            return senderNickname;
         }
 
         return null;
+    }
+
+    /**
+     Checks if the given sender is registered.
+
+     @param sender
+     the sender to check
+
+     @return true if the sender is registered, false otherwise
+     */
+    private boolean checkIfSenderIsRegistered(final String sender) {
+
+        return this.mainFrame.getChatClientPropertiesHashMap().containsKey(sender);
     }
 
     /**
@@ -586,12 +657,18 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
      */
     private void scrollMainPanelDownToLastMessage(JScrollPane scrollPane) {
 
+        final int scrollBarMaxValue = getMaximumVerticalScrollbarValue(scrollPane);
+
         SwingUtilities.invokeLater(() -> {
 
-            repaintMainFrame();
-            scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
+            scrollPane.getVerticalScrollBar().setValue(scrollBarMaxValue);
             repaintMainFrame();
         });
+    }
+
+    private int getMaximumVerticalScrollbarValue(final JScrollPane scrollPane) {
+
+        return scrollPane.getVerticalScrollBar().getMaximum();
     }
 
 }

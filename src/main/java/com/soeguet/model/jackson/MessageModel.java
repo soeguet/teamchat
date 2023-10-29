@@ -1,7 +1,5 @@
 package com.soeguet.model.jackson;
 
-import com.soeguet.model.MessageTypes;
-
 public non-sealed class MessageModel extends BaseModel {
 
     private String quotedMessageSender;

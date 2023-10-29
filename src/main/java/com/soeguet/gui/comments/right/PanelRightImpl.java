@@ -9,6 +9,7 @@ import com.soeguet.gui.comments.reaction_panel.ReactionPopupMenuImpl;
 import com.soeguet.gui.comments.reaction_panel.dtos.ReactionPanelDTO;
 import com.soeguet.gui.comments.reaction_sticker.ReactionStickerImpl;
 import com.soeguet.gui.comments.right.generated.PanelRight;
+import com.soeguet.gui.comments.util.CustomFormContainer;
 import com.soeguet.gui.comments.util.LinkWrapEditorKit;
 import com.soeguet.gui.comments.util.QuotePanelImpl;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
@@ -28,6 +29,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 /**
@@ -44,12 +46,40 @@ public class PanelRightImpl extends PanelRight implements CommentInterface, Bord
     private ReactionPopupMenuImpl popupMenu;
     private ReactionStickerImpl reactionSticker;
 
+    public Consumer<Graphics> getCustomPaint() {
+
+        return customPaint;
+    }
+
+    public void setCustomPaint(final Consumer<Graphics> customPaint) {
+
+        this.customPaint = customPaint;
+        repaint();
+    }
+
+    @Override
+    public CustomFormContainer getFormContainer() {
+
+        return (CustomFormContainer) form_container;
+    }
+
+    private  Consumer<Graphics> customPaint;
+
     public PanelRightImpl(MainFrameGuiInterface mainFrame, BaseModel baseModel) {
 
         super(mainFrame);
         this.mainFrame = mainFrame;
 
         this.baseModel = baseModel;
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+
+        super.paintComponent(g);
+        if (customPaint != null) {
+            customPaint.accept(g);
+        }
     }
 
     public JEditorPane createEditorPaneForLinks(MessageModel messageModel) {

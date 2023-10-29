@@ -116,7 +116,12 @@ public class PropertiesPanelImpl extends PropertiesPanel implements PropertiesIn
         }
 
         form_usernameTextField.setText(client.username());
-        form_nicknameTextField.setText(client.nickname());
+
+        if (client.nickname() != null) {
+
+            form_nicknameTextField.setText(client.nickname());
+        }
+
         form_colorPickerPanel.setBackground(new Color(client.getBorderColor()));
     }
 
@@ -197,28 +202,16 @@ public class PropertiesPanelImpl extends PropertiesPanel implements PropertiesIn
         //TODO wow this is some overkill bullshit
 
         CustomUserPropertiesDTO ownProperties = mainFrame.getChatClientPropertiesHashMap().get("own");
-        Color borderColor = null;
 
-        if (ownProperties != null) {
+        final String nickname = ownProperties.nickname() == null ? null : ownProperties.nickname();
+        Color borderColor = new Color(ownProperties.getBorderColor());
 
-            borderColor = new Color(ownProperties.getBorderColor());
-
-        } else {
-
-            final String username = mainFrame.getUsername() != null ? mainFrame.getUsername() : "own";
-            CustomUserPropertiesDTO updatedOwnProperties = new CustomUserPropertiesDTO(username, ownProperties.nickname() == null ? null :
-                                                                                                 ownProperties.nickname(),
-                                                                                       ownProperties.borderColor());
-            mainFrame.getChatClientPropertiesHashMap().replace("own", updatedOwnProperties);
-        }
-
-        Color color = JColorChooser.showDialog(this, "Choose a color", (borderColor != null ? borderColor : Color.BLACK));
+        Color color = JColorChooser.showDialog(this, "Choose a color", borderColor);
 
         if (color != null) {
 
             getOwnBorderColorPanel().setBackground(color);
-            CustomUserPropertiesDTO updatedOwnProperties = new CustomUserPropertiesDTO(ownProperties.username(), ownProperties.nickname() == null ?
-                                                                                                                 null : ownProperties.nickname(),
+            CustomUserPropertiesDTO updatedOwnProperties = new CustomUserPropertiesDTO(ownProperties.username(), nickname,
                                                                                        String.valueOf(color.getRGB()));
             mainFrame.getChatClientPropertiesHashMap().replace("own", updatedOwnProperties);
         }

@@ -7,6 +7,7 @@ import com.soeguet.gui.comments.left.LinkLeftImpl;
 import com.soeguet.gui.comments.left.PanelLeftImpl;
 import com.soeguet.gui.comments.right.LinkRightImpl;
 import com.soeguet.gui.comments.right.PanelRightImpl;
+import com.soeguet.gui.comments.util.CustomFormContainer;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.MessageTypes;
 import com.soeguet.model.jackson.BaseModel;
@@ -100,6 +101,33 @@ public class CommentManagerImpl implements CommentManager {
             addMessagePanelToMainChatPanel((JPanel) panelRight, "trailing");
 
             panelRight.initializeReactionStickerHandler(messageModel.getUserInteractions());
+
+            panelRight.getFormContainer().setCustomPaint(grphcs -> {
+
+                CustomFormContainer container = panelRight.getFormContainer();
+                final int containerWidth = container.getWidth();
+                final int containerHeight = container.getHeight();
+
+                int rounding = 20;
+                Graphics2D g2d = (Graphics2D) grphcs;
+
+                final Color backgroundColor = Color.WHITE;
+
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setColor(backgroundColor);
+                g2d.fillRoundRect(0, 0, containerWidth - 13, containerHeight - 1, rounding, rounding);
+
+                g2d.setColor(borderColor);
+                g2d.drawRoundRect(0, 0, containerWidth - 13, containerHeight - 1, rounding, rounding);
+
+                g2d.setColor(backgroundColor);
+                g2d.fillPolygon(new int[]{containerWidth - 1, containerWidth - 28, containerWidth - 13},
+                                new int[]{containerHeight - 1, containerHeight - 1, containerHeight - 13}, 3);
+
+                g2d.setColor(borderColor);
+                g2d.drawLine(containerWidth - 30, containerHeight - 1, containerWidth, containerHeight - 1);
+                g2d.drawLine(containerWidth - 13, containerHeight - 13, containerWidth, containerHeight);
+            });
         }
     }
 

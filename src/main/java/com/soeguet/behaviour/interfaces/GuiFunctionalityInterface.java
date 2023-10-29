@@ -5,8 +5,6 @@ public interface GuiFunctionalityInterface {
 
     void overrideTransferHandlerOfTextPane();
 
-    void clearTextPane();
-
     void internalNotificationHandling(String message);
 
     String getTextFromInput();
@@ -14,4 +12,8 @@ public interface GuiFunctionalityInterface {
     String convertUserTextToJSON(String textFromInput);
 
     void sendMessageToSocket(String serializedTextFromInput);
+
+    void notifyClientsSendStatus();
+
+    void clearTextPane();
 }

@@ -835,7 +835,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
 
         String textFromInput = guiFunctionality.getTextFromInput();
         String serializedTextFromInput = guiFunctionality.convertUserTextToJSON(textFromInput);
-        guiFunctionality.sendMessageToSocket(serializedTextFromInput);
+        if (serializedTextFromInput != null) {
+            guiFunctionality.sendMessageToSocket(serializedTextFromInput);
+            guiFunctionality.notifyClientsSendStatus();
+        }
         guiFunctionality.clearTextPane();
     }
 
@@ -902,41 +905,54 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     @Override
     protected void allNotificationsMenuItemItemStateChanged(final ItemEvent e) {
 
-        if (cacheManager.getCache("waitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
+        //any kind of change needs to get rid of an existing timer
+        resetMessageBlockTimer();
 
-            //any kind of change needs to get rid of an existing timer
-            if (blockTimer != null) {
+        //block all notifications for 5 minutes
+        if (e.getStateChange() == ItemEvent.SELECTED) {
 
-                blockTimer.stop();
-                blockTimer = null;
-            }
-
-            //block all notifications for 5 minutes
-            if (e.getStateChange() == ItemEvent.SELECTED) {
+            if (cacheManager.getCache("waitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
 
                 //getter call since this one is synchronized
                 waitingNotificationQueue.removeAll();
-
-                blockTimer = new Timer(1_000 * 60 * 5, e1 -> {
-
-                    form_allNotificationsMenuItem.setSelected(false);
-
-                    //show popup
-                    PopupInterface popup = new PopupPanelImpl(this);
-                    popup.getMessageTextField().setText("Notifications status" + System.lineSeparator() + "reverted");
-                    popup.configurePopupPanelPlacement();
-                    popup.initiatePopupTimer(3_000);
-                });
-
-                blockTimer.setRepeats(false);
-                blockTimer.start();
-
-                //show popup
-                PopupInterface popup = new PopupPanelImpl(this);
-                popup.getMessageTextField().setText("All notifications disabled" + System.lineSeparator() + "for 5 minutes");
-                popup.configurePopupPanelPlacement();
-                popup.initiatePopupTimer(3_000);
             }
+
+            initializeNewMessageBlockTimer();
+
+            //show popup
+            initializePopupMessage("All notifications disabled", "for 5 minutes");
+        }
+    }
+
+    private void initializePopupMessage(final String x, final String x1) {
+
+        PopupInterface popup = new PopupPanelImpl(this);
+        popup.getMessageTextField().setText(x + System.lineSeparator() + x1);
+        popup.configurePopupPanelPlacement();
+        popup.initiatePopupTimer(3_000);
+    }
+
+    private void initializeNewMessageBlockTimer() {
+
+        //blocking for 5 Minutes
+        blockTimer = new Timer(1_000 * 60 * 5, e1 -> {
+
+            form_allNotificationsMenuItem.setSelected(false);
+
+            //show popup
+            initializePopupMessage("Notifications status", "reverted");
+        });
+
+        blockTimer.setRepeats(false);
+        blockTimer.start();
+    }
+
+    private void resetMessageBlockTimer() {
+
+        if (blockTimer != null) {
+
+            blockTimer.stop();
+            blockTimer = null;
         }
     }
 
