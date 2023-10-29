@@ -3,7 +3,7 @@ package com.soeguet.behaviour;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.soeguet.behaviour.interfaces.GuiFunctionality;
+import com.soeguet.behaviour.interfaces.GuiFunctionalityInterface;
 import com.soeguet.behaviour.interfaces.SocketToGuiInterface;
 import com.soeguet.cache.factory.CacheManagerFactory;
 import com.soeguet.cache.implementations.MessageQueue;
@@ -52,12 +52,12 @@ import java.util.logging.Logger;
  <p>
  Implements the SocketToGuiInterface for receiving messages from the socket.
  */
-public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterface {
+public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketToGuiInterface {
 
     private final MainFrameGuiInterface mainFrame;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Logger logger = Logger.getLogger(GuiFunctionalityImpl.class.getName());
-    CacheManager cacheManager = CacheManagerFactory.getCacheManager();
+    private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
 
     /**
      Constructor for the GuiFunctionalityImpl class.
@@ -89,18 +89,8 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
     }
 
     /**
-     Fixes the scroll speed for the main text background scroll pane. This method sets the unit increment of the vertical scrollbar of the main text
-     background scroll pane to 20. This ensures that the scrolling speed is faster.
-     */
-    @Override
-    public void fixScrollPaneScrollSpeed() {
-
-        this.mainFrame.getMainTextBackgroundScrollPane().getVerticalScrollBar().setUnitIncrement(25);
-    }
-
-    /**
      Overrides the transfer handler of the text pane in the GUI. This method is responsible for handling dropped data onto the text pane,
-     distinguishing between image and text data and triggering the appropriate actions.
+     distinguishing between image, normal text data as well as links and triggering the appropriate actions.
      <p>
      The original transfer handler is preserved before overriding it with a new transfer handler.
      */
@@ -598,7 +588,6 @@ public class GuiFunctionalityImpl implements GuiFunctionality, SocketToGuiInterf
 
             default -> messageDisplayHandler.processAndDisplayMessage(baseModel, nickname);
         }
-
 
         //check for remaining messages in the local cache
         checkIfDequeIsEmptyOrStartOver();

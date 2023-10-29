@@ -3,6 +3,8 @@ package com.soeguet.initialization.interfaces;
 import com.soeguet.emoji.interfaces.EmojiInitializerInterface;
 import com.soeguet.model.EnvVariables;
 
+import javax.swing.*;
+
 public interface MainFrameInitInterface {
 
     void repositionChatFrameForTestingPurposes();
@@ -30,4 +32,6 @@ public interface MainFrameInitInterface {
     void initializeClientController();
 
     void initEmojiHandler();
+
+    void setFixedScrollSpeed(int i);
 }

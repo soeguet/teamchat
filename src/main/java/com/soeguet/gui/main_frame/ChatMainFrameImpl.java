@@ -3,7 +3,7 @@ package com.soeguet.gui.main_frame;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.behaviour.GuiFunctionalityImpl;
-import com.soeguet.behaviour.interfaces.GuiFunctionality;
+import com.soeguet.behaviour.interfaces.GuiFunctionalityInterface;
 import com.soeguet.cache.factory.CacheManagerFactory;
 import com.soeguet.cache.implementations.WaitingNotificationQueue;
 import com.soeguet.cache.manager.CacheManager;
@@ -77,7 +77,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     /**
      Instance of the gui functionality handler.
      */
-    private GuiFunctionality guiFunctionality;
+    private GuiFunctionalityInterface guiFunctionality;
     /**
      The margin east border for the JScrollPane.
      */
@@ -313,7 +313,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
 
         CustomUserPropertiesDTO client = customProperties.loaderThisClientProperties();
 
-        //only override statusArray if nothing is set on start up
+        //only override statusArray if nothing is set on startup
         if (client != null && username == null) {
 
             this.username = client.username();
@@ -329,7 +329,6 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     public void initGuiFunctionality() {
 
         this.guiFunctionality = new GuiFunctionalityImpl(this);
-        this.guiFunctionality.fixScrollPaneScrollSpeed();
         this.guiFunctionality.overrideTransferHandlerOfTextPane();
     }
 
@@ -356,6 +355,12 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
     public void initEmojiHandler() {
 
         this.emojiHandler = new EmojiHandler(this);
+    }
+
+    @Override
+    public void setFixedScrollSpeed(final int i) {
+
+        this.getMainTextBackgroundScrollPane().getVerticalScrollBar().setUnitIncrement(i);
     }
 
     private String chatVersion() {
@@ -721,7 +726,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
 
         try {
 
-            final byte[] jsonTypingStatus = objectMapper.writeValueAsBytes(new StatusTransferDTO("typing", new String[]{this.getUsername()}));
+            final byte[] jsonTypingStatus = objectMapper.writeValueAsBytes(new StatusTransferDTO("typing", this.getUsername()));
             clientController.getWebsocketClient().send(jsonTypingStatus);
 
         } catch (JsonProcessingException e) {
@@ -958,7 +963,7 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
      @return the GuiFunctionality object.
      */
     @Override
-    public GuiFunctionality getGuiFunctionality() {
+    public GuiFunctionalityInterface getGuiFunctionality() {
 
         return guiFunctionality;
     }

@@ -1,7 +1,7 @@
 package com.soeguet.gui.main_frame.interfaces;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.soeguet.behaviour.interfaces.GuiFunctionality;
+import com.soeguet.behaviour.interfaces.GuiFunctionalityInterface;
 import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.notification_panel.NotificationImpl;
 import com.soeguet.properties.dto.CustomUserPropertiesDTO;
@@ -59,7 +59,7 @@ public interface MainFrameGuiInterface {
 
      @return the GuiFunctionality object representing the GUI state and functionality
      */
-    GuiFunctionality getGuiFunctionality();
+    GuiFunctionalityInterface getGuiFunctionality();
 
     /**
      Returns the name of the last message sender.

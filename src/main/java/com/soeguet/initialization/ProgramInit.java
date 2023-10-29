@@ -52,6 +52,7 @@ public class ProgramInit {
 
             //setup GUI
             this.mainFrame.setMainFrameTitle();
+            this.mainFrame.setFixedScrollSpeed(25);
             this.mainFrame.setGuiIcon();
 
             this.mainFrame.setButtonIcons();

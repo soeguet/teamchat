@@ -1,6 +1,6 @@
 package com.soeguet.socket_client;
 
-import com.soeguet.behaviour.interfaces.GuiFunctionality;
+import com.soeguet.behaviour.interfaces.GuiFunctionalityInterface;
 import com.soeguet.behaviour.interfaces.SocketToGuiInterface;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.popups.PopupPanelImpl;
@@ -20,7 +20,7 @@ public class CustomWebsocketClient extends WebSocketClient {
     private final MainFrameGuiInterface mainFrame;
     private final SocketToGuiInterface socketToGuiInterface;
 
-    public CustomWebsocketClient(URI serverUri, MainFrameGuiInterface mainFrame, final GuiFunctionality guiFunctionality) {
+    public CustomWebsocketClient(URI serverUri, MainFrameGuiInterface mainFrame, final GuiFunctionalityInterface guiFunctionality) {
 
         super(serverUri);
         this.mainFrame = mainFrame;
