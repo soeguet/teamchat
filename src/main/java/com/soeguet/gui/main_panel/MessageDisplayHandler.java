@@ -6,7 +6,9 @@ import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.interfaces.CommentManager;
 import com.soeguet.gui.comments.origin.CustomOriginPanel;
 import com.soeguet.gui.comments.right.PanelRightImpl;
+import com.soeguet.gui.comments.util.CommentTypeEnum;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
+import com.soeguet.gui.main_panel.dtos.MessageHandlerDTO;
 import com.soeguet.gui.main_panel.interfaces.MessageDisplayHandlerInterface;
 import com.soeguet.gui.notification_panel.NotificationImpl;
 import com.soeguet.gui.notification_panel.interfaces.NotificationInterface;
@@ -79,30 +81,31 @@ public class MessageDisplayHandler implements MessageDisplayHandlerInterface {
     }
 
     /**
-     This method processes and displays a message based on the message model, timeAndUsername, and nickname.
-
-     @param baseModel The message model representing the message.
-     @param nickname  The nickname of the client.
+     * Processes and displays a message based on the message model, nickname, and comment type.
+     *
+     * @param baseModel The message model representing the message.
+     * @param nickname The nickname of the client.
      */
     @Override
     public void processAndDisplayMessage(final BaseModel baseModel, final String nickname) {
 
-        int messageCategory = commentManager.categorizeMessageFromSocket(baseModel);
+        CommentTypeEnum commentType = commentManager.categorizeMessageFromSocket(baseModel);
 
-        switch (messageCategory) {
+        MessageHandlerDTO messageHandlerDTO = new MessageHandlerDTO(baseModel, nickname, commentType);
 
-            case MessageCategory.RIGHT_SIDE_TEXT_MESSAGE -> commentManager.setupMessagesRightSide(baseModel, nickname);
+        switch (commentType) {
 
-            case MessageCategory.RIGHT_SIDE_PICTURE_MESSAGE -> commentManager.setupPicturesRightSide(baseModel, nickname);
+            case CommentTypeEnum.RIGHT_TEXT -> commentManager.setupMessage(messageHandlerDTO);
 
-            case MessageCategory.RIGHT_SIDE_LINK_MESSAGE -> commentManager.setupLinkRightSite(baseModel);
+            case CommentTypeEnum.RIGHT_PICTURE -> commentManager.setupPicturesRightSide(baseModel, nickname);
 
-            case MessageCategory.LEFT_SIDE_TEXT_MESSAGE -> commentManager.setupMessagesLeftSide(baseModel, nickname);
+            case CommentTypeEnum.RIGHT_LINK -> commentManager.setupLinkRightSite(baseModel);
 
-            case MessageCategory.LEFT_SIDE_PICTURE_MESSAGE -> commentManager.setupPicturesLeftSide(baseModel, nickname);
+            case CommentTypeEnum.LEFT_TEXT -> commentManager.setupMessage(messageHandlerDTO);
 
-            case MessageCategory.LEFT_SIDE_LINK_MESSAGE -> commentManager.setupLinkLeftSide(baseModel);
+            case CommentTypeEnum.LEFT_PICTURE -> commentManager.setupPicturesLeftSide(baseModel, nickname);
+
+            case CommentTypeEnum.LEFT_LINK -> commentManager.setupLinkLeftSide(baseModel);
         }
     }
-
 }

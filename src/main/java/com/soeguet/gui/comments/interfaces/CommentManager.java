@@ -1,10 +1,12 @@
 package com.soeguet.gui.comments.interfaces;
 
+import com.soeguet.gui.comments.util.CommentTypeEnum;
+import com.soeguet.gui.main_panel.dtos.MessageHandlerDTO;
 import com.soeguet.model.jackson.BaseModel;
 
 public interface CommentManager {
 
-    int categorizeMessageFromSocket(final BaseModel baseModel);
+    CommentTypeEnum categorizeMessageFromSocket(final BaseModel baseModel);
 
     //RIGHT SIDE
     void setupMessagesRightSide(final BaseModel messageModel, final String nickname);
@@ -19,4 +21,6 @@ public interface CommentManager {
     void setupPicturesLeftSide(final BaseModel messageModel, final String nickname);
 
     void setupLinkLeftSide(BaseModel baseModel);
+
+    void setupMessage(MessageHandlerDTO messageHandlerDTO);
 }
