@@ -29,13 +29,13 @@ public class BorderHandlerImpl implements BorderHandlerInterface {
     public void highlightBorder() {
 
         comment.setBorderColor(highlightBorderColor);
-        mainFrame.repaint();
+//        mainFrame.repaint();
     }
 
     @Override
     public void revertBorderColor() {
 
         comment.setBorderColor(borderColor);
-        mainFrame.repaint();
+//        mainFrame.repaint();
     }
 }

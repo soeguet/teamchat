@@ -69,12 +69,7 @@ public class CustomTransferHandler extends TransferHandler {
         if (data.startsWith("http://") || data.startsWith("https://")) {
 
             //send the link
-            final String finalData = data;
-
-            SwingUtilities.invokeLater(() -> {
-
-                callLinkConfirmationDialog(finalData);
-            });
+            SwingUtilities.invokeLater(() -> callLinkConfirmationDialog(data));
 
             //don't append the link to the text pane
             return true;

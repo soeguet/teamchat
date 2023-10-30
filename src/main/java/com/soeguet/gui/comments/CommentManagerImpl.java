@@ -7,6 +7,7 @@ import com.soeguet.gui.comments.left.LinkLeftImpl;
 import com.soeguet.gui.comments.left.PanelLeftImpl;
 import com.soeguet.gui.comments.right.LinkRightImpl;
 import com.soeguet.gui.comments.right.PanelRightImpl;
+import com.soeguet.gui.comments.util.CommentTypeEnum;
 import com.soeguet.gui.comments.util.CustomFormContainer;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.MessageTypes;
@@ -16,6 +17,7 @@ import com.soeguet.model.jackson.PictureModel;
 import com.soeguet.util.interfaces.MessageCategory;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.util.Random;
 
@@ -92,6 +94,7 @@ public class CommentManagerImpl implements CommentManager {
             Color borderColor = determineBorderColor("own");
 
             CommentInterface panelRight = new PanelRightImpl(this.mainFrame, messageModel);
+            panelRight.setCommentType(CommentTypeEnum.RIGHT_TEXT);
             panelRight.initializeBorderHandler(borderColor);
 
             this.mainFrame.getCommentsHashMap().put(messageModel.getId(), panelRight);
@@ -117,16 +120,66 @@ public class CommentManagerImpl implements CommentManager {
                 g2d.setColor(backgroundColor);
                 g2d.fillRoundRect(0, 0, containerWidth - 13, containerHeight - 1, rounding, rounding);
 
-                g2d.setColor(borderColor);
+                g2d.setColor(panelRight.getBorderColor());
                 g2d.drawRoundRect(0, 0, containerWidth - 13, containerHeight - 1, rounding, rounding);
 
                 g2d.setColor(backgroundColor);
                 g2d.fillPolygon(new int[]{containerWidth - 1, containerWidth - 28, containerWidth - 13},
                                 new int[]{containerHeight - 1, containerHeight - 1, containerHeight - 13}, 3);
 
-                g2d.setColor(borderColor);
+                g2d.setColor(panelRight.getBorderColor());
                 g2d.drawLine(containerWidth - 30, containerHeight - 1, containerWidth, containerHeight - 1);
                 g2d.drawLine(containerWidth - 13, containerHeight - 13, containerWidth, containerHeight);
+            });
+        }
+    }
+
+    @Override
+    public void setupMessagesLeftSide(final BaseModel baseModel, final String nickname) {
+
+        //TEXT - LEFT
+        if (baseModel instanceof MessageModel messageModel) {
+
+            Color borderColor = determineBorderColor(messageModel.getSender());
+
+            CommentInterface panelLeft = new PanelRightImpl(this.mainFrame, messageModel);
+            panelLeft.setBorder(new LineBorder(Color.BLACK, 1));
+            panelLeft.setCommentType(CommentTypeEnum.LEFT_TEXT);
+
+            this.mainFrame.getCommentsHashMap().put(messageModel.getId(), panelLeft);
+            panelLeft.setupTextPanelWrapper();
+            panelLeft.setBorderColor(borderColor);
+            displayNicknameInsteadOfUsername(nickname, panelLeft);
+            addMessagePanelToMainChatPanel((JPanel) panelLeft, "leading");
+
+            panelLeft.initializeReactionStickerHandler(messageModel.getUserInteractions());
+
+            panelLeft.getFormContainer().setCustomPaint(grphcs -> {
+
+                CustomFormContainer container = panelLeft.getFormContainer();
+                final int containerWidth = container.getWidth();
+                final int containerHeight = container.getHeight();
+
+                int rounding = 20;
+                Graphics2D g2d = (Graphics2D) grphcs;
+
+                final Color backgroundColor = Color.WHITE;
+
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setColor(backgroundColor);
+                g2d.fillRoundRect(13, 0, containerWidth - 13 - 1, containerHeight - 1, rounding, rounding);
+
+                g2d.setColor(borderColor);
+                g2d.drawRoundRect(13, 0, containerWidth - 13 - 1, containerHeight - 1, rounding, rounding);
+
+                g2d.setColor(backgroundColor);
+                g2d.fillPolygon(new int[]{0, 13, 25},
+                                new int[]{containerHeight, containerHeight -13, containerHeight},
+                                3);
+
+                g2d.setColor(borderColor);
+                g2d.drawLine(0, containerHeight - 1, 25, containerHeight - 1);
+                g2d.drawLine(0, containerHeight - 1, 13, containerHeight - 13);
             });
         }
     }
@@ -172,22 +225,22 @@ public class CommentManagerImpl implements CommentManager {
         }
     }
 
-    @Override
-    public void setupMessagesLeftSide(final BaseModel baseModel, final String nickname) {
-
-        //TEXT - LEFT
-        if (baseModel instanceof MessageModel messageModel) {
-
-            Color borderColor = determineBorderColor(messageModel.getSender());
-
-            CommentInterface panelLeft = new PanelLeftImpl(this.mainFrame, messageModel);
-            this.mainFrame.getCommentsHashMap().put(messageModel.getId(), panelLeft);
-            panelLeft.setupTextPanelWrapper();
-            panelLeft.setBorderColor(borderColor);
-            displayNicknameInsteadOfUsername(nickname, panelLeft);
-            addMessagePanelToMainChatPanel((JPanel) panelLeft, "leading");
-        }
-    }
+//    @Override
+//    public void setupMessagesLeftSide(final BaseModel baseModel, final String nickname) {
+//
+//        //TEXT - LEFT
+//        if (baseModel instanceof MessageModel messageModel) {
+//
+//            Color borderColor = determineBorderColor(messageModel.getSender());
+//
+//            CommentInterface panelLeft = new PanelLeftImpl(this.mainFrame, messageModel);
+//            this.mainFrame.getCommentsHashMap().put(messageModel.getId(), panelLeft);
+//            panelLeft.setupTextPanelWrapper();
+//            panelLeft.setBorderColor(borderColor);
+//            displayNicknameInsteadOfUsername(nickname, panelLeft);
+//            addMessagePanelToMainChatPanel((JPanel) panelLeft, "leading");
+//        }
+//    }
 
     @Override
     public void setupPicturesLeftSide(final BaseModel baseModel, final String nickname) {

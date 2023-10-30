@@ -19,8 +19,12 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Pattern;
 
 public class LinkDialogHandler {
 
@@ -175,6 +179,7 @@ public class LinkDialogHandler {
 
         MessageModel messageModel = new MessageModel();
         messageModel.setMessageType(MessageTypes.LINK);
+        messageModel.setTime(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
         messageModel.setSender(mainFrame.getUsername());
         messageModel.setMessage(message);
 

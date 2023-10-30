@@ -2,6 +2,7 @@ package com.soeguet.gui.comments.left;
 
 import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.left.generated.PanelLeft;
+import com.soeguet.gui.comments.util.CommentTypeEnum;
 import com.soeguet.gui.comments.util.CustomFormContainer;
 import com.soeguet.gui.comments.util.QuotePanelImpl;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
@@ -177,6 +178,17 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     public CustomFormContainer getFormContainer() {
 
         return null;
+    }
+
+    @Override
+    public Color getBorderColor() {
+
+        return null;
+    }
+
+    @Override
+    public void setCommentType(final CommentTypeEnum commentType) {
+
     }
 
     /**

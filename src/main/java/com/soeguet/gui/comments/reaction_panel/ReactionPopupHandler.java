@@ -3,6 +3,9 @@ package com.soeguet.gui.comments.reaction_panel;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * This class handles the reaction popup menu functionality.
+ */
 public class ReactionPopupHandler {
 
     private final ReactionPopupMenuImpl reactionPopupMenu;
@@ -41,7 +44,12 @@ public class ReactionPopupHandler {
 
         popupTimer = new Timer(2000, timer -> {
 
-            final Point location = layeredPane.getMousePosition();
+            Point location = layeredPane.getMousePosition();
+
+            if (location == null) {
+                location = new Point(0, 0);
+            }
+
             reactionPopupMenu.show(layeredPane, (int) location.getX(), (int) location.getY());
         });
 

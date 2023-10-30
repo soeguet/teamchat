@@ -5,10 +5,12 @@ import com.soeguet.gui.comments.border.interfaces.BorderHandlerInterface;
 import com.soeguet.gui.comments.border.interfaces.BorderInterface;
 import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.interfaces.LinkPanelInterface;
+import com.soeguet.gui.comments.left.generated.PanelLeft;
 import com.soeguet.gui.comments.reaction_panel.ReactionPopupMenuImpl;
 import com.soeguet.gui.comments.reaction_panel.dtos.ReactionPanelDTO;
 import com.soeguet.gui.comments.reaction_sticker.ReactionStickerImpl;
 import com.soeguet.gui.comments.right.generated.PanelRight;
+import com.soeguet.gui.comments.util.CommentTypeEnum;
 import com.soeguet.gui.comments.util.CustomFormContainer;
 import com.soeguet.gui.comments.util.LinkWrapEditorKit;
 import com.soeguet.gui.comments.util.QuotePanelImpl;
@@ -45,40 +47,37 @@ public class PanelRightImpl extends PanelRight implements CommentInterface, Bord
     private BorderHandlerInterface borderHandler;
     private ReactionPopupMenuImpl popupMenu;
     private ReactionStickerImpl reactionSticker;
-
-    public Consumer<Graphics> getCustomPaint() {
-
-        return customPaint;
-    }
-
-    public void setCustomPaint(final Consumer<Graphics> customPaint) {
-
-        this.customPaint = customPaint;
-        repaint();
-    }
-
-    @Override
-    public CustomFormContainer getFormContainer() {
-
-        return (CustomFormContainer) form_container;
-    }
-
-    private  Consumer<Graphics> customPaint;
+    private Consumer<Graphics> customPaint;
+    private CommentTypeEnum commentType;
 
     public PanelRightImpl(MainFrameGuiInterface mainFrame, BaseModel baseModel) {
 
         super(mainFrame);
         this.mainFrame = mainFrame;
-
         this.baseModel = baseModel;
     }
 
-    @Override
-    protected void paintComponent(Graphics g) {
+    public CommentTypeEnum getCommentType() {
 
-        super.paintComponent(g);
+        return commentType;
+    }
+
+    public void setCommentType(final CommentTypeEnum commentType) {
+        this.commentType = commentType;
+    }
+
+    /**
+     Overrides the paintComponent method to perform custom painting.
+
+     @param graphics
+     the Graphics object used for painting
+     */
+    @Override
+    protected void paintComponent(Graphics graphics) {
+
+        super.paintComponent(graphics);
         if (customPaint != null) {
-            customPaint.accept(g);
+            customPaint.accept(graphics);
         }
     }
 
@@ -153,7 +152,11 @@ public class PanelRightImpl extends PanelRight implements CommentInterface, Bord
 
         if (quotedSectionPanel != null) {
 
-            form_container.add(quotedSectionPanel, "cell 0 0, wrap");
+            switch (commentType) {
+                case LEFT_TEXT -> form_container.add(quotedSectionPanel, "cell 1 0, wrap");
+                case RIGHT_TEXT -> form_container.add(quotedSectionPanel, "cell 0 0, wrap");
+                default -> throw new RuntimeException("Unsupported comment type");
+            }
         }
     }
 
@@ -162,7 +165,12 @@ public class PanelRightImpl extends PanelRight implements CommentInterface, Bord
         JTextPane actualTextPane = setUserMessage(messageModel);
         actualTextPane.setForeground(Color.BLACK);
         addRightClickOptionToPanel(actualTextPane);
-        form_container.add(actualTextPane, "cell 0 1, wrap");
+
+        switch (commentType) {
+            case LEFT_TEXT -> form_container.add(actualTextPane, "cell 1 1, wrap");
+            case RIGHT_TEXT -> form_container.add(actualTextPane, "cell 0 1, wrap");
+            default -> throw new RuntimeException("Unsupported comment type");
+        }
     }
 
     private void setupCommentEssentials(final MessageModel messageModel) {
@@ -185,7 +193,9 @@ public class PanelRightImpl extends PanelRight implements CommentInterface, Bord
             SwingUtilities.invokeLater(() -> {
 
                 //handle image extraction and return, if null
-                if (handleImageExtraction(pictureModel)) {return;}
+                if (handleImageExtraction(pictureModel)) {
+                    return;
+                }
 
                 //handle image and max sizing of image on the main panel
                 setImageOnChatPanel();
@@ -227,7 +237,14 @@ public class PanelRightImpl extends PanelRight implements CommentInterface, Bord
     private void setImageOnChatPanel() {
 
         JLabel imageLabel = new JLabel(scaleImageIfTooBig(image));
-        form_container.add(imageLabel, "cell 0 0, wrap");
+
+        //TODO picture
+        switch (commentType) {
+            case LEFT_TEXT -> form_container.add(imageLabel, "cell 1 0, wrap");
+            case RIGHT_TEXT -> form_container.add(imageLabel, "cell 0 0, wrap");
+            default -> throw new RuntimeException("Unsupported comment type");
+        }
+
         addMaximizePictureOnClick(imageLabel, image);
     }
 
@@ -242,7 +259,13 @@ public class PanelRightImpl extends PanelRight implements CommentInterface, Bord
         JTextPane imageCaptionTextPane = createImageCaptionTextPane(pictureModel);
         if (imageCaptionTextPane != null) {
             addRightClickOptionToPanel(imageCaptionTextPane);
-            form_container.add(imageCaptionTextPane, "cell 0 1, wrap");
+
+            //TODO picture
+            switch (commentType) {
+                case LEFT_TEXT -> form_container.add(imageCaptionTextPane, "cell 1 1, wrap");
+                case RIGHT_TEXT -> form_container.add(imageCaptionTextPane, "cell 0 1, wrap");
+                default -> throw new RuntimeException("Unsupported comment type");
+            }
         }
     }
 
@@ -292,6 +315,18 @@ public class PanelRightImpl extends PanelRight implements CommentInterface, Bord
     public void setBaseModel(final BaseModel baseModel) {
 
         this.baseModel = baseModel;
+    }
+
+    public void setCustomPaint(final Consumer<Graphics> customPaint) {
+
+        this.customPaint = customPaint;
+        repaint();
+    }
+
+    @Override
+    public CustomFormContainer getFormContainer() {
+
+        return (CustomFormContainer) form_container;
     }
 
     /**
