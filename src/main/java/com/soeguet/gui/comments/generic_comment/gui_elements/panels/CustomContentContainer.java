@@ -6,26 +6,24 @@ import java.util.function.Consumer;
 
 public class CustomContentContainer extends JPanel {
 
-    private Color borderColor;
+    // variables -- start
     private Consumer<Graphics> customPaint;
+    // variables -- end
 
-    public Consumer<Graphics> getCustomPaint() {
+    // overrides -- start
+    @Override
+    protected void paintComponent(Graphics graphics) {
 
-        return customPaint;
+        if (customPaint != null) {
+            customPaint.accept(graphics);
+        }
     }
 
+    // getter & setter -- start
     public void setCustomPaint(final Consumer<Graphics> customPaint) {
 
         this.customPaint = customPaint;
         repaint();
     }
-
-    @Override
-    protected void paintComponent(Graphics grphcs) {
-
-        System.out.println("paintComponent");
-        if (customPaint != null) {
-            customPaint.accept(grphcs);
-        }
-    }
+    // getter & setter -- end
 }

@@ -1,9 +1,11 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.textpane;
 
+import com.soeguet.gui.comments.generic_comment.gui_elements.interfaces.ContentInterface;
+
 import javax.swing.*;
 import javax.swing.text.*;
 
-public class CustomTextPane extends JTextPane {
+public class CustomTextPane extends JTextPane implements ContentInterface {
 
     private final boolean lineWrap;
 

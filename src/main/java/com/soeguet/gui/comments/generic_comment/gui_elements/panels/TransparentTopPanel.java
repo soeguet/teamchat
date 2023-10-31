@@ -7,12 +7,15 @@ import java.awt.event.MouseListener;
 
 public class TransparentTopPanel extends JPanel implements MouseListener {
 
+    // constructors -- start
     public TransparentTopPanel() {
 
         this.setBackground(new Color(0, 0, 0, 0));
         this.setOpaque(false);
     }
+    // constructors -- end
 
+    // overrides -- start
     @Override
     protected void paintComponent(Graphics g) {
 
@@ -38,6 +41,7 @@ public class TransparentTopPanel extends JPanel implements MouseListener {
     @Override
     public void mouseEntered(final MouseEvent e) {
 
+        System.out.println("TransparentTopPanel entered");
     }
 
     @Override

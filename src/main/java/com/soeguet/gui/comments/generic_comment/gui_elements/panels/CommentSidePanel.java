@@ -1,7 +1,9 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
+import com.soeguet.gui.comments.generic_comment.gui_elements.interfaces.ContentInterface;
 import com.soeguet.gui.comments.generic_comment.util.Side;
 import com.soeguet.gui.comments.generic_comment.util.SideHandler;
+import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.util.CommentTypeEnum;
 import net.miginfocom.swing.MigLayout;
 
@@ -10,11 +12,14 @@ import java.awt.*;
 
 public class CommentSidePanel extends JPanel {
 
+    // variables -- start
     private final Side side;
     private JLabel nameLabel;
     private JLabel timeLabel;
     private JButton interactionButton;
+    // variables -- end
 
+    // constructors -- start
     public CommentSidePanel(final CommentTypeEnum commentType) {
 
         side = new SideHandler().determineSide(commentType);
@@ -74,6 +79,7 @@ public class CommentSidePanel extends JPanel {
 
         this.timeLabel = timeLabel;
     }
+    // constructors -- end
 
     public void setLayoutManager() {
 

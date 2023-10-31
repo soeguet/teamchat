@@ -1,24 +1,26 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
 import com.soeguet.gui.comments.generic_comment.dto.CommentGuiDTO;
+import com.soeguet.gui.comments.generic_comment.gui_elements.interfaces.ContentInterface;
+import com.soeguet.gui.comments.generic_comment.gui_elements.textpane.CustomPicturePane;
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpane.CustomTextPane;
 import com.soeguet.gui.comments.generic_comment.gui_elements.util.ChatBubblePaintHandler;
 import com.soeguet.gui.comments.generic_comment.util.Side;
 import com.soeguet.gui.comments.generic_comment.util.SideHandler;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.BaseModel;
+import com.soeguet.model.jackson.MessageModel;
+import com.soeguet.model.jackson.PictureModel;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class CommentMainPanel extends JPanel {
 
+    // variables -- start
     private final MainFrameGuiInterface mainFrame;
     /**
      Represents a side of the comment - LEFT or RIGHT.
@@ -47,8 +49,9 @@ public class CommentMainPanel extends JPanel {
     private final CustomContentContainer customContentContainer;
     private JTextPane jTextPane;
     private Color borderColor;
-    private ChatBubblePaintHandler chatBubblePaintHandler;
+    // variables -- end
 
+    // constructors -- start
     public CommentMainPanel(CommentGuiDTO commentGuiDTO) {
 
         this.mainFrame = commentGuiDTO.mainFrame();
@@ -59,34 +62,8 @@ public class CommentMainPanel extends JPanel {
 
         this.customContentContainer = commentGuiDTO.customContentContainer();
         this.mainContainer = commentGuiDTO.mainContainer();
-
-        //FIXME remove this
-        //        this.getTopContainer().setBorder(new LineBorder(Color.BLACK, 5));
-        //
-        //        this.getMainContainer().setBorder(new LineBorder(Color.GREEN, 1));
-        //        this.getSidePanel().setBorder(new LineBorder(Color.BLUE, 1));
-        //        this.getCustomContentContainer().setBorder(new LineBorder(Color.RED, 1));
-
-        // PINK -> GREEN + BLACK
-        // BLACK -> BLUE + GREEN
-        // GREEN -> RED + BLUE
-
     }
-
-    public JTextPane getjTextPane() {
-
-        return jTextPane;
-    }
-
-    public void setTextPane(final JTextPane jTextPane) {
-
-        this.jTextPane = jTextPane;
-    }
-
-    public BaseModel getBaseModel() {
-
-        return baseModel;
-    }
+    // constructors -- end
 
     public void setLayoutManager() {
 
@@ -109,14 +86,14 @@ public class CommentMainPanel extends JPanel {
         switch (this.getSide()) {
             case LEFT -> mainPanel.setLayout(new MigLayout("",
                                                            // columns
-                                                           "[]" + "[]",
+                                                           "[][]",
                                                            // rows
-                                                           "[]" + "[]"));
+                                                           "[][]"));
             case RIGHT -> mainPanel.setLayout(new MigLayout("",
                                                             // columns
-                                                            "[grow]" + "[]",
+                                                            "[grow][]",
                                                             // rows
-                                                            "[]" + "[]"));
+                                                            "[][]"));
         }
     }
 
@@ -129,7 +106,7 @@ public class CommentMainPanel extends JPanel {
                                                  // columns
                                                  "[fill]",
                                                  // rows
-                                                 "[]" + "[fill]" + "[]"));
+                                                 "[][fill][]"));
     }
 
     public JPanel getMainContainer() {
@@ -184,24 +161,23 @@ public class CommentMainPanel extends JPanel {
         switch (this.getSide()) {
             case LEFT -> {
                 mainPanel.add(commentSidePanel, "cell 0 0 1 2, dock west");
-                mainPanel.add(mainContentPanel, "cell 1 0 1 2, dock west, gapleft 5");
+                mainPanel.add(mainContentPanel, "cell 1 0 1 2, dock west, gapleft 5, gapright 50");
                 topPanel.setAlignmentX(0.0f);
             }
             case RIGHT -> {
                 mainPanel.add(commentSidePanel, "cell 1 0 1 2, dock east");
-                mainPanel.add(mainContentPanel, "cell 0 0 1 2, dock east, gapright 5, grow");
+                mainPanel.add(mainContentPanel, "cell 0 0 1 2, dock east, gapright 5, gapleft 50, grow");
             }
         }
 
         this.getCustomContentContainer().addComponentListener(new ComponentAdapter() {
 
+            // overrides -- start
             @Override
             public void componentResized(final ComponentEvent e) {
 
                 getTopContainer().setMaximumSize(new Dimension(getCustomContentContainer().getSize().width + getSidePanel().getWidth(), getCustomContentContainer().getSize().height));
                 super.componentResized(e);
-                revalidate();
-                repaint();
             }
         });
     }
@@ -211,33 +187,37 @@ public class CommentMainPanel extends JPanel {
         return topContainer;
     }
 
-    public MainFrameGuiInterface getMainFrame() {
-
-        return mainFrame;
-    }
-
     public void addContext() {
 
-        jTextPane = new CustomTextPane(true);
-        jTextPane.setEditable(false);
-        jTextPane.setOpaque(false);
-        jTextPane.setText(baseModel.getMessage());
+        if (baseModel instanceof MessageModel messageModel) {
 
-        final String layoutConstraints = determineTextPanePaddings();
+            jTextPane = new CustomTextPane(true);
+            jTextPane.setEditable(false);
+            jTextPane.setOpaque(false);
+            jTextPane.setText(baseModel.getMessage());
 
-        this.getCustomContentContainer().add(jTextPane, layoutConstraints);
+            final String layoutConstraints = determineTextPanePaddings();
 
-        this.getTopContainer().addMouseListener(new MouseAdapter() {
+            this.getCustomContentContainer().add(jTextPane, layoutConstraints);
 
-            @Override
-            public void mouseEntered(final MouseEvent e) {
+        } else if (baseModel instanceof PictureModel pictureModel) {
 
-                System.out.println("mouse entered");
-                chatBubblePaintHandler.setBorderColor(Color.RED);
+            CustomPicturePane pictureLabel = new CustomPicturePane(pictureModel.getPicture());
+            this.getCustomContentContainer().add(pictureLabel, "gapleft 15, gaptop 10");
+        }
 
-                super.mouseEntered(e);
-            }
-        });
+
+        //        this.getTopContainer().addMouseListener(new MouseAdapter() {
+        //
+        //            @Override
+        //            public void mouseEntered(final MouseEvent e) {
+        //
+        //                System.out.println("mouse entered");
+        //                chatBubblePaintHandler.setBorderColor(Color.RED);
+        //
+        //                super.mouseEntered(e);
+        //            }
+        //        });
     }
 
     private String determineTextPanePaddings() {
@@ -256,20 +236,21 @@ public class CommentMainPanel extends JPanel {
             default -> throw new IllegalStateException("Unexpected value: " + this.getSide());
         }
 
-        return layoutConstraints + ", gaptop 10";
-    }
-
-    public JPanel getLayeredContainer() {
-
-        return topContainer;
+        return "%s, gaptop 10".formatted(layoutConstraints);
     }
 
     public void paintChatBubble() {
 
-        chatBubblePaintHandler = new ChatBubblePaintHandler(getCustomContentContainer(), getSide(), new Color(23, 0,
-                                                                                                              146));
+        ChatBubblePaintHandler chatBubblePaintHandler = new ChatBubblePaintHandler(getCustomContentContainer(),
+                                                                                   getSide(), new Color(23, 0, 146));
 
         chatBubblePaintHandler.setupChatBubble();
+    }
+
+    // getter & setter -- start
+    public BaseModel getBaseModel() {
+
+        return baseModel;
     }
 
     public Color getBorderColor() {
@@ -281,4 +262,25 @@ public class CommentMainPanel extends JPanel {
 
         this.borderColor = borderColor;
     }
+
+    public JPanel getLayeredContainer() {
+
+        return topContainer;
+    }
+
+    public MainFrameGuiInterface getMainFrame() {
+
+        return mainFrame;
+    }
+
+    public JTextPane getjTextPane() {
+
+        return jTextPane;
+    }
+
+    public void setTextPane(final JTextPane jTextPane) {
+
+        this.jTextPane = jTextPane;
+    }
+    // getter & setter -- end
 }
