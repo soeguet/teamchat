@@ -1,7 +1,6 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
 import com.soeguet.gui.comments.generic_comment.dto.CommentGuiDTO;
-import com.soeguet.gui.comments.generic_comment.gui_elements.interfaces.ContentInterface;
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpane.CustomPicturePane;
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpane.CustomTextPane;
 import com.soeguet.gui.comments.generic_comment.gui_elements.util.ChatBubblePaintHandler;
@@ -104,7 +103,7 @@ public class CommentMainPanel extends JPanel {
         final JPanel mainContentPanel = this.getCustomContentContainer();
         mainContentPanel.setLayout(new MigLayout("",
                                                  // columns
-                                                 "[fill]",
+                                                 "[fill,grow]",
                                                  // rows
                                                  "[][fill][]"));
     }
@@ -203,9 +202,26 @@ public class CommentMainPanel extends JPanel {
         } else if (baseModel instanceof PictureModel pictureModel) {
 
             CustomPicturePane pictureLabel = new CustomPicturePane(pictureModel.getPicture());
-            this.getCustomContentContainer().add(pictureLabel, "gapleft 15, gaptop 10");
-        }
 
+            switch (this.getSide()) {
+                case LEFT -> {
+                    this.getCustomContentContainer().add(pictureLabel, "cell 0 0, wrap, gapleft 15, gaptop 10, " +
+                                                                       "gapright 5");
+                }
+                case RIGHT -> {
+                    this.getCustomContentContainer().add(pictureLabel, "cell 0 0, wrap, gapleft 3, gapright 15, " +
+                                                                       "gaptop 10");
+                }
+            }
+            this.getCustomContentContainer().setSize(pictureLabel.getSize().width * 2,
+                                                     pictureLabel.getSize().height * 2);
+            this.getMainContainer().setSize(pictureLabel.getSize().width * 2, pictureLabel.getSize().height * 2);
+            this.setSize(pictureLabel.getSize().width * 2, pictureLabel.getSize().height * 2);
+            this.getCustomContentContainer().revalidate();
+            this.getCustomContentContainer().repaint();
+            this.mainFrame.revalidate();
+            this.mainFrame.repaint();
+        }
 
         //        this.getTopContainer().addMouseListener(new MouseAdapter() {
         //
