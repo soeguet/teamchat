@@ -3,6 +3,7 @@ package com.soeguet.gui.comments;
 import com.soeguet.gui.comments.generic_comment.dto.CommentGuiDTO;
 import com.soeguet.gui.comments.generic_comment.gui_elements.CommentMainPanel;
 import com.soeguet.gui.comments.generic_comment.gui_elements.CommentSidePanel;
+import com.soeguet.gui.comments.generic_comment.gui_elements.TransparentPanel;
 import com.soeguet.gui.comments.generic_comment.util.Side;
 import com.soeguet.gui.comments.generic_comment.util.SideHandler;
 import com.soeguet.gui.comments.interfaces.CommentInterface;
@@ -95,14 +96,15 @@ public class CommentManagerImpl implements CommentManager {
 
         //TEXT - RIGHT
         if (baseModel instanceof MessageModel messageModel) {
-            CommentSidePanel commentSidePanel = new CommentSidePanel(CommentTypeEnum.LEFT_TEXT);
-            final CommentGuiDTO commentGuiDto = new CommentGuiDTO(CommentTypeEnum.LEFT_TEXT, commentSidePanel, new JLayeredPane(), new JPanel());
-            CommentMainPanel panelLeft = new CommentMainPanel(commentGuiDto);
-            panelLeft.setLayoutManager();
-            panelLeft.setupSidePanel(baseModel);
-            panelLeft.addComponents();
-            panelLeft.setBorder(new LineBorder(Color.BLACK, 1));
-            this.mainFrame.getMainTextPanel().add(panelLeft, "w 70%, trailing, wrap");
+//            CommentSidePanel commentSidePanel = new CommentSidePanel(CommentTypeEnum.LEFT_TEXT);
+//            final CommentGuiDTO commentGuiDto = new CommentGuiDTO(CommentTypeEnum.LEFT_TEXT, baseModel,
+//                                                                  commentSidePanel, new JPanel(), new JPanel(),new JPanel());
+//            CommentMainPanel panelLeft = new CommentMainPanel(commentGuiDto);
+//            panelLeft.setLayoutManager();
+//            panelLeft.setupSidePanel(baseModel);
+//            panelLeft.addComponents();
+//            panelLeft.addContext();
+//            this.mainFrame.getMainTextPanel().add(panelLeft, "w 70%, trailing, wrap");
         }
     }
 
@@ -202,14 +204,15 @@ public class CommentManagerImpl implements CommentManager {
         //TEXT - LEFT
         if (baseModel instanceof MessageModel messageModel) {
 
-            CommentSidePanel commentSidePanel = new CommentSidePanel(CommentTypeEnum.RIGHT_TEXT);
-            final CommentGuiDTO commentGuiDto = new CommentGuiDTO(CommentTypeEnum.RIGHT_TEXT, commentSidePanel, new JLayeredPane(), new JPanel());
-            CommentMainPanel panelRight = new CommentMainPanel(commentGuiDto);
-            panelRight.setLayoutManager();
-            panelRight.setupSidePanel(baseModel);
-            panelRight.addComponents();
-            panelRight.setBorder(new LineBorder(Color.BLACK, 1));
-            this.mainFrame.getMainTextPanel().add(panelRight, "w 70%, leading, wrap");
+//            CommentSidePanel commentSidePanel = new CommentSidePanel(CommentTypeEnum.RIGHT_TEXT);
+//            final CommentGuiDTO commentGuiDto = new CommentGuiDTO(CommentTypeEnum.RIGHT_TEXT, baseModel,
+//                                                                  commentSidePanel, new JPanel(), new JPanel(),new JPanel());
+//            CommentMainPanel panelRight = new CommentMainPanel(commentGuiDto);
+//            panelRight.setLayoutManager();
+//            panelRight.setupSidePanel(baseModel);
+//            panelRight.addComponents();
+//            panelRight.addContext();
+//            this.mainFrame.getMainTextPanel().add(panelRight, "w 70%, leading, wrap");
             //
             //            Color borderColor = determineBorderColor(messageModel.getSender());
             //
@@ -238,13 +241,16 @@ public class CommentManagerImpl implements CommentManager {
             //
             //                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             //                g2d.setColor(backgroundColor);
-            //                g2d.fillRoundRect(13, 0, containerWidth - 13 - 1, containerHeight - 1, rounding, rounding);
+            //                g2d.fillRoundRect(13, 0, containerWidth - 13 - 1, containerHeight - 1, rounding,
+            //                rounding);
             //
             //                g2d.setColor(borderColor);
-            //                g2d.drawRoundRect(13, 0, containerWidth - 13 - 1, containerHeight - 1, rounding, rounding);
+            //                g2d.drawRoundRect(13, 0, containerWidth - 13 - 1, containerHeight - 1, rounding,
+            //                rounding);
             //
             //                g2d.setColor(backgroundColor);
-            //                g2d.fillPolygon(new int[]{0, 13, 25}, new int[]{containerHeight, containerHeight - 13, containerHeight}, 3);
+            //                g2d.fillPolygon(new int[]{0, 13, 25}, new int[]{containerHeight, containerHeight - 13,
+            //                containerHeight}, 3);
             //
             //                g2d.setColor(borderColor);
             //                g2d.drawLine(0, containerHeight - 1, 25, containerHeight - 1);
@@ -292,7 +298,8 @@ public class CommentManagerImpl implements CommentManager {
     //                g2d.drawRoundRect(13, 0, containerWidth - 13 - 1, containerHeight - 1, rounding, rounding);
     //
     //                g2d.setColor(backgroundColor);
-    //                g2d.fillPolygon(new int[]{0, 13, 25}, new int[]{containerHeight, containerHeight - 13, containerHeight}, 3);
+    //                g2d.fillPolygon(new int[]{0, 13, 25}, new int[]{containerHeight, containerHeight - 13,
+    //                containerHeight}, 3);
     //
     //                g2d.setColor(borderColor);
     //                g2d.drawLine(0, containerHeight - 1, 25, containerHeight - 1);
@@ -369,17 +376,20 @@ public class CommentManagerImpl implements CommentManager {
         //TEXT - RIGHT
         if (baseModel instanceof MessageModel messageModel) {
             CommentSidePanel commentSidePanel = new CommentSidePanel(commentType);
-            final CommentGuiDTO commentGuiDto = new CommentGuiDTO(commentType, commentSidePanel, new JLayeredPane(), new JPanel());
+            final CommentGuiDTO commentGuiDto = new CommentGuiDTO(mainFrame,commentType, baseModel, commentSidePanel,
+                                                                  new TransparentPanel(), new JPanel(), new JPanel());
             CommentMainPanel commentPanel = new CommentMainPanel(commentGuiDto);
             commentPanel.setLayoutManager();
             commentPanel.setupSidePanel(baseModel);
             commentPanel.addComponents();
-            commentPanel.setBorder(new LineBorder(Color.BLACK, 1));
+//            commentPanel.addContext();
+            commentPanel.setBorder(new LineBorder(Color.PINK, 2));
             this.addCommentPanelToMainChatPanel(commentPanel, commentType);
         }
     }
 
-    private void addCommentPanelToMainChatPanel(final CommentMainPanel commentPanel, final CommentTypeEnum commentType) {
+    private void addCommentPanelToMainChatPanel(final CommentMainPanel commentPanel,
+                                                final CommentTypeEnum commentType) {
 
         Side side = new SideHandler().determineSide(commentType);
 
@@ -392,7 +402,8 @@ public class CommentManagerImpl implements CommentManager {
     /**
      Displays the nickname instead of the timeAndUsername in a comment.
      <p>
-     If the nickname parameter is not null and not empty after trimming, it sets the text of the name label in the comment to the nickname.
+     If the nickname parameter is not null and not empty after trimming, it sets the text of the name label in the
+     comment to the nickname.
 
      @param nickname
      the nickname to be displayed
