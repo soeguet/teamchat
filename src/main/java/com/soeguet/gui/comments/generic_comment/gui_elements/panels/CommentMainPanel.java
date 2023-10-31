@@ -2,6 +2,7 @@ package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
 import com.soeguet.gui.comments.generic_comment.dto.CommentGuiDTO;
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpane.CustomTextPane;
+import com.soeguet.gui.comments.generic_comment.gui_elements.util.ChatBubblePaintHandler;
 import com.soeguet.gui.comments.generic_comment.util.Side;
 import com.soeguet.gui.comments.generic_comment.util.SideHandler;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
@@ -9,7 +10,6 @@ import com.soeguet.model.jackson.BaseModel;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -43,10 +43,10 @@ public class CommentMainPanel extends JPanel {
     /**
      The content container will be used for the text and picture content as well as the quoted comments.
      */
-    private final JPanel contentContainer;
-    private int layeredPanelWidth = 0;
-    private int layeredPanelHeight = 0;
+    private final CustomContentContainer customContentContainer;
     private JTextPane jTextPane;
+    private Color borderColor;
+    private ChatBubblePaintHandler chatBubblePaintHandler;
 
     public CommentMainPanel(CommentGuiDTO commentGuiDTO) {
 
@@ -58,15 +58,15 @@ public class CommentMainPanel extends JPanel {
         this.topContainer.setBackground(Color.RED);
         this.topContainer.setOpaque(true);
 
-        this.contentContainer = commentGuiDTO.container();
+        this.customContentContainer = commentGuiDTO.customContentContainer();
         this.mainContainer = commentGuiDTO.mainContainer();
 
         //FIXME remove this
-        this.getTopContainer().setBorder(new LineBorder(Color.BLACK, 5));
-
-        this.getMainContainer().setBorder(new LineBorder(Color.GREEN, 1));
-        this.getSidePanel().setBorder(new LineBorder(Color.BLUE, 1));
-        this.getContentContainer().setBorder(new LineBorder(Color.RED, 1));
+        //        this.getTopContainer().setBorder(new LineBorder(Color.BLACK, 5));
+        //
+        //        this.getMainContainer().setBorder(new LineBorder(Color.GREEN, 1));
+        //        this.getSidePanel().setBorder(new LineBorder(Color.BLUE, 1));
+        //        this.getCustomContentContainer().setBorder(new LineBorder(Color.RED, 1));
 
         // PINK -> GREEN + BLACK
         // BLACK -> BLUE + GREEN
@@ -74,24 +74,14 @@ public class CommentMainPanel extends JPanel {
 
     }
 
-    public JPanel getTopContainer() {
+    public JTextPane getjTextPane() {
 
-        return topContainer;
+        return jTextPane;
     }
 
-    public JPanel getMainContainer() {
+    public void setjTextPane(final JTextPane jTextPane) {
 
-        return mainContainer;
-    }
-
-    public CommentSidePanel getSidePanel() {
-
-        return sidePanel;
-    }
-
-    public JPanel getContentContainer() {
-
-        return contentContainer;
+        this.jTextPane = jTextPane;
     }
 
     public BaseModel getBaseModel() {
@@ -131,7 +121,7 @@ public class CommentMainPanel extends JPanel {
 
     private void setMainContentContainerLayoutManager() {
 
-        final JPanel mainContentPanel = this.getContentContainer();
+        final JPanel mainContentPanel = this.getCustomContentContainer();
         mainContentPanel.setLayout(new MigLayout("",
                                                  // columns
                                                  "[fill]",
@@ -139,9 +129,19 @@ public class CommentMainPanel extends JPanel {
                                                  "[]" + "[fill]" + "[]"));
     }
 
+    public JPanel getMainContainer() {
+
+        return mainContainer;
+    }
+
     public Side getSide() {
 
         return side;
+    }
+
+    public CustomContentContainer getCustomContentContainer() {
+
+        return customContentContainer;
     }
 
     public void setupSidePanel(final BaseModel baseModel) {
@@ -152,6 +152,11 @@ public class CommentMainPanel extends JPanel {
         commentSidePanel.getTimeLabel().setText("10:00");
         commentSidePanel.setLayoutManager();
         commentSidePanel.addComponents();
+    }
+
+    public CommentSidePanel getSidePanel() {
+
+        return sidePanel;
     }
 
     public void addComponents() {
@@ -165,8 +170,9 @@ public class CommentMainPanel extends JPanel {
         final JPanel mainPanel = this.getMainContainer();
         final JPanel topPanel = this.getTopContainer();
         final CommentSidePanel commentSidePanel = this.getSidePanel();
-        final JPanel mainContentPanel = this.getContentContainer();
+        final JPanel mainContentPanel = this.getCustomContentContainer();
 
+        mainPanel.setOpaque(true);
         //container components
         this.add(mainPanel);
         this.add(topPanel);
@@ -190,12 +196,12 @@ public class CommentMainPanel extends JPanel {
             }
         }
 
-        this.getContentContainer().addComponentListener(new ComponentAdapter() {
+        this.getCustomContentContainer().addComponentListener(new ComponentAdapter() {
 
             @Override
             public void componentResized(final ComponentEvent e) {
 
-                getTopContainer().setMaximumSize(new Dimension(getContentContainer().getSize().width + getSidePanel().getWidth(), getContentContainer().getSize().height));
+                getTopContainer().setMaximumSize(new Dimension(getCustomContentContainer().getSize().width + getSidePanel().getWidth(), getCustomContentContainer().getSize().height));
                 super.componentResized(e);
                 revalidate();
                 repaint();
@@ -203,39 +209,26 @@ public class CommentMainPanel extends JPanel {
         });
     }
 
+    public JPanel getTopContainer() {
+
+        return topContainer;
+    }
+
     public MainFrameGuiInterface getMainFrame() {
 
         return mainFrame;
-    }
-
-    public int getLayeredPanelWidth() {
-
-        return layeredPanelWidth;
-    }
-
-    public void setLayeredPanelWidth(final int layeredPanelWidth) {
-
-        this.layeredPanelWidth = layeredPanelWidth;
-    }
-
-    public int getLayeredPanelHeight() {
-
-        return layeredPanelHeight;
-    }
-
-    public void setLayeredPanelHeight(final int layeredPanelHeight) {
-
-        this.layeredPanelHeight = layeredPanelHeight;
     }
 
     public void addContext() {
 
         jTextPane = new CustomTextPane(true);
         jTextPane.setEditable(false);
-        jTextPane.setBackground(null);
+        jTextPane.setOpaque(false);
         jTextPane.setText(baseModel.getMessage());
 
-        this.getContentContainer().add(jTextPane);
+        final String layoutConstraints = determineTextPanePaddings();
+
+        this.getCustomContentContainer().add(jTextPane, layoutConstraints);
 
         this.getTopContainer().addMouseListener(new MouseAdapter() {
 
@@ -243,13 +236,52 @@ public class CommentMainPanel extends JPanel {
             public void mouseEntered(final MouseEvent e) {
 
                 System.out.println("mouse entered");
+                chatBubblePaintHandler.setBorderColor(Color.RED);
+
                 super.mouseEntered(e);
             }
         });
     }
 
+    private String determineTextPanePaddings() {
+
+        String layoutConstraints;
+
+        switch (this.getSide()) {
+            case LEFT -> {
+                jTextPane.setBackground(Color.RED);
+                layoutConstraints = "gapleft 15";
+            }
+            case RIGHT -> {
+                jTextPane.setBackground(Color.BLUE);
+                layoutConstraints = "gapright 15";
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + this.getSide());
+        }
+
+        return layoutConstraints + ", gaptop 10";
+    }
+
     public JPanel getLayeredContainer() {
 
         return topContainer;
+    }
+
+    public void paintChatBubble() {
+
+        chatBubblePaintHandler = new ChatBubblePaintHandler(getCustomContentContainer(), getSide(), new Color(23, 0,
+                                                                                                              146));
+
+        chatBubblePaintHandler.setupChatBubble();
+    }
+
+    public Color getBorderColor() {
+
+        return borderColor;
+    }
+
+    public void setBorderColor(final Color borderColor) {
+
+        this.borderColor = borderColor;
     }
 }

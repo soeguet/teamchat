@@ -3,6 +3,7 @@ package com.soeguet.gui.comments;
 import com.soeguet.gui.comments.generic_comment.dto.CommentGuiDTO;
 import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CommentMainPanel;
 import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CommentSidePanel;
+import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomContentContainer;
 import com.soeguet.gui.comments.generic_comment.gui_elements.panels.TransparentTopPanel;
 import com.soeguet.gui.comments.generic_comment.util.Side;
 import com.soeguet.gui.comments.generic_comment.util.SideHandler;
@@ -377,14 +378,17 @@ public class CommentManagerImpl implements CommentManager {
         if (baseModel instanceof MessageModel messageModel) {
             CommentSidePanel commentSidePanel = new CommentSidePanel(commentType);
             final CommentGuiDTO commentGuiDto = new CommentGuiDTO(mainFrame, commentType, baseModel, commentSidePanel,
-                                                                  new TransparentTopPanel(), new JPanel(), new JPanel());
+                                                                  new TransparentTopPanel(), new CustomContentContainer(), new JPanel());
             CommentMainPanel commentPanel = new CommentMainPanel(commentGuiDto);
             commentPanel.setLayoutManager();
             commentPanel.setupSidePanel(baseModel);
             commentPanel.addComponents();
             commentPanel.addContext();
             commentPanel.setBorder(new LineBorder(Color.PINK, 2));
+            commentPanel.paintChatBubble();
             this.addCommentPanelToMainChatPanel(commentPanel, commentType);
+            mainFrame.revalidate();
+            mainFrame.repaint();
         }
     }
 
