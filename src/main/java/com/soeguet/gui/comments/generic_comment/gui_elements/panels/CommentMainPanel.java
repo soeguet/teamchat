@@ -1,9 +1,9 @@
-package com.soeguet.gui.comments.generic_comment.gui_elements;
+package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
 import com.soeguet.gui.comments.generic_comment.dto.CommentGuiDTO;
+import com.soeguet.gui.comments.generic_comment.gui_elements.textpane.CustomTextPane;
 import com.soeguet.gui.comments.generic_comment.util.Side;
 import com.soeguet.gui.comments.generic_comment.util.SideHandler;
-import com.soeguet.gui.comments.util.WrapEditorKit;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.BaseModel;
 import net.miginfocom.swing.MigLayout;
@@ -35,7 +35,7 @@ public class CommentMainPanel extends JPanel {
 
      @see JPanel
      */
-    private final TransparentPanel topContainer;
+    private final TransparentTopPanel topContainer;
     /**
      The main container panel will be used for the side panel as well as the content container.
      */
@@ -46,6 +46,7 @@ public class CommentMainPanel extends JPanel {
     private final JPanel contentContainer;
     private int layeredPanelWidth = 0;
     private int layeredPanelHeight = 0;
+    private JTextPane jTextPane;
 
     public CommentMainPanel(CommentGuiDTO commentGuiDTO) {
 
@@ -103,6 +104,7 @@ public class CommentMainPanel extends JPanel {
         this.setThisComponentLayoutManager();
 
         this.setMainContainerLayoutManager();
+        this.setMainContentContainerLayoutManager();
     }
 
     private void setThisComponentLayoutManager() {
@@ -125,6 +127,16 @@ public class CommentMainPanel extends JPanel {
                                                             // rows
                                                             "[]" + "[]"));
         }
+    }
+
+    private void setMainContentContainerLayoutManager() {
+
+        final JPanel mainContentPanel = this.getContentContainer();
+        mainContentPanel.setLayout(new MigLayout("",
+                                                 // columns
+                                                 "[fill]",
+                                                 // rows
+                                                 "[]" + "[fill]" + "[]"));
     }
 
     public Side getSide() {
@@ -156,8 +168,8 @@ public class CommentMainPanel extends JPanel {
         final JPanel mainContentPanel = this.getContentContainer();
 
         //container components
-        this.add(topPanel);
         this.add(mainPanel);
+        this.add(topPanel);
 
         switch (this.getSide()) {
             case LEFT -> {
@@ -172,7 +184,7 @@ public class CommentMainPanel extends JPanel {
                 mainPanel.setAlignmentX(1.0f);
                 mainPanel.setAlignmentY(0.5f);
                 mainPanel.add(commentSidePanel, "cell 1 0 1 2, dock east");
-                mainPanel.add(mainContentPanel, "cell 0 0 1 2, dock east");
+                mainPanel.add(mainContentPanel, "cell 0 0 1 2, dock east, grow");
                 topPanel.setAlignmentX(1.0f);
                 topPanel.setAlignmentY(0.5f);
             }
@@ -183,9 +195,7 @@ public class CommentMainPanel extends JPanel {
             @Override
             public void componentResized(final ComponentEvent e) {
 
-                System.out.println("component resized");
-                getTopContainer().setMaximumSize(new Dimension(getContentContainer().getSize().width + getSidePanel().getWidth(),
-                                                               getTopContainer().getSize().height));
+                getTopContainer().setMaximumSize(new Dimension(getContentContainer().getSize().width + getSidePanel().getWidth(), getContentContainer().getSize().height));
                 super.componentResized(e);
                 revalidate();
                 repaint();
@@ -220,19 +230,12 @@ public class CommentMainPanel extends JPanel {
 
     public void addContext() {
 
-        JTextPane jTextPane = new JTextPane();
-        jTextPane.setEditorKit(new WrapEditorKit());
-        jTextPane.setText(baseModel.getMessage());
+        jTextPane = new CustomTextPane(true);
         jTextPane.setEditable(false);
+        jTextPane.setBackground(null);
+        jTextPane.setText(baseModel.getMessage());
 
-        switch (this.getSide()) {
-            case LEFT -> {
-                this.getContentContainer().add(jTextPane, "cell 1 0, wrap");
-            }
-            case RIGHT -> {
-                this.getContentContainer().add(jTextPane, "cell 0 0, wrap");
-            }
-        }
+        this.getContentContainer().add(jTextPane);
 
         this.getTopContainer().addMouseListener(new MouseAdapter() {
 

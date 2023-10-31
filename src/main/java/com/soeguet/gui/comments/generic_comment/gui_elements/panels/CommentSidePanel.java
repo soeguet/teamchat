@@ -1,4 +1,4 @@
-package com.soeguet.gui.comments.generic_comment.gui_elements;
+package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
 import com.soeguet.gui.comments.generic_comment.util.Side;
 import com.soeguet.gui.comments.generic_comment.util.SideHandler;

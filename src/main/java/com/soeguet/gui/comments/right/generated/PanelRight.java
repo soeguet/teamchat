@@ -6,7 +6,7 @@ package com.soeguet.gui.comments.right.generated;
 
 import java.awt.event.*;
 
-import com.soeguet.gui.comments.util.CustomFormContainer;
+import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomFormContainer;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.comments.origin.CustomOriginPanel;
 import net.miginfocom.swing.MigLayout;

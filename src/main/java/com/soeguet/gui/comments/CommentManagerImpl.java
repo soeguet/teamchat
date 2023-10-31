@@ -1,9 +1,9 @@
 package com.soeguet.gui.comments;
 
 import com.soeguet.gui.comments.generic_comment.dto.CommentGuiDTO;
-import com.soeguet.gui.comments.generic_comment.gui_elements.CommentMainPanel;
-import com.soeguet.gui.comments.generic_comment.gui_elements.CommentSidePanel;
-import com.soeguet.gui.comments.generic_comment.gui_elements.TransparentPanel;
+import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CommentMainPanel;
+import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CommentSidePanel;
+import com.soeguet.gui.comments.generic_comment.gui_elements.panels.TransparentTopPanel;
 import com.soeguet.gui.comments.generic_comment.util.Side;
 import com.soeguet.gui.comments.generic_comment.util.SideHandler;
 import com.soeguet.gui.comments.interfaces.CommentInterface;
@@ -376,8 +376,8 @@ public class CommentManagerImpl implements CommentManager {
         //TEXT - RIGHT
         if (baseModel instanceof MessageModel messageModel) {
             CommentSidePanel commentSidePanel = new CommentSidePanel(commentType);
-            final CommentGuiDTO commentGuiDto = new CommentGuiDTO(mainFrame,commentType, baseModel, commentSidePanel,
-                                                                  new TransparentPanel(), new JPanel(), new JPanel());
+            final CommentGuiDTO commentGuiDto = new CommentGuiDTO(mainFrame, commentType, baseModel, commentSidePanel,
+                                                                  new TransparentTopPanel(), new JPanel(), new JPanel());
             CommentMainPanel commentPanel = new CommentMainPanel(commentGuiDto);
             commentPanel.setLayoutManager();
             commentPanel.setupSidePanel(baseModel);
