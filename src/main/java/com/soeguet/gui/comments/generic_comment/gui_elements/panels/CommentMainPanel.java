@@ -10,6 +10,7 @@ import com.soeguet.model.jackson.BaseModel;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -55,8 +56,6 @@ public class CommentMainPanel extends JPanel {
         this.baseModel = commentGuiDTO.baseModel();
         this.sidePanel = commentGuiDTO.sidePanel();
         this.topContainer = commentGuiDTO.topContainer();
-        this.topContainer.setBackground(Color.RED);
-        this.topContainer.setOpaque(true);
 
         this.customContentContainer = commentGuiDTO.customContentContainer();
         this.mainContainer = commentGuiDTO.mainContainer();
@@ -79,7 +78,7 @@ public class CommentMainPanel extends JPanel {
         return jTextPane;
     }
 
-    public void setjTextPane(final JTextPane jTextPane) {
+    public void setTextPane(final JTextPane jTextPane) {
 
         this.jTextPane = jTextPane;
     }
@@ -104,22 +103,26 @@ public class CommentMainPanel extends JPanel {
 
     private void setMainContainerLayoutManager() {
 
+        // wraps the side panel and the content container
+
         final JPanel mainPanel = this.getMainContainer();
         switch (this.getSide()) {
-            case LEFT -> mainPanel.setLayout(new MigLayout("insets 0,align left bottom",
+            case LEFT -> mainPanel.setLayout(new MigLayout("",
                                                            // columns
-                                                           "[right]" + "[fill]" + "[fill]" + "[fill]" + "[fill]",
+                                                           "[]" + "[]",
                                                            // rows
-                                                           "[]" + "[fill]" + "[]"));
+                                                           "[]" + "[]"));
             case RIGHT -> mainPanel.setLayout(new MigLayout("",
                                                             // columns
-                                                            "[grow,fill]" + "[7!]",
+                                                            "[grow]" + "[]",
                                                             // rows
                                                             "[]" + "[]"));
         }
     }
 
     private void setMainContentContainerLayoutManager() {
+
+        // wraps the text and picture content as well as the quoted comments
 
         final JPanel mainContentPanel = this.getCustomContentContainer();
         mainContentPanel.setLayout(new MigLayout("",
@@ -145,6 +148,8 @@ public class CommentMainPanel extends JPanel {
     }
 
     public void setupSidePanel(final BaseModel baseModel) {
+
+        // wraps the sender name, time and interaction button
 
         final CommentSidePanel commentSidePanel = this.getSidePanel();
 
@@ -172,27 +177,19 @@ public class CommentMainPanel extends JPanel {
         final CommentSidePanel commentSidePanel = this.getSidePanel();
         final JPanel mainContentPanel = this.getCustomContentContainer();
 
-        mainPanel.setOpaque(true);
         //container components
         this.add(mainPanel);
         this.add(topPanel);
 
         switch (this.getSide()) {
             case LEFT -> {
-                mainPanel.setAlignmentX(0.0f);
-                mainPanel.setAlignmentY(0.5f);
                 mainPanel.add(commentSidePanel, "cell 0 0 1 2, dock west");
-                mainPanel.add(mainContentPanel, "cell 1 0 1 2, dock west");
+                mainPanel.add(mainContentPanel, "cell 1 0 1 2, dock west, gapleft 5");
                 topPanel.setAlignmentX(0.0f);
-                topPanel.setAlignmentY(0.5f);
             }
             case RIGHT -> {
-                mainPanel.setAlignmentX(1.0f);
-                mainPanel.setAlignmentY(0.5f);
                 mainPanel.add(commentSidePanel, "cell 1 0 1 2, dock east");
-                mainPanel.add(mainContentPanel, "cell 0 0 1 2, dock east, grow");
-                topPanel.setAlignmentX(1.0f);
-                topPanel.setAlignmentY(0.5f);
+                mainPanel.add(mainContentPanel, "cell 0 0 1 2, dock east, gapright 5, grow");
             }
         }
 
