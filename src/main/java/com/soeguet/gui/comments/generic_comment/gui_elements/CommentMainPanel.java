@@ -13,6 +13,8 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class CommentMainPanel extends JPanel {
 
@@ -33,7 +35,7 @@ public class CommentMainPanel extends JPanel {
 
      @see JPanel
      */
-    private final JPanel topContainer;
+    private final TransparentPanel topContainer;
     /**
      The main container panel will be used for the side panel as well as the content container.
      */
@@ -42,6 +44,8 @@ public class CommentMainPanel extends JPanel {
      The content container will be used for the text and picture content as well as the quoted comments.
      */
     private final JPanel contentContainer;
+    private int layeredPanelWidth = 0;
+    private int layeredPanelHeight = 0;
 
     public CommentMainPanel(CommentGuiDTO commentGuiDTO) {
 
@@ -50,19 +54,23 @@ public class CommentMainPanel extends JPanel {
         this.baseModel = commentGuiDTO.baseModel();
         this.sidePanel = commentGuiDTO.sidePanel();
         this.topContainer = commentGuiDTO.topContainer();
+        this.topContainer.setBackground(Color.RED);
+        this.topContainer.setOpaque(true);
+
         this.contentContainer = commentGuiDTO.container();
         this.mainContainer = commentGuiDTO.mainContainer();
 
         //FIXME remove this
-        this.getSidePanel().setBorder(new LineBorder(Color.BLUE, 1));
-        this.getContainer().setBorder(new LineBorder(Color.RED, 1));
+        this.getTopContainer().setBorder(new LineBorder(Color.BLACK, 5));
+
         this.getMainContainer().setBorder(new LineBorder(Color.GREEN, 1));
-        this.getTopContainer().setBorder(new LineBorder(Color.BLACK, 3));
-    }
+        this.getSidePanel().setBorder(new LineBorder(Color.BLUE, 1));
+        this.getContentContainer().setBorder(new LineBorder(Color.RED, 1));
 
-    public BaseModel getBaseModel() {
+        // PINK -> GREEN + BLACK
+        // BLACK -> BLUE + GREEN
+        // GREEN -> RED + BLUE
 
-        return baseModel;
     }
 
     public JPanel getTopContainer() {
@@ -75,9 +83,19 @@ public class CommentMainPanel extends JPanel {
         return mainContainer;
     }
 
+    public CommentSidePanel getSidePanel() {
+
+        return sidePanel;
+    }
+
     public JPanel getContentContainer() {
 
         return contentContainer;
+    }
+
+    public BaseModel getBaseModel() {
+
+        return baseModel;
     }
 
     public void setLayoutManager() {
@@ -124,17 +142,13 @@ public class CommentMainPanel extends JPanel {
         commentSidePanel.addComponents();
     }
 
-    public CommentSidePanel getSidePanel() {
-
-        return sidePanel;
-    }
-
     public void addComponents() {
 
         /*
         cell 1 1 1 2
         colum 1, row 1, span col 1, span row 2
          */
+
         // init setup
         final JPanel mainPanel = this.getMainContainer();
         final JPanel topPanel = this.getTopContainer();
@@ -142,9 +156,8 @@ public class CommentMainPanel extends JPanel {
         final JPanel mainContentPanel = this.getContentContainer();
 
         //container components
-        this.add(mainPanel);
-        mainPanel.setBackground(Color.red);
         this.add(topPanel);
+        this.add(mainPanel);
 
         switch (this.getSide()) {
             case LEFT -> {
@@ -160,27 +173,25 @@ public class CommentMainPanel extends JPanel {
                 mainPanel.setAlignmentY(0.5f);
                 mainPanel.add(commentSidePanel, "cell 1 0 1 2, dock east");
                 mainPanel.add(mainContentPanel, "cell 0 0 1 2, dock east");
-
                 topPanel.setAlignmentX(1.0f);
                 topPanel.setAlignmentY(0.5f);
             }
         }
 
-        //addition -> main panel
-//        switch (this.getSide()) {
-//            case LEFT -> {
-//                mainPanel.add(commentSidePanel, "cell 0 0 1 2, dock west");
-//                mainPanel.add(mainContentPanel, "cell 1 0 1 2, dock west");
-//            }
-//            case RIGHT -> {
-//                mainPanel.add(commentSidePanel, "cell 1 0 1 2, dock east");
-//                mainPanel.add(mainContentPanel, "cell 0 0 1 2, dock east");
-//            }
-//        }
+        this.getContentContainer().addComponentListener(new ComponentAdapter() {
 
+            @Override
+            public void componentResized(final ComponentEvent e) {
+
+                System.out.println("component resized");
+                getTopContainer().setMaximumSize(new Dimension(getContentContainer().getSize().width + getSidePanel().getWidth(),
+                                                               getTopContainer().getSize().height));
+                super.componentResized(e);
+                revalidate();
+                repaint();
+            }
+        });
     }
-    private int layeredPanelWidth = 0;
-    private int layeredPanelHeight = 0;
 
     public MainFrameGuiInterface getMainFrame() {
 
@@ -216,17 +227,22 @@ public class CommentMainPanel extends JPanel {
 
         switch (this.getSide()) {
             case LEFT -> {
-                this.getMainContainer().add(jTextPane, "cell 1 0, wrap");
+                this.getContentContainer().add(jTextPane, "cell 1 0, wrap");
             }
             case RIGHT -> {
-                this.getContainer().add(jTextPane, "cell 0 0, wrap");
+                this.getContentContainer().add(jTextPane, "cell 0 0, wrap");
             }
         }
-    }
 
-    public JPanel getContainer() {
+        this.getTopContainer().addMouseListener(new MouseAdapter() {
 
-        return contentContainer;
+            @Override
+            public void mouseEntered(final MouseEvent e) {
+
+                System.out.println("mouse entered");
+                super.mouseEntered(e);
+            }
+        });
     }
 
     public JPanel getLayeredContainer() {

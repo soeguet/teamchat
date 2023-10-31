@@ -382,7 +382,7 @@ public class CommentManagerImpl implements CommentManager {
             commentPanel.setLayoutManager();
             commentPanel.setupSidePanel(baseModel);
             commentPanel.addComponents();
-//            commentPanel.addContext();
+            commentPanel.addContext();
             commentPanel.setBorder(new LineBorder(Color.PINK, 2));
             this.addCommentPanelToMainChatPanel(commentPanel, commentType);
         }
