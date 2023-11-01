@@ -8,15 +8,5 @@ public interface CommentManager {
 
     CommentTypeEnum categorizeMessageFromSocket(final BaseModel baseModel);
 
-    void setupLinkRightSite(final BaseModel messageModel);
-
-    void setupPicturesRightSide(final BaseModel messageModel, final String nickname);
-
-    //LEFT SIDE
-
-    void setupPicturesLeftSide(final BaseModel messageModel, final String nickname);
-
-    void setupLinkLeftSide(BaseModel baseModel);
-
     void setupMessage(MessageHandlerDTO messageHandlerDTO);
 }

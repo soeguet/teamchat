@@ -10,7 +10,7 @@ import com.soeguet.gui.comments.reaction_panel.dtos.ReactionPanelDTO;
 import com.soeguet.gui.comments.reaction_sticker.ReactionStickerImpl;
 import com.soeguet.gui.comments.right.generated.PanelRight;
 import com.soeguet.gui.comments.util.CommentTypeEnum;
-import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomFormContainer;
+import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomMainWrapperContainer;
 import com.soeguet.gui.comments.util.LinkWrapEditorKit;
 import com.soeguet.gui.comments.util.QuotePanelImpl;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
@@ -323,9 +323,9 @@ public class PanelRightImpl extends PanelRight implements CommentInterface, Bord
     }
 
     @Override
-    public CustomFormContainer getFormContainer() {
+    public CustomMainWrapperContainer getFormContainer() {
 
-        return (CustomFormContainer) form_container;
+        return (CustomMainWrapperContainer) form_container;
     }
 
     /**

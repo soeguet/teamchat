@@ -3,7 +3,7 @@ package com.soeguet.gui.comments.left;
 import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.left.generated.PanelLeft;
 import com.soeguet.gui.comments.util.CommentTypeEnum;
-import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomFormContainer;
+import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomMainWrapperContainer;
 import com.soeguet.gui.comments.util.QuotePanelImpl;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.UserInteraction;
@@ -175,7 +175,7 @@ public class PanelLeftImpl extends PanelLeft implements CommentInterface {
     }
 
     @Override
-    public CustomFormContainer getFormContainer() {
+    public CustomMainWrapperContainer getFormContainer() {
 
         return null;
     }

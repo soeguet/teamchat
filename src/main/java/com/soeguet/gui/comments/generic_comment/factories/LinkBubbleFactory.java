@@ -20,6 +20,7 @@ public class LinkBubbleFactory {
 
         CustomLinkPanel customLinkPane = new CustomLinkPanel(baseModel);
         customLinkPane.setLayoutManager();
+        customLinkPane.addQuoteToLinkPanel();
         customLinkPane.addLinkToPanel();
         customLinkPane.addLinkComment();
 

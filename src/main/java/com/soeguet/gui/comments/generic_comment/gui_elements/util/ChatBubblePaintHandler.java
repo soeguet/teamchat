@@ -49,7 +49,7 @@ public class ChatBubblePaintHandler {
 
     private void setupLeftChatBubble(final CustomContentContainer container) {
 
-        container.setCustomPaint(grphcs -> {
+        container.overrideCustomPaint(grphcs -> {
 
             final int containerWidth = container.getWidth();
             final int containerHeight = container.getHeight();
@@ -77,7 +77,7 @@ public class ChatBubblePaintHandler {
 
     private void setupRightChatBubble(final CustomContentContainer container) {
 
-        container.setCustomPaint(grphcs -> {
+        container.overrideCustomPaint(grphcs -> {
 
             final int containerWidth = container.getWidth();
             final int containerHeight = container.getHeight();

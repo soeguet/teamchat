@@ -6,7 +6,7 @@ package com.soeguet.gui.comments.right.generated;
 
 import java.awt.event.*;
 
-import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomFormContainer;
+import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomMainWrapperContainer;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.comments.origin.CustomOriginPanel;
 import net.miginfocom.swing.MigLayout;
@@ -39,38 +39,6 @@ public abstract class PanelRight extends CustomOriginPanel {
 	protected abstract void actionLabelMouseEntered(MouseEvent e);
 	protected abstract void actionLabelMouseClicked(MouseEvent e);
 	protected abstract void actionLabelMouseExited(MouseEvent e);
-
-	private void createUIComponents() {
-
-		form_container = new CustomFormContainer() {
-
-
-//			@Override
-//			protected void paintComponent(Graphics grphcs) {
-//
-//				int rounding = 20;
-//				Graphics2D g2d = (Graphics2D) grphcs;
-//
-//				final Color backgroundColor = Color.WHITE;
-//
-//				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//				g2d.setColor(backgroundColor);
-//				g2d.fillRoundRect(0, 0, getWidth() - 13, getHeight() - 1, rounding, rounding);
-//
-//				g2d.setColor(borderColor);
-//				g2d.drawRoundRect(0, 0, getWidth() - 13, getHeight() - 1, rounding, rounding);
-//
-//				g2d.setColor(backgroundColor);
-//				g2d.fillPolygon(new int[]{getWidth() - 1, getWidth() - 28, getWidth() - 13},
-//						new int[]{getHeight() - 1, getHeight() - 1, getHeight() - 13}, 3);
-//
-//				g2d.setColor(borderColor);
-//				g2d.drawLine(getWidth() - 30, getHeight() - 1, getWidth(), getHeight() - 1);
-//				g2d.drawLine(getWidth() - 13, getHeight() - 13, getWidth(), getHeight());
-//			}
-
-		};
-	}
 
 	public JLayeredPane getLayeredContainer() {
 		return this.form_layeredContainer;
@@ -117,7 +85,6 @@ public abstract class PanelRight extends CustomOriginPanel {
 	private void initComponents() {
 		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
 		// Generated using JFormDesigner non-commercial license
-		createUIComponents();
 
 		this.form_layeredContainer = new JLayeredPane();
 		this.form_hSpacer1 = new JPanel(null);

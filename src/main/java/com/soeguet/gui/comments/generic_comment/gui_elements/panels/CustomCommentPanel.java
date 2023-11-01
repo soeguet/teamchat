@@ -1,13 +1,11 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
-import com.soeguet.gui.comments.generic_comment.dto.CommentGuiDTO;
 import com.soeguet.gui.comments.generic_comment.factories.LinkBubbleFactory;
 import com.soeguet.gui.comments.generic_comment.factories.PictureBubbleFactory;
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpane.CustomPicturePane;
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpane.CustomTextPane;
 import com.soeguet.gui.comments.generic_comment.gui_elements.util.ChatBubblePaintHandler;
 import com.soeguet.gui.comments.generic_comment.util.Side;
-import com.soeguet.gui.comments.generic_comment.util.SideHandler;
 import com.soeguet.gui.comments.util.CommentTypeEnum;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.BaseModel;
@@ -15,56 +13,48 @@ import com.soeguet.model.jackson.MessageModel;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
-public class CommentMainPanel extends JPanel {
+public class CustomCommentPanel extends JPanel {
 
     // variables -- start
-    private final MainFrameGuiInterface mainFrame;
+    private MainFrameGuiInterface mainFrame;
     /**
      Represents a side of the comment - LEFT or RIGHT.
      */
-    private final Side side;
+    private Side side;
     /**
      Represents the main information Model of this app.
 
      @see BaseModel
      */
-    private final BaseModel baseModel;
-    private final CommentSidePanel sidePanel;
+    private BaseModel baseModel;
+    private CommentTypeEnum commentType;
+    private CommentSidePanel sidePanel;
     /**
      The top level container will be used for MouseEvents as well as reaction emojis.
 
      @see JPanel
      */
-    private final TransparentTopPanel topContainer;
+    private TransparentTopPanel topContainer;
     /**
      The main container panel will be used for the side panel as well as the content container.
      */
-    private final JPanel mainContainer;
+    private CustomMainWrapperContainer customMainWrapperContainer;
     /**
      The content container will be used for the text and picture content as well as the quoted comments.
      */
-    private final CustomContentContainer customContentContainer;
+    private CustomContentContainer customContentContainer;
     private JTextPane jTextPane;
     private Color borderColor;
-    private final CommentTypeEnum commentType;
+
     // variables -- end
-
     // constructors -- start
-    public CommentMainPanel(CommentGuiDTO commentGuiDTO) {
+    public CustomCommentPanel() {
 
-        this.mainFrame = commentGuiDTO.mainFrame();
-        this.commentType = commentGuiDTO.commentType();
-        this.side = new SideHandler().determineSide(commentGuiDTO.commentType());
-        this.baseModel = commentGuiDTO.baseModel();
-        this.sidePanel = commentGuiDTO.sidePanel();
-        this.topContainer = commentGuiDTO.topContainer();
-
-        this.customContentContainer = commentGuiDTO.customContentContainer();
-        this.mainContainer = commentGuiDTO.mainContainer();
     }
     // constructors -- end
 
@@ -73,7 +63,6 @@ public class CommentMainPanel extends JPanel {
         this.setThisComponentLayoutManager();
 
         this.setMainContainerLayoutManager();
-        this.setMainContentContainerLayoutManager();
     }
 
     private void setThisComponentLayoutManager() {
@@ -85,44 +74,15 @@ public class CommentMainPanel extends JPanel {
 
         // wraps the side panel and the content container
 
-        final JPanel mainPanel = this.getMainContainer();
-        switch (this.getSide()) {
-            case LEFT -> mainPanel.setLayout(new MigLayout("",
-                                                           // columns
-                                                           "[][]",
-                                                           // rows
-                                                           "[][]"));
-            case RIGHT -> mainPanel.setLayout(new MigLayout("",
-                                                            // columns
-                                                            "[grow][]",
-                                                            // rows
-                                                            "[][]"));
-        }
-    }
+        /*
 
-    private void setMainContentContainerLayoutManager() {
+        SCHEMA: MAIN CONTAINER -- side panel and content container
 
-        // wraps the text and picture content as well as the quoted comments
+        ">>" [side panel][content container] "<<"
 
-        final JPanel mainContentPanel = this.getCustomContentContainer();
+         */
 
-        mainContentPanel.setLayout(new MigLayout("",
-                                                 // columns
-                                                 "[fill,grow]",
-                                                 // rows
-                                                 "[][fill][]"));
-    }
 
-    public void setupSidePanel(final BaseModel baseModel) {
-
-        // wraps the sender name, time and interaction button
-
-        final CommentSidePanel commentSidePanel = this.getSidePanel();
-
-        commentSidePanel.getNameLabel().setText(baseModel.getSender());
-        commentSidePanel.getTimeLabel().setText("10:00");
-        commentSidePanel.setLayoutManager();
-        commentSidePanel.addComponents();
     }
 
     public void addComponents() {
@@ -133,7 +93,7 @@ public class CommentMainPanel extends JPanel {
          */
 
         // init setup
-        final JPanel mainPanel = this.getMainContainer();
+        final JPanel mainPanel = this.getCustomMainWrapperContainer();
         final JPanel topPanel = this.getTopContainer();
         final CommentSidePanel commentSidePanel = this.getSidePanel();
         final JPanel mainContentPanel = this.getCustomContentContainer();
@@ -170,7 +130,7 @@ public class CommentMainPanel extends JPanel {
 
         //setup
         final CustomContentContainer contentContainer = this.getCustomContentContainer();
-        final JPanel mainPanelContainer = this.getMainContainer();
+        final JPanel mainPanelContainer = this.getCustomMainWrapperContainer();
 
         switch (commentType) {
 
@@ -190,10 +150,12 @@ public class CommentMainPanel extends JPanel {
 
                 switch (this.getSide()) {
                     case LEFT -> {
-                        contentContainer.add(pictureLabel, "cell 0 0, wrap, gapleft 15, gaptop 10, gapright 5");
+                        contentContainer.add(pictureLabel,
+                                             "cell 0 0, wrap, gapleft 15, gaptop 10, " + "gapright 5, " + "grow 1.1");
                     }
                     case RIGHT -> {
-                        contentContainer.add(pictureLabel, "cell 0 0, wrap, gapleft 3, gapright 15, gaptop 10");
+                        contentContainer.add(pictureLabel,
+                                             "cell 0 0, wrap, gapleft 3, gapright 15, " + "gaptop 10, " + "grow 1.1");
                     }
                 }
                 contentContainer.setSize(pictureLabel.getSize().width * 2, pictureLabel.getSize().height * 2);
@@ -210,15 +172,14 @@ public class CommentMainPanel extends JPanel {
                 CustomLinkPanel customLinkPanel = new LinkBubbleFactory(baseModel).create();
                 switch (this.getSide()) {
                     case LEFT -> {
-                        contentContainer.add(customLinkPanel, "cell 0 0, wrap, gapleft 15, gaptop 10, gapright 5");
+                        contentContainer.add(customLinkPanel, "cell 0 0, gapleft 15, gaptop 10, gapright 5");
                     }
                     case RIGHT -> {
-                        contentContainer.add(customLinkPanel, "cell 0 0, wrap, gapleft 3, gapright 15, gaptop 10");
+                        contentContainer.add(customLinkPanel, "cell 0 0, gapleft 3, gapright 15, gaptop 10");
                     }
                 }
             }
         }
-
 
     }
 
@@ -228,10 +189,10 @@ public class CommentMainPanel extends JPanel {
 
         switch (this.getSide()) {
             case LEFT -> {
-                layoutConstraints = "gapleft 15";
+                layoutConstraints = "gapleft 15, grow 1.0";
             }
             case RIGHT -> {
-                layoutConstraints = "gapright 15";
+                layoutConstraints = "gapright 15, grow 1.0";
             }
             default -> throw new IllegalStateException("Unexpected value: %s".formatted(this.getSide()));
         }
@@ -247,10 +208,25 @@ public class CommentMainPanel extends JPanel {
         chatBubblePaintHandler.setupChatBubble();
     }
 
+    public void setSide() {
+
+        switch (this.getCommentType()) {
+
+            case LEFT_TEXT, LEFT_PICTURE, LEFT_LINK -> this.side = Side.LEFT;
+
+            case RIGHT_TEXT, RIGHT_PICTURE, RIGHT_LINK -> this.side = Side.RIGHT;
+        }
+    }
+
     // getter & setter -- start
     public BaseModel getBaseModel() {
 
         return baseModel;
+    }
+
+    public void setBaseModel(final BaseModel baseModel) {
+
+        this.baseModel = baseModel;
     }
 
     public Color getBorderColor() {
@@ -263,9 +239,34 @@ public class CommentMainPanel extends JPanel {
         this.borderColor = borderColor;
     }
 
+    public CommentTypeEnum getCommentType() {
+
+        return commentType;
+    }
+
+    public void setCommentType(final CommentTypeEnum commentType) {
+
+        this.commentType = commentType;
+    }
+
     public CustomContentContainer getCustomContentContainer() {
 
         return customContentContainer;
+    }
+
+    public void setCustomContentContainer(final CustomContentContainer customContentContainer) {
+
+        this.customContentContainer = customContentContainer;
+    }
+
+    public CustomMainWrapperContainer getCustomMainWrapperContainer() {
+
+        return customMainWrapperContainer;
+    }
+
+    public void setCustomMainWrapperContainer(final CustomMainWrapperContainer customMainWrapperContainer) {
+
+        this.customMainWrapperContainer = customMainWrapperContainer;
     }
 
     public JPanel getLayeredContainer() {
@@ -273,14 +274,14 @@ public class CommentMainPanel extends JPanel {
         return topContainer;
     }
 
-    public JPanel getMainContainer() {
-
-        return mainContainer;
-    }
-
     public MainFrameGuiInterface getMainFrame() {
 
         return mainFrame;
+    }
+
+    public void setMainFrame(final MainFrameGuiInterface mainFrame) {
+
+        this.mainFrame = mainFrame;
     }
 
     public Side getSide() {
@@ -293,14 +294,29 @@ public class CommentMainPanel extends JPanel {
         return sidePanel;
     }
 
+    public void setSidePanel(final CommentSidePanel sidePanel) {
+
+        this.sidePanel = sidePanel;
+    }
+
     public JPanel getTopContainer() {
 
         return topContainer;
     }
 
+    public void setTopContainer(final TransparentTopPanel topContainer) {
+
+        this.topContainer = topContainer;
+    }
+
     public JTextPane getjTextPane() {
 
         return jTextPane;
+    }
+
+    public void setjTextPane(final JTextPane jTextPane) {
+
+        this.jTextPane = jTextPane;
     }
 
     public void setTextPane(final JTextPane jTextPane) {

@@ -1,7 +1,7 @@
 package com.soeguet.gui.comments.interfaces;
 
 import com.soeguet.gui.comments.util.CommentTypeEnum;
-import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomFormContainer;
+import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomMainWrapperContainer;
 import com.soeguet.model.UserInteraction;
 import com.soeguet.model.jackson.BaseModel;
 
@@ -33,7 +33,7 @@ public interface CommentInterface {
 
     int getHeight();
 
-    CustomFormContainer getFormContainer();
+    CustomMainWrapperContainer getFormContainer();
 
     Color getBorderColor();
 

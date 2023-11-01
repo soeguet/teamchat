@@ -1,9 +1,7 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
-import com.soeguet.gui.comments.generic_comment.gui_elements.interfaces.ContentInterface;
 import com.soeguet.gui.comments.generic_comment.util.Side;
 import com.soeguet.gui.comments.generic_comment.util.SideHandler;
-import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.util.CommentTypeEnum;
 import net.miginfocom.swing.MigLayout;
 
@@ -29,6 +27,7 @@ public class CommentSidePanel extends JPanel {
 
         this.componentConfig();
     }
+    // constructors -- end
 
     private void componentConfig() {
 
@@ -46,49 +45,8 @@ public class CommentSidePanel extends JPanel {
 
         //button
         final JButton interactionButton = this.getInteractionButton();
-        interactionButton.setBorder(BorderFactory.createEmptyBorder());
+//        interactionButton.setBorder(BorderFactory.createEmptyBorder());
         interactionButton.setBackground(null);
-    }
-
-    public JLabel getTimeLabel() {
-
-        return timeLabel;
-    }
-
-    public JLabel getNameLabel() {
-
-        return nameLabel;
-    }
-
-    public void setNameLabel(final JLabel nameLabel) {
-
-        this.nameLabel = nameLabel;
-    }
-
-    public JButton getInteractionButton() {
-
-        return interactionButton;
-    }
-
-    public void setInteractionButton(final JButton interactionButton) {
-
-        this.interactionButton = interactionButton;
-    }
-
-    public void setTimeLabel(final JLabel timeLabel) {
-
-        this.timeLabel = timeLabel;
-    }
-    // constructors -- end
-
-    public void setLayoutManager() {
-
-        setLayout(new MigLayout("",
-                                // columns
-                                "[]" + "[]",
-                                // rows
-                                "push[]" + "[]"));
-
     }
 
     public void addComponents() {
@@ -110,4 +68,63 @@ public class CommentSidePanel extends JPanel {
             }
         }
     }
+
+    public void setSidePanelLayoutManager() {
+
+        /*
+
+        SCHEMA: SIDE PANEL
+
+        left
+        [[name][name]]
+        [button][time]
+
+        right
+        [[name][name]]
+        [time][button]
+
+        ___
+        [ ">>"SIDEPANEL"<<" [MAIN CONTENT PANEL] ]
+
+         */
+
+        setLayout(new MigLayout("",
+                                // columns
+                                "[][]",
+                                // rows
+                                "push[][]"));
+
+    }
+
+    // getter & setter -- start
+    public JButton getInteractionButton() {
+
+        return interactionButton;
+    }
+
+    public void setInteractionButton(final JButton interactionButton) {
+
+        this.interactionButton = interactionButton;
+    }
+
+    public JLabel getNameLabel() {
+
+        return nameLabel;
+    }
+
+    public void setNameLabel(final JLabel nameLabel) {
+
+        this.nameLabel = nameLabel;
+    }
+
+    public JLabel getTimeLabel() {
+
+        return timeLabel;
+    }
+
+    public void setTimeLabel(final JLabel timeLabel) {
+
+        this.timeLabel = timeLabel;
+    }
+    // getter & setter -- end
 }
