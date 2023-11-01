@@ -205,6 +205,6 @@ public class NotificationImpl extends Notification implements NotificationInterf
 
         form_notificationMainMessage.setText("[picture]\n");
 
-        replaceEmojiTextToIconOnTextPane(messageModel.getMessage());
+        replaceEmojiTextToIconOnTextPane(messageModel.getDescription());
     }
 }

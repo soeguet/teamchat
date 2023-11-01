@@ -9,6 +9,7 @@ public class CustomLinkCommentTextPane extends CustomTextPane {
 
     // variables -- start
     private final MessageModel messageModel;
+    private LinkTransferDTO linkCommentRecord;
     // variables -- end
 
     // constructors -- start
@@ -31,11 +32,17 @@ public class CustomLinkCommentTextPane extends CustomTextPane {
         }
     }
 
+    public boolean setUp() {
+
+        linkCommentRecord = extractLinkFromMessageModel(messageModel);
+
+        return linkCommentRecord.comment().isEmpty();
+    }
+
     // overrides -- start
     @Override
     public void create() {
 
-        LinkTransferDTO linkCommentRecord = extractLinkFromMessageModel(this.messageModel);
         super.setText(linkCommentRecord.comment());
     }
     // overrides -- end

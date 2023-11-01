@@ -270,14 +270,7 @@ public class CustomOriginPanel extends JPanel {
         return false;
     }
 
-    /**
-     Sets the user message in the text pane based on the given base model.
 
-     @param baseModel
-     The base model containing the information for setting up the user message. (NonNull)
-
-     @return The JTextPane containing the user message.
-     */
     protected JTextPane setUserMessage(BaseModel baseModel) {
 
         JTextPane actualTextPane = createTextPane();
@@ -285,7 +278,10 @@ public class CustomOriginPanel extends JPanel {
 
         addRightClickOptionToPanel(actualTextPane);
 
-        new EmojiHandler(this.mainFrame).replaceEmojiDescriptionWithActualImageIcon(actualTextPane, baseModel.getMessage());
+        if (baseModel instanceof MessageModel messageModel) {
+
+            new EmojiHandler(this.mainFrame).replaceEmojiDescriptionWithActualImageIcon(actualTextPane, messageModel.getMessage());
+        }
 
         return actualTextPane;
     }
@@ -399,16 +395,19 @@ public class CustomOriginPanel extends JPanel {
 
         JTextPane actualTextPane = new JTextPane();
 
-        if (baseModel.getMessage().isBlank()) {
+        if (baseModel instanceof PictureModel pictureModel) {
 
-            //remove spacing if the message is black, which was reserved for the message
-            return null;
+            if (pictureModel.getDescription().isBlank()) {
 
-        } else {
+                //remove spacing if the message is black, which was reserved for the message
+                return null;
 
-            actualTextPane.setText(baseModel.getMessage());
-            actualTextPane.setEditable(false);
-            actualTextPane.setOpaque(false);
+            } else {
+
+                actualTextPane.setText(pictureModel.getDescription());
+                actualTextPane.setEditable(false);
+                actualTextPane.setOpaque(false);
+            }
         }
 
         return actualTextPane;

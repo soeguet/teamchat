@@ -26,13 +26,13 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
 
     private final Point offset = new Point();
     private final MainFrameGuiInterface mainFrame;
-    private final BaseModel messageModel;
+    private final BaseModel baseModel;
     private final Border border = this.getBorder();
 
-    public ReplyPanelImpl(MainFrameGuiInterface mainFrame, BaseModel messageModel) {
+    public ReplyPanelImpl(MainFrameGuiInterface mainFrame, BaseModel baseModel) {
 
         this.mainFrame = mainFrame;
-        this.messageModel = messageModel;
+        this.baseModel = baseModel;
     }
 
     @Override
@@ -40,9 +40,13 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
 
         getMainQuoteTextField().setEditorKit(new WrapEditorKit());
 
-        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(getMainQuoteTextField(), messageModel.getMessage());
-        form_quotedSender.setText(messageModel.getSender());
-        form_quotedTime.setText(messageModel.getTime());
+        if (baseModel instanceof MessageModel messageModel) {
+
+            new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(getMainQuoteTextField(), messageModel.getMessage());
+            form_quotedSender.setText(baseModel.getSender());
+            form_quotedTime.setText(baseModel.getTime());
+        }
+
     }
 
     @Override
@@ -180,9 +184,14 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
         sendModel.setQuotedMessageText(this.getReplyTextPane().getText());
         sendModel.setQuotedMessageTime(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
         //this client
-        sendModel.setSender(this.messageModel.getSender());
-        sendModel.setMessage(messageModel.getMessage());
-        sendModel.setTime(messageModel.getTime());
+        sendModel.setSender(this.baseModel.getSender());
+
+        if (baseModel instanceof MessageModel messageModel) {
+
+            sendModel.setMessage(messageModel.getMessage());
+        }
+
+        sendModel.setTime(baseModel.getTime());
 
         try {
 

@@ -1,5 +1,5 @@
 # TeamChat
-### v1.0.6 - reverted back to Gradle since 8.4 -- partial JDK-21 support was announced
+### v1.0.7 - reverted back to Gradle since 8.4 -- partial JDK-21 support was announced
 
 <div style="text-align: center;">
 <img src="pictures/img.png" alt="img" height="600"/>

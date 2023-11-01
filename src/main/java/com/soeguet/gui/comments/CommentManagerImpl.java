@@ -22,6 +22,7 @@ import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.main_panel.dtos.MessageHandlerDTO;
 import com.soeguet.model.MessageTypes;
 import com.soeguet.model.jackson.BaseModel;
+import com.soeguet.model.jackson.LinkModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
 
@@ -122,6 +123,10 @@ public class CommentManagerImpl implements CommentManager {
                 }
             }
 
+            case LinkModel link ->{
+
+                throw new RuntimeException("LinkModel not supported yet");
+            }
         }
     }
 

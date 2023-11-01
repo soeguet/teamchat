@@ -12,6 +12,7 @@ import com.soeguet.gui.notification_panel.interfaces.NotificationDisplayInterfac
 import com.soeguet.gui.notification_panel.interfaces.NotificationInterface;
 import com.soeguet.gui.notification_panel.interfaces.NotificationStatusHandlerInterface;
 import com.soeguet.model.jackson.BaseModel;
+import com.soeguet.model.jackson.LinkModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
 import com.soeguet.util.NotificationStatus;
@@ -242,16 +243,21 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
 
                         notificationDisplayInterface = new NotificationDisplayLinux();
                         notificationDisplayInterface.displayNotification(picture.getSender(),
-                                                                         "[picture]" + System.lineSeparator() + picture.getMessage());
+                                                                         "[picture]" + System.lineSeparator() + picture.getDescription());
                     }
 
                     case "Windows 10", "WINDOWS_NT" -> {
 
                         notificationDisplayInterface = new NotificationDisplayWindows();
                         notificationDisplayInterface.displayNotification(picture.getSender(),
-                                                                         "[picture]" + System.lineSeparator() + picture.getMessage());
+                                                                         "[picture]" + System.lineSeparator() + picture.getDescription());
                     }
                 }
+            }
+
+            case LinkModel link ->{
+
+                throw new RuntimeException("LinkModel not supported yet");
             }
         }
     }

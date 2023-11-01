@@ -45,14 +45,20 @@ public class CustomLinkPanel extends JPanel {
     public void addLinkComment() {
 
         CustomLinkCommentTextPane customTextPane = new CustomLinkCommentTextPane(true, messageModel);
-        customTextPane.create();
 
-        if (!customTextPane.getText().isEmpty()) {
+        // if there is no comment to the link -> return
+        if (!customTextPane.setUp()) {
+
+            customTextPane.create();
             this.add(customTextPane, "cell 0 2, growy");
         }
     }
 
     public void addQuoteToLinkPanel() {
+
+        if (messageModel.getQuotedMessageText() == null) {
+            return;
+        }
 
         CustomQuotePanel customQuotePanel = new CustomQuotePanel(messageModel);
 

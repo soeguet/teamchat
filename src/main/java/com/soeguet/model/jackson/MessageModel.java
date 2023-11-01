@@ -2,43 +2,19 @@ package com.soeguet.model.jackson;
 
 public non-sealed class MessageModel extends BaseModel {
 
-    private String quotedMessageSender;
-    private String quotedMessageTime;
-    private String quotedMessageText;
+    // variables -- start
+    protected String message;
+    // variables -- end
 
-    public String getQuotedMessageSender() {
+    // getter & setter -- start
+    public String getMessage() {
 
-        return quotedMessageSender;
+        return message;
     }
 
-    public void setQuotedMessageSender(final String quotedMessageSender) {
+    public void setMessage(final String message) {
 
-        this.quotedMessageSender = quotedMessageSender;
+        this.message = message;
     }
-
-    public String getQuotedMessageTime() {
-
-        return quotedMessageTime;
-    }
-
-    public void setQuotedMessageTime(final String quotedMessageTime) {
-
-        this.quotedMessageTime = quotedMessageTime;
-    }
-
-    public String getQuotedMessageText() {
-
-        return quotedMessageText;
-    }
-
-    public void setQuotedMessageText(final String quotedMessageText) {
-
-        this.quotedMessageText = quotedMessageText;
-    }
-
-    @Override
-    public String toString() {
-
-        return "MessageModel{" + "quotedMessageSender='" + quotedMessageSender + '\'' + ", quotedMessageTime='" + quotedMessageTime + '\'' + ", " + "quotedMessageText='" + quotedMessageText + '\'' + ", id=" + id + ", userInteractions=" + userInteractions + ", localIp='" + localIp + '\'' + ", sender='" + sender + '\'' + ", time='" + time + '\'' + ", message='" + message + '\'' + '}';
-    }
+    // getter & setter -- end
 }

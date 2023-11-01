@@ -4,21 +4,34 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.soeguet.model.UserInteraction;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "messageType")
-@JsonSubTypes({@JsonSubTypes.Type(value = MessageModel.class, name = "text"), @JsonSubTypes.Type(value = PictureModel.class, name = "image")})
-public abstract sealed class BaseModel permits MessageModel, PictureModel {
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "subclass")
+@JsonSubTypes({@JsonSubTypes.Type(value = MessageModel.class, name = "text"), @JsonSubTypes.Type(value =
+        PictureModel.class, name = "image"), @JsonSubTypes.Type(value = LinkModel.class, name = "link")})
+public abstract sealed class BaseModel permits LinkModel, MessageModel, PictureModel {
 
-    Long id;
-    List<UserInteraction> userInteractions;
-    String localIp;
-    String sender;
-    String time;
-    String message;
-    private byte messageType;
+    // variables -- start
+    protected Long id;
+    protected String subclass;
+    protected byte messageType;
+    protected List<UserInteraction> userInteractions;
+    protected String sender;
+    protected String time;
+    protected String quotedMessageSender;
+    protected String quotedMessageTime;
+    protected String quotedMessageText;
+    // variables -- end
 
+    // overrides -- start
+    @Override
+    public String toString() {
+
+        return "BaseModel{" + "id=" + id + ", subclass='" + subclass + '\'' + ", messageType=" + messageType + ", " + "userInteractions=" + userInteractions + ", sender='" + sender + '\'' + ", time='" + time + '\'' + ", " + "quotedMessageSender='" + quotedMessageSender + '\'' + ", quotedMessageTime='" + quotedMessageTime + '\'' + ", quotedMessageText='" + quotedMessageText + '\'' + '}';
+    }
+    // overrides -- end
+
+    // getter & setter -- start
     public Long getId() {
 
         return id;
@@ -39,30 +52,34 @@ public abstract sealed class BaseModel permits MessageModel, PictureModel {
         this.messageType = messageType;
     }
 
-    public List<UserInteraction> getUserInteractions() {
+    public String getQuotedMessageSender() {
 
-        //lazy initialization
-        if (userInteractions == null) {
-
-            userInteractions = new ArrayList<>();
-        }
-
-        return userInteractions;
+        return quotedMessageSender;
     }
 
-    public void setUserInteractions(final List<UserInteraction> userInteractions) {
+    public void setQuotedMessageSender(final String quotedMessageSender) {
 
-        this.userInteractions = userInteractions;
+        this.quotedMessageSender = quotedMessageSender;
     }
 
-    public String getLocalIp() {
+    public String getQuotedMessageText() {
 
-        return localIp;
+        return quotedMessageText;
     }
 
-    public void setLocalIp(final String localIp) {
+    public void setQuotedMessageText(final String quotedMessageText) {
 
-        this.localIp = localIp;
+        this.quotedMessageText = quotedMessageText;
+    }
+
+    public String getQuotedMessageTime() {
+
+        return quotedMessageTime;
+    }
+
+    public void setQuotedMessageTime(final String quotedMessageTime) {
+
+        this.quotedMessageTime = quotedMessageTime;
     }
 
     public String getSender() {
@@ -75,6 +92,16 @@ public abstract sealed class BaseModel permits MessageModel, PictureModel {
         this.sender = sender;
     }
 
+    public String getSubclass() {
+
+        return subclass;
+    }
+
+    public void setSubclass(final String subclass) {
+
+        this.subclass = subclass;
+    }
+
     public String getTime() {
 
         return time;
@@ -85,19 +112,14 @@ public abstract sealed class BaseModel permits MessageModel, PictureModel {
         this.time = time;
     }
 
-    public String getMessage() {
+    public List<UserInteraction> getUserInteractions() {
 
-        return message;
+        return userInteractions;
     }
 
-    public void setMessage(final String message) {
+    public void setUserInteractions(final List<UserInteraction> userInteractions) {
 
-        this.message = message;
+        this.userInteractions = userInteractions;
     }
-
-    @Override
-    public String toString() {
-
-        return "BaseModel{" + "id=" + id + ", messageType=" + messageType + ", userInteractions=" + userInteractions + ", localIp='" + localIp + '\'' + ", sender='" + sender + '\'' + ", time='" + time + '\'' + ", message='" + message + '\'' + '}';
-    }
+    // getter & setter -- end
 }
