@@ -1,12 +1,10 @@
 package com.soeguet.gui.comments;
 
 import com.soeguet.gui.comments.generic_comment.dto.CommentGuiDTO;
-import com.soeguet.gui.comments.generic_comment.gui_elements.interfaces.ContentInterface;
 import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CommentMainPanel;
 import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CommentSidePanel;
 import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomContentContainer;
 import com.soeguet.gui.comments.generic_comment.gui_elements.panels.TransparentTopPanel;
-import com.soeguet.gui.comments.generic_comment.gui_elements.textpane.CustomPicturePane;
 import com.soeguet.gui.comments.generic_comment.util.Side;
 import com.soeguet.gui.comments.generic_comment.util.SideHandler;
 import com.soeguet.gui.comments.interfaces.CommentInterface;
@@ -40,6 +38,66 @@ public class CommentManagerImpl implements CommentManager {
         this.mainFrame = mainFrame;
     }
     // constructors -- end
+
+    private void addCommentPanelToMainChatPanel(final JPanel commentPanel, final CommentTypeEnum commentType) {
+
+        Side side = new SideHandler().determineSide(commentType);
+
+        switch (side) {
+            case LEFT -> this.mainFrame.getMainTextPanel().add(commentPanel, "w 70%, leading, wrap");
+            case RIGHT -> this.mainFrame.getMainTextPanel().add(commentPanel, "w 70%, trailing, wrap");
+        }
+    }
+
+    /**
+     Displays the nickname instead of the timeAndUsername in a comment.
+     <p>
+     If the nickname parameter is not null and not empty after trimming, it sets the text of the name label in the
+     comment to the nickname.
+
+     @param nickname
+     the nickname to be displayed
+     @param comment
+     the comment object containing the name label
+     */
+    private void displayNicknameInsteadOfUsername(String nickname, CommentInterface comment) {
+
+        if (nickname != null && !nickname.trim().isEmpty()) {
+            comment.getNameLabel().setText(nickname);
+            comment.getNameLabel().revalidate();
+            comment.getNameLabel().repaint();
+        }
+    }
+
+    private Color determineBorderColor(String sender) {
+
+        if (this.mainFrame.getChatClientPropertiesHashMap().containsKey(sender)) {
+
+            return new Color(this.mainFrame.getChatClientPropertiesHashMap().get(sender).getBorderColor());
+        }
+
+        return new Color(generateRandomRgbIntValue());
+    }
+
+    private void addMessagePanelToMainChatPanel(JPanel message, String alignment) {
+
+        this.mainFrame.getMainTextPanel().add(message, "w 70%, " + alignment + ", wrap");
+    }
+
+    private void repaintMainFrame() {
+
+        this.mainFrame.revalidate();
+        this.mainFrame.repaint();
+    }
+
+    private int generateRandomRgbIntValue() {
+
+        Random rand = new Random();
+        int r = rand.nextInt(256);
+        int g = rand.nextInt(256);
+        int b = rand.nextInt(256);
+        return new Color(r, g, b).getRGB();
+    }
 
     // overrides -- start
 
@@ -187,97 +245,22 @@ public class CommentManagerImpl implements CommentManager {
         //TODO WORKING ON THIS
         //FEATURE WORKING ON THIS
         BaseModel baseModel = messageHandlerDTO.baseModel();
-        String nickname = messageHandlerDTO.nickname();
         CommentTypeEnum commentType = messageHandlerDTO.commentType();
 
-        //TEXT - RIGHT
-        if (baseModel instanceof MessageModel messageModel) {
-            CommentSidePanel commentSidePanel = new CommentSidePanel(commentType);
-            final CommentGuiDTO commentGuiDto = new CommentGuiDTO(mainFrame, commentType, baseModel, commentSidePanel
-                    , new TransparentTopPanel(), new CustomContentContainer(), new JPanel());
-            CommentMainPanel commentPanel = new CommentMainPanel(commentGuiDto);
-            commentPanel.setLayoutManager();
-            commentPanel.setupSidePanel(baseModel);
-            commentPanel.addComponents();
-            commentPanel.addContext();
-            commentPanel.paintChatBubble();
-            this.addCommentPanelToMainChatPanel(commentPanel, commentType);
-            repaintMainFrame();
-        }
+        CommentSidePanel commentSidePanel = new CommentSidePanel(commentType);
+        final CommentGuiDTO commentGuiDto = new CommentGuiDTO(mainFrame, commentType, baseModel, commentSidePanel,
+                                                              new TransparentTopPanel(), new CustomContentContainer()
+                , new JPanel());
+        CommentMainPanel commentPanel = new CommentMainPanel(commentGuiDto);
 
-        if (baseModel instanceof PictureModel pictureModel) {
-            CommentSidePanel commentSidePanel = new CommentSidePanel(commentType);
-            final CommentGuiDTO commentGuiDto = new CommentGuiDTO(mainFrame, commentType, baseModel, commentSidePanel
-                    , new TransparentTopPanel(), new CustomContentContainer(), new JPanel());
-            CommentMainPanel commentPanel = new CommentMainPanel(commentGuiDto);
-            commentPanel.setLayoutManager();
-            commentPanel.setupSidePanel(baseModel);
-            commentPanel.addComponents();
-            commentPanel.addContext();
-            commentPanel.paintChatBubble();
-            this.addCommentPanelToMainChatPanel(commentPanel, commentType);
-            repaintMainFrame();
-        }
+        commentPanel.setLayoutManager();
+        commentPanel.setupSidePanel(baseModel);
+        commentPanel.addComponents();
+        commentPanel.addContext();
+        commentPanel.paintChatBubble();
+        this.addCommentPanelToMainChatPanel(commentPanel, commentType);
+        repaintMainFrame();
+
     }
-
-    private void addCommentPanelToMainChatPanel(final JPanel commentPanel,
-                                                final CommentTypeEnum commentType) {
-
-        Side side = new SideHandler().determineSide(commentType);
-
-        switch (side) {
-            case LEFT -> this.mainFrame.getMainTextPanel().add((JComponent) commentPanel, "w 70%, leading, wrap");
-            case RIGHT -> this.mainFrame.getMainTextPanel().add((JComponent) commentPanel, "w 70%, trailing, wrap");
-        }
-    }
-
-    /**
-     Displays the nickname instead of the timeAndUsername in a comment.
-     <p>
-     If the nickname parameter is not null and not empty after trimming, it sets the text of the name label in the
-     comment to the nickname.
-
-     @param nickname
-     the nickname to be displayed
-     @param comment
-     the comment object containing the name label
-     */
-    private void displayNicknameInsteadOfUsername(String nickname, CommentInterface comment) {
-
-        if (nickname != null && !nickname.trim().isEmpty()) {
-            comment.getNameLabel().setText(nickname);
-            comment.getNameLabel().revalidate();
-            comment.getNameLabel().repaint();
-        }
-    }
-
-    private Color determineBorderColor(String sender) {
-
-        if (this.mainFrame.getChatClientPropertiesHashMap().containsKey(sender)) {
-
-            return new Color(this.mainFrame.getChatClientPropertiesHashMap().get(sender).getBorderColor());
-        }
-
-        return new Color(getRandomRgbIntValue());
-    }
-
-    private void addMessagePanelToMainChatPanel(JPanel message, String alignment) {
-
-        this.mainFrame.getMainTextPanel().add(message, "w 70%, " + alignment + ", wrap");
-    }
-
-    private void repaintMainFrame() {
-
-        this.mainFrame.revalidate();
-        this.mainFrame.repaint();
-    }
-
-    private int getRandomRgbIntValue() {
-
-        Random rand = new Random();
-        int r = rand.nextInt(256);
-        int g = rand.nextInt(256);
-        int b = rand.nextInt(256);
-        return new Color(r, g, b).getRGB();
-    }
+    // overrides -- end
 }

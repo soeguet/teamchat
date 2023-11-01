@@ -1,11 +1,14 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
 import com.soeguet.gui.comments.generic_comment.dto.CommentGuiDTO;
+import com.soeguet.gui.comments.generic_comment.factories.LinkBubbleFactory;
+import com.soeguet.gui.comments.generic_comment.factories.PictureBubbleFactory;
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpane.CustomPicturePane;
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpane.CustomTextPane;
 import com.soeguet.gui.comments.generic_comment.gui_elements.util.ChatBubblePaintHandler;
 import com.soeguet.gui.comments.generic_comment.util.Side;
 import com.soeguet.gui.comments.generic_comment.util.SideHandler;
+import com.soeguet.gui.comments.util.CommentTypeEnum;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
@@ -48,12 +51,14 @@ public class CommentMainPanel extends JPanel {
     private final CustomContentContainer customContentContainer;
     private JTextPane jTextPane;
     private Color borderColor;
+    private final CommentTypeEnum commentType;
     // variables -- end
 
     // constructors -- start
     public CommentMainPanel(CommentGuiDTO commentGuiDTO) {
 
         this.mainFrame = commentGuiDTO.mainFrame();
+        this.commentType = commentGuiDTO.commentType();
         this.side = new SideHandler().determineSide(commentGuiDTO.commentType());
         this.baseModel = commentGuiDTO.baseModel();
         this.sidePanel = commentGuiDTO.sidePanel();
@@ -101,26 +106,12 @@ public class CommentMainPanel extends JPanel {
         // wraps the text and picture content as well as the quoted comments
 
         final JPanel mainContentPanel = this.getCustomContentContainer();
+
         mainContentPanel.setLayout(new MigLayout("",
                                                  // columns
                                                  "[fill,grow]",
                                                  // rows
                                                  "[][fill][]"));
-    }
-
-    public JPanel getMainContainer() {
-
-        return mainContainer;
-    }
-
-    public Side getSide() {
-
-        return side;
-    }
-
-    public CustomContentContainer getCustomContentContainer() {
-
-        return customContentContainer;
     }
 
     public void setupSidePanel(final BaseModel baseModel) {
@@ -133,11 +124,6 @@ public class CommentMainPanel extends JPanel {
         commentSidePanel.getTimeLabel().setText("10:00");
         commentSidePanel.setLayoutManager();
         commentSidePanel.addComponents();
-    }
-
-    public CommentSidePanel getSidePanel() {
-
-        return sidePanel;
     }
 
     public void addComponents() {
@@ -181,59 +167,54 @@ public class CommentMainPanel extends JPanel {
         });
     }
 
-    public JPanel getTopContainer() {
-
-        return topContainer;
-    }
-
     public void addContext() {
 
-        if (baseModel instanceof MessageModel messageModel) {
+        //setup
+        final CustomContentContainer contentContainer = this.getCustomContentContainer();
+        final JPanel mainPanelContainer = this.getMainContainer();
 
-            jTextPane = new CustomTextPane(true);
-            jTextPane.setEditable(false);
-            jTextPane.setOpaque(false);
-            jTextPane.setText(baseModel.getMessage());
+        switch (commentType) {
 
-            final String layoutConstraints = determineTextPanePaddings();
+            case LEFT_TEXT, RIGHT_TEXT -> {
 
-            this.getCustomContentContainer().add(jTextPane, layoutConstraints);
+                jTextPane = new CustomTextPane(true);
+                jTextPane.setEditable(false);
+                jTextPane.setOpaque(false);
+                jTextPane.setText(baseModel.getMessage());
 
-        } else if (baseModel instanceof PictureModel pictureModel) {
+                final String layoutConstraints = determineTextPanePaddings();
 
-            CustomPicturePane pictureLabel = new CustomPicturePane(pictureModel.getPicture());
-
-            switch (this.getSide()) {
-                case LEFT -> {
-                    this.getCustomContentContainer().add(pictureLabel, "cell 0 0, wrap, gapleft 15, gaptop 10, " +
-                                                                       "gapright 5");
-                }
-                case RIGHT -> {
-                    this.getCustomContentContainer().add(pictureLabel, "cell 0 0, wrap, gapleft 3, gapright 15, " +
-                                                                       "gaptop 10");
-                }
+                contentContainer.add(jTextPane, layoutConstraints);
             }
-            this.getCustomContentContainer().setSize(pictureLabel.getSize().width * 2,
-                                                     pictureLabel.getSize().height * 2);
-            this.getMainContainer().setSize(pictureLabel.getSize().width * 2, pictureLabel.getSize().height * 2);
-            this.setSize(pictureLabel.getSize().width * 2, pictureLabel.getSize().height * 2);
-            this.getCustomContentContainer().revalidate();
-            this.getCustomContentContainer().repaint();
-            this.mainFrame.revalidate();
-            this.mainFrame.repaint();
+
+            case LEFT_PICTURE, RIGHT_PICTURE -> {
+
+                CustomPicturePane pictureLabel = new PictureBubbleFactory(baseModel).create();
+
+                switch (this.getSide()) {
+                    case LEFT -> {
+                        contentContainer.add(pictureLabel, "cell 0 0, wrap, gapleft 15, gaptop 10, gapright 5");
+                    }
+                    case RIGHT -> {
+                        contentContainer.add(pictureLabel, "cell 0 0, wrap, gapleft 3, gapright 15, gaptop 10");
+                    }
+                }
+                contentContainer.setSize(pictureLabel.getSize().width * 2, pictureLabel.getSize().height * 2);
+                mainPanelContainer.setSize(pictureLabel.getSize().width * 2, pictureLabel.getSize().height * 2);
+                this.setSize(pictureLabel.getSize().width * 2, pictureLabel.getSize().height * 2);
+                contentContainer.revalidate();
+                contentContainer.repaint();
+                this.mainFrame.revalidate();
+                this.mainFrame.repaint();
+            }
+
+            case LEFT_LINK, RIGHT_LINK -> {
+
+                CustomLinkPanel customLinkPanel = new LinkBubbleFactory(baseModel).create();
+            }
         }
 
-        //        this.getTopContainer().addMouseListener(new MouseAdapter() {
-        //
-        //            @Override
-        //            public void mouseEntered(final MouseEvent e) {
-        //
-        //                System.out.println("mouse entered");
-        //                chatBubblePaintHandler.setBorderColor(Color.RED);
-        //
-        //                super.mouseEntered(e);
-        //            }
-        //        });
+
     }
 
     private String determineTextPanePaddings() {
@@ -279,14 +260,39 @@ public class CommentMainPanel extends JPanel {
         this.borderColor = borderColor;
     }
 
+    public CustomContentContainer getCustomContentContainer() {
+
+        return customContentContainer;
+    }
+
     public JPanel getLayeredContainer() {
 
         return topContainer;
     }
 
+    public JPanel getMainContainer() {
+
+        return mainContainer;
+    }
+
     public MainFrameGuiInterface getMainFrame() {
 
         return mainFrame;
+    }
+
+    public Side getSide() {
+
+        return side;
+    }
+
+    public CommentSidePanel getSidePanel() {
+
+        return sidePanel;
+    }
+
+    public JPanel getTopContainer() {
+
+        return topContainer;
     }
 
     public JTextPane getjTextPane() {
