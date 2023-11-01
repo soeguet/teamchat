@@ -12,7 +12,6 @@ import com.soeguet.gui.comments.util.CommentTypeEnum;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
-import com.soeguet.model.jackson.PictureModel;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -177,14 +176,12 @@ public class CommentMainPanel extends JPanel {
 
             case LEFT_TEXT, RIGHT_TEXT -> {
 
-                jTextPane = new CustomTextPane(true);
-                jTextPane.setEditable(false);
-                jTextPane.setOpaque(false);
-                jTextPane.setText(baseModel.getMessage());
+                CustomTextPane customTextPane = new CustomTextPane(true, (MessageModel) baseModel);
+                customTextPane.create();
 
                 final String layoutConstraints = determineTextPanePaddings();
 
-                contentContainer.add(jTextPane, layoutConstraints);
+                contentContainer.add(customTextPane, layoutConstraints);
             }
 
             case LEFT_PICTURE, RIGHT_PICTURE -> {
@@ -211,6 +208,14 @@ public class CommentMainPanel extends JPanel {
             case LEFT_LINK, RIGHT_LINK -> {
 
                 CustomLinkPanel customLinkPanel = new LinkBubbleFactory(baseModel).create();
+                switch (this.getSide()) {
+                    case LEFT -> {
+                        contentContainer.add(customLinkPanel, "cell 0 0, wrap, gapleft 15, gaptop 10, gapright 5");
+                    }
+                    case RIGHT -> {
+                        contentContainer.add(customLinkPanel, "cell 0 0, wrap, gapleft 3, gapright 15, gaptop 10");
+                    }
+                }
             }
         }
 
@@ -223,14 +228,12 @@ public class CommentMainPanel extends JPanel {
 
         switch (this.getSide()) {
             case LEFT -> {
-                jTextPane.setBackground(Color.RED);
                 layoutConstraints = "gapleft 15";
             }
             case RIGHT -> {
-                jTextPane.setBackground(Color.BLUE);
                 layoutConstraints = "gapright 15";
             }
-            default -> throw new IllegalStateException("Unexpected value: " + this.getSide());
+            default -> throw new IllegalStateException("Unexpected value: %s".formatted(this.getSide()));
         }
 
         return "%s, gaptop 10".formatted(layoutConstraints);

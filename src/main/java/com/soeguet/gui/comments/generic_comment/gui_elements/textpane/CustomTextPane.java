@@ -1,6 +1,7 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.textpane;
 
 import com.soeguet.gui.comments.generic_comment.gui_elements.interfaces.ContentInterface;
+import com.soeguet.model.jackson.MessageModel;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -8,28 +9,24 @@ import javax.swing.text.*;
 public class CustomTextPane extends JTextPane implements ContentInterface {
 
     private final boolean lineWrap;
+    private final MessageModel messageModel;
 
-    public CustomTextPane(final boolean lineWrap) {
+    public CustomTextPane(final boolean lineWrap, final MessageModel messageModel) {
 
         this.lineWrap = lineWrap;
+        this.messageModel = messageModel;
 
         if (lineWrap) {
 
             setEditorKit(new WrapEditorKit());
         }
+        super.setEditable(false);
+        super.setOpaque(false);
     }
 
-    @Override
-    public boolean getScrollableTracksViewportWidth() {
+    public void create() {
 
-        if (lineWrap) {
-
-            return super.getScrollableTracksViewportWidth();
-
-        } else {
-
-            return getParent() == null || getUI().getPreferredSize(this).width <= getParent().getSize().width;
-        }
+        super.setText(messageModel.getMessage());
     }
 
     private static class WrapEditorKit extends StyledEditorKit {
@@ -45,6 +42,7 @@ public class CustomTextPane extends JTextPane implements ContentInterface {
 
     private static class WrapColumnFactory implements ViewFactory {
 
+// overrides -- start
         @Override
         public View create(final Element element) {
 
@@ -84,6 +82,19 @@ public class CustomTextPane extends JTextPane implements ContentInterface {
                 case View.Y_AXIS -> super.getMinimumSpan(axis);
                 default -> throw new IllegalArgumentException("Invalid axis: " + axis);
             };
+        }
+    }
+
+    @Override
+    public boolean getScrollableTracksViewportWidth() {
+
+        if (lineWrap) {
+
+            return super.getScrollableTracksViewportWidth();
+
+        } else {
+
+            return getParent() == null || getUI().getPreferredSize(this).width <= getParent().getSize().width;
         }
     }
 }

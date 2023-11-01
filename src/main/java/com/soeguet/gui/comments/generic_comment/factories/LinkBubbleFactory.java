@@ -19,8 +19,9 @@ public class LinkBubbleFactory {
     public CustomLinkPanel create() {
 
         CustomLinkPanel customLinkPane = new CustomLinkPanel(baseModel);
-        customLinkPane.setOpaque(true);
+        customLinkPane.setLayoutManager();
         customLinkPane.addLinkToPanel();
+        customLinkPane.addLinkComment();
 
         return customLinkPane;
     }
