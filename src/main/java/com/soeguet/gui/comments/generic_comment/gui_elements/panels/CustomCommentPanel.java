@@ -2,7 +2,7 @@ package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
 import com.soeguet.gui.comments.generic_comment.factories.LinkPanelFactory;
 import com.soeguet.gui.comments.generic_comment.factories.PicturePanelFactory;
-import com.soeguet.gui.comments.generic_comment.gui_elements.textpane.CustomTextPane;
+import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomTextPane;
 import com.soeguet.gui.comments.generic_comment.gui_elements.util.ChatBubblePaintHandler;
 import com.soeguet.gui.comments.generic_comment.util.Side;
 import com.soeguet.gui.comments.util.CommentTypeEnum;
@@ -79,7 +79,6 @@ public class CustomCommentPanel extends JPanel {
 
         // wrapped by CustomMainWrapperContainer -- SIDE
         final CommentSidePanel commentSidePanel = this.getSidePanel();
-        commentSidePanel.setInteractionButton();
 
         // wrapped by CustomMainWrapperContainer -- CONTENT
         final CustomContentContainer mainContentPanel = this.getCustomContentContainer();

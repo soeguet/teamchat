@@ -1,7 +1,7 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.labels;
 
 import com.soeguet.gui.comments.generic_comment.gui_elements.interfaces.ContentInterface;
-import com.soeguet.gui.comments.generic_comment.gui_elements.menu_item.CustomPictureMaximizeMenuItem;
+import com.soeguet.gui.comments.generic_comment.gui_elements.menu_items.CustomPictureMaximizeMenuItem;
 import com.soeguet.model.jackson.PictureModel;
 
 import javax.swing.*;

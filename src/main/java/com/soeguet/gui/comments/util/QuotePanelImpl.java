@@ -27,6 +27,7 @@ public class QuotePanelImpl extends QuotePanel {
         this.getQuoteTime().setText(time);
     }
 
+
     private void createTextOnPane(JTextPane actualTextPane, String text) {
 
         StyledDocument doc = actualTextPane.getStyledDocument();
@@ -56,17 +57,13 @@ public class QuotePanelImpl extends QuotePanel {
         }
     }
 
-    /**
-     Processes and inserts an emoji image into a styled document.
 
-     @param actualTextPane
-     The JTextPane where the emoji image will be inserted.
-     @param gui
-     The MainFrameInterface that provides the necessary GUI functionalities.
-     @param doc
-     The StyledDocument where the emoji image will be inserted.
-     @param word
-     The word associated with the emoji image.
+    /**
+     * Process an emoji in the given text pane and insert it into the styled document.
+     *
+     * @param actualTextPane The JTextPane in which the emoji is to be inserted.
+     * @param doc The StyledDocument where the emoji is to be inserted.
+     * @param word The emoji word or code to be processed.
      */
     private void processEmoji(JTextPane actualTextPane, StyledDocument doc, String word) {
 
@@ -83,17 +80,13 @@ public class QuotePanelImpl extends QuotePanel {
         }
     }
 
+
     /**
-     Creates a Style with an icon for inserting an image in a JTextPane.
-
-     @param actualTextPane
-     the JTextPane in which the image should be inserted
-     @param gui
-     the MainFrameInterface implementation providing GUI elements
-     @param word
-     the word associated with the image to be inserted
-
-     @return the Style with the icon set for the image
+     * Creates a style for inserting an image into a JTextPane.
+     *
+     * @param actualTextPane The JTextPane in which the image will be inserted.
+     * @param word The word or code representing the image.
+     * @return The style with the image icon set.
      */
     private Style createImageStyle(JTextPane actualTextPane, String word) {
 

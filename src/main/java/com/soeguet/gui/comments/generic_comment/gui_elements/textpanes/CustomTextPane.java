@@ -1,7 +1,6 @@
-package com.soeguet.gui.comments.generic_comment.gui_elements.textpane;
+package com.soeguet.gui.comments.generic_comment.gui_elements.textpanes;
 
 import com.soeguet.gui.comments.generic_comment.gui_elements.interfaces.ContentInterface;
-import com.soeguet.model.jackson.MessageModel;
 
 import javax.swing.*;
 import javax.swing.text.*;

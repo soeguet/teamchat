@@ -1,10 +1,9 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
-import com.soeguet.gui.comments.generic_comment.gui_elements.textpane.CustomLinkCommentTextPane;
-import com.soeguet.gui.comments.generic_comment.gui_elements.textpane.CustomLinkTextPane;
+import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomLinkCommentTextPane;
+import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomLinkTextPane;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.LinkModel;
-import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.QuoteModel;
 import net.miginfocom.swing.MigLayout;
 

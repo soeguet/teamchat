@@ -2,7 +2,7 @@ package com.soeguet.gui.comments.generic_comment.factories;
 
 import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomPictureWrapperPanel;
 import com.soeguet.gui.comments.generic_comment.gui_elements.labels.CustomPictureLabel;
-import com.soeguet.gui.comments.generic_comment.gui_elements.textpane.CustomTextPane;
+import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomTextPane;
 import com.soeguet.model.jackson.*;
 
 import javax.swing.*;

@@ -32,7 +32,7 @@ public class MainChatPanelFactory {
     public CustomCommentPanel create() {
 
         //SIDE
-        CommentSidePanel commentSidePanel = new SidePanelFactory(baseModel, commentType).create();
+        CommentSidePanel commentSidePanel = new SidePanelFactory(mainFrame, baseModel, commentType).create();
 
         //NEXT TO SIDE -> CONTENT
         // setup of content container -> will not be populated with content yet -- #generateCommentPanel

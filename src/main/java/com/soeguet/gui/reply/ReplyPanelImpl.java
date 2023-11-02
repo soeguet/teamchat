@@ -47,7 +47,6 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
             form_quotedSender.setText(baseModel.getSender());
             form_quotedTime.setText(baseModel.getTime());
         }
-
     }
 
     @Override

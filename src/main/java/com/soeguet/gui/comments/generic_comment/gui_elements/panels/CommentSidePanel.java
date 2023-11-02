@@ -1,5 +1,6 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
+import com.soeguet.gui.comments.generic_comment.gui_elements.buttons.CustomInteractionButton;
 import com.soeguet.gui.comments.generic_comment.util.Side;
 import com.soeguet.gui.comments.generic_comment.util.SideHandler;
 import com.soeguet.gui.comments.util.CommentTypeEnum;
@@ -14,7 +15,8 @@ public class CommentSidePanel extends JPanel {
     private final Side side;
     private JLabel nameLabel;
     private JLabel timeLabel;
-    private JButton interactionButton;
+    private CustomInteractionButton interactionButton;
+
     // variables -- end
     // constructors -- start
     public CommentSidePanel(final CommentTypeEnum commentType) {
@@ -40,11 +42,6 @@ public class CommentSidePanel extends JPanel {
         final Font nameLabelFont = nameLabel.getFont();
         nameLabel.setEnabled(false);
         nameLabel.setFont(new Font(nameLabelFont.getName(), Font.BOLD, nameLabelFont.getSize()));
-
-        //button
-        final JButton interactionButton = this.getInteractionButton();
-        //        interactionButton.setBorder(BorderFactory.createEmptyBorder());
-        interactionButton.setBackground(null);
     }
 
     public void addComponents() {
@@ -95,12 +92,13 @@ public class CommentSidePanel extends JPanel {
     }
 
     // getter & setter -- start
-    public JButton getInteractionButton() {
+
+    public CustomInteractionButton getInteractionButton() {
 
         return interactionButton;
     }
 
-    public void setInteractionButton(final JButton interactionButton) {
+    public void setInteractionButton(final CustomInteractionButton interactionButton) {
 
         this.interactionButton = interactionButton;
     }

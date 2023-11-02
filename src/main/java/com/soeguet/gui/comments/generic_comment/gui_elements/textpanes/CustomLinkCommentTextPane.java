@@ -1,10 +1,6 @@
-package com.soeguet.gui.comments.generic_comment.gui_elements.textpane;
+package com.soeguet.gui.comments.generic_comment.gui_elements.textpanes;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.soeguet.gui.option_pane.links.dtos.LinkTransferDTO;
 import com.soeguet.model.jackson.LinkModel;
-import com.soeguet.model.jackson.MessageModel;
 
 public class CustomLinkCommentTextPane extends CustomTextPane {
 

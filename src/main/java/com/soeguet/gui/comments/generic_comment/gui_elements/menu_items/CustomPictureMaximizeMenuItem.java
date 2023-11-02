@@ -1,4 +1,4 @@
-package com.soeguet.gui.comments.generic_comment.gui_elements.menu_item;
+package com.soeguet.gui.comments.generic_comment.gui_elements.menu_items;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

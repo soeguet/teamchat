@@ -1,4 +1,4 @@
-package com.soeguet.gui.comments.generic_comment.gui_elements.textpane;
+package com.soeguet.gui.comments.generic_comment.gui_elements.textpanes;
 
 import com.soeguet.gui.comments.util.LinkWrapEditorKit;
 import com.soeguet.model.jackson.LinkModel;
