@@ -49,7 +49,8 @@ public class CustomQuotePanel extends JPanel {
         // TODO: 01.11.23 this needs to be rather complex to determine, whether the quoted text is a link or a text
         JTextPane jTextPane = new JTextPane();
         jTextPane.setEditorKit(new WrapEditorKit());
-        jTextPane.setText(messageModel.getQuotedMessageText());
+        // FIXME: 02.11.23
+        jTextPane.setText("messageModel.getQuotedMessageText())");
         jTextPane.setEnabled(false);
         super.add(jTextPane, "cell 0 1");
     }

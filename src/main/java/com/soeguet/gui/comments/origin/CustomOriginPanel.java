@@ -9,6 +9,7 @@ import com.soeguet.gui.reply.interfaces.ReplyInterface;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
+import com.soeguet.model.jackson.QuoteModel;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -166,16 +167,14 @@ public class CustomOriginPanel extends JPanel {
 
     protected QuotePanelImpl checkForQuotesInMessage(MessageModel messageModel) {
 
-        String quotedText = messageModel.getQuotedMessageText();
+        // FIXME: 02.11.23
+        final QuoteModel<? extends BaseModel> quotedMessage = messageModel.getQuotedMessage();
 
-        if (quotedText == null) {
+        if (quotedMessage == null) {
             return null;
         }
 
-        String quotedChatParticipant = messageModel.getQuotedMessageSender();
-        String quotedTime = messageModel.getQuotedMessageTime();
-
-        return new QuotePanelImpl(this.mainFrame, quotedText, quotedChatParticipant, quotedTime);
+        return new QuotePanelImpl(this.mainFrame, "quotedText", "quotedChatParticipant", "quotedTime");
     }
 
     /**

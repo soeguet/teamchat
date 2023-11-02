@@ -3,47 +3,35 @@ package com.soeguet.gui.comments.generic_comment.gui_elements.textpane;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.gui.option_pane.links.dtos.LinkTransferDTO;
+import com.soeguet.model.jackson.LinkModel;
 import com.soeguet.model.jackson.MessageModel;
 
 public class CustomLinkCommentTextPane extends CustomTextPane {
 
     // variables -- start
-    private final MessageModel messageModel;
-    private LinkTransferDTO linkCommentRecord;
+    private final LinkModel linkModel;
     // variables -- end
 
     // constructors -- start
-    public CustomLinkCommentTextPane(final boolean lineWrap, final MessageModel messageModel) {
+    public CustomLinkCommentTextPane(final boolean lineWrap, final LinkModel linkModel) {
 
-        super(lineWrap, messageModel);
-        this.messageModel = messageModel;
+        // FIXME: 02.11.23 -> this is a hack
+        super(lineWrap, new MessageModel());
+        this.linkModel = linkModel;
     }
     // constructors -- end
 
-    private LinkTransferDTO extractLinkFromMessageModel(final MessageModel messageModel) {
-
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.readValue(messageModel.getMessage(), LinkTransferDTO.class);
-
-        } catch (JsonProcessingException e) {
-
-            throw new RuntimeException(e);
-        }
-    }
 
     public boolean setUp() {
 
-        linkCommentRecord = extractLinkFromMessageModel(messageModel);
-
-        return linkCommentRecord.comment().isEmpty();
+        return linkModel.getComment().isEmpty();
     }
 
     // overrides -- start
     @Override
     public void create() {
 
-        super.setText(linkCommentRecord.comment());
+        super.setText(linkModel.getComment());
     }
     // overrides -- end
 }

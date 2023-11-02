@@ -185,15 +185,16 @@ public class LinkDialogImpl extends LinkDialog implements LinkDialogInterface {
         //TODO find maybe a better method instead of separating this via regex
         LinkTransferDTO linkTransferDTO = new LinkTransferDTO(link, comment);
 
-        try {
-
-            final String serializedLinkTransferDTO = mainFrame.getObjectMapper().writeValueAsString(linkTransferDTO);
-            linkDialogHandler.sendLinkToWebsocket(mainFrame, serializedLinkTransferDTO);
-
-        } catch (JsonProcessingException ex) {
-
-            throw new RuntimeException(ex);
-        }
+        linkDialogHandler.sendLinkToWebsocket(mainFrame, linkTransferDTO);
+//        try {
+//
+//            final String serializedLinkTransferDTO = mainFrame.getObjectMapper().writeValueAsString(linkTransferDTO);
+//            linkDialogHandler.sendLinkToWebsocket(mainFrame, serializedLinkTransferDTO);
+//
+//        } catch (JsonProcessingException ex) {
+//
+//            throw new RuntimeException(ex);
+//        }
 
         this.cancelButtonActionPerformed(e);
     }

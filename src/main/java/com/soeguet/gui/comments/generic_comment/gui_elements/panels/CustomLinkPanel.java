@@ -2,9 +2,10 @@ package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpane.CustomLinkCommentTextPane;
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpane.CustomLinkTextPane;
-import com.soeguet.gui.comments.util.WrapEditorKit;
 import com.soeguet.model.jackson.BaseModel;
+import com.soeguet.model.jackson.LinkModel;
 import com.soeguet.model.jackson.MessageModel;
+import com.soeguet.model.jackson.QuoteModel;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -12,13 +13,13 @@ import javax.swing.*;
 public class CustomLinkPanel extends JPanel {
 
     // variables -- start
-    private final MessageModel messageModel;
+    private final LinkModel linkModel;
     // variables -- end
 
     // constructors -- start
-    public CustomLinkPanel(final BaseModel messageModel) {
+    public CustomLinkPanel(final BaseModel baseModel) {
 
-        this.messageModel = (MessageModel) messageModel;
+        this.linkModel = (LinkModel) baseModel;
         super.setOpaque(false);
     }
     // constructors -- end
@@ -37,14 +38,14 @@ public class CustomLinkPanel extends JPanel {
 
     public void addLinkToPanel() {
 
-        CustomLinkTextPane customLinkTextPane = new CustomLinkTextPane(messageModel);
+        CustomLinkTextPane customLinkTextPane = new CustomLinkTextPane(linkModel);
         customLinkTextPane.create();
         this.add(customLinkTextPane, "cell 0 1, growy");
     }
 
     public void addLinkComment() {
 
-        CustomLinkCommentTextPane customTextPane = new CustomLinkCommentTextPane(true, messageModel);
+        CustomLinkCommentTextPane customTextPane = new CustomLinkCommentTextPane(true, linkModel);
 
         // if there is no comment to the link -> return
         if (!customTextPane.setUp()) {
@@ -56,11 +57,14 @@ public class CustomLinkPanel extends JPanel {
 
     public void addQuoteToLinkPanel() {
 
-        if (messageModel.getQuotedMessageText() == null) {
+        // FIXME: 02.11.23
+        final QuoteModel<? extends BaseModel> quotedMessage = linkModel.getQuotedMessage();
+
+        if (quotedMessage == null) {
             return;
         }
 
-        CustomQuotePanel customQuotePanel = new CustomQuotePanel(messageModel);
+        CustomQuotePanel customQuotePanel = new CustomQuotePanel(linkModel);
 
         customQuotePanel.setLayoutManager();
         customQuotePanel.createQuotedTextPane();

@@ -21,7 +21,8 @@ public class CustomQuoteTopLabel extends JLabel {
 
     public void create() {
 
-        super.setText("%s - %s".formatted(messageModel.getQuotedMessageSender(), messageModel.getQuotedMessageTime()));
+        // FIXME: 02.11.23
+        super.setText("%s - %s".formatted("messageModel.getQuotedMessageSender()", "messageModel.getQuotedMessageTime()"));
         super.setFont(new Font(super.getFont().getName(), Font.ITALIC, 11));
         super.setEnabled(false);
     }

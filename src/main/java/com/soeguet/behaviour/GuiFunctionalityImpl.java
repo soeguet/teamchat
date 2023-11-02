@@ -214,6 +214,7 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
     @Override
     public void onMessage(String message) {
 
+        System.out.println("onMessage: " + message);
         switch (message) {
 
             case "__startup__end__" -> mainFrame.setStartUp(false);

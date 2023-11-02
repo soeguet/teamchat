@@ -97,7 +97,7 @@ public class CustomWebsocketClient extends WebSocketClient {
         popup.initiatePopupTimer(2_000);
 
 
-        throw new RuntimeException(Arrays.toString(ex.getStackTrace()));
+        throw new RuntimeException(ex);
     }
 
     @Override

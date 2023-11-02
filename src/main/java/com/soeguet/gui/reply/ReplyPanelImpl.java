@@ -11,6 +11,7 @@ import com.soeguet.gui.reply.interfaces.ReplyInterface;
 import com.soeguet.model.MessageTypes;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
+import com.soeguet.model.jackson.QuoteModel;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -180,9 +181,10 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
         //type
         sendModel.setMessageType(MessageTypes.NORMAL);
         //quoted message
-        sendModel.setQuotedMessageSender(this.mainFrame.getUsername());
-        sendModel.setQuotedMessageText(this.getReplyTextPane().getText());
-        sendModel.setQuotedMessageTime(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
+        // FIXME: 02.11.23
+//        sendModel.setQuotedMessageSender(this.mainFrame.getUsername());
+//        sendModel.setQuotedMessageText(this.getReplyTextPane().getText());
+//        sendModel.setQuotedMessageTime(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
         //this client
         sendModel.setSender(this.baseModel.getSender());
 

@@ -5,19 +5,22 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.util.function.Consumer;
 
-public class CustomContentContainer extends JPanel {
+public class CustomContentContainer extends JPanel implements ComponentListener {
 
-// variables -- start
+    // variables -- start
     private Consumer<Graphics> customPaint;
-// variables -- end
-
-// constructors -- start
+    private TransparentTopPanel topPanel;
+    // variables -- end
+    // constructors -- start
     public CustomContentContainer() {
 
+        addComponentListener(this);
     }
-// constructors -- end
+    // constructors -- end
 
     public void setContentContainerLayoutManager() {
 
@@ -48,7 +51,38 @@ public class CustomContentContainer extends JPanel {
         repaint();
     }
 
-// overrides -- start
+    // overrides -- start
+    @Override
+    public void componentResized(final ComponentEvent e) {
+
+        // FIXME: 02.11.23 -> this is not working
+        final int combinedWidthForTopPanel = super.getWidth() + super.getWidth();
+        final int heightForTopPanel = super.getHeight();
+
+        this.topPanel.setSize(new Dimension(combinedWidthForTopPanel, heightForTopPanel));
+        this.topPanel.setMaximumSize(new Dimension(combinedWidthForTopPanel, heightForTopPanel));
+//        topPanel.setBorder(new LineBorder(Color.RED,5));
+//        topPanel.setOpaque(true);
+//        topPanel.setBackground(Color.GREEN);
+//        revalidate();
+//        repaint();
+    }
+
+    @Override
+    public void componentMoved(final ComponentEvent e) {
+
+    }
+
+    @Override
+    public void componentShown(final ComponentEvent e) {
+
+    }
+
+    @Override
+    public void componentHidden(final ComponentEvent e) {
+
+    }
+
     @Override
     protected void paintComponent(Graphics graphics) {
 
@@ -56,5 +90,12 @@ public class CustomContentContainer extends JPanel {
             customPaint.accept(graphics);
         }
     }
-// overrides -- end
+    // overrides -- end
+
+// getter & setter -- start
+    public void setTopPanelReference(final TransparentTopPanel topPanel) {
+
+        this.topPanel = topPanel;
+    }
+// getter & setter -- end
 }

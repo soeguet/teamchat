@@ -1,26 +1,13 @@
 package com.soeguet.gui.comments;
 
-import com.soeguet.gui.comments.generic_comment.dto.CommentGuiDTO;
 import com.soeguet.gui.comments.generic_comment.factories.CommentPanelFactory;
-import com.soeguet.gui.comments.generic_comment.factories.ContentContainerFactory;
-import com.soeguet.gui.comments.generic_comment.factories.SidePanelFactory;
-import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CommentSidePanel;
 import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomCommentPanel;
-import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomContentContainer;
-import com.soeguet.gui.comments.generic_comment.gui_elements.panels.TransparentTopPanel;
 import com.soeguet.gui.comments.generic_comment.util.Side;
 import com.soeguet.gui.comments.generic_comment.util.SideHandler;
-import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.interfaces.CommentManager;
-import com.soeguet.gui.comments.interfaces.LinkPanelInterface;
-import com.soeguet.gui.comments.left.LinkLeftImpl;
-import com.soeguet.gui.comments.left.PanelLeftImpl;
-import com.soeguet.gui.comments.right.LinkRightImpl;
-import com.soeguet.gui.comments.right.PanelRightImpl;
 import com.soeguet.gui.comments.util.CommentTypeEnum;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.main_panel.dtos.MessageHandlerDTO;
-import com.soeguet.model.MessageTypes;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.LinkModel;
 import com.soeguet.model.jackson.MessageModel;
@@ -47,9 +34,21 @@ public class CommentManagerImpl implements CommentManager {
 
         Side side = new SideHandler().determineSide(commentType);
 
+        /*
+        wrap -> else all fields will not stack on top of each other
+        width -> else each panel will grow endlessly -> can't go past 95%
+        align right -> else the panel will be aligned left
+         */
+
         switch (side) {
-            case LEFT -> this.mainFrame.getMainTextPanel().add(commentPanel, "wrap, width 70%");
-            case RIGHT -> this.mainFrame.getMainTextPanel().add(commentPanel, "wrap, width 70%, align right");
+            case LEFT -> {
+                final String constraintsLeft = "width 95%, wrap";
+                this.mainFrame.getMainTextPanel().add(commentPanel, constraintsLeft);
+            }
+            case RIGHT -> {
+                final String constraintsRight = "width 95%, wrap, align right";
+                this.mainFrame.getMainTextPanel().add(commentPanel, constraintsRight);
+            }
         }
     }
 
@@ -87,33 +86,19 @@ public class CommentManagerImpl implements CommentManager {
 
             case MessageModel messageModel -> {
 
-                if (mainFrame.getUsername().equals(messageModel.getSender())) {
+                if (doesClientMatchSender(messageModel.getSender())) {
 
-                    if (messageModel.getMessageType() == MessageTypes.LINK) {
-
-                        return CommentTypeEnum.RIGHT_LINK;
-
-                    } else {
-
-                        return CommentTypeEnum.RIGHT_TEXT;
-                    }
+                    return CommentTypeEnum.RIGHT_TEXT;
 
                 } else {
 
-                    if (messageModel.getMessageType() == MessageTypes.LINK) {
-
-                        return CommentTypeEnum.LEFT_LINK;
-
-                    } else {
-
-                        return CommentTypeEnum.LEFT_TEXT;
-                    }
+                    return CommentTypeEnum.LEFT_TEXT;
                 }
             }
 
             case PictureModel pictureModel -> {
 
-                if (mainFrame.getUsername().equals(pictureModel.getSender())) {
+                if (doesClientMatchSender(pictureModel.getSender())) {
 
                     return CommentTypeEnum.RIGHT_PICTURE;
 
@@ -123,11 +108,23 @@ public class CommentManagerImpl implements CommentManager {
                 }
             }
 
-            case LinkModel link ->{
+            case LinkModel linkModel -> {
 
-                throw new RuntimeException("LinkModel not supported yet");
+                if (doesClientMatchSender(linkModel.getSender())) {
+
+                    return CommentTypeEnum.RIGHT_LINK;
+
+                } else {
+
+                    return CommentTypeEnum.LEFT_LINK;
+                }
             }
         }
+    }
+
+    private boolean doesClientMatchSender(final String messageModel) {
+
+        return mainFrame.getUsername().equals(messageModel);
     }
 
     @Override

@@ -3,8 +3,10 @@ package com.soeguet.gui.option_pane.links;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.option_pane.links.dtos.AbsoluteLinkRecord;
+import com.soeguet.gui.option_pane.links.dtos.LinkTransferDTO;
 import com.soeguet.gui.option_pane.links.dtos.MetadataStorageRecord;
 import com.soeguet.model.MessageTypes;
+import com.soeguet.model.jackson.LinkModel;
 import com.soeguet.model.jackson.MessageModel;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -19,12 +21,10 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.regex.Pattern;
 
 public class LinkDialogHandler {
 
@@ -173,20 +173,23 @@ public class LinkDialogHandler {
      Sends a link message to the websocket server.
 
      @param mainFrame the main frame interface
-     @param message the message to send
+     @param linkTransferDTO the message to send
      */
-    public void sendLinkToWebsocket(final MainFrameGuiInterface mainFrame, final String message) {
+    public void sendLinkToWebsocket(final MainFrameGuiInterface mainFrame, final LinkTransferDTO linkTransferDTO) {
 
-        MessageModel messageModel = new MessageModel();
-        messageModel.setMessageType(MessageTypes.LINK);
-        messageModel.setTime(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
-        messageModel.setSender(mainFrame.getUsername());
-        messageModel.setMessage(message);
+
+        LinkModel linkModel = new LinkModel();
+        linkModel.setMessageType(MessageTypes.LINK);
+        linkModel.setTime(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
+        linkModel.setSender(mainFrame.getUsername());
+        linkModel.setLink(linkTransferDTO.link());
+        linkModel.setComment(linkTransferDTO.comment());
+        // TODO: 02.11.23 add quote support
 
         try {
 
-            String messageString = mainFrame.getObjectMapper().writeValueAsString(messageModel);
-            mainFrame.getWebsocketClient().send(messageString);
+            String linkString = mainFrame.getObjectMapper().writeValueAsString(linkModel);
+            mainFrame.getWebsocketClient().send(linkString);
 
         } catch (JsonProcessingException ex) {
 
