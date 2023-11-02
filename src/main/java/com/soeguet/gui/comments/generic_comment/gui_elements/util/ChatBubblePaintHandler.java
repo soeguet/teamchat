@@ -7,17 +7,13 @@ import java.awt.*;
 
 public class ChatBubblePaintHandler {
 
+    // variables -- start
     private final CustomContentContainer customContentContainer;
     private final Side side;
-
-    public void setBorderColor(final Color borderColor) {
-
-        this.borderColor = borderColor;
-        customContentContainer.repaint();
-    }
-
     private Color borderColor;
+    // variables -- end
 
+    // constructors -- start
     public ChatBubblePaintHandler(final CustomContentContainer customContentContainer, final Side side,
                                   final Color borderColor) {
 
@@ -25,6 +21,7 @@ public class ChatBubblePaintHandler {
         this.side = side;
         this.borderColor = borderColor;
     }
+    // constructors -- end
 
     public void setupChatBubble() {
 
@@ -35,16 +32,6 @@ public class ChatBubblePaintHandler {
             case RIGHT -> setupRightChatBubble(container);
         }
 
-    }
-
-    public CustomContentContainer getCustomContentContainer() {
-
-        return customContentContainer;
-    }
-
-    public Side getSide() {
-
-        return side;
     }
 
     private void setupLeftChatBubble(final CustomContentContainer container) {
@@ -104,8 +91,26 @@ public class ChatBubblePaintHandler {
         });
     }
 
+    // getter & setter -- start
     public Color getBorderColor() {
 
         return borderColor;
     }
+
+    public void setBorderColor(final Color borderColor) {
+
+        this.borderColor = borderColor;
+        customContentContainer.repaint();
+    }
+
+    public CustomContentContainer getCustomContentContainer() {
+
+        return customContentContainer;
+    }
+
+    public Side getSide() {
+
+        return side;
+    }
+    // getter & setter -- end
 }

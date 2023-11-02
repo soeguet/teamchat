@@ -66,121 +66,138 @@ public class CustomCommentPanel extends JPanel {
     public void addComponents() {
 
         /*
-        cell 1 1 1 2
-        colum 1, row 1, span col 1, span row 2
+        CONSTRAINS EXPLAINED
+                cell 1 1 1 2
+                colum 1, row 1, span col 1, span row 2
          */
 
-        // init setup
+        // MainPanel - MigLayout - wraps SIDE and CONTENT - wrapped by CustomCommentPanel (OverlayLayout)
         final CustomMainWrapperContainer mainPanel = this.getCustomMainWrapperContainer();
-        final TransparentTopPanel topPanel = this.getTopContainer();
-        final CommentSidePanel commentSidePanel = this.getSidePanel();
-        final CustomContentContainer mainContentPanel = this.getCustomContentContainer();
-        mainContentPanel.setTopPanelReference(topPanel);
 
-        //container components
-        this.add(mainPanel);
-        this.add(topPanel);
+        // wrapped by CustomCommentPanel (OverlayLayout)
+        final TransparentTopPanel topPanel = this.getTopContainer();
+
+        // wrapped by CustomMainWrapperContainer -- SIDE
+        final CommentSidePanel commentSidePanel = this.getSidePanel();
+        commentSidePanel.setInteractionButton();
+
+        // wrapped by CustomMainWrapperContainer -- CONTENT
+        final CustomContentContainer mainContentPanel = this.getCustomContentContainer();
+        mainContentPanel.setTopPanelReference(topPanel); //gets a reference to the TopPanel (resizing events!)
 
         switch (this.getSide()) {
 
             case LEFT -> {
 
+                //SIDE
                 mainPanel.add(commentSidePanel, "cell 0 0 1 2, dock west");
+
+                //CONTENT
                 mainPanel.add(mainContentPanel, "cell 1 0 1 2, dock west, gapleft 5, gapright 50");
                 topPanel.setAlignmentX(0.0f);
             }
 
             case RIGHT -> {
 
+                //SIDE
                 mainPanel.add(commentSidePanel, "cell 1 0 1 2, dock east");
+
+                //CONTENT
                 mainPanel.add(mainContentPanel, "cell 0 0 1 2, dock east, gapright 5, gapleft 50, grow");
             }
         }
+
+        // this == CustomCommentPanel == Container with OverlayLayout (!) -> wraps TopPanel and MainPanel
+        this.add(mainPanel);
+        this.add(topPanel);
     }
 
     public void addContext() {
 
-        // TODO: 02.11.23 less complex approach needed
-
         //setup
         final CustomContentContainer contentContainer = this.getCustomContentContainer();
-        final JPanel mainPanelContainer = this.getCustomMainWrapperContainer();
-
         final Side commentSide = this.getSide();
 
         switch (commentType) {
 
-            case LEFT_TEXT, RIGHT_TEXT -> {
+            case LEFT_TEXT, RIGHT_TEXT -> processIncomingTextMessage(commentSide, contentContainer);
 
-                //TODO factory method maybe?
-                if (baseModel instanceof MessageModel messageModel) {
+            case LEFT_PICTURE, RIGHT_PICTURE -> processIncomingPictureMessage(commentSide, contentContainer);
 
-                    CustomTextPane customTextPane = new CustomTextPane(true, messageModel.getMessage());
-                    customTextPane.create();
+            case LEFT_LINK, RIGHT_LINK -> processIncomingLinkMessage(commentSide, contentContainer);
+        }
 
-                    switch (commentSide) {
+    }
 
-                        case LEFT -> {
+    private void processIncomingLinkMessage(final Side commentSide, final CustomContentContainer contentContainer) {
 
-                            String leftConstraints = "gapleft 15, grow 1.0, gaptop 10";
-                            contentContainer.add(customTextPane, leftConstraints);
-                        }
+        CustomLinkPanel customLinkPanel = new LinkPanelFactory(baseModel).create();
 
-                        case RIGHT -> {
+        switch (commentSide) {
 
-                            String rightConstraints = "gapright 15, grow 1.0, gaptop 10";
-                            contentContainer.add(customTextPane, rightConstraints);
-                        }
-                    }
-                }
+            case LEFT -> {
+
+                final String leftConstraints = "cell 0 0, gapleft 15, gaptop 10, gapright 5";
+                contentContainer.add(customLinkPanel, leftConstraints);
             }
 
-            case LEFT_PICTURE, RIGHT_PICTURE -> {
+            case RIGHT -> {
 
-                CustomPictureWrapperPanel pictureLabel = new PicturePanelFactory(baseModel).create();
+                final String rightConstraints = "cell 0 0, gapleft 3, gapright 15, gaptop 10";
+                contentContainer.add(customLinkPanel, rightConstraints);
+            }
+        }
+    }
 
-                switch (commentSide) {
+    private void processIncomingPictureMessage(final Side commentSide, final CustomContentContainer contentContainer) {
 
-                    case LEFT -> {
+        CustomPictureWrapperPanel pictureLabel = new PicturePanelFactory(baseModel).create();
 
-                        final String leftConstraints = "cell 0 0, wrap, gapleft 15, gaptop 10, gapright 5, grow 1.1";
-                        contentContainer.add(pictureLabel, leftConstraints);
-                    }
+        switch (commentSide) {
 
-                    case RIGHT -> {
+            case LEFT -> {
 
-                        final String rightConstraints = "cell 0 0, wrap, gapleft 3, gapright 15, gaptop 10, grow 1.1";
-                        contentContainer.add(pictureLabel, rightConstraints);
-                    }
-                }
+                final String leftConstraints = "cell 0 0, wrap, gapleft 15, gaptop 10, gapright 5, grow 1.1";
+                contentContainer.add(pictureLabel, leftConstraints);
             }
 
-            case LEFT_LINK, RIGHT_LINK -> {
+            case RIGHT -> {
 
-                CustomLinkPanel customLinkPanel = new LinkPanelFactory(baseModel).create();
+                final String rightConstraints = "cell 0 0, wrap, gapleft 3, gapright 15, gaptop 10, grow 1.1";
+                contentContainer.add(pictureLabel, rightConstraints);
+            }
+        }
+    }
 
-                switch (commentSide) {
+    private void processIncomingTextMessage(final Side commentSide, final CustomContentContainer contentContainer) {
 
-                    case LEFT -> {
+        //TODO factory method maybe?
+        if (baseModel instanceof MessageModel messageModel) {
 
-                        final String leftConstraints = "cell 0 0, gapleft 15, gaptop 10, gapright 5";
-                        contentContainer.add(customLinkPanel, leftConstraints);
-                    }
+            CustomTextPane customTextPane = new CustomTextPane(true, messageModel.getMessage());
+            customTextPane.create();
 
-                    case RIGHT -> {
+            switch (commentSide) {
 
-                        final String rightConstraints = "cell 0 0, gapleft 3, gapright 15, gaptop 10";
-                        contentContainer.add(customLinkPanel, rightConstraints);
-                    }
+                case LEFT -> {
+
+                    String leftConstraints = "gapleft 15, grow 1.0, gaptop 10";
+                    contentContainer.add(customTextPane, leftConstraints);
+                }
+
+                case RIGHT -> {
+
+                    String rightConstraints = "gapright 15, grow 1.0, gaptop 10";
+                    contentContainer.add(customTextPane, rightConstraints);
                 }
             }
         }
-
     }
 
     public void paintChatBubble() {
 
         final Side commentSide = this.getSide();
+        // TODO: 02.11.23 border color implementation
         final Color borderColor = new Color(23, 0, 146);
         ChatBubblePaintHandler chatBubblePaintHandler = new ChatBubblePaintHandler(getCustomContentContainer(),
                                                                                    commentSide, borderColor);
@@ -196,6 +213,10 @@ public class CustomCommentPanel extends JPanel {
 
             case RIGHT_TEXT, RIGHT_PICTURE, RIGHT_LINK -> this.side = Side.RIGHT;
         }
+    }
+
+    public void prepareInteractionButtons() {
+
     }
 
     // getter & setter -- start

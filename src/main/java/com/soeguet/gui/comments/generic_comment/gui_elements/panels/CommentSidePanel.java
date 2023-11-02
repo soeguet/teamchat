@@ -16,14 +16,12 @@ public class CommentSidePanel extends JPanel {
     private JLabel timeLabel;
     private JButton interactionButton;
     // variables -- end
-
     // constructors -- start
     public CommentSidePanel(final CommentTypeEnum commentType) {
 
         side = new SideHandler().determineSide(commentType);
         nameLabel = new JLabel();
         timeLabel = new JLabel("10:00");
-        interactionButton = new JButton("...");
 
         this.componentConfig();
     }
@@ -45,13 +43,13 @@ public class CommentSidePanel extends JPanel {
 
         //button
         final JButton interactionButton = this.getInteractionButton();
-//        interactionButton.setBorder(BorderFactory.createEmptyBorder());
+        //        interactionButton.setBorder(BorderFactory.createEmptyBorder());
         interactionButton.setBackground(null);
     }
 
     public void addComponents() {
 
-        switch (side) {
+        switch (this.getSide()) {
             case LEFT -> {
                 add(this.getNameLabel(), "cell 0 0 2 1");
                 add(this.getTimeLabel(), "cell 1 1 1 1");
@@ -115,6 +113,11 @@ public class CommentSidePanel extends JPanel {
     public void setNameLabel(final JLabel nameLabel) {
 
         this.nameLabel = nameLabel;
+    }
+
+    public Side getSide() {
+
+        return side;
     }
 
     public JLabel getTimeLabel() {

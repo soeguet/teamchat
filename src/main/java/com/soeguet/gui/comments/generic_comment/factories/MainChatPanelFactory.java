@@ -38,7 +38,8 @@ public class MainChatPanelFactory {
         // setup of content container -> will not be populated with content yet -- #generateCommentPanel
         CustomContentContainer customContentContainer = new ContentContainerFactory().create();
 
-        //WRAPS SIDE AND CONTENT! CustomCommentPanel can't since the LayoutManger needs to be OverlayLayout
+        //WRAPS SIDE AND CONTENT!
+        // CustomCommentPanel can't since the LayoutManger needs to be OverlayLayout
         // -> it needs to bind TransparentTopPanel and CustomMainWrapperContainer
         CustomMainWrapperContainer customMainWrapperContainer = new CustomMainWrapperContainer(commentType);
         customMainWrapperContainer.setMainWrapperContainerLayoutManager();
@@ -63,6 +64,7 @@ public class MainChatPanelFactory {
         customCommentPanel.setTopContainer(new TransparentTopPanel());
 
         //assemble -> this is where basemodel is differentiated -> message, link, picture
+        customCommentPanel.prepareInteractionButtons(); //will be needed in .addComponents()
         customCommentPanel.setLayoutManager();
         customCommentPanel.addComponents();
         customCommentPanel.addContext();
