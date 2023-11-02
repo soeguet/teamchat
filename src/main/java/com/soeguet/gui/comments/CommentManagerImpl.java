@@ -67,6 +67,11 @@ public class CommentManagerImpl implements CommentManager {
         return new Color(r, g, b).getRGB();
     }
 
+    private boolean doesClientMatchSender(final String messageModel) {
+
+        return mainFrame.getUsername().equals(messageModel);
+    }
+
     // overrides -- start
 
     /**
@@ -81,7 +86,6 @@ public class CommentManagerImpl implements CommentManager {
     public CommentTypeEnum categorizeMessageFromSocket(final BaseModel baseModel) {
 
         //TEST this
-
         switch (baseModel) {
 
             case MessageModel messageModel -> {
@@ -122,11 +126,9 @@ public class CommentManagerImpl implements CommentManager {
         }
     }
 
-    private boolean doesClientMatchSender(final String messageModel) {
-
-        return mainFrame.getUsername().equals(messageModel);
-    }
-
+    /**
+     Sets up a message on the main chat panel based on the given MessageHandlerDTO. Core Method!
+     */
     @Override
     public void setupMessage(final MessageHandlerDTO messageHandlerDTO) {
 

@@ -2,7 +2,6 @@ package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
 import com.soeguet.gui.comments.generic_comment.factories.LinkBubbleFactory;
 import com.soeguet.gui.comments.generic_comment.factories.PictureBubbleFactory;
-import com.soeguet.gui.comments.generic_comment.gui_elements.textpane.CustomPicturePane;
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpane.CustomTextPane;
 import com.soeguet.gui.comments.generic_comment.gui_elements.util.ChatBubblePaintHandler;
 import com.soeguet.gui.comments.generic_comment.util.Side;
@@ -113,28 +112,31 @@ public class CustomCommentPanel extends JPanel {
 
             case LEFT_TEXT, RIGHT_TEXT -> {
 
-                CustomTextPane customTextPane = new CustomTextPane(true, (MessageModel) baseModel);
-                customTextPane.create();
+                if (baseModel instanceof MessageModel messageModel) {
 
-                switch (commentSide) {
+                    CustomTextPane customTextPane = new CustomTextPane(true, messageModel.getMessage());
+                    customTextPane.create();
 
-                    case LEFT -> {
+                    switch (commentSide) {
 
-                        String leftConstraints = "gapleft 15, grow 1.0, gaptop 10";
-                        contentContainer.add(customTextPane, leftConstraints);
-                    }
+                        case LEFT -> {
 
-                    case RIGHT -> {
+                            String leftConstraints = "gapleft 15, grow 1.0, gaptop 10";
+                            contentContainer.add(customTextPane, leftConstraints);
+                        }
 
-                        String rightConstraints = "gapright 15, grow 1.0, gaptop 10";
-                        contentContainer.add(customTextPane, rightConstraints);
+                        case RIGHT -> {
+
+                            String rightConstraints = "gapright 15, grow 1.0, gaptop 10";
+                            contentContainer.add(customTextPane, rightConstraints);
+                        }
                     }
                 }
             }
 
             case LEFT_PICTURE, RIGHT_PICTURE -> {
 
-                CustomPicturePane pictureLabel = new PictureBubbleFactory(baseModel).create();
+                CustomPictureWrapperPanel pictureLabel = new PictureBubbleFactory(baseModel).create();
 
                 switch (commentSide) {
 

@@ -24,6 +24,8 @@ public class CommentPanelFactory {
 
         CommentSidePanel commentSidePanel = new SidePanelFactory(messageHandlerDTO.baseModel(),
                                                                  messageHandlerDTO.commentType()).create();
+
+        //setup of content container -> will not be populated with content yet! #generateCommentPanel
         CustomContentContainer customContentContainer = new ContentContainerFactory().create();
 
         CustomMainWrapperContainer customMainWrapperContainer = new CustomMainWrapperContainer(messageHandlerDTO.commentType());
@@ -32,6 +34,14 @@ public class CommentPanelFactory {
         return generateCommentPanel(commentSidePanel, customContentContainer, customMainWrapperContainer);
     }
 
+    /**
+     * Generates a custom comment panel with the specified dependencies and components.
+     *
+     * @param commentSidePanel The comment side panel to set for the comment panel.
+     * @param customContentContainer The custom content container to set for the comment panel.
+     * @param customMainWrapperContainer The custom main wrapper container to set for the comment panel.
+     * @return The generated custom comment panel.
+     */
     private CustomCommentPanel generateCommentPanel(final CommentSidePanel commentSidePanel,
                                                     final CustomContentContainer customContentContainer,
                                                     final CustomMainWrapperContainer customMainWrapperContainer) {
@@ -48,7 +58,7 @@ public class CommentPanelFactory {
         customCommentPanel.setCustomMainWrapperContainer(customMainWrapperContainer);
         customCommentPanel.setTopContainer(new TransparentTopPanel());
 
-        //assemble
+        //assemble -> this is where basemodel is differentiated -> message, link, picture
         customCommentPanel.setLayoutManager();
         customCommentPanel.addComponents();
         customCommentPanel.addContext();

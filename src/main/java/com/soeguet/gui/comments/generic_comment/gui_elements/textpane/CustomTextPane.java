@@ -9,12 +9,12 @@ import javax.swing.text.*;
 public class CustomTextPane extends JTextPane implements ContentInterface {
 
     private final boolean lineWrap;
-    private final MessageModel messageModel;
+    private final String message;
 
-    public CustomTextPane(final boolean lineWrap, final MessageModel messageModel) {
+    public CustomTextPane(final boolean lineWrap, final String message) {
 
         this.lineWrap = lineWrap;
-        this.messageModel = messageModel;
+        this.message = message;
 
         if (lineWrap) {
 
@@ -26,7 +26,7 @@ public class CustomTextPane extends JTextPane implements ContentInterface {
 
     public void create() {
 
-        super.setText(messageModel.getMessage());
+        super.setText(message);
     }
 
     private static class WrapEditorKit extends StyledEditorKit {

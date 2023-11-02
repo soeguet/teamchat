@@ -32,8 +32,6 @@ public class CustomPictureMaximizeMenuItem extends JMenuItem implements MouseLis
      */
     private void openImageInExternalImageViewer(BufferedImage image) {
 
-        System.out.println("opening image in external viewer");
-
         try {
 
             File tempFile = File.createTempFile("tempImage", ".png");

@@ -16,7 +16,7 @@ public class CustomLinkCommentTextPane extends CustomTextPane {
     public CustomLinkCommentTextPane(final boolean lineWrap, final LinkModel linkModel) {
 
         // FIXME: 02.11.23 -> this is a hack
-        super(lineWrap, new MessageModel());
+        super(lineWrap, linkModel.getComment());
         this.linkModel = linkModel;
     }
     // constructors -- end

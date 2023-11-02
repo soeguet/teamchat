@@ -1,7 +1,8 @@
-package com.soeguet.gui.comments.generic_comment.gui_elements.textpane;
+package com.soeguet.gui.comments.generic_comment.gui_elements.labels;
 
 import com.soeguet.gui.comments.generic_comment.gui_elements.interfaces.ContentInterface;
 import com.soeguet.gui.comments.generic_comment.gui_elements.menu_item.CustomPictureMaximizeMenuItem;
+import com.soeguet.model.jackson.PictureModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,18 +16,21 @@ import java.io.IOException;
 
 import static javax.imageio.ImageIO.read;
 
-public class CustomPicturePane extends JLabel implements ContentInterface, ComponentListener, MouseListener {
+public class CustomPictureLabel extends JLabel implements ContentInterface, ComponentListener, MouseListener {
 
     // variables -- start
+    private final PictureModel pictureModel;
     private final BufferedImage bufferedImage;
     // variables -- end
 
     // constructors -- start
-    public CustomPicturePane(byte[] picture) {
+    public CustomPictureLabel(PictureModel pictureModel) {
+
+        this.pictureModel = pictureModel;
 
         try {
 
-            bufferedImage = read(new ByteArrayInputStream(picture));
+            bufferedImage = read(new ByteArrayInputStream(pictureModel.getPicture()));
 
         } catch (IOException ex) {
 
