@@ -3,7 +3,6 @@ package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -15,6 +14,7 @@ public class CustomContentContainer extends JPanel implements ComponentListener 
     private Consumer<Graphics> customPaint;
     private TransparentTopPanel topPanel;
     // variables -- end
+
     // constructors -- start
     public CustomContentContainer() {
 
@@ -37,7 +37,6 @@ public class CustomContentContainer extends JPanel implements ComponentListener 
 
          */
 
-        super.setBorder(new LineBorder(Color.GREEN, 1));
         super.setLayout(new MigLayout("",
                                       // columns
                                       "[grow,fill]",
@@ -61,11 +60,11 @@ public class CustomContentContainer extends JPanel implements ComponentListener 
 
         this.topPanel.setSize(new Dimension(combinedWidthForTopPanel, heightForTopPanel));
         this.topPanel.setMaximumSize(new Dimension(combinedWidthForTopPanel, heightForTopPanel));
-//        topPanel.setBorder(new LineBorder(Color.RED,5));
-//        topPanel.setOpaque(true);
-//        topPanel.setBackground(Color.GREEN);
-//        revalidate();
-//        repaint();
+        //        topPanel.setBorder(new LineBorder(Color.RED,5));
+        //        topPanel.setOpaque(true);
+        //        topPanel.setBackground(Color.GREEN);
+        //        revalidate();
+        //        repaint();
     }
 
     @Override
@@ -92,10 +91,10 @@ public class CustomContentContainer extends JPanel implements ComponentListener 
     }
     // overrides -- end
 
-// getter & setter -- start
+    // getter & setter -- start
     public void setTopPanelReference(final TransparentTopPanel topPanel) {
 
         this.topPanel = topPanel;
     }
-// getter & setter -- end
+    // getter & setter -- end
 }

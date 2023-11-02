@@ -3,14 +3,14 @@ package com.soeguet.gui.comments.generic_comment.factories;
 import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomLinkPanel;
 import com.soeguet.model.jackson.BaseModel;
 
-public class LinkBubbleFactory {
+public class LinkPanelFactory {
 
     // variables -- start
     private final BaseModel baseModel;
     // variables -- end
 
     // constructors -- start
-    public LinkBubbleFactory(BaseModel baseModel) {
+    public LinkPanelFactory(BaseModel baseModel) {
 
         this.baseModel = baseModel;
     }

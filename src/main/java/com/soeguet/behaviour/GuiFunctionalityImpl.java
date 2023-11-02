@@ -410,14 +410,17 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
         checkIfMessageSenderAlreadyRegisteredInLocalCache(mainFrame.getChatClientPropertiesHashMap(), baseModel.getSender());
 
         //handle displayed message name - nickname as well as timeAndUsername
-        String nickname = checkForNickname(baseModel.getSender());
+        // TODO: 02.11.23 maybe nickname support -- removed it for now
+        //String nickname = checkForNickname(baseModel.getSender());
 
         //process and display message
-        switch (retrieveMessageType(baseModel)) {
+        if (retrieveMessageType(baseModel) == MessageTypes.INTERACTED) {
 
-            case MessageTypes.INTERACTED -> messageDisplayHandler.updateExistingMessage(baseModel);
+            messageDisplayHandler.updateExistingMessage(baseModel);
 
-            default -> messageDisplayHandler.processAndDisplayMessage(baseModel, nickname);
+        } else {
+
+            messageDisplayHandler.processAndDisplayMessage(baseModel);
         }
 
         //check for remaining messages in the local cache

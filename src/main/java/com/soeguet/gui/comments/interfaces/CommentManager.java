@@ -8,5 +8,5 @@ public interface CommentManager {
 
     CommentTypeEnum categorizeMessageFromSocket(final BaseModel baseModel);
 
-    void setupMessage(MessageHandlerDTO messageHandlerDTO);
+    void setupMessage(BaseModel baseModel, CommentTypeEnum commentType);
 }

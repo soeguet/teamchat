@@ -54,28 +54,10 @@ public class MessageDisplayHandler implements MessageDisplayHandlerInterface {
      The nickname of the client.
      */
     @Override
-    public void processAndDisplayMessage(final BaseModel baseModel, final String nickname) {
+    public void processAndDisplayMessage(final BaseModel baseModel) {
 
         CommentTypeEnum commentType = commentManager.categorizeMessageFromSocket(baseModel);
-
-        MessageHandlerDTO messageHandlerDTO = new MessageHandlerDTO(baseModel, nickname, commentType);
-
-        commentManager.setupMessage(messageHandlerDTO);
-
-        //        switch (commentType) {
-        //
-        //            case CommentTypeEnum.RIGHT_TEXT -> commentManager.setupMessage(messageHandlerDTO);
-        //
-        //            case CommentTypeEnum.RIGHT_PICTURE -> commentManager.setupPicturesRightSide(baseModel, nickname);
-        //
-        //            case CommentTypeEnum.RIGHT_LINK -> commentManager.setupLinkRightSite(baseModel);
-        //
-        //            case CommentTypeEnum.LEFT_TEXT -> commentManager.setupMessage(messageHandlerDTO);
-        //
-        //            case CommentTypeEnum.LEFT_PICTURE -> commentManager.setupPicturesLeftSide(baseModel, nickname);
-        //
-        //            case CommentTypeEnum.LEFT_LINK -> commentManager.setupLinkLeftSide(baseModel);
-        //        }
+        commentManager.setupMessage(baseModel, commentType);
     }
 
     public void setCacheManager(final CacheManager cacheManager) {

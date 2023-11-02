@@ -1,13 +1,12 @@
 package com.soeguet.gui.comments;
 
-import com.soeguet.gui.comments.generic_comment.factories.CommentPanelFactory;
+import com.soeguet.gui.comments.generic_comment.factories.MainChatPanelFactory;
 import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomCommentPanel;
 import com.soeguet.gui.comments.generic_comment.util.Side;
 import com.soeguet.gui.comments.generic_comment.util.SideHandler;
 import com.soeguet.gui.comments.interfaces.CommentManager;
 import com.soeguet.gui.comments.util.CommentTypeEnum;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
-import com.soeguet.gui.main_panel.dtos.MessageHandlerDTO;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.LinkModel;
 import com.soeguet.model.jackson.MessageModel;
@@ -130,10 +129,10 @@ public class CommentManagerImpl implements CommentManager {
      Sets up a message on the main chat panel based on the given MessageHandlerDTO. Core Method!
      */
     @Override
-    public void setupMessage(final MessageHandlerDTO messageHandlerDTO) {
+    public void setupMessage(BaseModel baseModel, CommentTypeEnum commentType) {
 
-        CustomCommentPanel customCommentPanel = new CommentPanelFactory(mainFrame, messageHandlerDTO).create();
-        this.addCommentPanelToMainChatPanel(customCommentPanel, messageHandlerDTO.commentType());
+        CustomCommentPanel customCommentPanel = new MainChatPanelFactory(mainFrame, baseModel, commentType).create();
+        this.addCommentPanelToMainChatPanel(customCommentPanel, commentType);
 
         repaintMainFrame();
     }

@@ -20,7 +20,7 @@ public class CustomPictureWrapperPanel extends JPanel {
         [DESCRIPTION/TEXT]
          */
 
-        super.setLayout(new MigLayout("debug",
+        super.setLayout(new MigLayout("",
                                       //columns
                                       "[fill,grow]",
                                       //rows

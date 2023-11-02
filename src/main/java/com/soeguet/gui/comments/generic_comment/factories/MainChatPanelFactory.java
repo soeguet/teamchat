@@ -1,47 +1,51 @@
 package com.soeguet.gui.comments.generic_comment.factories;
 
 import com.soeguet.gui.comments.generic_comment.gui_elements.panels.*;
+import com.soeguet.gui.comments.util.CommentTypeEnum;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
-import com.soeguet.gui.main_panel.dtos.MessageHandlerDTO;
+import com.soeguet.model.jackson.BaseModel;
 
 //THIS IS THE MAIN CHAT PANEL FACTORY
-public class CommentPanelFactory {
+public class MainChatPanelFactory {
 
     // variables -- start
     private final MainFrameGuiInterface mainFrame;
-    private final MessageHandlerDTO messageHandlerDTO;
+    private final BaseModel baseModel;
+    private final CommentTypeEnum commentType;
     // variables -- end
 
     // constructors -- start
-    public CommentPanelFactory(final MainFrameGuiInterface mainFrame, final MessageHandlerDTO messageHandlerDTO) {
+    public MainChatPanelFactory(final MainFrameGuiInterface mainFrame, BaseModel baseModel,
+                                CommentTypeEnum commentType) {
 
         this.mainFrame = mainFrame;
-        this.messageHandlerDTO = messageHandlerDTO;
+        this.baseModel = baseModel;
+        this.commentType = commentType;
     }
     // constructors -- end
 
+    /**
+     Creates a custom comment panel.
+
+     @return the custom comment panel
+     */
     public CustomCommentPanel create() {
 
-        CommentSidePanel commentSidePanel = new SidePanelFactory(messageHandlerDTO.baseModel(),
-                                                                 messageHandlerDTO.commentType()).create();
+        //SIDE
+        CommentSidePanel commentSidePanel = new SidePanelFactory(baseModel, commentType).create();
 
-        //setup of content container -> will not be populated with content yet! #generateCommentPanel
+        //NEXT TO SIDE -> CONTENT
+        // setup of content container -> will not be populated with content yet -- #generateCommentPanel
         CustomContentContainer customContentContainer = new ContentContainerFactory().create();
 
-        CustomMainWrapperContainer customMainWrapperContainer = new CustomMainWrapperContainer(messageHandlerDTO.commentType());
+        //WRAPS SIDE AND CONTENT! CustomCommentPanel can't since the LayoutManger needs to be OverlayLayout
+        // -> it needs to bind TransparentTopPanel and CustomMainWrapperContainer
+        CustomMainWrapperContainer customMainWrapperContainer = new CustomMainWrapperContainer(commentType);
         customMainWrapperContainer.setMainWrapperContainerLayoutManager();
 
         return generateCommentPanel(commentSidePanel, customContentContainer, customMainWrapperContainer);
     }
 
-    /**
-     * Generates a custom comment panel with the specified dependencies and components.
-     *
-     * @param commentSidePanel The comment side panel to set for the comment panel.
-     * @param customContentContainer The custom content container to set for the comment panel.
-     * @param customMainWrapperContainer The custom main wrapper container to set for the comment panel.
-     * @return The generated custom comment panel.
-     */
     private CustomCommentPanel generateCommentPanel(final CommentSidePanel commentSidePanel,
                                                     final CustomContentContainer customContentContainer,
                                                     final CustomMainWrapperContainer customMainWrapperContainer) {
@@ -50,9 +54,9 @@ public class CommentPanelFactory {
 
         //set dependencies
         customCommentPanel.setMainFrame(mainFrame);
-        customCommentPanel.setCommentType(messageHandlerDTO.commentType());
+        customCommentPanel.setCommentType(commentType);
         customCommentPanel.setSide();
-        customCommentPanel.setBaseModel(messageHandlerDTO.baseModel());
+        customCommentPanel.setBaseModel(baseModel);
         customCommentPanel.setSidePanel(commentSidePanel);
         customCommentPanel.setCustomContentContainer(customContentContainer);
         customCommentPanel.setCustomMainWrapperContainer(customMainWrapperContainer);

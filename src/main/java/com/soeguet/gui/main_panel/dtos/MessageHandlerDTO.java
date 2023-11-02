@@ -3,6 +3,6 @@ package com.soeguet.gui.main_panel.dtos;
 import com.soeguet.gui.comments.util.CommentTypeEnum;
 import com.soeguet.model.jackson.BaseModel;
 
-public record MessageHandlerDTO(BaseModel baseModel, String nickname, CommentTypeEnum commentType) {
+public record MessageHandlerDTO(BaseModel baseModel, CommentTypeEnum commentType) {
 
 }

@@ -62,6 +62,8 @@ public class CustomMainWrapperContainer extends JPanel {
         }
     }
 
+
+
     // overrides -- start
     @Override
     protected void paintComponent(Graphics g) {

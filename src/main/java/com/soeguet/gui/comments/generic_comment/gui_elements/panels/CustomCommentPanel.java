@@ -1,7 +1,7 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
-import com.soeguet.gui.comments.generic_comment.factories.LinkBubbleFactory;
-import com.soeguet.gui.comments.generic_comment.factories.PictureBubbleFactory;
+import com.soeguet.gui.comments.generic_comment.factories.LinkPanelFactory;
+import com.soeguet.gui.comments.generic_comment.factories.PicturePanelFactory;
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpane.CustomTextPane;
 import com.soeguet.gui.comments.generic_comment.gui_elements.util.ChatBubblePaintHandler;
 import com.soeguet.gui.comments.generic_comment.util.Side;
@@ -112,6 +112,7 @@ public class CustomCommentPanel extends JPanel {
 
             case LEFT_TEXT, RIGHT_TEXT -> {
 
+                //TODO factory method maybe?
                 if (baseModel instanceof MessageModel messageModel) {
 
                     CustomTextPane customTextPane = new CustomTextPane(true, messageModel.getMessage());
@@ -136,7 +137,7 @@ public class CustomCommentPanel extends JPanel {
 
             case LEFT_PICTURE, RIGHT_PICTURE -> {
 
-                CustomPictureWrapperPanel pictureLabel = new PictureBubbleFactory(baseModel).create();
+                CustomPictureWrapperPanel pictureLabel = new PicturePanelFactory(baseModel).create();
 
                 switch (commentSide) {
 
@@ -152,17 +153,11 @@ public class CustomCommentPanel extends JPanel {
                         contentContainer.add(pictureLabel, rightConstraints);
                     }
                 }
-
-                final int pictureLabelWidth = pictureLabel.getWidth();
-                final int pictureLabelHeight = pictureLabel.getHeight();
-                contentContainer.setSize(pictureLabelWidth * 2, pictureLabelHeight * 2);
-                mainPanelContainer.setSize(pictureLabelWidth * 2, pictureLabelHeight * 2);
-                this.setSize(pictureLabelWidth * 2, pictureLabelHeight * 2);
             }
 
             case LEFT_LINK, RIGHT_LINK -> {
 
-                CustomLinkPanel customLinkPanel = new LinkBubbleFactory(baseModel).create();
+                CustomLinkPanel customLinkPanel = new LinkPanelFactory(baseModel).create();
 
                 switch (commentSide) {
 
