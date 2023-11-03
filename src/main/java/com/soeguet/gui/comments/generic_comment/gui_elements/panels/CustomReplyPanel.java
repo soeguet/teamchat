@@ -1,7 +1,8 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
 import com.soeguet.gui.comments.generic_comment.factories.ReferencePanelFactory;
-import com.soeguet.gui.comments.util.WrapEditorKit;
+import com.soeguet.gui.comments.generic_comment.gui_elements.buttons.CustomCloseButton;
+import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomSimpleTextPane;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.BaseModel;
 import net.miginfocom.swing.MigLayout;
@@ -33,6 +34,8 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
 
         super.addMouseListener(this);
         super.addMouseMotionListener(this);
+
+        super.setBorder(new LineBorder(Color.DARK_GRAY, 2));
     }
     // constructors -- end
 
@@ -51,9 +54,9 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
         /*
         SCHEMA: ReplyPanel
 
-        [[          title         ][x]] // contains title and close button
-        [[   referenced stuff     ]] // contains refereced stuff <- will contain CustomQuotePanel (?)
-        [ [text pane] [ [1] [2] [3] ] ] //text pane and buttons
+        [[_________title__________][x]]     // contains title and close button
+        [[______referenced_stuff_____]]     // contains refereced stuff <- will contain CustomQuotePanel (?)
+        [ [text_pane] [ [1] [2] [3] ] ]     //text pane and buttons
 
          */
 
@@ -71,61 +74,44 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
 
     public void populateCustomReplyPanel() {
 
-        // TODO: 02.11.23 this should be done in a factory class
-
-        super.setBorder(new LineBorder(Color.DARK_GRAY, 2));
-
         //TITLE
-        JPanel titlePanel = new JPanel();
-        titlePanel.setBackground(new Color(189, 189, 189, 255));
-        titlePanel.setLayout(new MigLayout("",
-                                           //columns
-                                           "[fill,grow][fill]",
-                                           //rows
-                                           "[fill, center]"));
-        JLabel titleLabel = new JLabel("Reply to: " + baseModel.getSender());
-        titlePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        titlePanel.add(titleLabel, "cell 0 0");
-        JButton closeButton = new JButton("x");
-        titlePanel.add(closeButton, "cell 1 0");
-        closeButton.addMouseListener(new MouseAdapter() {
-
-            // overrides -- start
-            @Override
-            public void mouseClicked(final MouseEvent e) {
-
-                CustomReplyPanel.super.setVisible(false);
-            }
-            // overrides -- end
-        });
-        super.add(titlePanel, "cell 0 0");
+        populateReplyPanelTitle();
 
         //REFERENCE
-        CustomReferencePanel customQuoteReplyPanel = new ReferencePanelFactory(baseModel).createReferencePanel();
-        customQuoteReplyPanel.setLayoutManager();
-
-        super.add(customQuoteReplyPanel, "cell 0 1, grow");
+        populateReplyPanelReferenceSection();
 
         //BOTTOM
+        populateReplyPanelBottomSection();
+    }
+
+    private void populateReplyPanelBottomSection() {
+
+        //create panel itself
+        CustomSimpleJPanel bottomPanel = new CustomSimpleJPanel(new MigLayout("",
+                                                                              //columns
+                                                                              "[fill,grow][fill]",
+                                                                              //rows
+                                                                              "[fill]"));
+
         // -> TEXT PANE
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.setOpaque(false);
-        bottomPanel.setLayout(new MigLayout("",
-                                            //columns
-                                            "[fill,grow][fill]",
-                                            //rows
-                                            "[fill]"));
-        JTextPane textPane = new JTextPane();
-        textPane.setEditorKit(new WrapEditorKit());
+        CustomSimpleTextPane textPane = new CustomSimpleTextPane();
         bottomPanel.add(textPane, "cell 0 0");
 
         // -> BUTTON PANEL
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new MigLayout("",
-                                            //columns
-                                            "[fill][fill][fill]",
-                                            //rows
-                                            "[fill]"));
+        CustomSimpleJPanel buttonPanel = new CustomSimpleJPanel(new MigLayout("",
+                                                                              //columns
+                                                                              "[fill][fill][fill]",
+                                                                              //rows
+                                                                              "[fill]"));
+        populateButtonPanel(buttonPanel);
+        bottomPanel.add(buttonPanel, "cell 1 0");
+
+        //add panel to reply panel
+        super.add(bottomPanel, "cell 0 2");
+    }
+
+    private void populateButtonPanel(final CustomSimpleJPanel buttonPanel) {
+
         JButton emojiButton = new JButton("E");
         buttonPanel.add(emojiButton, "cell 0 0");
 
@@ -134,11 +120,33 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
 
         JButton sendButton = new JButton("S");
         buttonPanel.add(sendButton, "cell 2 0");
+    }
 
-        bottomPanel.add(buttonPanel, "cell 1 0");
+    private void populateReplyPanelReferenceSection() {
 
-        super.add(bottomPanel, "cell 0 2");
+        CustomReferencePanel customReferencePanel = new ReferencePanelFactory(baseModel).createReferencePanel();
+        customReferencePanel.setLayoutManager();
 
+        super.add(customReferencePanel, "cell 0 1, grow, gapleft 10, gapright 10");
+    }
+
+    private void populateReplyPanelTitle() {
+
+        JPanel titlePanel = new JPanel();
+        titlePanel.setBackground(new Color(189, 189, 189, 255));
+        titlePanel.setLayout(new MigLayout("",
+                                           //columns
+                                           "[fill,grow][fill]",
+                                           //rows
+                                           "[fill, center]"));
+
+        JLabel titleLabel = new JLabel("Reply to: " + baseModel.getSender());
+        titlePanel.add(titleLabel, "cell 0 0");
+
+        CustomCloseButton closeButton = new CustomCloseButton(this, "x");
+        titlePanel.add(closeButton, "cell 1 0");
+
+        super.add(titlePanel, "cell 0 0");
     }
 
     private boolean isInCorner(Point p) {
@@ -147,8 +155,6 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
         return p.x >= size.width - CORNER_SIZE && p.y >= size.height - CORNER_SIZE;
     }
 
-    // overrides -- start
-    // overrides -- start
     @Override
     protected void paintComponent(final Graphics g) {
 
@@ -195,42 +201,9 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
             this.setLocation(x, y);
         }
 
+        //this is needed, else the panel will not adjust to the new size
         revalidate();
         repaint();
-
-        //
-        //        Point currentPoint = e.getPoint();
-        //
-        //        if (!isInCorner(currentPoint)) {
-        //            int x = e.getX() - previousPoint.x + this.getX();
-        //            int y = e.getY() - previousPoint.y + this.getY();
-        //            this.setLocation(x, y);
-        //
-        //        } else {
-        //
-        //            System.out.println("is corner!");
-        //            int x = e.getX() - previousPoint.x;
-        //            int y = e.getY() - previousPoint.y;
-        //            System.out.println("x: " + x + " y: " + y);
-        //            this.setSize(this.getSize().width + x, this.getSize().height + y);
-        //            System.out.println("width: " + this.getSize().width + " height: " + this.getSize().height);
-        //            this.revalidate();
-        //        }
-        //            int dx = currentPoint.x - previousPoint.x;
-        //            int dy = currentPoint.y - previousPoint.y;
-        //            Dimension size = this.getSize();
-        //            this.setSize(size.width + dx, size.height + dy);
-        //            this.revalidate();
-        //        }
-        //
-        //        else {
-        //            System.out.println("currentPoint: " + currentPoint);
-        //            int dx = currentPoint.x - previousPoint.x;
-        //            int dy = currentPoint.y - previousPoint.y;
-        //            this.setLocation(this.getLocation().x + dx, this.getLocation().y + dy);
-        //        }
-        //        previousPoint = currentPoint;
-
     }
 
     @Override
@@ -273,6 +246,4 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
     public void mouseExited(final java.awt.event.MouseEvent e) {
 
     }
-    // overrides -- end
-    // overrides -- end
 }

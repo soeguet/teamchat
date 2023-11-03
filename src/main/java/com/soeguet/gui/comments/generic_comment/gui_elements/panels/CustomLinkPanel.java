@@ -28,7 +28,7 @@ public class CustomLinkPanel extends JPanel {
      */
     public void setLayoutManager() {
 
-        super.setLayout(new MigLayout("debug",
+        super.setLayout(new MigLayout("",
                                       //columns
                                       "[fill,grow]",
                                       //rows

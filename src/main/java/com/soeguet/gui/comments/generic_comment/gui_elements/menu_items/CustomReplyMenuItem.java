@@ -39,7 +39,6 @@ public class CustomReplyMenuItem extends JMenuItem implements MouseListener {
 
         new ReplyPanelFactory(mainFrame,baseModel).create();
 
-        System.out.println("Reply to comment: " + baseModel.getSender());
         //CODE HERE
     }
 

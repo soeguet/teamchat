@@ -84,31 +84,11 @@ public class CustomReferencePanel extends JPanel {
 
             JScrollPane jScrollPane = new JScrollPane();
 
-            //LINK
+            // LINK
             CustomLinkTextPane customLinkTextPane = new CustomLinkTextPane(linkModel);
             customLinkTextPane.create();
 
-            //COMMENT if it exists
-            //            if (!linkModel.getComment().isEmpty()) {
-            //
-            //                CustomTextPane customTextPane = new CustomTextPane(true, linkModel.getComment());
-            //                customTextPane.create();
-            //
-            //                JPanel jPanel = new JPanel();
-            //                jPanel.setLayout(new MigLayout("wrap",
-            //                                               //columns
-            //                                               "[fill,grow]",
-            //                                               //rows
-            //                                               "[fill][fill,grow]"));
-            //                jPanel.add(customLinkTextPane, "cell 0 0");
-            //                jPanel.add(customTextPane, "cell 0 1");
-            //                jScrollPane.setViewportView(jPanel);
-            //
-            //            } else {
-            //
-            //                jScrollPane.setViewportView(customLinkTextPane);
-            //            }
-
+            // COMMENT
             if (!linkModel.getComment().isEmpty()) {
 
                 String textWithComment = """
