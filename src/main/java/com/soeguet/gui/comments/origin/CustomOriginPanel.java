@@ -330,7 +330,7 @@ public class CustomOriginPanel extends JPanel {
      @param popupMenu
      The JPopupMenu to add the menu item to.
      @param menuItemName
-     The name of the menu item to create.
+     The name of the menu item to createQuoteTopTextPane.
 
      @return The created JMenuItem object.
      */

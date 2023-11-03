@@ -1,6 +1,6 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
-import com.soeguet.gui.comments.generic_comment.gui_elements.labels.CustomQuoteTopLabel;
+import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomQuoteTopTextPane;
 import com.soeguet.gui.comments.util.WrapEditorKit;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
@@ -46,9 +46,26 @@ public class CustomQuotePanel extends JPanel {
         if (baseModel instanceof MessageModel messageModel) {
 
             //TODO change this to be a TextPane?
-            CustomQuoteTopLabel customQuotedTextPane = new CustomQuoteTopLabel(messageModel);
-            customQuotedTextPane.create();
+            CustomQuoteTopTextPane customQuotedTextPane = new CustomQuoteTopTextPane(messageModel);
+            customQuotedTextPane.createQuoteTopTextPane();
             super.add(customQuotedTextPane, "cell 0 0");
+
+            JTextPane jTextPane = new JTextPane();
+            jTextPane.setEditorKit(new WrapEditorKit());
+
+            jTextPane.setText("messageModel.getQuotedMessageText())");
+            jTextPane.setEnabled(false);
+            super.add(jTextPane, "cell 0 1");
+        }
+    }
+
+    public void createReplyQuoteTextPane() {
+
+        if (baseModel instanceof MessageModel messageModel) {
+
+            CustomQuoteTopTextPane customReplyQuoteTextPane = new CustomQuoteTopTextPane(messageModel);
+            customReplyQuoteTextPane.createReplyTopTextPane();
+            super.add(customReplyQuoteTextPane, "cell 0 0");
 
             JTextPane jTextPane = new JTextPane();
             jTextPane.setEditorKit(new WrapEditorKit());

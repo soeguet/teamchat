@@ -34,7 +34,6 @@ public class CustomMainWrapperContainer extends JPanel {
 
     public void setMainWrapperContainerLayoutManager() {
 
-        this.setBorder(new LineBorder(Color.BLACK, 1));
 
         /*
 

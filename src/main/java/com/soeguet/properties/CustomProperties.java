@@ -72,7 +72,7 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
         //try loading data from file
         if (!new File(configFilePath).exists()) {
 
-            //create file if not present
+            //createQuoteTopTextPane file if not present
             createPropertiesFile(configFilePath);
             return true;
         }
@@ -168,7 +168,7 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
 
             if (!mkdir) {
 
-                logger.log(java.util.logging.Level.SEVERE, "ERROR! Could not create app dir!");
+                logger.log(java.util.logging.Level.SEVERE, "ERROR! Could not createQuoteTopTextPane app dir!");
                 throw new RuntimeException();
             }
         }
@@ -182,7 +182,7 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
 
         } catch (IOException e) {
 
-            logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not create config file!", e);
+            logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not createQuoteTopTextPane config file!", e);
             throw new RuntimeException(e);
         }
     }

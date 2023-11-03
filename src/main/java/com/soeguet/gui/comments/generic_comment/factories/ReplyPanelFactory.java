@@ -24,6 +24,7 @@ public class ReplyPanelFactory {
         customReplyPanel.populateCustomReplyPanel();
         customReplyPanel.setMaximumSizeWithingMainFrame();
         mainFrame.getMainTextPanelLayeredPane().add(customReplyPanel, JLayeredPane.MODAL_LAYER);
+        customReplyPanel.moveReplyPanelToCenter();
         customReplyPanel.setVisible(true);
     }
 }

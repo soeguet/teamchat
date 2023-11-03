@@ -60,11 +60,6 @@ public class CustomContentContainer extends JPanel implements ComponentListener 
 
         this.topPanel.setSize(new Dimension(combinedWidthForTopPanel, heightForTopPanel));
         this.topPanel.setMaximumSize(new Dimension(combinedWidthForTopPanel, heightForTopPanel));
-        //        topPanel.setBorder(new LineBorder(Color.RED,5));
-        //        topPanel.setOpaque(true);
-        //        topPanel.setBackground(Color.GREEN);
-        //        revalidate();
-        //        repaint();
     }
 
     @Override

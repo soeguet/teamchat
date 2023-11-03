@@ -129,7 +129,7 @@ public class LinkDialogImpl extends LinkDialog implements LinkDialogInterface {
     /**
      Creates a title label.
      <p>
-     This method is called to create and customize a JTextPane component to be used as a title label. The title label displays the title of a metadata
+     This method is called to createQuoteTopTextPane and customize a JTextPane component to be used as a title label. The title label displays the title of a metadata
      storage record.
 
      @param metadataStorageRecord

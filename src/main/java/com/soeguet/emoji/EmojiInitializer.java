@@ -88,7 +88,7 @@ public class EmojiInitializer implements EmojiInitializerInterface {
      Creates an ImageIcon from a given entry name and adds it to the given list of ImageIcons.
 
      @param imageIcons the list of ImageIcons to add the created ImageIcon to
-     @param entryName  the name of the entry to create the ImageIcon from
+     @param entryName  the name of the entry to createQuoteTopTextPane the ImageIcon from
      */
     private void createAndAddImageIcon(HashMap<String, ImageIcon> imageIcons, String entryName) {
 
