@@ -21,8 +21,8 @@ public class ReplyPanelFactory {
 
         CustomReplyPanel customReplyPanel = new CustomReplyPanel(mainFrame, baseModel);
         customReplyPanel.setCustomReplyPanelLayoutManger();
-        customReplyPanel.setMaximumSizeWithingMainFrame();
         customReplyPanel.populateCustomReplyPanel();
+        customReplyPanel.setMaximumSizeWithingMainFrame();
         mainFrame.getMainTextPanelLayeredPane().add(customReplyPanel, JLayeredPane.MODAL_LAYER);
         customReplyPanel.setVisible(true);
     }

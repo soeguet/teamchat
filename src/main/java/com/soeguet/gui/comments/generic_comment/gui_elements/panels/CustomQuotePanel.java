@@ -12,13 +12,13 @@ import java.awt.*;
 public class CustomQuotePanel extends JPanel {
 
     // variables -- start
-    private final MessageModel messageModel;
+    private final BaseModel baseModel;
     // variables -- end
 
     // constructors -- start
     public CustomQuotePanel(final BaseModel baseModel) {
 
-        this.messageModel = (MessageModel) baseModel;
+        this.baseModel = baseModel;
     }
     // constructors -- end
 
@@ -41,18 +41,22 @@ public class CustomQuotePanel extends JPanel {
     }
 
     public void createQuotedTextPane() {
-
-        CustomQuoteTopLabel customQuotedTextPane = new CustomQuoteTopLabel(messageModel);
-        customQuotedTextPane.create();
-        super.add(customQuotedTextPane, "cell 0 0");
-
         // TODO: 01.11.23 this needs to be rather complex to determine, whether the quoted text is a link or a text
-        JTextPane jTextPane = new JTextPane();
-        jTextPane.setEditorKit(new WrapEditorKit());
-        // FIXME: 02.11.23
-        jTextPane.setText("messageModel.getQuotedMessageText())");
-        jTextPane.setEnabled(false);
-        super.add(jTextPane, "cell 0 1");
+
+        if (baseModel instanceof MessageModel messageModel) {
+
+            //TODO change this to be a TextPane?
+            CustomQuoteTopLabel customQuotedTextPane = new CustomQuoteTopLabel(messageModel);
+            customQuotedTextPane.create();
+            super.add(customQuotedTextPane, "cell 0 0");
+
+            JTextPane jTextPane = new JTextPane();
+            jTextPane.setEditorKit(new WrapEditorKit());
+
+            jTextPane.setText("messageModel.getQuotedMessageText())");
+            jTextPane.setEnabled(false);
+            super.add(jTextPane, "cell 0 1");
+        }
     }
 
     // overrides -- start
