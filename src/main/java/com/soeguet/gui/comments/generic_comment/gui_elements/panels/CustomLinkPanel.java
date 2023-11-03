@@ -28,7 +28,7 @@ public class CustomLinkPanel extends JPanel {
      */
     public void setLayoutManager() {
 
-        super.setLayout(new MigLayout("",
+        super.setLayout(new MigLayout("debug",
                                       //columns
                                       "[fill,grow]",
                                       //rows
@@ -63,7 +63,7 @@ public class CustomLinkPanel extends JPanel {
             return;
         }
 
-        CustomQuotePanel customQuotePanel = new CustomQuotePanel(linkModel);
+        CustomReferencePanel customQuotePanel = new CustomReferencePanel(linkModel);
 
         customQuotePanel.setLayoutManager();
         customQuotePanel.createQuotedTextPane();

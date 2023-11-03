@@ -6,14 +6,14 @@ import com.soeguet.model.jackson.MessageModel;
 import javax.swing.*;
 import java.awt.*;
 
-public class CustomQuoteTopTextPane extends JTextPane {
+public class CustomReplyPreviewTopInformationTextPane extends JTextPane {
 
     // variables -- start
     private final MessageModel messageModel;
     // variables -- end
 
     // constructors -- start
-    public CustomQuoteTopTextPane(final MessageModel messageModel) {
+    public CustomReplyPreviewTopInformationTextPane(final MessageModel messageModel) {
 
         super();
         super.setEditorKit(new WrapEditorKit());

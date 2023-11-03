@@ -1,5 +1,6 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.textpanes;
 
+import com.soeguet.gui.comments.util.LinkWrapEditorKit;
 import com.soeguet.model.jackson.LinkModel;
 
 public class CustomLinkCommentTextPane extends CustomTextPane {
@@ -13,6 +14,8 @@ public class CustomLinkCommentTextPane extends CustomTextPane {
 
         // FIXME: 02.11.23 -> this is a hack
         super(lineWrap, linkModel.getComment());
+        super.setContentType("text/html");
+        super.setEditorKit(new LinkWrapEditorKit());
         this.linkModel = linkModel;
     }
     // constructors -- end

@@ -1,6 +1,6 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
-import com.soeguet.gui.comments.generic_comment.factories.QuotePanelFactory;
+import com.soeguet.gui.comments.generic_comment.factories.ReferencePanelFactory;
 import com.soeguet.gui.comments.util.WrapEditorKit;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.BaseModel;
@@ -52,7 +52,7 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
         SCHEMA: ReplyPanel
 
         [[          title         ][x]] // contains title and close button
-        [[        quoted stuff       ]] // contains former, quoted stuff <- will contain CustomQuotePanel (?)
+        [[   referenced stuff     ]] // contains refereced stuff <- will contain CustomQuotePanel (?)
         [ [text pane] [ [1] [2] [3] ] ] //text pane and buttons
 
          */
@@ -98,21 +98,13 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
             }
             // overrides -- end
         });
-        add(titlePanel, "cell 0 0");
+        super.add(titlePanel, "cell 0 0");
 
-        //QUOTE
-        JPanel middlePanel = new JPanel();
-        middlePanel.setLayout(new MigLayout("",
-                                            //columns
-                                            "[fill,grow]",
-                                            //rows
-                                            "[fill,grow]"));
-
-        CustomQuotePanel customQuoteReplyPanel = new QuotePanelFactory(baseModel).createReplyQuotePanel();
+        //REFERENCE
+        CustomReferencePanel customQuoteReplyPanel = new ReferencePanelFactory(baseModel).createReferencePanel();
         customQuoteReplyPanel.setLayoutManager();
-        customQuoteReplyPanel.createQuotedTextPane();
-        middlePanel.add(customQuoteReplyPanel, "cell 0 0");
-        add(middlePanel, "cell 0 1, grow");
+
+        super.add(customQuoteReplyPanel, "cell 0 1, grow");
 
         //BOTTOM
         // -> TEXT PANE
@@ -145,7 +137,7 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
 
         bottomPanel.add(buttonPanel, "cell 1 0");
 
-        this.add(bottomPanel, "cell 0 2");
+        super.add(bottomPanel, "cell 0 2");
 
     }
 

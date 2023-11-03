@@ -37,6 +37,31 @@ public class WrapEditorKit extends StyledEditorKit {
             super(elem);
         }
 
+        /**
+         * Returns the preferred span of 500 pixels for the view along the specified axis.
+         *
+         * @param axis the axis along which to determine the preferred span,
+         *             either View.X_AXIS or View.Y_AXIS
+         * @return the preferred span of the view along the specified axis
+         * @throws IllegalArgumentException if the specified axis is not valid
+         */
+        @Override
+        public float getPreferredSpan(int axis) {
+
+            return switch (axis) {
+
+                case View.X_AXIS -> {
+                    float width = super.getPreferredSpan(axis);
+                    yield Math.min(500, width);
+                }
+
+                case View.Y_AXIS -> super.getPreferredSpan(axis);
+
+                default -> throw new IllegalArgumentException("Invalid axis: " + axis);
+            };
+        }
+
+
         @Override
         public float getMinimumSpan(int axis) {
 

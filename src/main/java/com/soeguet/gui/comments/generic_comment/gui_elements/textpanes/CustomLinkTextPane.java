@@ -15,15 +15,21 @@ public class CustomLinkTextPane extends JTextPane {
     public CustomLinkTextPane(LinkModel linkModel) {
 
         this.linkModel = linkModel;
-
+        super.setOpaque(false);
+        super.setEditable(false);
+        super.setBackground(null);
         super.setEditorKit(new LinkWrapEditorKit());
     }
     // constructors -- end
 
     public void create() {
 
-        final String hyperlinkHtml = ("<a href=\"%s\" style=\"text-decoration:underline; color:blue; font-size:15;" +
-                                      "\">%s</a>").formatted(linkModel.getLink(), linkModel.getLink());
+        final String hyperlinkHtml = """
+                <a href="%s"
+                style="text-decoration:underline; color:blue; font-size:15;">
+                %s
+                </a>
+                """.formatted(linkModel.getLink(), linkModel.getLink());
         super.setText(hyperlinkHtml);
     }
 }
