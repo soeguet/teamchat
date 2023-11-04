@@ -5,6 +5,7 @@ import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomLin
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomReplyPreviewTopInformationTextPane;
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomSimpleTextPane;
 import com.soeguet.gui.comments.util.WrapEditorKit;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.LinkModel;
 import com.soeguet.model.jackson.MessageModel;
@@ -17,11 +18,14 @@ import java.awt.*;
 public class CustomReferencePanel extends JPanel {
 
     // variables -- start
+    private final MainFrameGuiInterface mainFrame;
     private final BaseModel baseModel;
     // variables -- end
 
     // constructors -- start
-    public CustomReferencePanel(final BaseModel baseModel) {
+    public CustomReferencePanel(MainFrameGuiInterface mainFrame, final BaseModel baseModel) {
+
+        this.mainFrame = mainFrame;
 
         this.baseModel = baseModel;
 
@@ -71,7 +75,7 @@ public class CustomReferencePanel extends JPanel {
 
     public void populateReferencePanel() {
 
-        switch (baseModel){
+        switch (baseModel) {
 
             case MessageModel messageModel -> {
 
@@ -86,15 +90,15 @@ public class CustomReferencePanel extends JPanel {
                 super.add(jScrollPane, "cell 0 1, grow, width ::500, h ::800");
             }
 
-            case PictureModel pictureModel ->{
+            case PictureModel pictureModel -> {
 
-                PicturePanelFactory picturePanelFactory = new PicturePanelFactory(pictureModel);
+                PicturePanelFactory picturePanelFactory = new PicturePanelFactory(mainFrame, pictureModel);
                 CustomPictureWrapperPanel customPictureWrapperPanel = picturePanelFactory.create();
 
                 super.add(customPictureWrapperPanel, "cell 0 1, grow, width ::400, h ::400, center");
             }
 
-            case LinkModel linkModel ->{
+            case LinkModel linkModel -> {
 
                 // LINK
                 final CustomLinkTextPane customLinkTextPane = createCustomLinkTextPaneWithComment(linkModel);
@@ -126,7 +130,7 @@ public class CustomReferencePanel extends JPanel {
 
     private CustomSimpleTextPane createReferenceMessageTextPane(final MessageModel messageModel) {
 
-        CustomSimpleTextPane referenceMessageTextPane = new CustomSimpleTextPane();
+        CustomSimpleTextPane referenceMessageTextPane = new CustomSimpleTextPane(mainFrame);
         referenceMessageTextPane.setText(messageModel.getMessage());
 
         return referenceMessageTextPane;
@@ -139,7 +143,7 @@ public class CustomReferencePanel extends JPanel {
 
     private CustomSimpleTextPane createNameAndTimeTextPane() {
 
-        CustomSimpleTextPane nameAndTimeTextPane = new CustomSimpleTextPane();
+        CustomSimpleTextPane nameAndTimeTextPane = new CustomSimpleTextPane(mainFrame);
 
         nameAndTimeTextPane.setText("%s - %s".formatted(baseModel.getSender(), baseModel.getTime()));
         nameAndTimeTextPane.setFont(new Font(nameAndTimeTextPane.getFont().getName(), Font.ITALIC, 11));

@@ -1,16 +1,21 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.textpanes;
 
+import com.soeguet.emoji.EmojiHandler;
 import com.soeguet.gui.comments.generic_comment.gui_elements.interfaces.ContentInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 
 import javax.swing.*;
 import javax.swing.text.*;
 
 public class CustomTextPane extends JTextPane implements ContentInterface {
 
+    private final MainFrameGuiInterface mainFrame;
     private final boolean lineWrap;
     private final String message;
 
-    public CustomTextPane(final boolean lineWrap, final String message) {
+    public CustomTextPane(MainFrameGuiInterface mainFrame, final boolean lineWrap, final String message) {
+
+        this.mainFrame = mainFrame;
 
         this.lineWrap = lineWrap;
         this.message = message;
@@ -26,6 +31,8 @@ public class CustomTextPane extends JTextPane implements ContentInterface {
     public void create() {
 
         super.setText(message);
+        EmojiHandler emojiHandler = new EmojiHandler(mainFrame);
+        emojiHandler.replaceImageIconWithEmojiDescription(this);
     }
 
     private static class WrapEditorKit extends StyledEditorKit {

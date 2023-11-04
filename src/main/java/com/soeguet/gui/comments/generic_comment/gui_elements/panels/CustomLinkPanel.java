@@ -2,6 +2,7 @@ package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomLinkCommentTextPane;
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomLinkTextPane;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.LinkModel;
 import com.soeguet.model.jackson.QuoteModel;
@@ -11,12 +12,15 @@ import javax.swing.*;
 
 public class CustomLinkPanel extends JPanel {
 
+    private final MainFrameGuiInterface mainFrame;
     // variables -- start
     private final LinkModel linkModel;
     // variables -- end
 
     // constructors -- start
-    public CustomLinkPanel(final BaseModel baseModel) {
+    public CustomLinkPanel(MainFrameGuiInterface mainFrame, final BaseModel baseModel) {
+
+        this.mainFrame = mainFrame;
 
         this.linkModel = (LinkModel) baseModel;
         super.setOpaque(false);
@@ -52,7 +56,7 @@ public class CustomLinkPanel extends JPanel {
             return;
         }
 
-        CustomReferencePanel customQuotePanel = new CustomReferencePanel(linkModel);
+        CustomReferencePanel customQuotePanel = new CustomReferencePanel(mainFrame,linkModel);
 
         customQuotePanel.setLayoutManager();
         customQuotePanel.createQuotedTextPane();

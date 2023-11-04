@@ -73,14 +73,8 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
 
     public void setMaximumSizeWithingMainFrame() {
 
-        int width = this.getPreferredSize().width + 50;
+        int width = 600;
         int height = this.getPreferredSize().height + 50;
-
-        //restrict max sizing to ::500
-        if (width > 500) {
-
-            width = 500;
-        }
 
         super.setBounds(0, 0, width, height);
 
@@ -109,7 +103,8 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
                                                                               "[fill]"));
 
         // -> TEXT PANE
-        this.textPane = new CustomSimpleTextPane();
+        this.textPane = new CustomSimpleTextPane(mainFrame);
+
         this.textPane.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
         bottomPanel.add(this.textPane, "cell 0 0");
 
@@ -146,7 +141,8 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
 
     private void populateReplyPanelReferenceSection() {
 
-        CustomReferencePanel customReferencePanel = new ReferencePanelFactory(this.baseModel).createReferencePanel();
+        CustomReferencePanel customReferencePanel =
+                new ReferencePanelFactory(this.mainFrame, this.baseModel).createReferencePanel();
         customReferencePanel.setLayoutManager();
 
         super.add(customReferencePanel, "cell 0 1, grow, gapleft 10, gapright 10");

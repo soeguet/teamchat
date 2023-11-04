@@ -1,6 +1,7 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomSimpleTextPane;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.MessageModel;
 import net.miginfocom.swing.MigLayout;
 
@@ -8,9 +9,12 @@ import javax.swing.*;
 
 public class CustomTextAndQuoteForBubblePanel extends JPanel {
 
+    private final MainFrameGuiInterface mainFrame;
     private final MessageModel messageModel;
 
-    public CustomTextAndQuoteForBubblePanel(MessageModel messageModel) {
+    public CustomTextAndQuoteForBubblePanel(MainFrameGuiInterface mainFrame,MessageModel messageModel) {
+
+        this.mainFrame = mainFrame;
 
         this.messageModel = messageModel;
         super.setBackground(null);
@@ -38,8 +42,9 @@ public class CustomTextAndQuoteForBubblePanel extends JPanel {
 
     public void addTextMessage() {
 
-        CustomSimpleTextPane customSimpleTextPane = new CustomSimpleTextPane();
+        CustomSimpleTextPane customSimpleTextPane = new CustomSimpleTextPane(mainFrame);
         customSimpleTextPane.setText(messageModel.getMessage());
+        customSimpleTextPane.convertTextToEmojis();
 
         super.add(customSimpleTextPane, "cell 0 1");
     }
@@ -49,7 +54,8 @@ public class CustomTextAndQuoteForBubblePanel extends JPanel {
         if (messageModel.getQuotedMessage() != null) {
 
 
-            CustomQuoteBubblePanel customQuoteBubblePanel = new CustomQuoteBubblePanel(messageModel.getQuotedMessage());
+            CustomQuoteBubblePanel customQuoteBubblePanel =
+                    new CustomQuoteBubblePanel(mainFrame, messageModel.getQuotedMessage());
 
             customQuoteBubblePanel.setQuoteBubbleLayoutManager();
             customQuoteBubblePanel.extractQuotedMessage();

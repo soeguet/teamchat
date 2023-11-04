@@ -2,6 +2,7 @@ package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomLinkTextPane;
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomSimpleTextPane;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.*;
 import net.miginfocom.swing.MigLayout;
 
@@ -10,9 +11,12 @@ import java.awt.*;
 
 public class CustomQuoteBubblePanel extends JPanel {
 
+    private final MainFrameGuiInterface mainFrame;
     private final QuoteModel<? extends BaseModel> quoteModel;
 
-    public CustomQuoteBubblePanel(final QuoteModel<? extends BaseModel> quoteModel) {
+    public CustomQuoteBubblePanel(MainFrameGuiInterface mainFrame, final QuoteModel<? extends BaseModel> quoteModel) {
+
+        this.mainFrame = mainFrame;
 
         this.quoteModel = quoteModel;
         super.setBackground(new Color(240, 240, 240, 255));
@@ -53,7 +57,7 @@ public class CustomQuoteBubblePanel extends JPanel {
         switch (baseModel) {
             case MessageModel messageModel -> {
 
-                CustomSimpleTextPane customSimpleTextPane = new CustomSimpleTextPane();
+                CustomSimpleTextPane customSimpleTextPane = new CustomSimpleTextPane(mainFrame);
                 customSimpleTextPane.setText(messageModel.getMessage());
 
                 super.add(customSimpleTextPane, "cell 0 0");
@@ -61,7 +65,7 @@ public class CustomQuoteBubblePanel extends JPanel {
 
             case PictureModel pictureModel -> {
 
-                CustomSimpleTextPane customSimpleTextPane = new CustomSimpleTextPane();
+                CustomSimpleTextPane customSimpleTextPane = new CustomSimpleTextPane(mainFrame);
                 customSimpleTextPane.setText(pictureModel.getDescription());
 
                 super.add(customSimpleTextPane, "cell 0 0");

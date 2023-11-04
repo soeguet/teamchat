@@ -3,18 +3,22 @@ package com.soeguet.gui.comments.generic_comment.factories;
 import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomPictureWrapperPanel;
 import com.soeguet.gui.comments.generic_comment.gui_elements.labels.CustomPictureLabel;
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomTextPane;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.*;
 
 import javax.swing.*;
 
 public class PicturePanelFactory  {
 
+    private final MainFrameGuiInterface mainFrame;
     // variables -- start
     private final PictureModel pictureModel;
     // variables -- end
 
     // constructors -- start
-    public PicturePanelFactory(final BaseModel baseModel) {
+    public PicturePanelFactory(MainFrameGuiInterface mainFrame, final BaseModel baseModel) {
+
+        this.mainFrame = mainFrame;
 
         this.pictureModel = (PictureModel) baseModel;
     }
@@ -42,7 +46,7 @@ public class PicturePanelFactory  {
         if (quotedMessageModel != null) {
 
             String quotedText = extractQuotedText(quotedMessageModel);
-            CustomTextPane customQuoteTextPane = new CustomTextPane(true, quotedText);
+            CustomTextPane customQuoteTextPane = new CustomTextPane(mainFrame, true, quotedText);
             customPictureWrapperPanel.add(customQuoteTextPane, "cell 0 0");
         }
 
@@ -94,7 +98,7 @@ public class PicturePanelFactory  {
             return null;
         }
 
-        CustomTextPane customTextPane = new CustomTextPane(true, pictureModel.getDescription());
+        CustomTextPane customTextPane = new CustomTextPane(mainFrame,true, pictureModel.getDescription());
         customTextPane.create();
         return customTextPane;
     }

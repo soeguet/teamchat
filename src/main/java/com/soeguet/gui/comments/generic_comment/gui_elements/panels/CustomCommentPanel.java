@@ -131,7 +131,7 @@ public class CustomCommentPanel extends JPanel {
 
     private void processIncomingLinkMessage(final Side commentSide, final CustomContentContainer contentContainer) {
 
-        CustomLinkPanel customLinkPanel = new LinkPanelFactory(baseModel).create();
+        CustomLinkPanel customLinkPanel = new LinkPanelFactory(mainFrame,baseModel).create();
 
         switch (commentSide) {
 
@@ -151,7 +151,7 @@ public class CustomCommentPanel extends JPanel {
 
     private void processIncomingPictureMessage(final Side commentSide, final CustomContentContainer contentContainer) {
 
-        CustomPictureWrapperPanel pictureLabel = new PicturePanelFactory(baseModel).create();
+        CustomPictureWrapperPanel pictureLabel = new PicturePanelFactory(mainFrame,baseModel).create();
 
         switch (commentSide) {
 
@@ -174,7 +174,8 @@ public class CustomCommentPanel extends JPanel {
         //TODO factory method maybe?
         if (baseModel instanceof MessageModel messageModel) {
 
-            CustomTextAndQuoteForBubblePanel customTextAndQuoteForBubblePanel = new TextMessageFactory(messageModel).create();
+            CustomTextAndQuoteForBubblePanel customTextAndQuoteForBubblePanel =
+                    new TextMessageFactory(mainFrame,messageModel).create();
 
             switch (commentSide) {
 
