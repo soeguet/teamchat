@@ -1,11 +1,13 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
+import com.soeguet.gui.comments.generic_comment.factories.PicturePanelFactory;
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomLinkTextPane;
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomReplyPreviewTopInformationTextPane;
 import com.soeguet.gui.comments.util.WrapEditorKit;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.LinkModel;
 import com.soeguet.model.jackson.MessageModel;
+import com.soeguet.model.jackson.PictureModel;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -68,30 +70,41 @@ public class CustomReferencePanel extends JPanel {
 
     public void populateReferencePanel() {
 
-        if (baseModel instanceof MessageModel messageModel) {
+        switch (baseModel){
 
-            JScrollPane jScrollPane = new JScrollPane();
-            final JTextPane referenceMessageTextPane = createReferenceMessageTextPane(messageModel);
+            case MessageModel messageModel -> {
 
-            jScrollPane.setViewportView(referenceMessageTextPane);
-            jScrollPane.setOpaque(false);
-            jScrollPane.getViewport().setOpaque(false);
-            jScrollPane.setBorder(null);
+                JScrollPane jScrollPane = new JScrollPane();
+                final JTextPane referenceMessageTextPane = createReferenceMessageTextPane(messageModel);
 
-            super.add(jScrollPane, "cell 0 1, grow, width ::500, h :600:800");
+                jScrollPane.setViewportView(referenceMessageTextPane);
+                jScrollPane.setOpaque(false);
+                jScrollPane.getViewport().setOpaque(false);
+                jScrollPane.setBorder(null);
 
-        } else if (baseModel instanceof LinkModel linkModel) {
+                super.add(jScrollPane, "cell 0 1, grow, width ::500, h :600:800");
+            }
 
-            JScrollPane jScrollPane = new JScrollPane();
+            case PictureModel pictureModel ->{
 
-            // LINK
-            CustomLinkTextPane customLinkTextPane = new CustomLinkTextPane(linkModel);
-            customLinkTextPane.create();
+                PicturePanelFactory picturePanelFactory = new PicturePanelFactory(pictureModel);
+                CustomPictureWrapperPanel customPictureWrapperPanel = picturePanelFactory.create();
 
-            // COMMENT
-            if (!linkModel.getComment().isEmpty()) {
+                super.add(customPictureWrapperPanel, "cell 0 1, grow, width ::400, h ::400, center");
+            }
 
-                String textWithComment = """
+            case LinkModel linkModel ->{
+
+                JScrollPane jScrollPane = new JScrollPane();
+
+                // LINK itself
+                CustomLinkTextPane customLinkTextPane = new CustomLinkTextPane(linkModel);
+                customLinkTextPane.create();
+
+                // COMMENTation of the link
+                if (!linkModel.getComment().isEmpty()) {
+
+                    String textWithComment = """
                         <a href="%s"
                         style="text-decoration:underline; color:blue; font-size:15;">
                         %s
@@ -99,15 +112,16 @@ public class CustomReferencePanel extends JPanel {
                         <p>%s</p>
                         """.formatted(linkModel.getLink(), linkModel.getLink(), linkModel.getComment());
 
-                customLinkTextPane.setText(textWithComment);
+                    customLinkTextPane.setText(textWithComment);
+                }
+
+                jScrollPane.setViewportView(customLinkTextPane);
+                jScrollPane.setOpaque(false);
+                jScrollPane.getViewport().setOpaque(false);
+                jScrollPane.setBorder(null);
+
+                super.add(jScrollPane, "cell 0 1, grow, width ::500, h :600:800");
             }
-
-            jScrollPane.setViewportView(customLinkTextPane);
-            jScrollPane.setOpaque(false);
-            jScrollPane.getViewport().setOpaque(false);
-            jScrollPane.setBorder(null);
-
-            super.add(jScrollPane, "cell 0 1, grow, width ::500, h :600:800");
         }
     }
 

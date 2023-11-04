@@ -7,7 +7,7 @@ import com.soeguet.model.jackson.*;
 
 import javax.swing.*;
 
-public class PicturePanelFactory extends JLabel {
+public class PicturePanelFactory  {
 
     // variables -- start
     private final PictureModel pictureModel;
@@ -48,7 +48,7 @@ public class PicturePanelFactory extends JLabel {
 
         //PICTURE PART
         final CustomPictureLabel customPictureLabel = generateCustomPictureLabel();
-        customPictureWrapperPanel.add(customPictureLabel, "cell 0 1");
+        customPictureWrapperPanel.add(customPictureLabel, "cell 0 1, center");
 
         //DESCRIPTION/TEXT PART if not null!
         final CustomTextPane customTextPane = generateCustomTextPane();

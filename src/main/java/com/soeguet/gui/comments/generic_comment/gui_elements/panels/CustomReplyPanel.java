@@ -25,6 +25,7 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
     private boolean isResizing = false;
     private boolean isMoving = false;
     private CustomSimpleTextPane textPane;
+    private Dimension maximumSize;
     // variables -- end
 
     // constructors -- start
@@ -70,7 +71,12 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
 
     public void setMaximumSizeWithingMainFrame() {
 
-        super.setBounds(0, 0, this.getPreferredSize().width + 50, this.getPreferredSize().height + 50);
+        final int width = this.getPreferredSize().width + 50;
+        final int height = this.getPreferredSize().height + 50;
+
+        super.setBounds(0, 0, width, height);
+
+        this.setMaximumSize(new Dimension(width, height));
     }
 
     public void populateCustomReplyPanel() {
@@ -146,10 +152,16 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
         JLabel titleLabel = new JLabel("Reply to: " + baseModel.getSender());
         titlePanel.add(titleLabel, "cell 0 0");
 
-        CustomCloseButton closeButton = new CustomCloseButton(mainFrame,this, "x");
+        CustomCloseButton closeButton = new CustomCloseButton(mainFrame, this, "x");
         titlePanel.add(closeButton, "cell 1 0");
 
         super.add(titlePanel, "cell 0 0");
+    }
+
+    @Override
+    public Dimension getMaximumSize() {
+
+        return maximumSize;
     }
 
     private boolean isInCorner(Point p) {
@@ -160,13 +172,14 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
 
     public void setFocusOnTextPane() {
 
-        SwingUtilities.invokeLater(()->{
+        SwingUtilities.invokeLater(() -> {
 
             textPane.requestFocus(true);
             textPane.requestFocusInWindow();
         });
     }
 
+// overrides -- start
     @Override
     protected void paintComponent(final Graphics g) {
 
@@ -201,6 +214,14 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
             int newX = (int) (currentSize.getWidth() + dx);
             int newY = (int) (currentSize.getHeight() + dy);
 
+            if (newX < this.getMaximumSize().getWidth()) {
+                newX = (int) this.getMaximumSize().getWidth();
+            }
+
+            if (newY < this.getMaximumSize().getHeight()) {
+                newY = (int) this.getMaximumSize().getHeight();
+            }
+
             this.setSize(newX, newY);
 
             previousPoint = currentPoint;
@@ -216,6 +237,10 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
         //this is needed, else the panel will not adjust to the new size
         revalidate();
         repaint();
+    }    // overrides -- start    @Override
+    public void setMaximumSize(final Dimension maximumSize) {
+
+        this.maximumSize = maximumSize;
     }
 
     @Override
@@ -258,4 +283,11 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
     public void mouseExited(final java.awt.event.MouseEvent e) {
 
     }
+// overrides -- end
+
+
+
+
+    // overrides -- end
+
 }
