@@ -18,11 +18,11 @@ public class ReferencePanelFactory {
 
     public CustomReferencePanel createReferencePanel() {
 
-        CustomReferencePanel customQuotePanel = new CustomReferencePanel(baseModel);
-        customQuotePanel.setLayoutManager();
-        customQuotePanel.setupNameAndTimeTopPanel();
-        customQuotePanel.populateReferencePanel();
+        CustomReferencePanel customReferencePanel = new CustomReferencePanel(baseModel);
+        customReferencePanel.setLayoutManager();
+        customReferencePanel.setupNameAndTimeTopPanel();
+        customReferencePanel.populateReferencePanel();
 
-        return customQuotePanel;
+        return customReferencePanel;
     }
 }

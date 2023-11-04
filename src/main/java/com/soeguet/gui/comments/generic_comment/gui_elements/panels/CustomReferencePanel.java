@@ -3,6 +3,7 @@ package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 import com.soeguet.gui.comments.generic_comment.factories.PicturePanelFactory;
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomLinkTextPane;
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomReplyPreviewTopInformationTextPane;
+import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomSimpleTextPane;
 import com.soeguet.gui.comments.util.WrapEditorKit;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.LinkModel;
@@ -44,7 +45,7 @@ public class CustomReferencePanel extends JPanel {
                                       //columns
                                       "[fill,grow]",
                                       //rows
-                                      "[fill][fill,grow]"));
+                                      "[fill][fill]"));
     }
 
     public void createQuotedTextPane() {
@@ -75,14 +76,14 @@ public class CustomReferencePanel extends JPanel {
             case MessageModel messageModel -> {
 
                 JScrollPane jScrollPane = new JScrollPane();
-                final JTextPane referenceMessageTextPane = createReferenceMessageTextPane(messageModel);
+                final CustomSimpleTextPane referenceMessageTextPane = createReferenceMessageTextPane(messageModel);
 
                 jScrollPane.setViewportView(referenceMessageTextPane);
                 jScrollPane.setOpaque(false);
                 jScrollPane.getViewport().setOpaque(false);
                 jScrollPane.setBorder(null);
 
-                super.add(jScrollPane, "cell 0 1, grow, width ::500, h :600:800");
+                super.add(jScrollPane, "cell 0 1, grow, width ::500, h ::800");
             }
 
             case PictureModel pictureModel ->{
@@ -95,67 +96,54 @@ public class CustomReferencePanel extends JPanel {
 
             case LinkModel linkModel ->{
 
-                JScrollPane jScrollPane = new JScrollPane();
 
                 // LINK itself
-                CustomLinkTextPane customLinkTextPane = new CustomLinkTextPane(linkModel);
-                customLinkTextPane.create();
+                final CustomLinkTextPane customLinkTextPane = createCustomLinkTextPaneWithComment(linkModel);
 
-                // COMMENTation of the link
-                if (!linkModel.getComment().isEmpty()) {
-
-                    String textWithComment = """
-                        <a href="%s"
-                        style="text-decoration:underline; color:blue; font-size:15;">
-                        %s
-                        </a>
-                        <p>%s</p>
-                        """.formatted(linkModel.getLink(), linkModel.getLink(), linkModel.getComment());
-
-                    customLinkTextPane.setText(textWithComment);
-                }
-
+                final JScrollPane jScrollPane = createScrollPane();
                 jScrollPane.setViewportView(customLinkTextPane);
-                jScrollPane.setOpaque(false);
-                jScrollPane.getViewport().setOpaque(false);
-                jScrollPane.setBorder(null);
 
-                super.add(jScrollPane, "cell 0 1, grow, width ::500, h :600:800");
+                super.add(jScrollPane, "cell 0 1, grow, width ::500, h ::800");
             }
         }
     }
 
-    private JTextPane createReferenceMessageTextPane(final MessageModel messageModel) {
+    private JScrollPane createScrollPane() {
 
-        JTextPane referenceMessageTextPane = new JTextPane();
+        JScrollPane jScrollPane = new JScrollPane();
+        jScrollPane.setOpaque(false);
+        jScrollPane.getViewport().setOpaque(false);
+        jScrollPane.setBorder(null);
+        return jScrollPane;
+    }
 
-        referenceMessageTextPane.setEditorKit(new WrapEditorKit());
+    private CustomLinkTextPane createCustomLinkTextPaneWithComment(final LinkModel linkModel) {
+
+        CustomLinkTextPane customLinkTextPane = new CustomLinkTextPane(linkModel);
+        customLinkTextPane.create();
+
+        return customLinkTextPane;
+    }
+
+    private CustomSimpleTextPane createReferenceMessageTextPane(final MessageModel messageModel) {
+
+        CustomSimpleTextPane referenceMessageTextPane = new CustomSimpleTextPane();
         referenceMessageTextPane.setText(messageModel.getMessage());
-
-        referenceMessageTextPane.setEnabled(false);
-        referenceMessageTextPane.setBackground(null);
-        referenceMessageTextPane.setOpaque(false);
 
         return referenceMessageTextPane;
     }
 
     public void setupNameAndTimeTopPanel() {
 
-        final JTextPane nameAndTimeTextPane = createNameAndTimeTextPane();
-        super.add(nameAndTimeTextPane, "cell 0 0");
+        super.add(createNameAndTimeTextPane(), "cell 0 0");
     }
 
-    private JTextPane createNameAndTimeTextPane() {
+    private CustomSimpleTextPane createNameAndTimeTextPane() {
 
-        JTextPane nameAndTimeTextPane = new JTextPane();
+        CustomSimpleTextPane nameAndTimeTextPane = new CustomSimpleTextPane();
 
-        nameAndTimeTextPane.setEditorKit(new WrapEditorKit());
         nameAndTimeTextPane.setText("%s - %s".formatted(baseModel.getSender(), baseModel.getTime()));
         nameAndTimeTextPane.setFont(new Font(nameAndTimeTextPane.getFont().getName(), Font.ITALIC, 11));
-        nameAndTimeTextPane.setBackground(null);
-        nameAndTimeTextPane.setOpaque(false);
-        nameAndTimeTextPane.setEnabled(false);
-        nameAndTimeTextPane.setAlignmentY(Component.CENTER_ALIGNMENT);
 
         return nameAndTimeTextPane;
     }
@@ -165,10 +153,16 @@ public class CustomReferencePanel extends JPanel {
     protected void paintComponent(final Graphics g) {
 
         Graphics2D g2d = (Graphics2D) g;
+
         g2d.setColor(new Color(0, 0, 0, 10));
         g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
+
         g2d.setColor(new Color(0, 0, 0, 100));
+
+        // left line
         g2d.drawLine(0, 0, 0, this.getHeight() - 1);
+
+        // right line
         g2d.drawLine(this.getWidth() - 1, 0, this.getWidth() - 1, this.getHeight() - 1);
     }
     // overrides -- end

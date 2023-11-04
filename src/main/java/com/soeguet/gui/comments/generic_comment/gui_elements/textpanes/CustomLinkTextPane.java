@@ -24,12 +24,28 @@ public class CustomLinkTextPane extends JTextPane {
 
     public void create() {
 
-        final String hyperlinkHtml = """
-                <a href="%s"
-                style="text-decoration:underline; color:blue; font-size:15;">
-                %s
-                </a>
-                """.formatted(linkModel.getLink(), linkModel.getLink());
+        String hyperlinkHtml;
+
+        if (linkModel.getComment().isEmpty()) {
+
+            hyperlinkHtml = """
+                    <a href="%s"
+                    style="text-decoration:underline; color:blue; font-size:15;">
+                    %s
+                    </a>
+                    """.formatted(linkModel.getLink(), linkModel.getLink());
+
+        } else {
+
+            hyperlinkHtml = """
+                    <a href="%s"
+                    style="text-decoration:underline; color:blue; font-size:15;">
+                    %s
+                    </a>
+                    <p>%s</p>
+                    """.formatted(linkModel.getLink(), linkModel.getLink(), linkModel.getComment());
+        }
+
         super.setText(hyperlinkHtml);
     }
 }

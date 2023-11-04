@@ -70,9 +70,9 @@ public class MessageDisplayHandler implements MessageDisplayHandlerInterface {
 
         final Component[] mainTextPanelComponents = mainFrame.getMainTextPanel().getComponents();
 
-        for (int i = 0; i < mainTextPanelComponents.length; i++) {
+        for (final Component mainTextPanelComponent : mainTextPanelComponents) {
 
-            if (mainTextPanelComponents[i] instanceof CommentInterface commentInterface) {
+            if (mainTextPanelComponent instanceof CommentInterface commentInterface) {
 
                 if (commentInterface.getBaseModel().getId().equals(baseModel.getId())) {
 

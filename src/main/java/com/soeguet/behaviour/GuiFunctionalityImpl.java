@@ -404,17 +404,18 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
         }
 
         //convert message to java object
-        final BaseModel baseModel = parseMessageToJsonModel(message);
+        final BaseModel baseModel = this.parseMessageToJsonModel(message);
 
         //register user from message to local cache if not present yet
-        checkIfMessageSenderAlreadyRegisteredInLocalCache(mainFrame.getChatClientPropertiesHashMap(), baseModel.getSender());
+        this.checkIfMessageSenderAlreadyRegisteredInLocalCache(mainFrame.getChatClientPropertiesHashMap(),
+                                                           baseModel.getSender());
 
         //handle displayed message name - nickname as well as timeAndUsername
         // TODO: 02.11.23 maybe nickname support -- removed it for now
         //String nickname = checkForNickname(baseModel.getSender());
 
         //process and display message
-        if (retrieveMessageType(baseModel) == MessageTypes.INTERACTED) {
+        if (this.retrieveMessageType(baseModel) == MessageTypes.INTERACTED) {
 
             messageDisplayHandler.updateExistingMessage(baseModel);
 

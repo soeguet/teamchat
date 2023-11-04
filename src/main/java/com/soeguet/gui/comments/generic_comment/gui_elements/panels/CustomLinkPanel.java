@@ -32,7 +32,7 @@ public class CustomLinkPanel extends JPanel {
                                       //columns
                                       "[fill,grow]",
                                       //rows
-                                      "[fill,grow][fill,grow][fill,grow]"));
+                                      "[fill,grow][fill,grow]"));
     }
 
     public void addLinkToPanel() {
@@ -42,17 +42,6 @@ public class CustomLinkPanel extends JPanel {
         this.add(customLinkTextPane, "cell 0 1, growy");
     }
 
-    public void addLinkComment() {
-
-        CustomLinkCommentTextPane customTextPane = new CustomLinkCommentTextPane(true, linkModel);
-
-        // if there is no comment to the link -> return
-        if (!customTextPane.setUp()) {
-
-            customTextPane.create();
-            this.add(customTextPane, "cell 0 2, growy");
-        }
-    }
 
     public void addQuoteToLinkPanel() {
 

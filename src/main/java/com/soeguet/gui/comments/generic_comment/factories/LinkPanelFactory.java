@@ -22,7 +22,6 @@ public class LinkPanelFactory {
         customLinkPane.setLayoutManager();
         customLinkPane.addQuoteToLinkPanel();
         customLinkPane.addLinkToPanel();
-        customLinkPane.addLinkComment();
 
         return customLinkPane;
     }

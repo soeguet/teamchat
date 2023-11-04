@@ -2,6 +2,7 @@ package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
 import com.soeguet.gui.comments.generic_comment.factories.LinkPanelFactory;
 import com.soeguet.gui.comments.generic_comment.factories.PicturePanelFactory;
+import com.soeguet.gui.comments.generic_comment.factories.TextMessageFactory;
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomTextPane;
 import com.soeguet.gui.comments.generic_comment.gui_elements.util.ChatBubblePaintHandler;
 import com.soeguet.gui.comments.generic_comment.util.Side;
@@ -173,21 +174,20 @@ public class CustomCommentPanel extends JPanel {
         //TODO factory method maybe?
         if (baseModel instanceof MessageModel messageModel) {
 
-            CustomTextPane customTextPane = new CustomTextPane(true, messageModel.getMessage());
-            customTextPane.create();
+            CustomTextAndQuoteForBubblePanel customTextAndQuoteForBubblePanel = new TextMessageFactory(messageModel).create();
 
             switch (commentSide) {
 
                 case LEFT -> {
 
                     String leftConstraints = "gapleft 15, grow 1.0, gaptop 10";
-                    contentContainer.add(customTextPane, leftConstraints);
+                    contentContainer.add(customTextAndQuoteForBubblePanel, leftConstraints);
                 }
 
                 case RIGHT -> {
 
                     String rightConstraints = "gapright 15, grow 1.0, gaptop 10";
-                    contentContainer.add(customTextPane, rightConstraints);
+                    contentContainer.add(customTextAndQuoteForBubblePanel, rightConstraints);
                 }
             }
         }
