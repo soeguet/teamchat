@@ -26,11 +26,9 @@ public class CustomLinkCommentTextPane extends CustomTextPane {
         return linkModel.getComment().isEmpty();
     }
 
-    // overrides -- start
     @Override
     public void create() {
 
         super.setText(linkModel.getComment());
     }
-    // overrides -- end
 }

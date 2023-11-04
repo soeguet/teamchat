@@ -34,9 +34,9 @@ public class CustomReferencePanel extends JPanel {
 
         /*
 
-        SCHEMA: QUOTE PANEL
+        SCHEMA: CustomReferencePanel
 
-        [[name - time]]
+        [[name - time]]     #CustomReplyPreviewTopInformationTextPane
         [[quoted text]]
 
         */
@@ -96,14 +96,13 @@ public class CustomReferencePanel extends JPanel {
 
             case LinkModel linkModel ->{
 
-
-                // LINK itself
+                // LINK
                 final CustomLinkTextPane customLinkTextPane = createCustomLinkTextPaneWithComment(linkModel);
 
                 final JScrollPane jScrollPane = createScrollPane();
                 jScrollPane.setViewportView(customLinkTextPane);
 
-                super.add(jScrollPane, "cell 0 1, grow, width ::500, h ::800");
+                super.add(jScrollPane, "cell 0 1, width ::500, h ::800");
             }
         }
     }
@@ -148,7 +147,6 @@ public class CustomReferencePanel extends JPanel {
         return nameAndTimeTextPane;
     }
 
-    // overrides -- start
     @Override
     protected void paintComponent(final Graphics g) {
 
@@ -165,5 +163,4 @@ public class CustomReferencePanel extends JPanel {
         // right line
         g2d.drawLine(this.getWidth() - 1, 0, this.getWidth() - 1, this.getHeight() - 1);
     }
-    // overrides -- end
 }

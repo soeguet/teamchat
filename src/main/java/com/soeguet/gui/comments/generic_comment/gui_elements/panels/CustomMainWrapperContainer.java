@@ -63,7 +63,6 @@ public class CustomMainWrapperContainer extends JPanel {
 
 
 
-    // overrides -- start
     @Override
     protected void paintComponent(Graphics g) {
 
@@ -71,7 +70,6 @@ public class CustomMainWrapperContainer extends JPanel {
             customPaint.accept(g);
         }
     }
-    // overrides -- end
 
     // getter & setter -- start
     public Consumer<Graphics> getCustomPaint() {

@@ -8,19 +8,24 @@ import javax.swing.*;
 
 public class ReplyPanelFactory {
 
+    // variables -- start
     private final MainFrameGuiInterface mainFrame;
     private final BaseModel baseModel;
     private CustomReplyPanel customReplyPanel;
+    // variables -- end
 
+    // constructors -- start
     public ReplyPanelFactory(MainFrameGuiInterface mainFrame, BaseModel baseModel) {
 
         this.mainFrame = mainFrame;
         this.baseModel = baseModel;
     }
+    // constructors -- end
 
     public void create() {
 
         customReplyPanel = new CustomReplyPanel(mainFrame, baseModel);
+
         customReplyPanel.setCustomReplyPanelLayoutManger();
         customReplyPanel.populateCustomReplyPanel();
         customReplyPanel.setMaximumSizeWithingMainFrame();
@@ -30,7 +35,8 @@ public class ReplyPanelFactory {
         customReplyPanel.moveReplyPanelToCenter();
         customReplyPanel.setVisible(true);
     }
-    public void setFocusOnTextPane(){
+
+    public void setFocusOnTextPane() {
 
         customReplyPanel.setFocusOnTextPane();
     }

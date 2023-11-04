@@ -18,14 +18,15 @@ import java.time.format.DateTimeFormatter;
 
 public class CustomReplySendButton extends JButton implements MouseListener {
 
-// variables -- start
+    // variables -- start
     private final MainFrameGuiInterface mainFrame;
     private final BaseModel baseModel;
     private final CustomReplyPanel customReplyPanel;
-// variables -- end
+    // variables -- end
 
-// constructors -- start
-    public CustomReplySendButton(MainFrameGuiInterface mainFrame, BaseModel baseModel, CustomReplyPanel customReplyPanel) {
+    // constructors -- start
+    public CustomReplySendButton(MainFrameGuiInterface mainFrame, BaseModel baseModel,
+                                 CustomReplyPanel customReplyPanel) {
 
         this.mainFrame = mainFrame;
         this.baseModel = baseModel;
@@ -36,7 +37,7 @@ public class CustomReplySendButton extends JButton implements MouseListener {
 
         super.addMouseListener(this);
     }
-// constructors -- end
+    // constructors -- end
 
     private void setCustomIcon() {
 
@@ -48,34 +49,17 @@ public class CustomReplySendButton extends JButton implements MouseListener {
         }
     }
 
-// overrides -- start
-    @Override
-    public void mouseClicked(final MouseEvent e) {
-
-        final CustomWebsocketClient websocketClient = mainFrame.getWebsocketClient();
-        final ObjectMapper objectMapper = mainFrame.getObjectMapper();
-
-        final MessageModel messageModel = this.createMessageModel();
-
-        try {
-
-            objectMapper.writeValueAsString(messageModel);
-            websocketClient.send(objectMapper.writeValueAsString(messageModel));
-
-        } catch (JsonProcessingException ex) {
-
-            throw new RuntimeException(ex);
-        }
-
-        customReplyPanel.removeAll();
-        customReplyPanel.setVisible(false);
-    }
-
     private MessageModel createMessageModel() {
 
         final QuoteModel<BaseModel> quoteModel = this.createQuoteModel();
 
         MessageModel messageModel = new MessageModel();
+
+        //FEATURE -> can't quote pictures -> they clutter the database this way -> need to find a way to reference them
+        if (quoteModel.t() instanceof PictureModel pictureModel) {
+
+            pictureModel.setPicture(null);
+        }
 
         messageModel.setQuotedMessage(quoteModel);
         messageModel.setMessage(customReplyPanel.getTextPane().getText());
@@ -99,6 +83,28 @@ public class CustomReplySendButton extends JButton implements MouseListener {
     }
 
     @Override
+    public void mouseClicked(final MouseEvent e) {
+
+        final CustomWebsocketClient websocketClient = mainFrame.getWebsocketClient();
+        final ObjectMapper objectMapper = mainFrame.getObjectMapper();
+
+        final MessageModel messageModel = this.createMessageModel();
+
+        try {
+
+            objectMapper.writeValueAsString(messageModel);
+            websocketClient.send(objectMapper.writeValueAsString(messageModel));
+
+        } catch (JsonProcessingException ex) {
+
+            throw new RuntimeException(ex);
+        }
+
+        customReplyPanel.removeAll();
+        customReplyPanel.setVisible(false);
+    }
+
+    @Override
     public void mousePressed(final MouseEvent e) {
 
     }
@@ -117,5 +123,4 @@ public class CustomReplySendButton extends JButton implements MouseListener {
     public void mouseExited(final MouseEvent e) {
 
     }
-// overrides -- end
 }

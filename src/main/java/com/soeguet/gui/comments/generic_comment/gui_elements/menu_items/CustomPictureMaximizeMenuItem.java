@@ -45,7 +45,6 @@ public class CustomPictureMaximizeMenuItem extends JMenuItem implements MouseLis
         }
     }
 
-    // overrides -- start
     @Override
     public void mouseClicked(final MouseEvent e) {
 
@@ -72,5 +71,4 @@ public class CustomPictureMaximizeMenuItem extends JMenuItem implements MouseLis
     public void mouseExited(final MouseEvent e) {
 
     }
-    // overrides -- end
 }

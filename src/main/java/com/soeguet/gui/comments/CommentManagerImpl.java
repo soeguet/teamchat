@@ -71,7 +71,6 @@ public class CommentManagerImpl implements CommentManager {
         return mainFrame.getUsername().equals(messageModel);
     }
 
-    // overrides -- start
 
     /**
      Categorizes messages received from a socket based on the given BaseModel.
@@ -136,5 +135,4 @@ public class CommentManagerImpl implements CommentManager {
 
         repaintMainFrame();
     }
-    // overrides -- end
 }

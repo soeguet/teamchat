@@ -28,7 +28,6 @@ public class CustomReplyMenuItem extends JMenuItem implements MouseListener {
     }
     // constructors -- end
 
-    // overrides -- start
     @Override
     public void mouseClicked(final MouseEvent e) {
 
@@ -59,5 +58,4 @@ public class CustomReplyMenuItem extends JMenuItem implements MouseListener {
     public void mouseExited(final MouseEvent e) {
 
     }
-    // overrides -- end
 }

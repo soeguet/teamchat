@@ -80,7 +80,6 @@ public class CustomPictureLabel extends JLabel implements ContentInterface, Comp
         }
     }
 
-    // overrides -- start
     @Override
     public void mouseClicked(final MouseEvent e) {
 
@@ -127,5 +126,4 @@ public class CustomPictureLabel extends JLabel implements ContentInterface, Comp
     public void componentHidden(final ComponentEvent e) {
 
     }
-    // overrides -- end
 }

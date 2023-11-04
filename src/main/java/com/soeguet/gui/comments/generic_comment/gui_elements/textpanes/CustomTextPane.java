@@ -41,7 +41,6 @@ public class CustomTextPane extends JTextPane implements ContentInterface {
 
     private static class WrapColumnFactory implements ViewFactory {
 
-// overrides -- start
         @Override
         public View create(final Element element) {
 

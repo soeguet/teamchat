@@ -50,7 +50,6 @@ public class CustomContentContainer extends JPanel implements ComponentListener 
         repaint();
     }
 
-    // overrides -- start
     @Override
     public void componentResized(final ComponentEvent e) {
 
@@ -84,7 +83,6 @@ public class CustomContentContainer extends JPanel implements ComponentListener 
             customPaint.accept(graphics);
         }
     }
-    // overrides -- end
 
     // getter & setter -- start
     public void setTopPanelReference(final TransparentTopPanel topPanel) {

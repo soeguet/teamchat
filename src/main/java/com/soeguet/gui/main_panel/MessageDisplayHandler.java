@@ -28,7 +28,6 @@ public class MessageDisplayHandler implements MessageDisplayHandlerInterface {
     }
 // constructors -- end
 
-// overrides -- start
     /**
      Retrieves and removes the first message from the message queue cache.
 

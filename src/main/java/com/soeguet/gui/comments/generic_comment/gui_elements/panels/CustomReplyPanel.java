@@ -42,25 +42,15 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
     }
     // constructors -- end
 
-    public void moveReplyPanelToCenter() {
-
-        final int width = this.getWidth();
-        final int height = this.getHeight();
-        final int mainFrameWidth = mainFrame.getMainTextPanelLayeredPane().getWidth();
-        final int mainFrameHeight = mainFrame.getMainTextPanelLayeredPane().getHeight();
-
-        this.setLocation((mainFrameWidth - width) / 2, (mainFrameHeight - height) / 2);
-    }
-
     public void setCustomReplyPanelLayoutManger() {
 
         /*
-        SCHEMA: ReplyPanel
-
-        [[_________title__________][x]]     // contains title and close button
-        [[______referenced_stuff_____]]     // contains refereced stuff <- will contain CustomQuotePanel (?)
-        [ [text_pane] [ [1] [2] [3] ] ]     //text pane and buttons
-
+        SCHEMA: CustomReplyPanel
+                                                                                            __search for:
+        [[_________title__________][x]]     // contains title and close button              #titlePanel
+        [[______reference panel_____]]      // contains referenced stuff <- will contain    #CustomReferencePanel
+        [ [text_pane] [ [1] [2] [3] ] ]     //text pane and buttons                         #textPane
+                                                                                            #sendButton
          */
 
         super.setLayout(new MigLayout("insets 0",
@@ -70,10 +60,27 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
                                       "[fill][fill,grow][fill,bottom]"));
     }
 
+    public void moveReplyPanelToCenter() {
+
+        final int width = this.getWidth();
+        final int height = this.getHeight();
+
+        final int mainFrameWidth = mainFrame.getMainTextPanelLayeredPane().getWidth();
+        final int mainFrameHeight = mainFrame.getMainTextPanelLayeredPane().getHeight();
+
+        this.setLocation((mainFrameWidth - width) / 2, (mainFrameHeight - height) / 2);
+    }
+
     public void setMaximumSizeWithingMainFrame() {
 
-        final int width = this.getPreferredSize().width + 50;
-        final int height = this.getPreferredSize().height + 50;
+        int width = this.getPreferredSize().width + 50;
+        int height = this.getPreferredSize().height + 50;
+
+        //restrict max sizing to ::500
+        if (width > 500) {
+
+            width = 500;
+        }
 
         super.setBounds(0, 0, width, height);
 
@@ -122,14 +129,17 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
 
     private void populateButtonPanel(final CustomSimpleJPanel buttonPanel) {
 
+        // [1] EMOJI BUTTON
         JButton emojiButton = new JButton("E");
         emojiButton.setEnabled(false);
         buttonPanel.add(emojiButton, "cell 0 0");
 
+        // [2] ATTACH BUTTON
         JButton attachButton = new JButton("A");
         attachButton.setEnabled(false);
         buttonPanel.add(attachButton, "cell 1 0");
 
+        // [3] SEND BUTTON
         CustomReplySendButton sendButton = new CustomReplySendButton(this.mainFrame, this.baseModel, this);
         buttonPanel.add(sendButton, "cell 2 0");
     }
@@ -142,14 +152,10 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
         super.add(customReferencePanel, "cell 0 1, grow, gapleft 10, gapright 10");
     }
 
-    public CustomSimpleTextPane getTextPane() {
-
-        return textPane;
-    }
-
     private void populateReplyPanelTitle() {
 
         JPanel titlePanel = new JPanel();
+
         titlePanel.setBackground(new Color(189, 189, 189, 255));
         titlePanel.setLayout(new MigLayout("",
                                            //columns
@@ -164,12 +170,6 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
         titlePanel.add(closeButton, "cell 1 0");
 
         super.add(titlePanel, "cell 0 0");
-    }
-
-    @Override
-    public Dimension getMaximumSize() {
-
-        return maximumSize;
     }
 
     private boolean isInCorner(Point p) {
@@ -187,7 +187,6 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
         });
     }
 
-// overrides -- start
     @Override
     protected void paintComponent(final Graphics g) {
 
@@ -223,10 +222,12 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
             int newY = (int) (currentSize.getHeight() + dy);
 
             if (newX < this.getMaximumSize().getWidth()) {
+
                 newX = (int) this.getMaximumSize().getWidth();
             }
 
             if (newY < this.getMaximumSize().getHeight()) {
+
                 newY = (int) this.getMaximumSize().getHeight();
             }
 
@@ -245,10 +246,6 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
         //this is needed, else the panel will not adjust to the new size
         revalidate();
         repaint();
-    }    // overrides -- start    @Override
-    public void setMaximumSize(final Dimension maximumSize) {
-
-        this.maximumSize = maximumSize;
     }
 
     @Override
@@ -292,11 +289,13 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
     public void mouseExited(final java.awt.event.MouseEvent e) {
 
     }
-// overrides -- end
 
+    // getter & setter -- start
 
+    public CustomSimpleTextPane getTextPane() {
 
+        return textPane;
+    }
 
-    // overrides -- end
-
+    // getter & setter -- end
 }

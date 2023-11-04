@@ -15,7 +15,6 @@ public class TransparentTopPanel extends JPanel implements MouseListener {
     }
     // constructors -- end
 
-    // overrides -- start
     @Override
     protected void paintComponent(Graphics g) {
 
