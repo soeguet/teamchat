@@ -10,6 +10,7 @@ public class ReplyPanelFactory {
 
     private final MainFrameGuiInterface mainFrame;
     private final BaseModel baseModel;
+    private CustomReplyPanel customReplyPanel;
 
     public ReplyPanelFactory(MainFrameGuiInterface mainFrame, BaseModel baseModel) {
 
@@ -19,7 +20,7 @@ public class ReplyPanelFactory {
 
     public void create() {
 
-        CustomReplyPanel customReplyPanel = new CustomReplyPanel(mainFrame, baseModel);
+        customReplyPanel = new CustomReplyPanel(mainFrame, baseModel);
         customReplyPanel.setCustomReplyPanelLayoutManger();
         customReplyPanel.populateCustomReplyPanel();
         customReplyPanel.setMaximumSizeWithingMainFrame();
@@ -28,5 +29,9 @@ public class ReplyPanelFactory {
 
         customReplyPanel.moveReplyPanelToCenter();
         customReplyPanel.setVisible(true);
+    }
+    public void setFocusOnTextPane(){
+
+        customReplyPanel.setFocusOnTextPane();
     }
 }

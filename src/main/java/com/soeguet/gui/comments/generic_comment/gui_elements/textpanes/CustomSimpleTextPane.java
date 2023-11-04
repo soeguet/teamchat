@@ -13,6 +13,10 @@ public class CustomSimpleTextPane extends JTextPane {
         super.setOpaque(false);
         super.setBackground(null);
         super.setOpaque(false);
+        super.setFocusable(true);
+        super.setRequestFocusEnabled(true);
+        super.requestFocus();
+        super.requestFocusInWindow();
     }
     // constructors -- end
 }

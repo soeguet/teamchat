@@ -8,9 +8,9 @@ import com.soeguet.model.jackson.BaseModel;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -24,6 +24,7 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
     private Point previousPoint = new Point();
     private boolean isResizing = false;
     private boolean isMoving = false;
+    private CustomSimpleTextPane textPane;
     // variables -- end
 
     // constructors -- start
@@ -94,7 +95,8 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
                                                                               "[fill]"));
 
         // -> TEXT PANE
-        CustomSimpleTextPane textPane = new CustomSimpleTextPane();
+        textPane = new CustomSimpleTextPane();
+        textPane.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
         bottomPanel.add(textPane, "cell 0 0");
 
         // -> BUTTON PANEL
@@ -108,6 +110,7 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
 
         //add panel to reply panel
         super.add(bottomPanel, "cell 0 2");
+        textPane.requestFocus();
     }
 
     private void populateButtonPanel(final CustomSimpleJPanel buttonPanel) {
@@ -143,7 +146,7 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
         JLabel titleLabel = new JLabel("Reply to: " + baseModel.getSender());
         titlePanel.add(titleLabel, "cell 0 0");
 
-        CustomCloseButton closeButton = new CustomCloseButton(this, "x");
+        CustomCloseButton closeButton = new CustomCloseButton(mainFrame,this, "x");
         titlePanel.add(closeButton, "cell 1 0");
 
         super.add(titlePanel, "cell 0 0");
@@ -153,6 +156,15 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
 
         Dimension size = this.getSize();
         return p.x >= size.width - CORNER_SIZE && p.y >= size.height - CORNER_SIZE;
+    }
+
+    public void setFocusOnTextPane() {
+
+        SwingUtilities.invokeLater(()->{
+
+            textPane.requestFocus(true);
+            textPane.requestFocusInWindow();
+        });
     }
 
     @Override

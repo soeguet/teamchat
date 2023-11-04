@@ -23,6 +23,7 @@ public class CustomInteractionButton extends JButton implements MouseListener {
         this.baseModel = baseModel;
 
         this.addMouseListener(this);
+        this.setFocusable(false);
     }
     // constructors -- end
 

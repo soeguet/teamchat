@@ -37,9 +37,12 @@ public class CustomReplyMenuItem extends JMenuItem implements MouseListener {
     @Override
     public void mousePressed(final MouseEvent e) {
 
-        new ReplyPanelFactory(mainFrame,baseModel).create();
+        ReplyPanelFactory replyPanelFactory = new ReplyPanelFactory(mainFrame,baseModel);
+        replyPanelFactory.create();
 
-        //CODE HERE
+        // I don't know how to fix this otherwise. the damn text pane keeps stealing the focus
+        mainFrame.getTextEditorPane().setFocusable(false);
+        replyPanelFactory.setFocusOnTextPane();
     }
 
     @Override
