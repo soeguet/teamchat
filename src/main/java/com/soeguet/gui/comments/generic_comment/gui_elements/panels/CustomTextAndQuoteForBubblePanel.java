@@ -41,7 +41,7 @@ public class CustomTextAndQuoteForBubblePanel extends JPanel {
 
                 "", // Layout Constraints
                 "[fill,grow]", // Column constraints
-                "[fill][fill][fill]" // Row constraints
+                "[fill,shrink][fill,shrink]" // Row constraints
         ));
     }
 

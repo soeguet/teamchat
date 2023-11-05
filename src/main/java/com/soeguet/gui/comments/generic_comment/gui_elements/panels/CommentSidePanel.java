@@ -29,6 +29,41 @@ public class CommentSidePanel extends JPanel {
     }
     // constructors -- end
 
+    public void setSidePanelLayoutManager() {
+
+        /*
+
+        SCHEMA: SIDE PANEL
+
+        left
+        [[name][name]]
+        [button][time]
+
+        right
+        [[name][name]]
+        [time][button]
+
+        ___
+        [ ">>"SIDEPANEL"<<" [MAIN CONTENT PANEL] ]
+
+         */
+
+        if (side == Side.LEFT) {
+            super.setLayout(new MigLayout("insets 0",
+                                          // columns
+                                          "[][]10",
+                                          // rows - push is needed -> text will float
+                                          "push[shrink][shrink]"));
+        } else {
+            super.setLayout(new MigLayout("insets 0",
+                                          // columns
+                                          "10[][]",
+                                          // rows - push is needed -> text will float
+                                          "push[shrink][shrink]"));
+        }
+    }
+
+
     private void componentConfig() {
 
         //timestamp
@@ -62,33 +97,6 @@ public class CommentSidePanel extends JPanel {
                 add(this.getInteractionButton(), "cell 1 1 1 1");
             }
         }
-    }
-
-    public void setSidePanelLayoutManager() {
-
-        /*
-
-        SCHEMA: SIDE PANEL
-
-        left
-        [[name][name]]
-        [button][time]
-
-        right
-        [[name][name]]
-        [time][button]
-
-        ___
-        [ ">>"SIDEPANEL"<<" [MAIN CONTENT PANEL] ]
-
-         */
-
-        setLayout(new MigLayout("",
-                                // columns
-                                "[][]",
-                                // rows
-                                "push[][]"));
-
     }
 
     // getter & setter -- start

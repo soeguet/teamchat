@@ -41,7 +41,7 @@ public class CustomContentContainer extends JPanel implements ComponentListener 
                                       // columns
                                       "[grow,fill]",
                                       // rows
-                                      "[][][]"));
+                                      "[fill]"));
     }
 
     public void overrideCustomPaint(final Consumer<Graphics> customPaint) {

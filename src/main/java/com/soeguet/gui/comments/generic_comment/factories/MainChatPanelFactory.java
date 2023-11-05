@@ -44,16 +44,20 @@ public class MainChatPanelFactory {
         CustomMainWrapperContainer customMainWrapperContainer = new CustomMainWrapperContainer(commentType);
         customMainWrapperContainer.setMainWrapperContainerLayoutManager();
 
-        return generateCommentPanel(commentSidePanel, customContentContainer, customMainWrapperContainer);
+        //set dependencies
+        final CustomCommentPanel customCommentPanel = createCustomCommentPanel(commentSidePanel,
+                                                                               customContentContainer,
+                                                                               customMainWrapperContainer);
+
+        return customCommentPanel;
     }
 
-    private CustomCommentPanel generateCommentPanel(final CommentSidePanel commentSidePanel,
-                                                    final CustomContentContainer customContentContainer,
-                                                    final CustomMainWrapperContainer customMainWrapperContainer) {
+    private CustomCommentPanel createCustomCommentPanel(final CommentSidePanel commentSidePanel,
+                                                        final CustomContentContainer customContentContainer,
+                                                        final CustomMainWrapperContainer customMainWrapperContainer) {
 
         CustomCommentPanel customCommentPanel = new CustomCommentPanel();
 
-        //set dependencies
         customCommentPanel.setMainFrame(mainFrame);
         customCommentPanel.setCommentType(commentType);
         customCommentPanel.setSide();
@@ -63,13 +67,18 @@ public class MainChatPanelFactory {
         customCommentPanel.setCustomMainWrapperContainer(customMainWrapperContainer);
         customCommentPanel.setTopContainer(new TransparentTopPanel());
 
+        generateCommentPanel(customCommentPanel);
+
+        return customCommentPanel;
+    }
+
+    private void generateCommentPanel(CustomCommentPanel customCommentPanel) {
+
         //assemble -> this is where basemodel is differentiated -> message, link, picture
         customCommentPanel.prepareInteractionButtons(); //will be needed in .addComponents()
         customCommentPanel.setLayoutManager();
         customCommentPanel.addComponents();
         customCommentPanel.addContext();
         customCommentPanel.paintChatBubble();
-
-        return customCommentPanel;
     }
 }

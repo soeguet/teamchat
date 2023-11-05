@@ -22,6 +22,7 @@ public class TextMessageFactory {
                 new CustomTextAndQuoteForBubblePanel(mainFrame, messageModel);
 
         customTextAndQuoteForBubblePanel.setTextAndQuoteBubbleLayoutManager();
+
         customTextAndQuoteForBubblePanel.addQuote();
         customTextAndQuoteForBubblePanel.addTextMessage();
 

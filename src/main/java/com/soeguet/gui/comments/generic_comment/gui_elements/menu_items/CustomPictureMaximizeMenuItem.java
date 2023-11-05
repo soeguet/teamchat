@@ -30,10 +30,15 @@ public class CustomPictureMaximizeMenuItem extends JMenuItem implements MouseLis
     // constructors -- end
 
     /**
-     Opens the given image in an external image viewer.
+     Opens the image stored in the picture model in an external image viewer.
+     <p>
+     This method reads the picture data from the picture model and saves it as a temporary PNG file. The temporary file
+     is then opened using the default external image viewer associated with the system.
+     <p>
+     If an error occurs while opening the image in the external viewer, an error message dialog is displayed.
 
-     @param image
-     The image to be opened.
+     @throws IOException
+     if an I/O error occurs while reading the picture data or creating the temporary file
      */
     private void openImageInExternalImageViewer() {
 
@@ -50,7 +55,8 @@ public class CustomPictureMaximizeMenuItem extends JMenuItem implements MouseLis
 
         } catch (IOException ex) {
 
-            JOptionPane.showMessageDialog(null, "Error while opening image in external viewer: " + ex.getMessage());
+            JOptionPane.showMessageDialog(null,
+                                          "Error while opening image in external viewer: %s".formatted(ex.getMessage()));
         }
     }
 
@@ -59,6 +65,15 @@ public class CustomPictureMaximizeMenuItem extends JMenuItem implements MouseLis
 
     }
 
+    /**
+     Invoked when a mouse button is pressed on a component.
+     <p>
+     This method starts a new virtual thread that calls the {@link #openImageInExternalImageViewer()} method. The method
+     runs asynchronously, allowing the main thread to continue processing other events.
+
+     @param e
+     the MouseEvent that triggered this event
+     */
     @Override
     public void mousePressed(final MouseEvent e) {
 
