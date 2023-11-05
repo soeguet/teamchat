@@ -49,7 +49,7 @@ public class CustomReferencePanel extends JPanel {
 
             case MessageModel messageModel -> {
 
-                super.setLayout(new MigLayout("debug,wrap",
+                super.setLayout(new MigLayout("wrap",
                                               //columns
                                               "[fill,grow]",
                                               //rows
@@ -58,7 +58,7 @@ public class CustomReferencePanel extends JPanel {
 
             case PictureModel pictureModel -> {
 
-                super.setLayout(new MigLayout("debug,wrap",
+                super.setLayout(new MigLayout("wrap",
                                               //columns
                                               "[fill,grow]",
                                               //rows
@@ -67,7 +67,7 @@ public class CustomReferencePanel extends JPanel {
 
             case LinkModel linkModel -> {
 
-                super.setLayout(new MigLayout("debug,wrap",
+                super.setLayout(new MigLayout("wrap",
                                               //columns
                                               "[fill,grow]",
                                               //rows

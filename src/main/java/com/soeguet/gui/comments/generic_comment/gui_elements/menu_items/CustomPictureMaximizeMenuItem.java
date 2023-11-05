@@ -88,7 +88,6 @@ public class CustomPictureMaximizeMenuItem extends JMenuItem implements MouseLis
     @Override
     public void mouseEntered(final MouseEvent e) {
 
-        System.out.println("mouse entered");
     }
 
     @Override

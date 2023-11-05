@@ -49,6 +49,8 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Logger logger = Logger.getLogger(GuiFunctionalityImpl.class.getName());
     private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
+    private CommentManager commentManager;
+    private MessageDisplayHandlerInterface messageDisplayHandler;
 
     /**
      Constructor for the GuiFunctionalityImpl class.
@@ -393,9 +395,16 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
      */
     private synchronized void writeGuiMessageToChatPanel() {
 
-        CommentManager commentManager = new CommentManagerImpl(mainFrame);
-        MessageDisplayHandlerInterface messageDisplayHandler = new MessageDisplayHandler(mainFrame, commentManager);
-        messageDisplayHandler.setCacheManager(cacheManager);
+        if (commentManager == null) {
+
+            commentManager = new CommentManagerImpl(mainFrame);
+        }
+
+        if (messageDisplayHandler == null) {
+
+            messageDisplayHandler = new MessageDisplayHandler(mainFrame, commentManager);
+            messageDisplayHandler.setCacheManager(cacheManager);
+        }
 
         //retrieve the message from cache
         final String message = messageDisplayHandler.pollMessageFromCache();

@@ -24,61 +24,109 @@ public class EmojiSwingWorker extends SwingWorker<Void, Object> {
     // constructors -- end
 
     @Override
+    public Throwable exceptionNow() {
+
+        throw new RuntimeException("Exception in SwingWorker");
+    }
+
+    @Override
     protected Void doInBackground() {
 
+        StringBuilder textBuilder = new StringBuilder();
+
+        // else the swingworker crashes with larger texts
+        final int chunkSize = 100;
+        int wordCounter = 0;
+
         String[] words = text.split(" ");
-        StyledDocument doc = textPane.getStyledDocument();
 
         for (String word : words) {
 
-            // Directly append text that's not an emoji
-            if (!emojiList.containsKey(word)) {
+            if (emojiList.containsKey(word)) {
 
-                publish(word + " "); // Publish the word with a trailing space
-                continue;
-            }
+                wordCounter = processEmoji(word, textBuilder, wordCounter);
 
-            // For emojis, publish a placeholder
-            ImageIcon emojiIcon = emojiList.get(word);
+            } else {
 
-            if (emojiIcon != null) {
-
-                // Using ImageIcon.toString() as a placeholder for the ImageIcon
-                publish(emojiIcon);
+                wordCounter = processWord(word, textBuilder, wordCounter, chunkSize);
             }
         }
+
+        //publish last block if not empty
+        if (!textBuilder.isEmpty()) {
+            publish(textBuilder.toString());
+        }
+
         return null;
+
+    }
+
+    private int processWord(final String word, final StringBuilder textBuilder, int wordCounter, final int chunkSize) {
+
+        textBuilder.append(word).append(" ");
+        wordCounter++;
+
+        // Veröffentliche in größeren Blöcken
+        if (wordCounter >= chunkSize) {
+
+            wordCounter = publishAndResetText(textBuilder);
+        }
+        return wordCounter;
+    }
+
+    private int processEmoji(final String word, final StringBuilder textBuilder, int wordCounter) {
+
+        ImageIcon emojiIcon = emojiList.get(word);
+
+        if (emojiIcon != null) {
+
+            //publish everything up until now
+            if (!textBuilder.isEmpty()) {
+
+                wordCounter = publishAndResetText(textBuilder);
+            }
+
+            // Veröffentliche das ImageIcon
+            publish(emojiIcon);
+        }
+        return wordCounter;
+    }
+
+    private int publishAndResetText(StringBuilder textBuilder){
+
+        publish(textBuilder.toString());
+        textBuilder.setLength(0);
+        return  0;
     }
 
     @Override
     protected void process(List<Object> chunks) {
 
-        try {
 
-            StyledDocument doc = textPane.getStyledDocument();
+        SwingUtilities.invokeLater(()-> {
 
-            for (Object chunk : chunks) {
+            try {
 
-                if (chunk instanceof ImageIcon imageIcon) {
+                StyledDocument doc = textPane.getStyledDocument();
 
-                    // Insert the ImageIcon
-                    textPane.insertIcon(imageIcon);
+                for (Object chunk : chunks) {
 
-                } else if (chunk instanceof String string) {
+                    if (chunk instanceof ImageIcon imageIcon) {
 
-                    // Insert the text
-                    doc.insertString(doc.getLength(), string, null);
+                        // Insert the ImageIcon
+                        textPane.insertIcon(imageIcon);
+
+                    } else if (chunk instanceof String string) {
+
+                        // Insert the text
+                        doc.insertString(doc.getLength(), string, null);
+                    }
                 }
+
+            } catch (Exception e) {
+
+                throw new RuntimeException(e);
             }
-
-        } catch (BadLocationException e) {
-
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    protected void done() {
-        // Any finalization can be done here, this runs on the EDT.
+        });
     }
 }

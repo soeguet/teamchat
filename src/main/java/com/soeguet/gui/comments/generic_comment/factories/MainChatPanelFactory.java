@@ -4,6 +4,9 @@ import com.soeguet.gui.comments.generic_comment.gui_elements.panels.*;
 import com.soeguet.gui.comments.util.CommentTypeEnum;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.BaseModel;
+import com.soeguet.model.jackson.MessageModel;
+
+import java.lang.reflect.Member;
 
 //THIS IS THE MAIN CHAT PANEL FACTORY
 public class MainChatPanelFactory {
