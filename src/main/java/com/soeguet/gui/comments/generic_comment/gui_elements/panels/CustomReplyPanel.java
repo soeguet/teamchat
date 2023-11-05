@@ -104,6 +104,7 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
 
         // -> TEXT PANE
         this.textPane = new CustomSimpleTextPane(mainFrame);
+        this.textPane.setEditable(true);
 
         this.textPane.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
         bottomPanel.add(this.textPane, "cell 0 0");

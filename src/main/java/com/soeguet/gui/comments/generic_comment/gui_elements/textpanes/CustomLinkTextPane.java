@@ -37,6 +37,7 @@ public class CustomLinkTextPane extends JTextPane {
 
         } else {
 
+            // contains additional <p></p> tags
             hyperlinkHtml = """
                     <a href="%s"
                     style="text-decoration:underline; color:blue; font-size:15;">

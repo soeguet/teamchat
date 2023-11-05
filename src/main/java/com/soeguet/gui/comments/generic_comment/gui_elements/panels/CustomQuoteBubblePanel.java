@@ -11,9 +11,12 @@ import java.awt.*;
 
 public class CustomQuoteBubblePanel extends JPanel {
 
+    // variables -- start
     private final MainFrameGuiInterface mainFrame;
     private final QuoteModel<? extends BaseModel> quoteModel;
+    // variables -- end
 
+    // constructors -- start
     public CustomQuoteBubblePanel(MainFrameGuiInterface mainFrame, final QuoteModel<? extends BaseModel> quoteModel) {
 
         this.mainFrame = mainFrame;
@@ -21,6 +24,72 @@ public class CustomQuoteBubblePanel extends JPanel {
         this.quoteModel = quoteModel;
         super.setBackground(new Color(240, 240, 240, 255));
         super.setOpaque(true);
+    }
+    // constructors -- end
+
+    public void setQuoteBubbleLayoutManager() {
+
+        /*
+
+        SCHEMA: CustomQuoteBubblePanel
+
+        [NAME - TIME ]
+        [QUOTED STUFF]
+         */
+
+        super.setLayout(new MigLayout(
+
+                "", // Layout Constraints
+                "[fill]", // Column constraints
+                "[fill][fill]" // Row constraints
+        ));
+    }
+
+    public void addTopNameAndTimeTextPane() {
+
+        final BaseModel baseModel = quoteModel.t();
+
+        CustomSimpleTextPane nameAndTimeTextPane = new CustomSimpleTextPane(mainFrame);
+        //modifications -> maybe custom class
+        nameAndTimeTextPane.setEnabled(false);
+        nameAndTimeTextPane.setFont(new Font(nameAndTimeTextPane.getFont().getName(), Font.ITALIC, 10));
+
+        nameAndTimeTextPane.setText(baseModel.getSender() + " - " + baseModel.getTime());
+
+        super.add(nameAndTimeTextPane, "cell 0 0");
+    }
+
+    public void extractQuotedMessage() {
+
+        final BaseModel baseModel = quoteModel.t();
+
+        switch (baseModel) {
+
+            case MessageModel messageModel -> {
+
+                CustomSimpleTextPane customSimpleTextPane = new CustomSimpleTextPane(mainFrame);
+                customSimpleTextPane.replaceEmojiDescriptionWithActualImageIcon(messageModel.getMessage());
+
+                super.add(customSimpleTextPane, "cell 0 1");
+            }
+
+            case PictureModel pictureModel -> {
+
+                CustomSimpleTextPane customSimpleTextPane = new CustomSimpleTextPane(mainFrame);
+                customSimpleTextPane.replaceEmojiDescriptionWithActualImageIcon(pictureModel.getDescription());
+
+                super.add(customSimpleTextPane, "cell 0 1");
+            }
+
+            case LinkModel linkModel -> {
+
+                CustomLinkTextPane customLinkTextPane = new CustomLinkTextPane(linkModel);
+                customLinkTextPane.create();
+
+                super.add(customLinkTextPane, "cell 0 1");
+            }
+        }
+
     }
 
     @Override
@@ -37,49 +106,5 @@ public class CustomQuoteBubblePanel extends JPanel {
 
         g2d.drawLine(0, 0, 0, maxHeight);
         g2d.drawLine(maxWidth, 0, maxWidth, maxHeight);
-    }
-
-    public void setQuoteBubbleLayoutManager() {
-
-        super.setLayout(new MigLayout(
-
-                "", // Layout Constraints
-                "[fill]", // Column constraints
-                "[fill]" // Row constraints
-        ));
-    }
-
-
-    public void extractQuotedMessage() {
-
-        final BaseModel baseModel = quoteModel.t();
-
-        switch (baseModel) {
-            case MessageModel messageModel -> {
-
-                CustomSimpleTextPane customSimpleTextPane = new CustomSimpleTextPane(mainFrame);
-                customSimpleTextPane.setText(messageModel.getMessage());
-
-                super.add(customSimpleTextPane, "cell 0 0");
-            }
-
-            case PictureModel pictureModel -> {
-
-                CustomSimpleTextPane customSimpleTextPane = new CustomSimpleTextPane(mainFrame);
-                customSimpleTextPane.setText(pictureModel.getDescription());
-
-                super.add(customSimpleTextPane, "cell 0 0");
-            }
-
-            case LinkModel linkModel -> {
-
-                CustomLinkTextPane customLinkTextPane = new CustomLinkTextPane(linkModel);
-                customLinkTextPane.create();
-
-                super.add(customLinkTextPane, "cell 0 0");
-            }
-        }
-
-
     }
 }

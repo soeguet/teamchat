@@ -1,5 +1,7 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.menu_items;
 
+import com.soeguet.model.jackson.PictureModel;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -12,14 +14,14 @@ import java.io.IOException;
 public class CustomPictureMaximizeMenuItem extends JMenuItem implements MouseListener {
 
     // variables -- start
-    private final BufferedImage bufferedImage;
+    private final PictureModel pictureModel;
     // variables -- end
 
     // constructors -- start
-    public CustomPictureMaximizeMenuItem(String title, BufferedImage bufferedImage) {
+    public CustomPictureMaximizeMenuItem(String title, PictureModel pictureModel) {
 
         super(title);
-        this.bufferedImage = bufferedImage;
+        this.pictureModel = pictureModel;
         addMouseListener(this);
     }
     // constructors -- end
@@ -53,7 +55,7 @@ public class CustomPictureMaximizeMenuItem extends JMenuItem implements MouseLis
     @Override
     public void mousePressed(final MouseEvent e) {
 
-        new Thread(() -> openImageInExternalImageViewer(bufferedImage)).start();
+//        new Thread(() -> openImageInExternalImageViewer(bufferedImage)).start();
     }
 
     @Override

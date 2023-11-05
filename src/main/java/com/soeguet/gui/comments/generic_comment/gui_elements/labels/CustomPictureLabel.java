@@ -2,6 +2,8 @@ package com.soeguet.gui.comments.generic_comment.gui_elements.labels;
 
 import com.soeguet.gui.comments.generic_comment.gui_elements.interfaces.ContentInterface;
 import com.soeguet.gui.comments.generic_comment.gui_elements.menu_items.CustomPictureMaximizeMenuItem;
+import com.soeguet.gui.comments.util.PictureSwingWorker;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.PictureModel;
 
 import javax.swing.*;
@@ -20,22 +22,27 @@ public class CustomPictureLabel extends JLabel implements ContentInterface, Comp
 
     // variables -- start
     private final PictureModel pictureModel;
-    private final BufferedImage bufferedImage;
+//    private final BufferedImage bufferedImage;
     // variables -- end
 
     // constructors -- start
-    public CustomPictureLabel(PictureModel pictureModel) {
+    public CustomPictureLabel(MainFrameGuiInterface mainFrame, PictureModel pictureModel) {
 
         this.pictureModel = pictureModel;
+        new PictureSwingWorker(mainFrame, pictureModel, this).execute();
 
-        try {
 
-            bufferedImage = read(new ByteArrayInputStream(pictureModel.getPicture()));
 
-        } catch (IOException ex) {
-
-            throw new RuntimeException(ex);
-        }
+//        this.pictureModel = pictureModel;
+//
+//        try {
+//
+//            bufferedImage = read(new ByteArrayInputStream(pictureModel.getPicture()));
+//
+//        } catch (IOException ex) {
+//
+//            throw new RuntimeException(ex);
+//        }
 
         addMouseListener(this);
     }
@@ -44,41 +51,20 @@ public class CustomPictureLabel extends JLabel implements ContentInterface, Comp
     private void buildPopupMenu(final MouseEvent e) {
 
         JPopupMenu popupMenu = new JPopupMenu();
-        CustomPictureMaximizeMenuItem menuItem = new CustomPictureMaximizeMenuItem("maximize", bufferedImage);
+        CustomPictureMaximizeMenuItem menuItem = new CustomPictureMaximizeMenuItem("maximize",
+                                                                                   pictureModel);
         popupMenu.add(menuItem);
         popupMenu.show(this, e.getX(), e.getY());
     }
 
     public void addPictureAsIconToLabel() {
 
-        ImageIcon icon = scaleImageIfTooBig(bufferedImage);
-        super.setSize(icon.getIconWidth() + 300, icon.getIconHeight());
-        super.setIcon(icon);
+//        ImageIcon icon = scaleImageIfTooBig(bufferedImage);
+//        super.setSize(icon.getIconWidth() + 300, icon.getIconHeight());
+//        super.setIcon(icon);
     }
 
-    /**
-     Scales an image if it is too big.
 
-     @param bufferedImage
-     The image to be scaled.
-
-     @return The scaled image as an ImageIcon.
-     */
-    private ImageIcon scaleImageIfTooBig(BufferedImage bufferedImage) {
-
-        if (bufferedImage.getWidth() > 500) {
-
-            return new ImageIcon(bufferedImage.getScaledInstance(500, -1, Image.SCALE_AREA_AVERAGING));
-
-        } else if (bufferedImage.getHeight() > 350) {
-
-            return new ImageIcon(bufferedImage.getScaledInstance(-1, 350, Image.SCALE_AREA_AVERAGING));
-
-        } else {
-
-            return new ImageIcon(bufferedImage);
-        }
-    }
 
     @Override
     public void mouseClicked(final MouseEvent e) {
@@ -109,7 +95,7 @@ public class CustomPictureLabel extends JLabel implements ContentInterface, Comp
     @Override
     public void componentResized(final ComponentEvent e) {
 
-        addPictureAsIconToLabel();
+//        addPictureAsIconToLabel();
     }
 
     @Override

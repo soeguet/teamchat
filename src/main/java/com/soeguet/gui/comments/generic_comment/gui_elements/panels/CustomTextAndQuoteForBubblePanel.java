@@ -6,13 +6,17 @@ import com.soeguet.model.jackson.MessageModel;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class CustomTextAndQuoteForBubblePanel extends JPanel {
 
+// variables -- start
     private final MainFrameGuiInterface mainFrame;
     private final MessageModel messageModel;
+// variables -- end
 
-    public CustomTextAndQuoteForBubblePanel(MainFrameGuiInterface mainFrame,MessageModel messageModel) {
+// constructors -- start
+    public CustomTextAndQuoteForBubblePanel(MainFrameGuiInterface mainFrame, MessageModel messageModel) {
 
         this.mainFrame = mainFrame;
 
@@ -20,6 +24,7 @@ public class CustomTextAndQuoteForBubblePanel extends JPanel {
         super.setBackground(null);
         super.setOpaque(false);
     }
+// constructors -- end
 
     public void setTextAndQuoteBubbleLayoutManager() {
 
@@ -36,31 +41,30 @@ public class CustomTextAndQuoteForBubblePanel extends JPanel {
 
                 "", // Layout Constraints
                 "[fill,grow]", // Column constraints
-                "[fill][fill]" // Row constraints
+                "[fill][fill][fill]" // Row constraints
         ));
-    }
-
-    public void addTextMessage() {
-
-        CustomSimpleTextPane customSimpleTextPane = new CustomSimpleTextPane(mainFrame);
-        customSimpleTextPane.setText(messageModel.getMessage());
-        customSimpleTextPane.convertTextToEmojis();
-
-        super.add(customSimpleTextPane, "cell 0 1");
     }
 
     public void addQuote() {
 
         if (messageModel.getQuotedMessage() != null) {
 
+            CustomQuoteBubblePanel customQuoteBubblePanel = new CustomQuoteBubblePanel(mainFrame,
+                                                                                       messageModel.getQuotedMessage());
 
-            CustomQuoteBubblePanel customQuoteBubblePanel =
-                    new CustomQuoteBubblePanel(mainFrame, messageModel.getQuotedMessage());
-
+            customQuoteBubblePanel.addTopNameAndTimeTextPane();
             customQuoteBubblePanel.setQuoteBubbleLayoutManager();
             customQuoteBubblePanel.extractQuotedMessage();
 
             super.add(customQuoteBubblePanel, "cell 0 0");
         }
+    }
+
+    public void addTextMessage() {
+
+        CustomSimpleTextPane customSimpleTextPane = new CustomSimpleTextPane(mainFrame);
+        customSimpleTextPane.replaceEmojiDescriptionWithActualImageIcon(messageModel.getMessage());
+
+        super.add(customSimpleTextPane, "cell 0 1");
     }
 }

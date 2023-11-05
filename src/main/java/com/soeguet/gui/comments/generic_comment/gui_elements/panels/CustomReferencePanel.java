@@ -131,7 +131,7 @@ public class CustomReferencePanel extends JPanel {
     private CustomSimpleTextPane createReferenceMessageTextPane(final MessageModel messageModel) {
 
         CustomSimpleTextPane referenceMessageTextPane = new CustomSimpleTextPane(mainFrame);
-        referenceMessageTextPane.setText(messageModel.getMessage());
+        referenceMessageTextPane.replaceEmojiDescriptionWithActualImageIcon(messageModel.getMessage());
 
         return referenceMessageTextPane;
     }
