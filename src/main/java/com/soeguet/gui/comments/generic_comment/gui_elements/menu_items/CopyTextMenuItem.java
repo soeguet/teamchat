@@ -1,22 +1,23 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.menu_items;
 
-import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomSimpleTextPane;
-
 import javax.swing.*;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.StringWriter;
 
 public class CopyTextMenuItem extends JMenuItem implements MouseListener {
 
     // variables -- start
-    private final CustomSimpleTextPane textPane;
+    private final JTextPane textPane;
     // variables -- end
 
     // constructors -- start
-    public CopyTextMenuItem(final CustomSimpleTextPane textPane, final String menuItemName) {
+    public CopyTextMenuItem(final JTextPane textPane, final String menuItemName) {
 
         super(menuItemName);
 
@@ -34,14 +35,40 @@ public class CopyTextMenuItem extends JMenuItem implements MouseListener {
 
         } else if (textPane.getText() != null && !textPane.getText().isBlank()) {
 
-            return textPane.getText();
+            return extractOnlyPlainTextFromTextPane();
 
         } else {
 
-            JOptionPane.showMessageDialog(SwingUtilities.getRootPane(textPane), "Nothing to copy!", "No text " +
-                                                                                                    "selected",
-                                          JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(SwingUtilities.getRootPane(textPane), "Nothing to copy!", ("No text " +
+                                                                                                     "selected").formatted(), JOptionPane.INFORMATION_MESSAGE);
             return null;
+        }
+    }
+
+    private String extractOnlyPlainTextFromTextPane() {
+
+        try {
+            // if the document is an html document
+            HTMLDocument document = (HTMLDocument) textPane.getDocument();
+            HTMLEditorKit editorKit = new HTMLEditorKit();
+            StringWriter writer = new StringWriter();
+
+            try {
+
+                editorKit.write(writer, document, document.getStartPosition().getOffset(), document.getLength());
+                String textOnly = writer.toString();
+
+                return textOnly.replaceAll("<[^>]+>", "").trim();
+
+            } catch (Exception e) {
+
+                throw new RuntimeException(e);
+            }
+
+        } catch (ClassCastException e) {
+
+            // if the document is not a html document
+            return textPane.getText();
         }
     }
 
@@ -61,10 +88,15 @@ public class CopyTextMenuItem extends JMenuItem implements MouseListener {
             final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             clipboard.setContents(stringSelection, null);
 
+            if (selectedText.length() > 50) {
+
+                selectedText = "%s [...]".formatted(selectedText.substring(0, 50));
+            }
+
             JOptionPane.showMessageDialog(SwingUtilities.getRootPane(textPane),
-                                          "\"%s\" %scopied to clipboard".formatted(selectedText,
-                                                                                   System.lineSeparator()),
-                                          "Copied " + "to clipboard", JOptionPane.INFORMATION_MESSAGE);
+                                          "\"%s\" %s copied to clipboard".formatted(selectedText,
+                                                                                    System.lineSeparator()), "Copied " +
+                                                                                                             "to clipboard", JOptionPane.INFORMATION_MESSAGE);
         }
 
     }

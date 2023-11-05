@@ -31,6 +31,11 @@ public class CustomMainWrapperContainer extends JPanel {
 
                         RIGHT
                     >>"[" [Content Panel][Side Panel] "]"<<
+
+                  ## search for:
+                    TEXT MESSAGES   ->      CustomTextAndQuoteForBubblePanel    & TextMessageFactory
+                    PICTURES        ->      CustomPictureWrapperPanel           & PicturePanelFactory
+                    LINKS           ->      CustomLinkWrapperPanel              & LinkPanelFactory
          */
 
         switch (this.getSide()) {

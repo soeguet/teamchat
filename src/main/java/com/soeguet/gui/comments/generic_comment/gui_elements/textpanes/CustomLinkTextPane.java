@@ -1,5 +1,6 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.textpanes;
 
+import com.soeguet.gui.comments.generic_comment.gui_elements.menu_items.CopyTextMenuItem;
 import com.soeguet.gui.comments.util.LinkWrapEditorKit;
 import com.soeguet.model.jackson.LinkModel;
 
@@ -57,24 +58,7 @@ public class CustomLinkTextPane extends JTextPane implements MouseListener {
         super.setText(hyperlinkHtml);
     }
 
-    @Override
-    public void mouseClicked(final MouseEvent e) {
-
-        ProcessBuilder processBuilder = new ProcessBuilder();
-        prepareProcessBuilder(processBuilder);
-
-        try {
-
-            processBuilder.start();
-
-        } catch (IOException exception) {
-
-            throw new RuntimeException(exception);
-        }
-    }
-
     private void prepareProcessBuilder(final ProcessBuilder processBuilder) {
-
 
         if (System.getProperty("os.name").toLowerCase().contains("linux")) {
 
@@ -83,6 +67,34 @@ public class CustomLinkTextPane extends JTextPane implements MouseListener {
         } else {
 
             processBuilder.command("cmd", "/c", "start", linkModel.getLink());
+        }
+    }
+
+    @Override
+    public void mouseClicked(final MouseEvent e) {
+
+        if (SwingUtilities.isLeftMouseButton(e)) {
+
+            //LEFT CLICK -> OPEN LINK IN BROWSER
+            ProcessBuilder processBuilder = new ProcessBuilder();
+            prepareProcessBuilder(processBuilder);
+
+            try {
+
+                processBuilder.start();
+
+            } catch (IOException exception) {
+
+                throw new RuntimeException(exception);
+            }
+
+        } else {
+
+            //RIGHT CLICK -> COPY LINK
+            JPopupMenu popupMenu = new JPopupMenu();
+            CopyTextMenuItem copy = new CopyTextMenuItem(this, "Copy");
+            popupMenu.add(copy);
+            popupMenu.show(this, e.getX(), e.getY());
         }
     }
 

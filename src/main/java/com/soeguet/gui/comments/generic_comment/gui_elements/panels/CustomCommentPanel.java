@@ -137,13 +137,13 @@ public class CustomCommentPanel extends JPanel {
 
             case LEFT -> {
 
-                final String leftConstraints = "cell 0 0, gapleft 15, gaptop 10, gapright 5";
+                final String leftConstraints = "cell 0 0, gapleft 15, gapright 5";
                 contentContainer.add(customLinkPanel, leftConstraints);
             }
 
             case RIGHT -> {
 
-                final String rightConstraints = "cell 0 0, gapleft 3, gapright 15, gaptop 10";
+                final String rightConstraints = "cell 0 0, gapleft 3, gapright 15";
                 contentContainer.add(customLinkPanel, rightConstraints);
             }
         }
@@ -157,13 +157,13 @@ public class CustomCommentPanel extends JPanel {
 
             case LEFT -> {
 
-                final String leftConstraints = "cell 0 0, wrap, gapleft 15, gaptop 10, gapright 5, grow 1.1";
+                final String leftConstraints = "cell 0 0, wrap, gapleft 15, gapright 5, grow 1.1";
                 contentContainer.add(pictureLabel, leftConstraints);
             }
 
             case RIGHT -> {
 
-                final String rightConstraints = "cell 0 0, wrap, gapleft 3, gapright 15, gaptop 10, grow 1.1";
+                final String rightConstraints = "cell 0 0, wrap, gapleft 3, gapright 15, grow 1.1";
                 contentContainer.add(pictureLabel, rightConstraints);
             }
         }
@@ -181,13 +181,13 @@ public class CustomCommentPanel extends JPanel {
 
                 case LEFT -> {
 
-                    String leftConstraints = "gapleft 15, grow 1.0, gaptop 10";
+                    String leftConstraints = "gapleft 15, grow";
                     contentContainer.add(customTextAndQuoteForBubblePanel, leftConstraints);
                 }
 
                 case RIGHT -> {
 
-                    String rightConstraints = "gapright 15, grow 1.0, gaptop 10";
+                    String rightConstraints = "gapright 15, grow";
                     contentContainer.add(customTextAndQuoteForBubblePanel, rightConstraints);
                 }
             }

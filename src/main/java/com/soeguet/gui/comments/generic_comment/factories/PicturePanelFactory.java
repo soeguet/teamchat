@@ -2,6 +2,7 @@ package com.soeguet.gui.comments.generic_comment.factories;
 
 import com.soeguet.gui.comments.generic_comment.gui_elements.labels.CustomPictureLabel;
 import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomPictureWrapperPanel;
+import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomSimpleTextPane;
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomTextPane;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.*;
@@ -41,7 +42,8 @@ public class PicturePanelFactory {
         if (quotedMessageModel != null) {
 
             String quotedText = extractQuotedText(quotedMessageModel);
-            CustomTextPane customQuoteTextPane = new CustomTextPane(mainFrame, true, quotedText);
+            CustomSimpleTextPane customQuoteTextPane = new CustomSimpleTextPane(mainFrame);
+            customQuoteTextPane.replaceEmojiDescriptionWithActualImageIcon(quotedText);
             customPictureWrapperPanel.add(customQuoteTextPane, "cell 0 0");
         }
 
@@ -50,9 +52,11 @@ public class PicturePanelFactory {
         customPictureWrapperPanel.add(customPictureLabel, "cell 0 1, center");
 
         //DESCRIPTION/TEXT PART if not null!
-        final CustomTextPane customTextPane = generateCustomTextPane();
-        if (customTextPane != null) {
-            customPictureWrapperPanel.add(customTextPane, "cell 0 2");
+        if (pictureModel.getDescription() != null && !pictureModel.getDescription().isBlank()) {
+
+            CustomSimpleTextPane customSimpleTextPane = new CustomSimpleTextPane(mainFrame);
+            customSimpleTextPane.replaceEmojiDescriptionWithActualImageIcon(pictureModel.getDescription());
+            customPictureWrapperPanel.add(customSimpleTextPane, "cell 0 2");
         }
 
         return customPictureWrapperPanel;
@@ -83,24 +87,6 @@ public class PicturePanelFactory {
 
             case null -> throw new IllegalArgumentException("Unknown type: PictureBubbleFactory > extractQuotedText");
         };
-    }
-
-    /**
-     Generates a CustomTextPane based on the description from the pictureModel. If the description is empty, returns
-     null.
-
-     @return the generated CustomTextPane object, or null if the description is empty
-     */
-    private CustomTextPane generateCustomTextPane() {
-
-        if (pictureModel.getDescription().isEmpty()) {
-
-            return null;
-        }
-
-        CustomTextPane customTextPane = new CustomTextPane(mainFrame, true, pictureModel.getDescription());
-        customTextPane.create();
-        return customTextPane;
     }
 
     /**
