@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 
@@ -21,7 +22,9 @@ public class CustomPictureMaximizeMenuItem extends JMenuItem implements MouseLis
     public CustomPictureMaximizeMenuItem(String title, PictureModel pictureModel) {
 
         super(title);
+
         this.pictureModel = pictureModel;
+
         addMouseListener(this);
     }
     // constructors -- end
@@ -32,13 +35,17 @@ public class CustomPictureMaximizeMenuItem extends JMenuItem implements MouseLis
      @param image
      The image to be opened.
      */
-    private void openImageInExternalImageViewer(BufferedImage image) {
+    private void openImageInExternalImageViewer() {
 
         try {
 
+            BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(pictureModel.getPicture()));
+
             File tempFile = File.createTempFile("tempImage", ".png");
             tempFile.deleteOnExit();
-            ImageIO.write(image, "png", tempFile);
+
+            ImageIO.write(bufferedImage, "png", tempFile);
+
             Desktop.getDesktop().open(tempFile);
 
         } catch (IOException ex) {
@@ -55,7 +62,7 @@ public class CustomPictureMaximizeMenuItem extends JMenuItem implements MouseLis
     @Override
     public void mousePressed(final MouseEvent e) {
 
-//        new Thread(() -> openImageInExternalImageViewer(bufferedImage)).start();
+        Thread.ofVirtual().start(this::openImageInExternalImageViewer);
     }
 
     @Override

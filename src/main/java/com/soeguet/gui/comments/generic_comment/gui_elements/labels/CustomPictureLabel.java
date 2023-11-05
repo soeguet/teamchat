@@ -18,7 +18,7 @@ import java.io.IOException;
 
 import static javax.imageio.ImageIO.read;
 
-public class CustomPictureLabel extends JLabel implements ContentInterface, ComponentListener, MouseListener {
+public class CustomPictureLabel extends JLabel implements ContentInterface, MouseListener {
 
     // variables -- start
     private final PictureModel pictureModel;
@@ -30,19 +30,6 @@ public class CustomPictureLabel extends JLabel implements ContentInterface, Comp
 
         this.pictureModel = pictureModel;
         new PictureSwingWorker(mainFrame, pictureModel, this).execute();
-
-
-
-//        this.pictureModel = pictureModel;
-//
-//        try {
-//
-//            bufferedImage = read(new ByteArrayInputStream(pictureModel.getPicture()));
-//
-//        } catch (IOException ex) {
-//
-//            throw new RuntimeException(ex);
-//        }
 
         addMouseListener(this);
     }
@@ -56,15 +43,6 @@ public class CustomPictureLabel extends JLabel implements ContentInterface, Comp
         popupMenu.add(menuItem);
         popupMenu.show(this, e.getX(), e.getY());
     }
-
-    public void addPictureAsIconToLabel() {
-
-//        ImageIcon icon = scaleImageIfTooBig(bufferedImage);
-//        super.setSize(icon.getIconWidth() + 300, icon.getIconHeight());
-//        super.setIcon(icon);
-    }
-
-
 
     @Override
     public void mouseClicked(final MouseEvent e) {
@@ -89,27 +67,6 @@ public class CustomPictureLabel extends JLabel implements ContentInterface, Comp
 
     @Override
     public void mouseExited(final MouseEvent e) {
-
-    }
-
-    @Override
-    public void componentResized(final ComponentEvent e) {
-
-//        addPictureAsIconToLabel();
-    }
-
-    @Override
-    public void componentMoved(final ComponentEvent e) {
-
-    }
-
-    @Override
-    public void componentShown(final ComponentEvent e) {
-
-    }
-
-    @Override
-    public void componentHidden(final ComponentEvent e) {
 
     }
 }

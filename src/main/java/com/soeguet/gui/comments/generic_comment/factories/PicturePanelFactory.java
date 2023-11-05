@@ -112,7 +112,6 @@ public class PicturePanelFactory  {
 
         CustomPictureLabel customPictureLabel = new CustomPictureLabel(mainFrame,pictureModel);
         customPictureLabel.setOpaque(true);
-//        customPictureLabel.addPictureAsIconToLabel();
         return customPictureLabel;
     }
 
