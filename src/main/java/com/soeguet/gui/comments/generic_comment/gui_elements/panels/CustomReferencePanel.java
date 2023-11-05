@@ -75,6 +75,7 @@ public class CustomReferencePanel extends JPanel {
             }
         }
 
+
     }
 
     public void createQuotedTextPane() {
