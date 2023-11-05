@@ -1,17 +1,15 @@
 package com.soeguet.gui.comments.generic_comment.factories;
 
-import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomPictureWrapperPanel;
 import com.soeguet.gui.comments.generic_comment.gui_elements.labels.CustomPictureLabel;
+import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomPictureWrapperPanel;
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomTextPane;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.*;
 
-import javax.swing.*;
+public class PicturePanelFactory {
 
-public class PicturePanelFactory  {
-
-    private final MainFrameGuiInterface mainFrame;
     // variables -- start
+    private final MainFrameGuiInterface mainFrame;
     private final PictureModel pictureModel;
     // variables -- end
 
@@ -25,9 +23,6 @@ public class PicturePanelFactory  {
     // constructors -- end
 
     public CustomPictureWrapperPanel create() {
-        // TODO: 02.11.23 implement remaining parts -- quote left
-        // TEST is the quote block working? cannot test it right now since not implemented yet
-        // FEATURE maybe Link support for description/text part as well?
 
         /*
         SCHEMA: Picture Panel consists of:
@@ -56,17 +51,23 @@ public class PicturePanelFactory  {
 
         //DESCRIPTION/TEXT PART if not null!
         final CustomTextPane customTextPane = generateCustomTextPane();
-        if (customTextPane != null) customPictureWrapperPanel.add(customTextPane, "cell 0 2");
+        if (customTextPane != null) {
+            customPictureWrapperPanel.add(customTextPane, "cell 0 2");
+        }
 
         return customPictureWrapperPanel;
     }
 
     /**
-     * Extracts the quoted text from a given QuoteModel object.
-     *
-     * @param quotedMessageModel The QuoteModel object to extract the quoted text from.
-     * @return The quoted text, depending on the type of BaseModel.
-     * @throws IllegalArgumentException if the baseModel is null.
+     Extracts the quoted text from a given QuoteModel object.
+
+     @param quotedMessageModel
+     The QuoteModel object to extract the quoted text from.
+
+     @return The quoted text, depending on the type of BaseModel.
+
+     @throws IllegalArgumentException
+     if the baseModel is null.
      */
     private String extractQuotedText(final QuoteModel<? extends BaseModel> quotedMessageModel) {
 
@@ -80,16 +81,15 @@ public class PicturePanelFactory  {
 
             case LinkModel linkModel -> linkModel.getLink() + System.lineSeparator() + linkModel.getComment();
 
-            case null ->
-                    throw new IllegalArgumentException("Unknown type: PictureBubbleFactory > extractQuotedText");
+            case null -> throw new IllegalArgumentException("Unknown type: PictureBubbleFactory > extractQuotedText");
         };
     }
 
     /**
-     * Generates a CustomTextPane based on the description from the pictureModel.
-     * If the description is empty, returns null.
-     *
-     * @return the generated CustomTextPane object, or null if the description is empty
+     Generates a CustomTextPane based on the description from the pictureModel. If the description is empty, returns
+     null.
+
+     @return the generated CustomTextPane object, or null if the description is empty
      */
     private CustomTextPane generateCustomTextPane() {
 
@@ -98,33 +98,33 @@ public class PicturePanelFactory  {
             return null;
         }
 
-        CustomTextPane customTextPane = new CustomTextPane(mainFrame,true, pictureModel.getDescription());
+        CustomTextPane customTextPane = new CustomTextPane(mainFrame, true, pictureModel.getDescription());
         customTextPane.create();
         return customTextPane;
     }
 
     /**
-     * Generates a CustomPictureLabel based on the pictureModel.
-     *
-     * @return the generated CustomPictureLabel object
+     Generates a CustomPictureLabel based on the pictureModel.
+
+     @return the generated CustomPictureLabel object
      */
     private CustomPictureLabel generateCustomPictureLabel() {
 
-        CustomPictureLabel customPictureLabel = new CustomPictureLabel(mainFrame,pictureModel);
+        CustomPictureLabel customPictureLabel = new CustomPictureLabel(mainFrame, pictureModel);
         customPictureLabel.setOpaque(true);
         return customPictureLabel;
     }
 
     /**
-     * Generates a CustomPictureWrapperPanel.
-     *
-     * @return the generated CustomPictureWrapperPanel object
+     Generates a CustomPictureWrapperPanel.
+
+     @return the generated CustomPictureWrapperPanel object
      */
     private CustomPictureWrapperPanel generateCustomPictureWrapperPanel() {
 
         CustomPictureWrapperPanel customPictureWrapperPanel = new CustomPictureWrapperPanel();
-        customPictureWrapperPanel.setOpaque(false);
         customPictureWrapperPanel.setPictureWrapperPanelLayoutManager();
+        customPictureWrapperPanel.setOpaque(false);
         return customPictureWrapperPanel;
     }
 }

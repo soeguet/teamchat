@@ -45,11 +45,36 @@ public class CustomReferencePanel extends JPanel {
 
         */
 
-        super.setLayout(new MigLayout("wrap",
-                                      //columns
-                                      "[fill,grow]",
-                                      //rows
-                                      "[fill][fill]"));
+        switch (baseModel) {
+
+            case MessageModel messageModel -> {
+
+                super.setLayout(new MigLayout("debug,wrap",
+                                              //columns
+                                              "[fill,grow]",
+                                              //rows
+                                              "[fill][fill,grow,:150:200]"));
+            }
+
+            case PictureModel pictureModel -> {
+
+                super.setLayout(new MigLayout("debug,wrap",
+                                              //columns
+                                              "[fill,grow]",
+                                              //rows
+                                              "[fill][fill,grow,:300:350]"));
+            }
+
+            case LinkModel linkModel -> {
+
+                super.setLayout(new MigLayout("debug,wrap",
+                                              //columns
+                                              "[fill,grow]",
+                                              //rows
+                                              "[fill][fill,grow,:150:200]"));
+            }
+        }
+
     }
 
     public void createQuotedTextPane() {
@@ -92,10 +117,17 @@ public class CustomReferencePanel extends JPanel {
 
             case PictureModel pictureModel -> {
 
+                JScrollPane jScrollPane = new JScrollPane();
+                jScrollPane.setSize(500, 600);
+
                 PicturePanelFactory picturePanelFactory = new PicturePanelFactory(mainFrame, pictureModel);
                 CustomPictureWrapperPanel customPictureWrapperPanel = picturePanelFactory.create();
 
-                super.add(customPictureWrapperPanel, "cell 0 1, grow, width ::400, h ::400, center");
+                jScrollPane.setViewportView(customPictureWrapperPanel);
+
+                super.add(jScrollPane, "cell 0 1, grow, width 500!, h 600!, center");
+                revalidate();
+                repaint();
             }
 
             case LinkModel linkModel -> {

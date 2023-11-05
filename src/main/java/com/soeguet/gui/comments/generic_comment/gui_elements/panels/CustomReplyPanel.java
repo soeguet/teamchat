@@ -26,7 +26,6 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
     private boolean isResizing = false;
     private boolean isMoving = false;
     private CustomSimpleTextPane textPane;
-    private Dimension maximumSize;
     // variables -- end
 
     // constructors -- start
@@ -95,7 +94,7 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
 
     private void populateReplyPanelBottomSection() {
 
-        //create panel itself
+        //create panel itself -> bottomPanel
         CustomSimpleJPanel bottomPanel = new CustomSimpleJPanel(new MigLayout("",
                                                                               //columns
                                                                               "[fill,grow][fill]",
@@ -186,6 +185,8 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
 
     @Override
     protected void paintComponent(final Graphics g) {
+
+        //right bottom corner -- resize area
 
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
