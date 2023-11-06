@@ -8,17 +8,14 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.util.function.Consumer;
 
-public class CustomContentContainer extends JPanel implements ComponentListener {
+public class CustomContentContainer extends JPanel  {
 
     // variables -- start
     private Consumer<Graphics> customPaint;
-    private TransparentTopPanel topPanel;
     // variables -- end
 
     // constructors -- start
     public CustomContentContainer() {
-
-        addComponentListener(this);
     }
     // constructors -- end
 
@@ -50,31 +47,6 @@ public class CustomContentContainer extends JPanel implements ComponentListener 
         repaint();
     }
 
-    @Override
-    public void componentResized(final ComponentEvent e) {
-
-        // FIXME: 02.11.23 -> this is not working
-        final int combinedWidthForTopPanel = super.getWidth() + super.getWidth();
-        final int heightForTopPanel = super.getHeight();
-
-        this.topPanel.setSize(new Dimension(combinedWidthForTopPanel, heightForTopPanel));
-        this.topPanel.setMaximumSize(new Dimension(combinedWidthForTopPanel, heightForTopPanel));
-    }
-
-    @Override
-    public void componentMoved(final ComponentEvent e) {
-
-    }
-
-    @Override
-    public void componentShown(final ComponentEvent e) {
-
-    }
-
-    @Override
-    public void componentHidden(final ComponentEvent e) {
-
-    }
 
     @Override
     protected void paintComponent(Graphics graphics) {
@@ -83,11 +55,4 @@ public class CustomContentContainer extends JPanel implements ComponentListener 
             customPaint.accept(graphics);
         }
     }
-
-    // getter & setter -- start
-    public void setTopPanelReference(final TransparentTopPanel topPanel) {
-
-        this.topPanel = topPanel;
-    }
-    // getter & setter -- end
 }

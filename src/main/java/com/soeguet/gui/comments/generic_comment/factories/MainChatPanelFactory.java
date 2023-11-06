@@ -1,6 +1,7 @@
 package com.soeguet.gui.comments.generic_comment.factories;
 
 import com.soeguet.gui.comments.generic_comment.gui_elements.panels.*;
+import com.soeguet.gui.comments.reaction_panel.dtos.ReactionPanelDTO;
 import com.soeguet.gui.comments.util.CommentTypeEnum;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.BaseModel;
@@ -28,9 +29,9 @@ public class MainChatPanelFactory {
     // constructors -- end
 
     /**
-     Creates a custom comment panel.
-
-     @return the custom comment panel
+     * Creates a CustomCommentPanel with the necessary components and dependencies.
+     *
+     * @return The created CustomCommentPanel
      */
     public CustomCommentPanel create() {
 
@@ -59,6 +60,8 @@ public class MainChatPanelFactory {
                                                         final CustomContentContainer customContentContainer,
                                                         final CustomMainWrapperContainer customMainWrapperContainer) {
 
+        //TODO 06.11. this panel is not needed anymore. added a panel for the content panel itself -> topPanel
+        // floating over it
         CustomCommentPanel customCommentPanel = new CustomCommentPanel();
 
         customCommentPanel.setMainFrame(mainFrame);
@@ -68,7 +71,11 @@ public class MainChatPanelFactory {
         customCommentPanel.setSidePanel(commentSidePanel);
         customCommentPanel.setCustomContentContainer(customContentContainer);
         customCommentPanel.setCustomMainWrapperContainer(customMainWrapperContainer);
-        customCommentPanel.setTopContainer(new TransparentTopPanel());
+
+        ReactionPanelDTO reactionPanelDTO = new ReactionPanelDTO(baseModel, mainFrame.getUsername(),
+                                                                 mainFrame.getWebsocketClient(),mainFrame.getObjectMapper());
+
+        customCommentPanel.setTopContainer(new TransparentTopPanel(customCommentPanel,reactionPanelDTO));
 
         generateCommentPanel(customCommentPanel);
 

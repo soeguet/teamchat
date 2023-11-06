@@ -1,54 +1,133 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
+import com.soeguet.gui.comments.reaction_panel.ReactionPopupHandler;
+import com.soeguet.gui.comments.reaction_panel.ReactionPopupMenuImpl;
+import com.soeguet.gui.comments.reaction_panel.dtos.ReactionPanelDTO;
+
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
-public class TransparentTopPanel extends JPanel implements MouseListener {
+public class TransparentTopPanel extends JPanel implements MouseListener, MouseMotionListener {
 
+    // variables -- start
+    private final CustomCommentPanel customCommentPanel;
+    private final ReactionPanelDTO reactionPanelDTO;
+    private CustomContentContainer mainContentPanel;
+
+    // variables -- end
     // constructors -- start
-    public TransparentTopPanel() {
+    public TransparentTopPanel(final CustomCommentPanel customCommentPanel, ReactionPanelDTO reactionPanelDTO) {
+
+        this.customCommentPanel = customCommentPanel;
+        this.reactionPanelDTO = reactionPanelDTO;
 
         this.setBackground(new Color(0, 0, 0, 0));
         this.setOpaque(false);
         this.setBorder(new LineBorder(Color.BLACK, 1));
 
         this.addMouseListener(this);
+        this.addMouseMotionListener(this);
     }
     // constructors -- end
 
-    @Override
-    protected void paintComponent(Graphics g) {
+    /**
+     Dispatches a MouseEvent to the appropriate component. Else top panel grabs all events!
 
+     @param e
+     the MouseEvent to dispatch.
+     */
+    private void dispatchEvent(MouseEvent e) {
+
+        final Component deepComponent = SwingUtilities.getDeepestComponentAt(mainContentPanel, e.getX(), e.getY());
+
+        if (deepComponent == null) {
+            return;
+        }
+
+        Point pt = SwingUtilities.convertPoint(this, e.getPoint(), deepComponent);
+
+        final Component actualComponent = SwingUtilities.getDeepestComponentAt(deepComponent, pt.x, pt.y);
+
+        if (actualComponent == null) {
+            return;
+        }
+
+        if (!(actualComponent instanceof TransparentTopPanel)) {
+            MouseEvent e2 = new MouseEvent(actualComponent, e.getID(), e.getWhen(), e.getModifiersEx(), pt.x, pt.y,
+                                           e.getClickCount(), e.isPopupTrigger(), e.getButton());
+
+            actualComponent.dispatchEvent(e2);
+        }
+    }
+
+    @Override
+    public void mouseDragged(final MouseEvent e) {
+
+        dispatchEvent(e);
+    }
+
+    @Override
+    public void mouseMoved(final MouseEvent e) {
+
+        dispatchEvent(e);
     }
 
     @Override
     public void mouseClicked(final MouseEvent e) {
 
-        System.out.println("TransparentTopPanel clicked");
+        dispatchEvent(e);
     }
 
     @Override
     public void mousePressed(final MouseEvent e) {
 
-        System.out.println("TransparentTopPanel pressed");
+        dispatchEvent(e);
     }
 
     @Override
     public void mouseReleased(final MouseEvent e) {
 
+        dispatchEvent(e);
     }
 
     @Override
     public void mouseEntered(final MouseEvent e) {
 
-        System.out.println("TransparentTopPanel entered");
+        customCommentPanel.getChatBubblePaintHandler().setBorderColor(Color.RED);
+
+        Timer timer = new Timer(1000, e1 -> {
+
+            System.out.println("Timer triggered");
+
+            // TODO: 06.11.23 implement reaction to panel
+            ReactionPopupMenuImpl reactionPopupMenu = new ReactionPopupMenuImpl(reactionPanelDTO);
+            reactionPopupMenu.setPopupMenuUp();
+            reactionPopupMenu.show(this, e.getX(), e.getY());
+        });
+
+        timer.setRepeats(false);
+        timer.start();
+
+        dispatchEvent(e);
     }
 
     @Override
     public void mouseExited(final MouseEvent e) {
 
+        customCommentPanel.getChatBubblePaintHandler().setBorderColor(customCommentPanel.getBorderColor());
+
+        dispatchEvent(e);
+
     }
+
+    // getter & setter -- start
+    public void setReferenceToMainContentContainer(final CustomContentContainer mainContentPanel) {
+
+        this.mainContentPanel = mainContentPanel;
+    }
+    // getter & setter -- end
 }

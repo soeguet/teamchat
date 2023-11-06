@@ -47,6 +47,7 @@ public class CustomCommentPanel extends JPanel {
     private CustomContentContainer customContentContainer;
     private JTextPane jTextPane;
     private Color borderColor;
+    private ChatBubblePaintHandler chatBubblePaintHandler;
     // variables -- end
 
     // constructors -- start
@@ -83,16 +84,17 @@ public class CustomCommentPanel extends JPanel {
         // wrapped by CustomMainWrapperContainer -- SIDE
         final CommentSidePanel commentSidePanel = this.getSidePanel();
 
-        // wrapped by CustomMainWrapperContainer -- CONTENT
-        final CustomContentContainer mainContentPanel = this.getCustomContentContainer();
-        mainContentPanel.setTopPanelReference(topPanel); //gets a reference to the TopPanel (resizing events!)
+        // TODO: 06.11.23  - this works but it needs to be cleaned up -> contentStackPanel is new
+        // wrapped by CustomMainWrapperContainer -- CONTENT -> again wrapped by contentStackPanel -> topPanel and mainContentPanel
+        // everything else is a hassle to adjust the right alignment of the top panel
 
-        /*
-        don't even think about asking about those setAlignment methods.. I have no clue why they work like that,
-        a lot of trial and error was involved here
-        it seems like each layer - even though they stack - is also pushing the above or below layer depending on
-        the float value of the alignment.. which makes no effin sense to me
-         */
+        JPanel contentStackPanel = new JPanel();
+        contentStackPanel.setLayout(new OverlayLayout(contentStackPanel));
+        final CustomContentContainer mainContentPanel = this.getCustomContentContainer();
+        topPanel.setReferenceToMainContentContainer(mainContentPanel);
+
+        contentStackPanel.add(topPanel);
+        contentStackPanel.add(mainContentPanel);
 
         switch (this.getSide()) {
 
@@ -102,11 +104,7 @@ public class CustomCommentPanel extends JPanel {
                 mainPanel.add(commentSidePanel, "cell 0 0 1 2, dock west");
 
                 //CONTENT
-                mainPanel.add(mainContentPanel, "cell 1 0 1 2, dock west, gapleft 5, gapright 50");
-
-                // see comment above
-                topPanel.setAlignmentX(0.45f);
-                mainPanel.setAlignmentX(0.1f);
+                mainPanel.add(contentStackPanel, "cell 1 0 1 2, dock west, gapleft 5, gapright 50");
             }
 
             case RIGHT -> {
@@ -115,19 +113,10 @@ public class CustomCommentPanel extends JPanel {
                 mainPanel.add(commentSidePanel, "cell 1 0 1 2, dock east");
 
                 //CONTENT
-                mainPanel.add(mainContentPanel, "cell 0 0 1 2, dock east, gapright 5, gapleft 50, grow");
-
-                // see comment above
-                topPanel.setAlignmentX(0.88f);
-                mainPanel.setAlignmentX(1.0f);
+                mainPanel.add(contentStackPanel, "cell 0 0 1 2, dock east, gapright 5, gapleft 50, grow");
             }
         }
 
-
-        topPanel.setAlignmentY(0.5f);
-        mainPanel.setAlignmentY(0.5f);
-        // this == CustomCommentPanel == Container with OverlayLayout (!) -> wraps TopPanel and MainPanel
-        this.add(topPanel);
         this.add(mainPanel);
     }
 
@@ -217,12 +206,18 @@ public class CustomCommentPanel extends JPanel {
 
         final Side commentSide = this.getSide();
         // TODO: 02.11.23 border color implementation
-        final Color borderColor = new Color(23, 0, 146);
-        ChatBubblePaintHandler chatBubblePaintHandler = new ChatBubblePaintHandler(getCustomContentContainer(),
-                                                                                   commentSide, borderColor);
+        this.setBorderColor(new Color(23, 0, 146));
+        chatBubblePaintHandler = new ChatBubblePaintHandler(getCustomContentContainer(),
+                                                                                   commentSide, this.getBorderColor());
 
         chatBubblePaintHandler.setupChatBubble();
     }
+
+    public ChatBubblePaintHandler getChatBubblePaintHandler() {
+
+        return chatBubblePaintHandler;
+    }
+
 
     public void setSide() {
 
@@ -289,11 +284,6 @@ public class CustomCommentPanel extends JPanel {
         this.customMainWrapperContainer = customMainWrapperContainer;
     }
 
-    public JPanel getLayeredContainer() {
-
-        return topContainer;
-    }
-
     public MainFrameGuiInterface getMainFrame() {
 
         return mainFrame;
@@ -332,11 +322,6 @@ public class CustomCommentPanel extends JPanel {
     public JTextPane getjTextPane() {
 
         return jTextPane;
-    }
-
-    public void setjTextPane(final JTextPane jTextPane) {
-
-        this.jTextPane = jTextPane;
     }
 
     public void setTextPane(final JTextPane jTextPane) {
