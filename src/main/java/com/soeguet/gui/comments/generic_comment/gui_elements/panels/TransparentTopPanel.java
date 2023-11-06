@@ -1,6 +1,7 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -12,6 +13,9 @@ public class TransparentTopPanel extends JPanel implements MouseListener {
 
         this.setBackground(new Color(0, 0, 0, 0));
         this.setOpaque(false);
+        this.setBorder(new LineBorder(Color.BLACK, 1));
+
+        this.addMouseListener(this);
     }
     // constructors -- end
 

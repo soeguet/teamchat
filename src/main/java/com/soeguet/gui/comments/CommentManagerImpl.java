@@ -130,8 +130,6 @@ public class CommentManagerImpl implements CommentManager {
     @Override
     public void setupMessage(BaseModel baseModel, CommentTypeEnum commentType) {
 
-
-
         CustomCommentPanel customCommentPanel = new MainChatPanelFactory(mainFrame, baseModel, commentType).create();
         this.addCommentPanelToMainChatPanel(customCommentPanel, commentType);
 

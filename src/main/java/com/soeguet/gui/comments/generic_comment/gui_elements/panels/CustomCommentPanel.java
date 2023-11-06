@@ -12,6 +12,7 @@ import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 
 public class CustomCommentPanel extends JPanel {
@@ -51,6 +52,7 @@ public class CustomCommentPanel extends JPanel {
     // constructors -- start
     public CustomCommentPanel() {
 
+        this.setBorder(new LineBorder(Color.RED, 2));
     }
     // constructors -- end
 
@@ -85,6 +87,13 @@ public class CustomCommentPanel extends JPanel {
         final CustomContentContainer mainContentPanel = this.getCustomContentContainer();
         mainContentPanel.setTopPanelReference(topPanel); //gets a reference to the TopPanel (resizing events!)
 
+        /*
+        don't even think about asking about those setAlignment methods.. I have no clue why they work like that,
+        a lot of trial and error was involved here
+        it seems like each layer - even though they stack - is also pushing the above or below layer depending on
+        the float value of the alignment.. which makes no effin sense to me
+         */
+
         switch (this.getSide()) {
 
             case LEFT -> {
@@ -94,7 +103,10 @@ public class CustomCommentPanel extends JPanel {
 
                 //CONTENT
                 mainPanel.add(mainContentPanel, "cell 1 0 1 2, dock west, gapleft 5, gapright 50");
-                topPanel.setAlignmentX(0.0f);
+
+                // see comment above
+                topPanel.setAlignmentX(0.45f);
+                mainPanel.setAlignmentX(0.1f);
             }
 
             case RIGHT -> {
@@ -104,12 +116,19 @@ public class CustomCommentPanel extends JPanel {
 
                 //CONTENT
                 mainPanel.add(mainContentPanel, "cell 0 0 1 2, dock east, gapright 5, gapleft 50, grow");
+
+                // see comment above
+                topPanel.setAlignmentX(0.88f);
+                mainPanel.setAlignmentX(1.0f);
             }
         }
 
+
+        topPanel.setAlignmentY(0.5f);
+        mainPanel.setAlignmentY(0.5f);
         // this == CustomCommentPanel == Container with OverlayLayout (!) -> wraps TopPanel and MainPanel
-        this.add(mainPanel);
         this.add(topPanel);
+        this.add(mainPanel);
     }
 
     public void addContext() {
