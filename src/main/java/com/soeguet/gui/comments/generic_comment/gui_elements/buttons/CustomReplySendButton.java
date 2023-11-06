@@ -92,8 +92,8 @@ public class CustomReplySendButton extends JButton implements MouseListener {
 
         try {
 
-            objectMapper.writeValueAsString(messageModel);
-            websocketClient.send(objectMapper.writeValueAsString(messageModel));
+            final String serializedMessageModel = objectMapper.writeValueAsString(messageModel);
+            websocketClient.send(serializedMessageModel);
 
         } catch (JsonProcessingException ex) {
 

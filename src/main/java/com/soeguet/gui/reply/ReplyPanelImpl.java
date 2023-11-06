@@ -196,7 +196,9 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
 
         try {
 
-            mainFrame.getWebsocketClient().send(mainFrame.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(sendModel));
+            final String serializedMessage = mainFrame.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(sendModel);
+
+            mainFrame.getWebsocketClient().send(serializedMessage);
 
         } catch (JsonProcessingException ex) {
 

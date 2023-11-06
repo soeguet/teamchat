@@ -16,14 +16,14 @@ public class CommentSidePanel extends JPanel {
     private JLabel nameLabel;
     private JLabel timeLabel;
     private CustomInteractionButton interactionButton;
-
     // variables -- end
+
     // constructors -- start
     public CommentSidePanel(final CommentTypeEnum commentType) {
 
         side = new SideHandler().determineSide(commentType);
         nameLabel = new JLabel();
-        timeLabel = new JLabel("10:00");
+        timeLabel = new JLabel();
 
         this.componentConfig();
     }
@@ -62,7 +62,6 @@ public class CommentSidePanel extends JPanel {
                                           "push[shrink][shrink]"));
         }
     }
-
 
     private void componentConfig() {
 

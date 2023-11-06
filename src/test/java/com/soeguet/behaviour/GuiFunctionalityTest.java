@@ -31,6 +31,6 @@ class GuiFunctionalityTest {
 
         String expected = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(messageModel);
 
-        Assertions.assertEquals(expected, guiFunctionality.convertUserTextToJSON("test"));
+        Assertions.assertEquals(expected, guiFunctionality.convertUserTextToJSON(messageModel));
     }
 }

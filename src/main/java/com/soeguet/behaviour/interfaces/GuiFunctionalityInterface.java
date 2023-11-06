@@ -1,5 +1,7 @@
 package com.soeguet.behaviour.interfaces;
 
+import com.soeguet.model.jackson.MessageModel;
+
 public interface GuiFunctionalityInterface {
 
 
@@ -9,7 +11,7 @@ public interface GuiFunctionalityInterface {
 
     String getTextFromInput();
 
-    String convertUserTextToJSON(String textFromInput);
+    String convertUserTextToJSON(MessageModel messageModel);
 
     void sendMessageToSocket(String serializedTextFromInput);
 

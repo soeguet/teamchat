@@ -106,18 +106,15 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
         return this.mainFrame.getTextEditorPane().getText();
     }
 
+
     /**
-     Convert the given user text input to JSON format.
-
-     @param userTextInput
-     the user's text input to convert to JSON
-
-     @return the JSON representation of the user text input, or null if there was an error converting to JSON
+     * Converts the given user text to JSON format.
+     *
+     * @param messageModel the model containing the user text to be converted
+     * @return the user text converted to JSON format as a string
      */
     @Override
-    public String convertUserTextToJSON(String userTextInput) {
-
-        final MessageModel messageModel = textToMessageModel(userTextInput);
+    public String convertUserTextToJSON(MessageModel messageModel) {
 
         try {
 
