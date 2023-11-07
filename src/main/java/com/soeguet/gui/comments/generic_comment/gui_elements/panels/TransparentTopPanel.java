@@ -1,6 +1,6 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
-import com.soeguet.gui.comments.reaction_panel.ReactionPopupHandler;
+import com.soeguet.gui.comments.generic_comment.gui_elements.util.ChatBubblePaintHandler;
 import com.soeguet.gui.comments.reaction_panel.ReactionPopupMenuImpl;
 import com.soeguet.gui.comments.reaction_panel.dtos.ReactionPanelDTO;
 
@@ -16,9 +16,11 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
     // variables -- start
     private final CustomCommentPanel customCommentPanel;
     private final ReactionPanelDTO reactionPanelDTO;
+    private ReactionPopupMenuImpl reactionPopupMenu;
+    private ChatBubblePaintHandler chatBubblePaintHandler;
     private CustomContentContainer mainContentPanel;
-
     // variables -- end
+
     // constructors -- start
     public TransparentTopPanel(final CustomCommentPanel customCommentPanel, ReactionPanelDTO reactionPanelDTO) {
 
@@ -97,20 +99,19 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
     @Override
     public void mouseEntered(final MouseEvent e) {
 
-        customCommentPanel.getChatBubblePaintHandler().setBorderColor(Color.RED);
+        getChatBubblePaintHandler().setBorderColor(Color.RED);
 
-        Timer timer = new Timer(1000, e1 -> {
+        if (reactionPopupMenu == null) {
 
-            System.out.println("Timer triggered");
-
-            // TODO: 06.11.23 implement reaction to panel
-            ReactionPopupMenuImpl reactionPopupMenu = new ReactionPopupMenuImpl(reactionPanelDTO);
+            reactionPopupMenu = new ReactionPopupMenuImpl(reactionPanelDTO, this);
             reactionPopupMenu.setPopupMenuUp();
-            reactionPopupMenu.show(this, e.getX(), e.getY());
-        });
+            reactionPopupMenu.initializePopupHandler();
+        }
 
-        timer.setRepeats(false);
-        timer.start();
+        if (!reactionPopupMenu.isVisible()) {
+
+            reactionPopupMenu.startAnimation();
+        }
 
         dispatchEvent(e);
     }
@@ -118,13 +119,26 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
     @Override
     public void mouseExited(final MouseEvent e) {
 
-        customCommentPanel.getChatBubblePaintHandler().setBorderColor(customCommentPanel.getBorderColor());
+        getChatBubblePaintHandler().setBorderColor(customCommentPanel.getBorderColor());
+
+        if (reactionPopupMenu != null) {
+
+            reactionPopupMenu.stopAnimation();
+        }
 
         dispatchEvent(e);
 
     }
 
     // getter & setter -- start
+    public ChatBubblePaintHandler getChatBubblePaintHandler() {
+
+        if (chatBubblePaintHandler == null) {
+            chatBubblePaintHandler = customCommentPanel.getChatBubblePaintHandler();
+        }
+        return chatBubblePaintHandler;
+    }
+
     public void setReferenceToMainContentContainer(final CustomContentContainer mainContentPanel) {
 
         this.mainContentPanel = mainContentPanel;

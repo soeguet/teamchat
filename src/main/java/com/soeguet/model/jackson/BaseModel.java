@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.soeguet.model.UserInteraction;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -55,6 +56,11 @@ public abstract sealed class BaseModel permits LinkModel, MessageModel, PictureM
     }
 
     public List<UserInteraction> getUserInteractions() {
+
+        if (userInteractions == null) {
+
+            userInteractions = new ArrayList<>();
+        }
 
         return userInteractions;
     }

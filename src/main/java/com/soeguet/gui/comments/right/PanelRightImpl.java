@@ -386,15 +386,15 @@ public class PanelRightImpl extends PanelRight implements CommentInterface, Bord
         borderHandler.highlightBorder();
 
         //popup menu
-        if (popupMenu == null) {
-
-            ReactionPanelDTO reactionPanelDTO = new ReactionPanelDTO(baseModel, mainFrame.getUsername(), mainFrame.getWebsocketClient(),
-                                                                     mainFrame.getObjectMapper());
-
-            popupMenu = new ReactionPopupMenuImpl(reactionPanelDTO);
-            popupMenu.setPopupMenuUp();
-            popupMenu.initializePopupHandler(form_layeredContainer);
-        }
+//        if (popupMenu == null) {
+//
+//            ReactionPanelDTO reactionPanelDTO = new ReactionPanelDTO(baseModel, mainFrame.getUsername(), mainFrame.getWebsocketClient(),
+//                                                                     mainFrame.getObjectMapper());
+//
+//            popupMenu = new ReactionPopupMenuImpl(reactionPanelDTO);
+//            popupMenu.setPopupMenuUp();
+//            popupMenu.initializePopupHandler();
+//        }
 
         //start timer and show popup menu
         popupMenu.startAnimation();

@@ -19,15 +19,17 @@ import java.util.logging.Logger;
 public class ReactionPopupMenuImpl extends JPopupMenu {
 
     private final ReactionPanelDTO reactionPanelDTO;
+    private final JPanel topPanel;
     Logger logger = Logger.getLogger(ReactionPopupMenuImpl.class.getName());
     private ReactionPopupHandler reactionPopupHandler;
 
     /**
      This class represents a reaction popup menu implementation. It provides functionality to handle reactions in a popup menu.
      */
-    public ReactionPopupMenuImpl(final ReactionPanelDTO reactionPanelDTO) {
+    public ReactionPopupMenuImpl(final ReactionPanelDTO reactionPanelDTO, JPanel topPanel) {
 
         this.reactionPanelDTO = reactionPanelDTO;
+        this.topPanel = topPanel;
     }
 
     /**
@@ -159,9 +161,9 @@ public class ReactionPopupMenuImpl extends JPopupMenu {
      @param layeredPane
      the layeredPane to be used by the reactionPopupHandler
      */
-    public void initializePopupHandler(final JLayeredPane layeredPane) {
+    public void initializePopupHandler() {
 
-        reactionPopupHandler = new ReactionPopupHandler(this, layeredPane);
+        reactionPopupHandler = new ReactionPopupHandler(this,topPanel );
     }
 
     /**

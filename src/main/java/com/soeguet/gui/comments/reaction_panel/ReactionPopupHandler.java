@@ -9,7 +9,7 @@ import java.awt.*;
 public class ReactionPopupHandler {
 
     private final ReactionPopupMenuImpl reactionPopupMenu;
-    private final JLayeredPane layeredPane;
+    private final JPanel topPanel;
     private Timer popupTimer;
 
     /**
@@ -17,12 +17,12 @@ public class ReactionPopupHandler {
 
      @param reactionPopupMenu
      the ReactionPopupMenuImpl object to handle
-     @param layeredPane
+     @param topPanel
      the JLayeredPane to which the reaction popup will be added
      */
-    public ReactionPopupHandler(final ReactionPopupMenuImpl reactionPopupMenu, final JLayeredPane layeredPane) {
+    public ReactionPopupHandler(final ReactionPopupMenuImpl reactionPopupMenu, final JPanel topPanel) {
 
-        this.layeredPane = layeredPane;
+        this.topPanel = topPanel;
         this.reactionPopupMenu = reactionPopupMenu;
     }
 
@@ -44,13 +44,13 @@ public class ReactionPopupHandler {
 
         popupTimer = new Timer(2000, timer -> {
 
-            Point location = layeredPane.getMousePosition();
+            Point location = topPanel.getMousePosition();
 
             if (location == null) {
                 location = new Point(0, 0);
             }
 
-            reactionPopupMenu.show(layeredPane, (int) location.getX(), (int) location.getY());
+            reactionPopupMenu.show(topPanel, (int) location.getX(), (int) location.getY());
         });
 
         popupTimer.setRepeats(false);
