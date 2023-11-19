@@ -3,9 +3,12 @@ package com.soeguet.gui.comments.generic_comment.factories;
 import com.soeguet.gui.comments.generic_comment.gui_elements.labels.CustomPictureLabel;
 import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomPictureWrapperPanel;
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomSimpleTextPane;
-import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomTextPane;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
-import com.soeguet.model.jackson.*;
+import com.soeguet.model.jackson.BaseModel;
+import com.soeguet.model.jackson.LinkModel;
+import com.soeguet.model.jackson.MessageModel;
+import com.soeguet.model.jackson.PictureModel;
+import com.soeguet.model.jackson.QuoteModel;
 
 public class PicturePanelFactory {
 
@@ -85,7 +88,6 @@ public class PicturePanelFactory {
 
             case LinkModel linkModel -> linkModel.getLink() + System.lineSeparator() + linkModel.getComment();
 
-            case null -> throw new IllegalArgumentException("Unknown type: PictureBubbleFactory > extractQuotedText");
         };
     }
 
