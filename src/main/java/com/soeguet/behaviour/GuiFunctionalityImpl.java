@@ -29,14 +29,18 @@ import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.properties.dto.CustomUserPropertiesDTO;
 import com.soeguet.socket_client.CustomWebsocketClient;
 import com.soeguet.util.NotificationStatus;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 /**
  This class provides additional functionality to the GUI.
@@ -153,8 +157,8 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
 
         //sending status
         try {
-
-            StatusTransferDTO statusTransferDTO = new StatusTransferDTO("send");
+ 
+            StatusTransferDTO statusTransferDTO = new StatusTransferDTO("send",new ArrayList<String>());
             websocketClient.send(objectMapper.writeValueAsBytes(statusTransferDTO));
 
         } catch (JsonProcessingException e) {
@@ -302,7 +306,10 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
 
         //if typing client is already present on label -> return!
         //typingStatus.statusArray()[0] array with only one value, always!
-        final String typingUsername = typingStatus.statusArray()[0];
+        if(typingStatus.array().get(0) == null) {
+            return;
+        }
+        final String typingUsername = typingStatus.array().get(0);
 
         if (textOnTypingLabel.contains(typingUsername)) {
 
@@ -324,7 +331,7 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
 
         InterruptHandlerInterface interruptHandler = new InterruptHandler(mainFrame);
 
-        Arrays.stream(clientInterruptDTO.statusArray()).forEach(interruptHandler::forceChatGuiToFront);
+        clientInterruptDTO.array().forEach(interruptHandler::forceChatGuiToFront);
     }
 
     /**

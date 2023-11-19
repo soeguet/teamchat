@@ -10,10 +10,12 @@ import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
 import com.soeguet.model.jackson.QuoteModel;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -21,8 +23,16 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.Executors;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
 
 /**
  The CustomOriginPanel class extends JPanel and provides additional functionality for displaying custom origin panels.
@@ -142,10 +152,7 @@ public class CustomOriginPanel extends JPanel {
             @Override
             public void mousePressed(final MouseEvent e) {
 
-                try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-
-                    executor.submit(() -> openImageInExternalImageViewer(image));
-                }
+                new Thread(() -> openImageInExternalImageViewer(image)).start();
             }
         });
     }

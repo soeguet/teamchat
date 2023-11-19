@@ -6,8 +6,7 @@ import com.soeguet.initialization.interfaces.MainFrameInitInterface;
 import com.soeguet.model.EnvVariables;
 import com.soeguet.properties.CustomProperties;
 import com.soeguet.properties.dto.CustomUserPropertiesDTO;
-
-import javax.swing.*;
+import javax.swing.SwingUtilities;
 
 public class ProgramInit {
 
@@ -47,7 +46,7 @@ public class ProgramInit {
             this.initializeMainFrame();
             this.mainFrame.loadUsernameFromEnvVariables(envVariables);
 
-            //operating system specific settings
+            //operating system specific settings - margins for JScrollPane
             this.mainFrame.setScrollPaneMargins();
 
             //setup GUI

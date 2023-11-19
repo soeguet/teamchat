@@ -1,17 +1,23 @@
 package com.soeguet.gui.option_pane.links;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.option_pane.links.dtos.LinkTransferDTO;
 import com.soeguet.gui.option_pane.links.dtos.MetadataStorageRecord;
 import com.soeguet.gui.option_pane.links.generated.LinkDialog;
 import com.soeguet.gui.option_pane.links.interfaces.LinkDialogInterface;
-
-import javax.swing.*;
-import javax.swing.border.LineBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextPane;
+import javax.swing.border.LineBorder;
 
 public class LinkDialogImpl extends LinkDialog implements LinkDialogInterface {
 

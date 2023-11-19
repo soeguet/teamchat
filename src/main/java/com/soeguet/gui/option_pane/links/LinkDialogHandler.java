@@ -7,13 +7,7 @@ import com.soeguet.gui.option_pane.links.dtos.LinkTransferDTO;
 import com.soeguet.gui.option_pane.links.dtos.MetadataStorageRecord;
 import com.soeguet.model.MessageTypes;
 import com.soeguet.model.jackson.LinkModel;
-import com.soeguet.model.jackson.MessageModel;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URI;
@@ -23,8 +17,11 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.imageio.ImageIO;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 public class LinkDialogHandler {
 
@@ -70,26 +67,25 @@ public class LinkDialogHandler {
 
         final AtomicReference<HttpResponse<String>> response = new AtomicReference<>();
 
-        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+        new Thread(() -> {
 
-            executor.execute(() -> {
+            try {
 
-                try (HttpClient client = HttpClient.newHttpClient()) {
+                HttpClient client = HttpClient.newHttpClient();
+                HttpRequest request;
 
-                    HttpRequest request;
+                request = HttpRequest.newBuilder()
+                .uri(new URI(link))
+                .build();
 
-                    request = HttpRequest.newBuilder()
-                            .uri(new URI(link))
-                            .build();
+                response.set(client.send(request, HttpResponse.BodyHandlers.ofString()));
 
-                    response.set(client.send(request, HttpResponse.BodyHandlers.ofString()));
+            } catch (IOException | InterruptedException | URISyntaxException | IllegalArgumentException e) {
 
-                } catch (IOException | InterruptedException | URISyntaxException | IllegalArgumentException e) {
-
-                    System.err.println("Failed to connect or send the HTTP request: " + e.getMessage());
-                }
-            });
-        }
+                System.err.println("Failed to connect or send the HTTP request: " + e.getMessage());
+            }
+                 
+        }).start();
 
         return response.get() == null ? 1_000 : response.get().statusCode();
     }

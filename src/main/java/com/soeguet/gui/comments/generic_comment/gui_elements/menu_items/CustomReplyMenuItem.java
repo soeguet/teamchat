@@ -2,13 +2,10 @@ package com.soeguet.gui.comments.generic_comment.gui_elements.menu_items;
 
 import com.soeguet.gui.comments.generic_comment.factories.ReplyPanelFactory;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
-import com.soeguet.gui.reply.ReplyPanelImpl;
-import com.soeguet.gui.reply.interfaces.ReplyInterface;
 import com.soeguet.model.jackson.BaseModel;
-
-import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import javax.swing.JMenuItem;
 
 public class CustomReplyMenuItem extends JMenuItem implements MouseListener {
 

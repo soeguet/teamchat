@@ -1,10 +1,12 @@
 package com.soeguet.gui.comments.util;
 
-import javax.swing.*;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.StyledDocument;
 import java.util.HashMap;
 import java.util.List;
+import javax.swing.ImageIcon;
+import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import javax.swing.text.StyledDocument;
 
 public class EmojiSwingWorker extends SwingWorker<Void, Object> {
 
@@ -22,12 +24,6 @@ public class EmojiSwingWorker extends SwingWorker<Void, Object> {
         this.text = text;
     }
     // constructors -- end
-
-    @Override
-    public Throwable exceptionNow() {
-
-        throw new RuntimeException("Exception in SwingWorker");
-    }
 
     @Override
     protected Void doInBackground() {

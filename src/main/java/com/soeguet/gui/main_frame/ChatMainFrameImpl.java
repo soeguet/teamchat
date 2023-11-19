@@ -34,19 +34,28 @@ import com.soeguet.properties.dto.CustomUserPropertiesDTO;
 import com.soeguet.socket_client.ClientControllerImpl;
 import com.soeguet.socket_client.CustomWebsocketClient;
 import com.soeguet.socket_client.interfaces.ClientController;
-
-import javax.swing.Timer;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.*;
+import java.util.Properties;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 /**
  Main GUI method
@@ -218,8 +227,10 @@ public class ChatMainFrameImpl extends ChatPanel implements MainFrameGuiInterfac
 
         try {
 
-            final byte[] jsonTypingStatus = objectMapper.writeValueAsBytes(new StatusTransferDTO("typing",
-                                                                                                 this.getUsername()));
+            ArrayList<String> array = new ArrayList<>();
+            array.add(this.getUsername());
+            final byte[] jsonTypingStatus = objectMapper.writeValueAsBytes(new StatusTransferDTO("typing", array));
+                                                                                                 
             clientController.getWebsocketClient().send(jsonTypingStatus);
 
         } catch (JsonProcessingException e) {

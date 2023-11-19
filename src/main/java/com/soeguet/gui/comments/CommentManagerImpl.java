@@ -11,10 +11,7 @@ import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.LinkModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.Random;
+import javax.swing.JPanel;
 
 public class CommentManagerImpl implements CommentManager {
 
@@ -57,14 +54,14 @@ public class CommentManagerImpl implements CommentManager {
         this.mainFrame.repaint();
     }
 
-    private int generateRandomRgbIntValue() {
-
-        Random rand = new Random();
-        int r = rand.nextInt(256);
-        int g = rand.nextInt(256);
-        int b = rand.nextInt(256);
-        return new Color(r, g, b).getRGB();
-    }
+    // private int generateRandomRgbIntValue() {
+    //
+    //     Random rand = new Random();
+    //     int r = rand.nextInt(256);
+    //     int g = rand.nextInt(256);
+    //     int b = rand.nextInt(256);
+    //     return new Color(r, g, b).getRGB();
+    // }
 
     private boolean doesClientMatchSender(final String messageModel) {
 

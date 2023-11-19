@@ -3,8 +3,6 @@ package com.soeguet.initialization.interfaces;
 import com.soeguet.emoji.interfaces.EmojiInitializerInterface;
 import com.soeguet.model.EnvVariables;
 
-import javax.swing.*;
-
 public interface MainFrameInitInterface {
 
     void repositionChatFrameForTestingPurposes();
