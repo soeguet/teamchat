@@ -2,12 +2,15 @@ package com.soeguet.gui.comments.util;
 
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.PictureModel;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JScrollBar;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 public class PictureSwingWorker extends SwingWorker<Void, Object> {
 
@@ -79,9 +82,12 @@ public class PictureSwingWorker extends SwingWorker<Void, Object> {
     @Override
     protected void done() {
 
+        this.mainFrame.revalidate();
+        this.mainFrame.repaint();
+
         //scroll to end after finishing the loading
         final JScrollBar verticalScrollBar = mainFrame.getMainTextBackgroundScrollPane().getVerticalScrollBar();
-        verticalScrollBar.setValue(verticalScrollBar.getMaximum());
+    SwingUtilities.invokeLater(() -> verticalScrollBar.setValue(verticalScrollBar.getMaximum()));
 
         super.done();
     }

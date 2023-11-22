@@ -2,11 +2,8 @@ package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
 import com.soeguet.gui.comments.generic_comment.util.Side;
 import com.soeguet.gui.comments.util.CommentTypeEnum;
+import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
-
-import javax.swing.*;
-import javax.swing.border.LineBorder;
-import java.awt.*;
 
 public class CustomMainWrapperContainer extends JPanel {
 

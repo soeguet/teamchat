@@ -1,12 +1,9 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
-import net.miginfocom.swing.MigLayout;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
+import java.awt.Graphics;
 import java.util.function.Consumer;
+import javax.swing.JPanel;
+import net.miginfocom.swing.MigLayout;
 
 public class CustomContentContainer extends JPanel  {
 

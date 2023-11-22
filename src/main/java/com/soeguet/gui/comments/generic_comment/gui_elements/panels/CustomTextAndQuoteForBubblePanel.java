@@ -3,10 +3,8 @@ package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomSimpleTextPane;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.MessageModel;
+import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
-
-import javax.swing.*;
-import java.awt.*;
 
 public class CustomTextAndQuoteForBubblePanel extends JPanel {
 

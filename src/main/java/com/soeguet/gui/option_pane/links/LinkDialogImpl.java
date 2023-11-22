@@ -6,7 +6,6 @@ import com.soeguet.gui.option_pane.links.dtos.MetadataStorageRecord;
 import com.soeguet.gui.option_pane.links.generated.LinkDialog;
 import com.soeguet.gui.option_pane.links.interfaces.LinkDialogInterface;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Window;
@@ -17,7 +16,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
-import javax.swing.border.LineBorder;
 
 public class LinkDialogImpl extends LinkDialog implements LinkDialogInterface {
 
@@ -127,9 +125,7 @@ public class LinkDialogImpl extends LinkDialog implements LinkDialogInterface {
      */
     private JPanel generateMetadataPanel() {
 
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(new LineBorder(Color.BLACK, 1));
-        return panel;
+        return new JPanel(new BorderLayout());
     }
 
     /**

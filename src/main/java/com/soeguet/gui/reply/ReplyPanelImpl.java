@@ -11,17 +11,15 @@ import com.soeguet.gui.reply.interfaces.ReplyInterface;
 import com.soeguet.model.MessageTypes;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
-import com.soeguet.model.jackson.QuoteModel;
-
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import javax.swing.JLayeredPane;
+import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 
 public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
 
@@ -40,6 +38,9 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
     public void populatePanel() {
 
         getMainQuoteTextField().setEditorKit(new WrapEditorKit());
+
+        this.setBorder(new LineBorder(Color.BLACK, 1));
+
 
         if (baseModel instanceof MessageModel messageModel) {
 

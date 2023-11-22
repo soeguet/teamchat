@@ -3,17 +3,16 @@ package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 import com.soeguet.gui.comments.generic_comment.factories.LinkPanelFactory;
 import com.soeguet.gui.comments.generic_comment.factories.PicturePanelFactory;
 import com.soeguet.gui.comments.generic_comment.factories.TextMessageFactory;
-import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomTextPane;
 import com.soeguet.gui.comments.generic_comment.gui_elements.util.ChatBubblePaintHandler;
 import com.soeguet.gui.comments.generic_comment.util.Side;
 import com.soeguet.gui.comments.util.CommentTypeEnum;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
-
-import javax.swing.*;
-import javax.swing.border.LineBorder;
-import java.awt.*;
+import java.awt.Color;
+import javax.swing.JPanel;
+import javax.swing.JTextPane;
+import javax.swing.OverlayLayout;
 
 public class CustomCommentPanel extends JPanel {
 
@@ -53,7 +52,6 @@ public class CustomCommentPanel extends JPanel {
     // constructors -- start
     public CustomCommentPanel() {
 
-        this.setBorder(new LineBorder(Color.RED, 2));
     }
     // constructors -- end
 

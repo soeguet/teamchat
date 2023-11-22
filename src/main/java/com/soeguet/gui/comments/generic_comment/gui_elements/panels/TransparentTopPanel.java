@@ -3,13 +3,14 @@ package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 import com.soeguet.gui.comments.generic_comment.gui_elements.util.ChatBubblePaintHandler;
 import com.soeguet.gui.comments.reaction_panel.ReactionPopupMenuImpl;
 import com.soeguet.gui.comments.reaction_panel.dtos.ReactionPanelDTO;
-
-import javax.swing.*;
-import javax.swing.border.LineBorder;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 public class TransparentTopPanel extends JPanel implements MouseListener, MouseMotionListener {
 
@@ -29,7 +30,6 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
 
         this.setBackground(new Color(0, 0, 0, 0));
         this.setOpaque(false);
-        this.setBorder(new LineBorder(Color.BLACK, 1));
 
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
@@ -98,8 +98,6 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
 
     @Override
     public void mouseEntered(final MouseEvent e) {
-
-        getChatBubblePaintHandler().setBorderColor(Color.RED);
 
         if (reactionPopupMenu == null) {
 

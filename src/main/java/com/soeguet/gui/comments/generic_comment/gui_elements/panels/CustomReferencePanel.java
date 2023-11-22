@@ -10,10 +10,15 @@ import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.LinkModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
 import net.miginfocom.swing.MigLayout;
-
-import javax.swing.*;
-import java.awt.*;
 
 public class CustomReferencePanel extends JPanel {
 
@@ -124,11 +129,11 @@ public class CustomReferencePanel extends JPanel {
                 PicturePanelFactory picturePanelFactory = new PicturePanelFactory(mainFrame, pictureModel);
                 CustomPictureWrapperPanel customPictureWrapperPanel = picturePanelFactory.create();
 
-                jScrollPane.setViewportView(customPictureWrapperPanel);
-
                 super.add(jScrollPane, "cell 0 1, grow, width 500!, h 600!, center");
                 revalidate();
                 repaint();
+
+                SwingUtilities.invokeLater(() ->  jScrollPane.setViewportView(customPictureWrapperPanel));
             }
 
             case LinkModel linkModel -> {
@@ -137,7 +142,11 @@ public class CustomReferencePanel extends JPanel {
                 final CustomLinkTextPane customLinkTextPane = createCustomLinkTextPaneWithComment(linkModel);
 
                 final JScrollPane jScrollPane = createScrollPane();
-                jScrollPane.setViewportView(customLinkTextPane);
+
+                this.mainFrame.revalidate();
+                this.mainFrame.repaint();
+               
+                SwingUtilities.invokeLater(() ->  jScrollPane.setViewportView(customLinkTextPane));
 
                 super.add(jScrollPane, "cell 0 1, width ::500, h ::800");
             }

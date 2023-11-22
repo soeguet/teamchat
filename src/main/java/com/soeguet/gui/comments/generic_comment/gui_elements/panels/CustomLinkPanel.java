@@ -1,14 +1,12 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
-import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomLinkCommentTextPane;
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomLinkTextPane;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.LinkModel;
 import com.soeguet.model.jackson.QuoteModel;
+import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
-
-import javax.swing.*;
 
 public class CustomLinkPanel extends JPanel {
 

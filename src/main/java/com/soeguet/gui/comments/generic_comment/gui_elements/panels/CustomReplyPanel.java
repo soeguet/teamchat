@@ -6,15 +6,22 @@ import com.soeguet.gui.comments.generic_comment.gui_elements.buttons.CustomReply
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomSimpleTextPane;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.BaseModel;
-import net.miginfocom.swing.MigLayout;
-
-import javax.swing.*;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.LineBorder;
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.LineBorder;
+import net.miginfocom.swing.MigLayout;
 
 public class CustomReplyPanel extends JPanel implements MouseListener, MouseMotionListener {
 
