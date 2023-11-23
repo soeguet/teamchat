@@ -50,6 +50,15 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
     public void createDesktopNotification(final String message,
             final NotificationStatus notificationStatus) {
 
+        // force focus of gui on program
+        Toolkit.getDefaultToolkit().getSystemEventQueue()
+                .postEvent(new FocusEvent((Component) mainFrame, FocusEvent.FOCUS_GAINED));
+        // let symbol on system task bar blink
+        Toolkit.getDefaultToolkit().getSystemEventQueue()
+                .postEvent(new WindowEvent((Window) mainFrame, WindowEvent.WINDOW_ACTIVATED));
+        ((Frame) this.mainFrame).setState(java.awt.Frame.ICONIFIED);
+        ((Window) this.mainFrame).toFront();
+
         // check if notifications are even wanted
         switch (notificationStatus) {
 
@@ -70,14 +79,6 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
                 internalNotificationHandling(message);
                 externalNotificationHandling(message);
                 Toolkit.getDefaultToolkit().beep();
-                // force focus of gui on program
-                Toolkit.getDefaultToolkit().getSystemEventQueue()
-                        .postEvent(new FocusEvent((Component) mainFrame, FocusEvent.FOCUS_GAINED));
-                // let symbol on system task bar blink
-                Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(
-                        new WindowEvent((Window) mainFrame, WindowEvent.WINDOW_ACTIVATED));
-                ((Frame) this.mainFrame).setState(java.awt.Frame.ICONIFIED);
-                ((Window) this.mainFrame).toFront();
             }
 
             case ALL_DENIED, STARTUP -> {
