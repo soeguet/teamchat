@@ -22,34 +22,31 @@ public class CustomMainWrapperContainer extends JPanel {
 
 
         /*
-
-        SCHEMA: Main Panel - wraps everything
-
-            LEFT
-        >>"[" [Side Panel][Content Panel] "]"<<
-
-                        RIGHT
-                    >>"[" [Content Panel][Side Panel] "]"<<
-
-                  ## search for:
-                    TEXT MESSAGES   ->      CustomTextAndQuoteForBubblePanel    & TextMessageFactory
-                    PICTURES        ->      CustomPictureWrapperPanel           & PicturePanelFactory
-                    LINKS           ->      CustomLinkWrapperPanel              & LinkPanelFactory
+         * 
+         * SCHEMA: Main Panel - wraps everything
+         * 
+         * LEFT >>"[" [Side Panel][Content Panel] "]"<<
+         * 
+         * RIGHT >>"[" [Content Panel][Side Panel] "]"<<
+         * 
+         * ## search for: TEXT MESSAGES -> CustomTextAndQuoteForBubblePanel & TextMessageFactory
+         * PICTURES -> CustomPictureWrapperPanel & PicturePanelFactory LINKS ->
+         * CustomLinkWrapperPanel & LinkPanelFactory
          */
 
         switch (this.getSide()) {
 
             case LEFT -> super.setLayout(new MigLayout("insets 0",
-                                                       // columns
-                                                       "[left,shrink][fill,left]",
-                                                       // rows
-                                                       "[shrink]"));
+                    // columns
+                    "[left,shrink][fill,left]",
+                    // rows
+                    "[shrink]"));
             case RIGHT -> super.setLayout(new MigLayout("",
-                                                        // columns
-                                                        // -> grow is needed -> else right sight will collapse
-                                                        "[grow,fill,right]20[shrink,right]",
-                                                        // rows
-                                                        "[shrink]"));
+                    // columns
+                    // -> grow is needed -> else right sight will collapse
+                    "[grow,fill,right]20[shrink,right]",
+                    // rows
+                    "[shrink]"));
         }
     }
 

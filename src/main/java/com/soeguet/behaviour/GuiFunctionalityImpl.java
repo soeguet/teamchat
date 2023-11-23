@@ -361,8 +361,10 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
 
         DesktopNotificationHandlerInterface desktopNotificationHandler =
                 new DesktopNotificationHandler(mainFrame);
+
         NotificationStatus notificationStatus =
                 desktopNotificationHandler.determineDesktopNotificationStatus();
+
         desktopNotificationHandler.createDesktopNotification(message, notificationStatus);
     }
 
