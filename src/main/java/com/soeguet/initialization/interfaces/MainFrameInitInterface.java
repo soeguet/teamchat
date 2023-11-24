@@ -30,4 +30,6 @@ public interface MainFrameInitInterface {
     void initializeClientController();
 
     void initEmojiHandler();
+
+    void setFixedScrollSpeed(int i);
 }

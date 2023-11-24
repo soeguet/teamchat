@@ -6,8 +6,7 @@ import com.soeguet.initialization.interfaces.MainFrameInitInterface;
 import com.soeguet.model.EnvVariables;
 import com.soeguet.properties.CustomProperties;
 import com.soeguet.properties.dto.CustomUserPropertiesDTO;
-
-import javax.swing.*;
+import javax.swing.SwingUtilities;
 
 public class ProgramInit {
 
@@ -38,20 +37,21 @@ public class ProgramInit {
             //REMOVE remove later on
             this.mainFrame.repositionChatFrameForTestingPurposes();
 
+            //setup emojis
+            final EmojiInitializerInterface emojiInitializer = new EmojiInitializer();
+            this.mainFrame.initEmojiList(emojiInitializer);
+
             //setup functionality
             this.initializeProperties(envVariables);
             this.initializeMainFrame();
             this.mainFrame.loadUsernameFromEnvVariables(envVariables);
 
-            //setup emojis
-            final EmojiInitializerInterface emojiInitializer = new EmojiInitializer();
-            this.mainFrame.initEmojiList(emojiInitializer);
-
-            //operating system specific settings
+            //operating system specific settings - margins for JScrollPane
             this.mainFrame.setScrollPaneMargins();
 
             //setup GUI
             this.mainFrame.setMainFrameTitle();
+            this.mainFrame.setFixedScrollSpeed(25);
             this.mainFrame.setGuiIcon();
 
             this.mainFrame.setButtonIcons();

@@ -448,7 +448,7 @@ public abstract class PropertiesPanel extends JPanel {
 								form_panel13.add(form_hSpacer19);
 
 								//---- form_label6 ----
-								form_label6.setText("username:");
+								form_label6.setText("timeAndUsername:");
 								form_panel13.add(form_label6);
 								form_panel13.add(form_hSpacer20);
 								form_panel13.add(form_ownUserNameTextField);
@@ -519,7 +519,7 @@ public abstract class PropertiesPanel extends JPanel {
 								form_panel7.add(form_hSpacer3);
 
 								//---- form_label2 ----
-								form_label2.setText("username:");
+								form_label2.setText("timeAndUsername:");
 								form_panel7.add(form_label2);
 								form_panel7.add(form_hSpacer11);
 

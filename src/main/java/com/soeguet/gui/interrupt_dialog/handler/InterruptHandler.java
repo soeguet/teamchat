@@ -25,7 +25,7 @@ public class InterruptHandler implements InterruptHandlerInterface {
     /**
      * Force the chat GUI to the front and perform a visual effect.
      *
-     * @param clientUserName the username to check if it matches the current username of the main frame
+     * @param clientUserName the timeAndUsername to check if it matches the current timeAndUsername of the main frame
      */
     @Override
     public void forceChatGuiToFront(final String clientUserName) {

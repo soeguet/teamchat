@@ -11,26 +11,27 @@ import com.soeguet.gui.reply.interfaces.ReplyInterface;
 import com.soeguet.model.MessageTypes;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
-
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import javax.swing.JLayeredPane;
+import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 
 public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
 
     private final Point offset = new Point();
     private final MainFrameGuiInterface mainFrame;
-    private final BaseModel messageModel;
+    private final BaseModel baseModel;
     private final Border border = this.getBorder();
 
-    public ReplyPanelImpl(MainFrameGuiInterface mainFrame, BaseModel messageModel) {
+    public ReplyPanelImpl(MainFrameGuiInterface mainFrame, BaseModel baseModel) {
 
         this.mainFrame = mainFrame;
-        this.messageModel = messageModel;
+        this.baseModel = baseModel;
     }
 
     @Override
@@ -38,9 +39,15 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
 
         getMainQuoteTextField().setEditorKit(new WrapEditorKit());
 
-        new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(getMainQuoteTextField(), messageModel.getMessage());
-        form_quotedSender.setText(messageModel.getSender());
-        form_quotedTime.setText(messageModel.getTime());
+        this.setBorder(new LineBorder(Color.BLACK, 1));
+
+
+        if (baseModel instanceof MessageModel messageModel) {
+
+            new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(getMainQuoteTextField(), messageModel.getMessage());
+            form_quotedSender.setText(baseModel.getSender());
+            form_quotedTime.setText(baseModel.getTime());
+        }
     }
 
     @Override
@@ -166,13 +173,33 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
 
         new EmojiHandler(mainFrame).replaceImageIconWithEmojiDescription(this.getReplyTextPane());
 
-        if (isTextPaneBlank()) return;
+        //FIXME is this right?
+        if (isTextPaneBlank()) {return;}
 
-        MessageModel sendModel = new MessageModel((byte) MessageTypes.NORMAL, mainFrame.getUsername(), this.getReplyTextPane().getText(), messageModel.getSender(), messageModel.getTime(), messageModel.getMessage());
+        MessageModel sendModel = new MessageModel();
+
+        //type
+        sendModel.setMessageType(MessageTypes.NORMAL);
+        //quoted message
+        // FIXME: 02.11.23
+//        sendModel.setQuotedMessageSender(this.mainFrame.getUsername());
+//        sendModel.setQuotedMessageText(this.getReplyTextPane().getText());
+//        sendModel.setQuotedMessageTime(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
+        //this client
+        sendModel.setSender(this.baseModel.getSender());
+
+        if (baseModel instanceof MessageModel messageModel) {
+
+            sendModel.setMessage(messageModel.getMessage());
+        }
+
+        sendModel.setTime(baseModel.getTime());
 
         try {
 
-            mainFrame.getWebsocketClient().send(mainFrame.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(sendModel));
+            final String serializedMessage = mainFrame.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(sendModel);
+
+            mainFrame.getWebsocketClient().send(serializedMessage);
 
         } catch (JsonProcessingException ex) {
 

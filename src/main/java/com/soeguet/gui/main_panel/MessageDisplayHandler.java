@@ -2,28 +2,31 @@ package com.soeguet.gui.main_panel;
 
 import com.soeguet.cache.implementations.MessageQueue;
 import com.soeguet.cache.manager.CacheManager;
+import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.interfaces.CommentManager;
+import com.soeguet.gui.comments.util.CommentTypeEnum;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
+import com.soeguet.gui.main_panel.dtos.MessageHandlerDTO;
 import com.soeguet.gui.main_panel.interfaces.MessageDisplayHandlerInterface;
 import com.soeguet.model.jackson.BaseModel;
-import com.soeguet.util.interfaces.MessageCategory;
+
+import java.awt.*;
 
 public class MessageDisplayHandler implements MessageDisplayHandlerInterface {
 
+// variables -- start
     private final MainFrameGuiInterface mainFrame;
     private final CommentManager commentManager;
     private CacheManager cacheManager;
+// variables -- end
 
+// constructors -- start
     public MessageDisplayHandler(final MainFrameGuiInterface mainFrame, final CommentManager commentManager) {
 
         this.mainFrame = mainFrame;
         this.commentManager = commentManager;
     }
-
-    public void setCacheManager(final CacheManager cacheManager) {
-
-        this.cacheManager = cacheManager;
-    }
+// constructors -- end
 
     /**
      Retrieves and removes the first message from the message queue cache.
@@ -42,30 +45,47 @@ public class MessageDisplayHandler implements MessageDisplayHandlerInterface {
     }
 
     /**
-     This method processes and displays a message based on the message model, username, and nickname.
+     Processes and displays a message based on the message model, nickname, and comment type.
 
-     @param baseModel The message model representing the message.
-     @param nickname  The nickname of the client.
+     @param baseModel
+     The message model representing the message.
+     @param nickname
+     The nickname of the client.
      */
     @Override
-    public void processAndDisplayMessage(final BaseModel baseModel, final String nickname) {
+    public void processAndDisplayMessage(final BaseModel baseModel) {
 
-        int messageCategory = commentManager.categorizeMessageFromSocket(baseModel);
-
-        switch (messageCategory) {
-
-            case MessageCategory.RIGHT_SIDE_TEXT_MESSAGE -> commentManager.setupMessagesRightSide(baseModel, nickname);
-
-            case MessageCategory.RIGHT_SIDE_PICTURE_MESSAGE -> commentManager.setupPicturesRightSide(baseModel, nickname);
-
-            case MessageCategory.RIGHT_SIDE_LINK_MESSAGE -> commentManager.setupLinkRightSite(baseModel);
-
-            case MessageCategory.LEFT_SIDE_TEXT_MESSAGE -> commentManager.setupMessagesLeftSide(baseModel, nickname);
-
-            case MessageCategory.LEFT_SIDE_PICTURE_MESSAGE -> commentManager.setupPicturesLeftSide(baseModel, nickname);
-
-            case MessageCategory.LEFT_SIDE_LINK_MESSAGE -> commentManager.setupLinkLeftSide(baseModel);
-        }
+        CommentTypeEnum commentType = commentManager.categorizeMessageFromSocket(baseModel);
+        commentManager.setupMessage(baseModel, commentType);
     }
 
+    public void setCacheManager(final CacheManager cacheManager) {
+
+        this.cacheManager = cacheManager;
+    }
+
+    @Override
+    public void updateExistingMessage(final BaseModel baseModel) {
+
+        final Component[] mainTextPanelComponents = mainFrame.getMainTextPanel().getComponents();
+
+        for (final Component mainTextPanelComponent : mainTextPanelComponents) {
+
+            if (mainTextPanelComponent instanceof CommentInterface commentInterface) {
+
+                if (commentInterface.getBaseModel().getId().equals(baseModel.getId())) {
+
+                    commentInterface.setBaseModel(baseModel);
+
+                    commentInterface.initializeReactionStickerHandler(baseModel.getUserInteractions());
+
+                    //TODO implement notification for client
+                    Toolkit.getDefaultToolkit().beep();
+
+                    mainFrame.revalidate();
+                    mainFrame.repaint();
+                }
+            }
+        }
+    }
 }

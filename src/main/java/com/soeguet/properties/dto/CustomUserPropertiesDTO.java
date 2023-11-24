@@ -26,7 +26,7 @@ public record CustomUserPropertiesDTO(String username, String nickname, String b
 
         if (obj instanceof CustomUserPropertiesDTO customUserPropertiesDTO) {
 
-            return username.equals(customUserPropertiesDTO.username);
+            return username.equals(customUserPropertiesDTO.username());
         }
 
         return false;

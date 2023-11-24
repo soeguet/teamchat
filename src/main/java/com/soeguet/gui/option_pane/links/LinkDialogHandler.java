@@ -3,15 +3,11 @@ package com.soeguet.gui.option_pane.links;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.option_pane.links.dtos.AbsoluteLinkRecord;
+import com.soeguet.gui.option_pane.links.dtos.LinkTransferDTO;
 import com.soeguet.gui.option_pane.links.dtos.MetadataStorageRecord;
 import com.soeguet.model.MessageTypes;
-import com.soeguet.model.jackson.MessageModel;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
+import com.soeguet.model.jackson.LinkModel;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URI;
@@ -19,8 +15,13 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.concurrent.Executors;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.imageio.ImageIO;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 public class LinkDialogHandler {
 
@@ -66,26 +67,25 @@ public class LinkDialogHandler {
 
         final AtomicReference<HttpResponse<String>> response = new AtomicReference<>();
 
-        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+        new Thread(() -> {
 
-            executor.execute(() -> {
+            try {
 
-                try (HttpClient client = HttpClient.newHttpClient()) {
+                HttpClient client = HttpClient.newHttpClient();
+                HttpRequest request;
 
-                    HttpRequest request;
+                request = HttpRequest.newBuilder()
+                .uri(new URI(link))
+                .build();
 
-                    request = HttpRequest.newBuilder()
-                            .uri(new URI(link))
-                            .build();
+                response.set(client.send(request, HttpResponse.BodyHandlers.ofString()));
 
-                    response.set(client.send(request, HttpResponse.BodyHandlers.ofString()));
+            } catch (IOException | InterruptedException | URISyntaxException | IllegalArgumentException e) {
 
-                } catch (IOException | InterruptedException | URISyntaxException | IllegalArgumentException e) {
-
-                    System.err.println("Failed to connect or send the HTTP request: " + e.getMessage());
-                }
-            });
-        }
+                System.err.println("Failed to connect or send the HTTP request: " + e.getMessage());
+            }
+                 
+        }).start();
 
         return response.get() == null ? 1_000 : response.get().statusCode();
     }
@@ -169,16 +169,23 @@ public class LinkDialogHandler {
      Sends a link message to the websocket server.
 
      @param mainFrame the main frame interface
-     @param message the message to send
+     @param linkTransferDTO the message to send
      */
-    public void sendLinkToWebsocket(final MainFrameGuiInterface mainFrame, final String message) {
+    public void sendLinkToWebsocket(final MainFrameGuiInterface mainFrame, final LinkTransferDTO linkTransferDTO) {
 
-        MessageModel messageModel = new MessageModel((byte) MessageTypes.LINK, mainFrame.getUsername(), message);
+
+        LinkModel linkModel = new LinkModel();
+        linkModel.setMessageType(MessageTypes.LINK);
+        linkModel.setTime(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
+        linkModel.setSender(mainFrame.getUsername());
+        linkModel.setLink(linkTransferDTO.link());
+        linkModel.setComment(linkTransferDTO.comment());
+        // TODO: 02.11.23 add quote support
 
         try {
 
-            String messageString = mainFrame.getObjectMapper().writeValueAsString(messageModel);
-            mainFrame.getWebsocketClient().send(messageString);
+            String linkString = mainFrame.getObjectMapper().writeValueAsString(linkModel);
+            mainFrame.getWebsocketClient().send(linkString);
 
         } catch (JsonProcessingException ex) {
 

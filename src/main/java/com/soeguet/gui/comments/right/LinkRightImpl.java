@@ -190,7 +190,27 @@ public class LinkRightImpl extends PanelRight implements LinkPanelInterface {
     }
 
     @Override
-    protected void thisComponentResized(final ComponentEvent e) {
+    protected void layeredContainerMouseEntered(final MouseEvent e) {
+
+    }
+
+    @Override
+    protected void layeredContainerMouseExited(final MouseEvent e) {
+
+    }
+
+    @Override
+    protected void layeredContainerMousePressed(final MouseEvent e) {
+
+    }
+
+    @Override
+    protected void layeredContainerComponentResized(final ComponentEvent e) {
+
+    }
+
+    @Override
+    protected void layeredContainerMouseDragged(final MouseEvent e) {
 
     }
 }

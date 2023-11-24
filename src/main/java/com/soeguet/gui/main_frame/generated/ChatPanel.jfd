@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "8.1.1.0.298" Java: "17.0.8" encoding: "UTF-8"
+JFDML JFormDesigner: "8.2.0.0.331" Java: "21" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
@@ -13,8 +13,8 @@ new FormModel {
 		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class java.awt.BorderLayout ) ) {
 			name: "this"
 			"focusable": false
-			"minimumSize": new java.awt.Dimension( 700, 700 )
-			"preferredSize": new java.awt.Dimension( 700, 700 )
+			"minimumSize": new java.awt.Dimension( 750, 700 )
+			"preferredSize": new java.awt.Dimension( 750, 700 )
 			"defaultCloseOperation": 0
 			addEvent( new FormEvent( "java.awt.event.ComponentListener", "componentResized", "thisComponentResized", true ) )
 			addEvent( new FormEvent( "java.awt.event.WindowListener", "windowClosing", "thisWindowClosing", true ) )

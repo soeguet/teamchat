@@ -1,3 +1,5 @@
 package com.soeguet.dtos;
 
-public record StatusTransferDTO(String type, String... statusArray) {}
+import java.util.ArrayList;
+
+public record StatusTransferDTO(String type, ArrayList<String> array) {}

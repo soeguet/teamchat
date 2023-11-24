@@ -11,14 +11,14 @@ import javax.swing.*;
 public class UserInteractionImpl implements UserInteractionInterface {
 
     /**
-     Asks the user to enter their username.
+     Asks the user to enter their timeAndUsername.
 
-     @return The username entered by the user.
+     @return The timeAndUsername entered by the user.
      */
     @Override
     public String askForUsername() {
 
-        return JOptionPane.showInputDialog(null, "Please enter your username", "");
+        return JOptionPane.showInputDialog(null, "Please enter your timeAndUsername", "");
     }
 
     /**

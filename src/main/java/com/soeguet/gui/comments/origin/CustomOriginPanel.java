@@ -1,5 +1,6 @@
 package com.soeguet.gui.comments.origin;
 
+import com.soeguet.emoji.EmojiHandler;
 import com.soeguet.gui.comments.util.QuotePanelImpl;
 import com.soeguet.gui.comments.util.WrapEditorKit;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
@@ -8,11 +9,13 @@ import com.soeguet.gui.reply.interfaces.ReplyInterface;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
-import com.soeguet.emoji.EmojiHandler;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
+import com.soeguet.model.jackson.QuoteModel;
+import java.awt.Component;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -20,8 +23,16 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.Executors;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
 
 /**
  The CustomOriginPanel class extends JPanel and provides additional functionality for displaying custom origin panels.
@@ -30,11 +41,11 @@ public class CustomOriginPanel extends JPanel {
 
     private final MainFrameGuiInterface mainFrame;
     protected Logger LOGGER = Logger.getLogger(CustomOriginPanel.class.getName());
-
     /**
      Creates a new CustomOriginPanel object with the given MainFrameInterface object.
 
-     @param mainFrame the MainFrameInterface object that will be used by the CustomOriginPanel
+     @param mainFrame
+     the MainFrameInterface object that will be used by the CustomOriginPanel
      */
     public CustomOriginPanel(MainFrameGuiInterface mainFrame) {
 
@@ -42,9 +53,33 @@ public class CustomOriginPanel extends JPanel {
     }
 
     /**
+     * Passes the given MouseEvent to the JTextPane component.
+     *
+     * @param e
+     *      The MouseEvent object that needs to be passed to the JTextPane component.
+     * @param source
+     *      The JComponent where the MouseEvent originated from.
+     * @param destination
+     *      The JComponent where the MouseEvent should be passed to.
+     */
+    protected void passMouseEventToJTextPane(final MouseEvent e, JComponent source, JComponent destination) {
+
+        //pass event through to the text pane, else you cannot select the text
+        Point point = SwingUtilities.convertPoint(source, e.getPoint(), destination);
+        Component target = SwingUtilities.getDeepestComponentAt(destination, point.x, point.y);
+
+        if (target instanceof JTextPane) {
+
+            MouseEvent convertedEvent = SwingUtilities.convertMouseEvent(source, e, target);
+            target.dispatchEvent(convertedEvent);
+        }
+    }
+
+    /**
      Extracts an image from a message.
 
-     @param baseModel the base model containing the image data
+     @param baseModel
+     the base model containing the image data
 
      @return the extracted image as a BufferedImage, or null if an error occurs
      */
@@ -57,7 +92,7 @@ public class CustomOriginPanel extends JPanel {
         } catch (IOException e) {
 
             LOGGER.log(java.util.logging.Level.SEVERE, "Error reading image", e);
-            LOGGER.log(java.util.logging.Level.SEVERE,"CustomOriginPanel > extractImageFromMessage()");
+            LOGGER.log(java.util.logging.Level.SEVERE, "CustomOriginPanel > extractImageFromMessage()");
         }
 
         return null;
@@ -66,7 +101,8 @@ public class CustomOriginPanel extends JPanel {
     /**
      Scales an image if it is too big.
 
-     @param bufferedImage The image to be scaled.
+     @param bufferedImage
+     The image to be scaled.
 
      @return The scaled image as an ImageIcon.
      */
@@ -116,10 +152,7 @@ public class CustomOriginPanel extends JPanel {
             @Override
             public void mousePressed(final MouseEvent e) {
 
-                try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-
-                    executor.submit(() -> openImageInExternalImageViewer(image));
-                }
+                new Thread(() -> openImageInExternalImageViewer(image)).start();
             }
         });
     }
@@ -141,23 +174,23 @@ public class CustomOriginPanel extends JPanel {
 
     protected QuotePanelImpl checkForQuotesInMessage(MessageModel messageModel) {
 
-        String quotedText = messageModel.getQuotedMessageText();
+        // FIXME: 02.11.23
+        final QuoteModel<? extends BaseModel> quotedMessage = messageModel.getQuotedMessage();
 
-        if (quotedText == null) {
+        if (quotedMessage == null) {
             return null;
         }
 
-        String quotedChatParticipant = messageModel.getQuotedMessageSender();
-        String quotedTime = messageModel.getQuotedMessageTime();
-
-        return new QuotePanelImpl(this.mainFrame, quotedText, quotedChatParticipant, quotedTime);
+        return new QuotePanelImpl(this.mainFrame, "quotedText", "quotedChatParticipant", "quotedTime");
     }
 
     /**
      Sets up the time field for a given base model and time label.
 
-     @param baseModel The base model containing the time to be set.
-     @param timeLabel The label where the time will be displayed.
+     @param baseModel
+     The base model containing the time to be set.
+     @param timeLabel
+     The label where the time will be displayed.
      */
     protected void setupTimeField(BaseModel baseModel, JLabel timeLabel) {
 
@@ -170,7 +203,8 @@ public class CustomOriginPanel extends JPanel {
     /**
      Sets the timestamp field of the base model to be invisible.
 
-     @param baseModel The base model containing the timestamp to be set. (NonNull)
+     @param baseModel
+     The base model containing the timestamp to be set. (NonNull)
 
      @return true if the timestamp field was set to invisible, false otherwise.
      */
@@ -202,8 +236,10 @@ public class CustomOriginPanel extends JPanel {
     /**
      Sets up the name field based on the given base model.
 
-     @param baseModel The base model containing the information for setting up the name field. (NonNull)
-     @param nameLabel The JLabel representing the name field to be set up. (NonNull)
+     @param baseModel
+     The base model containing the information for setting up the name field. (NonNull)
+     @param nameLabel
+     The JLabel representing the name field to be set up. (NonNull)
      */
     protected void setupNameField(BaseModel baseModel, JLabel nameLabel) {
 
@@ -220,7 +256,8 @@ public class CustomOriginPanel extends JPanel {
     /**
      Sets the visibility of the name field based on the given base model.
 
-     @param baseModel The base model containing the information for setting up the name field. (NonNull)
+     @param baseModel
+     The base model containing the information for setting up the name field. (NonNull)
 
      @return True if the name field should be set to invisible, false otherwise.
      */
@@ -239,13 +276,7 @@ public class CustomOriginPanel extends JPanel {
         return false;
     }
 
-    /**
-     Sets the user message in the text pane based on the given base model.
 
-     @param baseModel The base model containing the information for setting up the user message. (NonNull)
-
-     @return The JTextPane containing the user message.
-     */
     protected JTextPane setUserMessage(BaseModel baseModel) {
 
         JTextPane actualTextPane = createTextPane();
@@ -253,7 +284,10 @@ public class CustomOriginPanel extends JPanel {
 
         addRightClickOptionToPanel(actualTextPane);
 
-        new EmojiHandler(this.mainFrame).replaceEmojiDescriptionWithActualImageIcon(actualTextPane, baseModel.getMessage());
+        if (baseModel instanceof MessageModel messageModel) {
+
+            new EmojiHandler(this.mainFrame).replaceEmojiDescriptionWithActualImageIcon(actualTextPane, messageModel.getMessage());
+        }
 
         return actualTextPane;
     }
@@ -277,7 +311,8 @@ public class CustomOriginPanel extends JPanel {
     /**
      Adds a right-click option to the panel.
 
-     @param actualTextPane The JTextPane to add the right-click option to.
+     @param actualTextPane
+     The JTextPane to add the right-click option to.
      */
     protected void addRightClickOptionToPanel(final JTextPane actualTextPane) {
 
@@ -299,8 +334,10 @@ public class CustomOriginPanel extends JPanel {
     /**
      Creates and adds a menu item to the given popup menu.
 
-     @param popupMenu    The JPopupMenu to add the menu item to.
-     @param menuItemName The name of the menu item to create.
+     @param popupMenu
+     The JPopupMenu to add the menu item to.
+     @param menuItemName
+     The name of the menu item to createQuoteTopTextPane.
 
      @return The created JMenuItem object.
      */
@@ -312,11 +349,12 @@ public class CustomOriginPanel extends JPanel {
     }
 
     /**
-     Adds an action listener to the given JMenuItem to copy the selected text from the given JTextPane
-     to the system clipboard.
+     Adds an action listener to the given JMenuItem to copy the selected text from the given JTextPane to the system clipboard.
 
-     @param actualTextPane The JTextPane containing the text to be copied.
-     @param menuOption     The JMenuItem to add the action listener to.
+     @param actualTextPane
+     The JTextPane containing the text to be copied.
+     @param menuOption
+     The JMenuItem to add the action listener to.
      */
     private void addActionListenerToCopyJMenuItem(JTextPane actualTextPane, JMenuItem menuOption) {
 
@@ -332,8 +370,10 @@ public class CustomOriginPanel extends JPanel {
     /**
      Adds a mouse listener to the given JTextPane to show a popup menu when the right mouse button is clicked.
 
-     @param textPane  The JTextPane to add the mouse listener to.
-     @param popupMenu The JPopupMenu to be shown when the right mouse button is clicked.
+     @param textPane
+     The JTextPane to add the mouse listener to.
+     @param popupMenu
+     The JPopupMenu to be shown when the right mouse button is clicked.
      */
     protected void addMouseListenerToJTextPane(JTextPane textPane, JPopupMenu popupMenu) {
 
@@ -350,10 +390,10 @@ public class CustomOriginPanel extends JPanel {
     }
 
     /**
-     Creates a JTextPane with the provided message as its text. The JTextPane is set to be non-editable
-     and has a transparent background.
+     Creates a JTextPane with the provided message as its text. The JTextPane is set to be non-editable and has a transparent background.
 
-     @param baseModel The BaseModel object containing the message to be displayed.
+     @param baseModel
+     The BaseModel object containing the message to be displayed.
 
      @return The created JTextPane with the message as its text, or null if the message is blank.
      */
@@ -361,16 +401,19 @@ public class CustomOriginPanel extends JPanel {
 
         JTextPane actualTextPane = new JTextPane();
 
-        if (baseModel.getMessage().isBlank()) {
+        if (baseModel instanceof PictureModel pictureModel) {
 
-            //remove spacing if the message is black, which was reserved for the message
-            return null;
+            if (pictureModel.getDescription().isBlank()) {
 
-        } else {
+                //remove spacing if the message is black, which was reserved for the message
+                return null;
 
-            actualTextPane.setText(baseModel.getMessage());
-            actualTextPane.setEditable(false);
-            actualTextPane.setOpaque(false);
+            } else {
+
+                actualTextPane.setText(pictureModel.getDescription());
+                actualTextPane.setEditable(false);
+                actualTextPane.setOpaque(false);
+            }
         }
 
         return actualTextPane;
@@ -379,7 +422,8 @@ public class CustomOriginPanel extends JPanel {
     /**
      Creates and sets up a JPopupMenu for an editor.
 
-     @param baseModel The BaseModel object containing the associated data.
+     @param baseModel
+     The BaseModel object containing the associated data.
 
      @return The created and configured JPopupMenu.
      */
@@ -400,12 +444,13 @@ public class CustomOriginPanel extends JPanel {
     }
 
     /**
-     Adds a mouse listener to the "reply" menu item in a JPopupMenu.
-     When the menu item is clicked, it creates and displays a ReplyPanelImpl
-     with the specified baseModel and adds it to the mainTextPanel's layered pane.
+     Adds a mouse listener to the "reply" menu item in a JPopupMenu. When the menu item is clicked, it creates and displays a ReplyPanelImpl with the
+     specified baseModel and adds it to the mainTextPanel's layered pane.
 
-     @param baseModel The BaseModel object containing the associated data.
-     @param reply     The "reply" menu item to which the mouse listener is added.
+     @param baseModel
+     The BaseModel object containing the associated data.
+     @param reply
+     The "reply" menu item to which the mouse listener is added.
      */
     protected void addMouseListenerToReplyMenuItem(BaseModel baseModel, JMenuItem reply) {
 

@@ -7,7 +7,9 @@ public interface MessageDisplayHandlerInterface {
 
     String pollMessageFromCache();
 
-    void processAndDisplayMessage(BaseModel baseModel, String nickname);
+    void processAndDisplayMessage(BaseModel baseModel);
 
     void setCacheManager(CacheManager cacheManager);
+
+    void updateExistingMessage(BaseModel baseModel);
 }

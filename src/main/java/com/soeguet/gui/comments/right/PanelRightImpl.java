@@ -1,11 +1,20 @@
 package com.soeguet.gui.comments.right;
 
+import com.soeguet.gui.comments.border.BorderHandlerImpl;
+import com.soeguet.gui.comments.border.interfaces.BorderHandlerInterface;
+import com.soeguet.gui.comments.border.interfaces.BorderInterface;
 import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.interfaces.LinkPanelInterface;
+import com.soeguet.gui.comments.reaction_panel.ReactionPopupMenuImpl;
+import com.soeguet.gui.comments.reaction_panel.dtos.ReactionPanelDTO;
+import com.soeguet.gui.comments.reaction_sticker.ReactionStickerImpl;
 import com.soeguet.gui.comments.right.generated.PanelRight;
+import com.soeguet.gui.comments.util.CommentTypeEnum;
+import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomMainWrapperContainer;
 import com.soeguet.gui.comments.util.LinkWrapEditorKit;
 import com.soeguet.gui.comments.util.QuotePanelImpl;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
+import com.soeguet.model.UserInteraction;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
@@ -20,23 +29,55 @@ import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.util.List;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 /**
  This class represents a right panel implementation that extends PanelRight and implements CommentInterface.
  */
-public class PanelRightImpl extends PanelRight implements CommentInterface {
+public class PanelRightImpl extends PanelRight implements CommentInterface, BorderInterface {
 
     private final Logger LOGGER = Logger.getLogger(PanelRightImpl.class.getName());
-    private final BaseModel baseModel;
+    private final MainFrameGuiInterface mainFrame;
+    private BaseModel baseModel;
     private JPopupMenu jPopupMenu;
     private BufferedImage image;
+    private BorderHandlerInterface borderHandler;
+    private ReactionPopupMenuImpl popupMenu;
+    private ReactionStickerImpl reactionSticker;
+    private Consumer<Graphics> customPaint;
+    private CommentTypeEnum commentType;
 
     public PanelRightImpl(MainFrameGuiInterface mainFrame, BaseModel baseModel) {
 
         super(mainFrame);
-
+        this.mainFrame = mainFrame;
         this.baseModel = baseModel;
+    }
+
+    public CommentTypeEnum getCommentType() {
+
+        return commentType;
+    }
+
+    public void setCommentType(final CommentTypeEnum commentType) {
+        this.commentType = commentType;
+    }
+
+    /**
+     Overrides the paintComponent method to perform custom painting.
+
+     @param graphics
+     the Graphics object used for painting
+     */
+    @Override
+    protected void paintComponent(Graphics graphics) {
+
+        super.paintComponent(graphics);
+        if (customPaint != null) {
+            customPaint.accept(graphics);
+        }
     }
 
     public JEditorPane createEditorPaneForLinks(MessageModel messageModel) {
@@ -52,7 +93,8 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     /**
      Prepares the style for a clicked link in the JEditorPane.
 
-     @param jEditorPane the JEditorPane to apply the clicked link style to
+     @param jEditorPane
+     the JEditorPane to apply the clicked link style to
      */
     private void prepareClickedLinkStyle(final JEditorPane jEditorPane) {
 
@@ -65,8 +107,10 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     /**
      Changes the color of the clicked link to violet in the given JEditorPane.
 
-     @param jEditorPane    the JEditorPane in which the link is clicked
-     @param hyperlinkEvent the HyperlinkEvent containing the information of the clicked link
+     @param jEditorPane
+     the JEditorPane in which the link is clicked
+     @param hyperlinkEvent
+     the HyperlinkEvent containing the information of the clicked link
      */
     private void changeLinkColorToVioletAfterClickingOnIt(final JEditorPane jEditorPane, final HyperlinkEvent hyperlinkEvent) {
 
@@ -74,8 +118,7 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
 
             Document doc = jEditorPane.getDocument();
             ((HTMLDocument) doc).setCharacterAttributes(hyperlinkEvent.getSourceElement().getStartOffset(),
-                    hyperlinkEvent.getSourceElement().getEndOffset() - hyperlinkEvent.getSourceElement().getStartOffset(),
-                    ((HTMLDocument) doc).getStyle("visited"), false);
+                                                        hyperlinkEvent.getSourceElement().getEndOffset() - hyperlinkEvent.getSourceElement().getStartOffset(), ((HTMLDocument) doc).getStyle("visited"), false);
 
         } catch (Exception ex) {
 
@@ -108,7 +151,11 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
 
         if (quotedSectionPanel != null) {
 
-            form_container.add(quotedSectionPanel, "cell 0 0, wrap");
+            switch (commentType) {
+                case LEFT_TEXT -> form_container.add(quotedSectionPanel, "cell 1 0, wrap");
+                case RIGHT_TEXT -> form_container.add(quotedSectionPanel, "cell 0 0, wrap");
+                default -> throw new RuntimeException("Unsupported comment type");
+            }
         }
     }
 
@@ -117,7 +164,12 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
         JTextPane actualTextPane = setUserMessage(messageModel);
         actualTextPane.setForeground(Color.BLACK);
         addRightClickOptionToPanel(actualTextPane);
-        form_container.add(actualTextPane, "cell 0 1, wrap");
+
+        switch (commentType) {
+            case LEFT_TEXT -> form_container.add(actualTextPane, "cell 1 1, wrap");
+            case RIGHT_TEXT -> form_container.add(actualTextPane, "cell 0 1, wrap");
+            default -> throw new RuntimeException("Unsupported comment type");
+        }
     }
 
     private void setupCommentEssentials(final MessageModel messageModel) {
@@ -140,7 +192,9 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
             SwingUtilities.invokeLater(() -> {
 
                 //handle image extraction and return, if null
-                if (handleImageExtraction(pictureModel)) return;
+                if (handleImageExtraction(pictureModel)) {
+                    return;
+                }
 
                 //handle image and max sizing of image on the main panel
                 setImageOnChatPanel();
@@ -157,7 +211,8 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     /**
      Handles the extraction of an image from a {@link PictureModel} object.
 
-     @param pictureModel The {@code PictureModel} object from which to extract the image.
+     @param pictureModel
+     The {@code PictureModel} object from which to extract the image.
 
      @return {@code true} if the extracted image is {@code null}, indicating an error occurred. Otherwise, {@code false}.
      */
@@ -181,28 +236,43 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     private void setImageOnChatPanel() {
 
         JLabel imageLabel = new JLabel(scaleImageIfTooBig(image));
-        form_container.add(imageLabel, "cell 0 0, wrap");
+
+        //TODO picture
+        switch (commentType) {
+            case LEFT_TEXT -> form_container.add(imageLabel, "cell 1 0, wrap");
+            case RIGHT_TEXT -> form_container.add(imageLabel, "cell 0 0, wrap");
+            default -> throw new RuntimeException("Unsupported comment type");
+        }
+
         addMaximizePictureOnClick(imageLabel, image);
     }
 
     /**
      Handles the image caption for the given PictureModel.
 
-     @param pictureModel The PictureModel containing the image caption information.
+     @param pictureModel
+     The PictureModel containing the image caption information.
      */
     private void handleImageCaption(final PictureModel pictureModel) {
 
         JTextPane imageCaptionTextPane = createImageCaptionTextPane(pictureModel);
         if (imageCaptionTextPane != null) {
             addRightClickOptionToPanel(imageCaptionTextPane);
-            form_container.add(imageCaptionTextPane, "cell 0 1, wrap");
+
+            //TODO picture
+            switch (commentType) {
+                case LEFT_TEXT -> form_container.add(imageCaptionTextPane, "cell 1 1, wrap");
+                case RIGHT_TEXT -> form_container.add(imageCaptionTextPane, "cell 0 1, wrap");
+                default -> throw new RuntimeException("Unsupported comment type");
+            }
         }
     }
 
     /**
      Handles the image caption for the given PictureModel.
 
-     @param pictureModel The PictureModel containing the image caption information.
+     @param pictureModel
+     The PictureModel containing the image caption information.
      */
     private void setupCommentEssentials(final PictureModel pictureModel) {
 
@@ -217,9 +287,52 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     }
 
     /**
+     Initializes the border handler for the component.
+
+     @param borderColor
+     The border color to be saved and used by the border handler.
+     */
+    @Override
+    public void initializeBorderHandler(final Color borderColor) {
+
+        borderHandler = new BorderHandlerImpl(mainFrame, this);
+        borderHandler.saveBorderColor(borderColor);
+    }
+
+    @Override
+    public void initializeReactionStickerHandler(final List<UserInteraction> userInteractions) {
+
+        reactionSticker = new ReactionStickerImpl(this.mainFrame, this.form_layeredContainer, userInteractions);
+        reactionSticker.pasteStickerToContainer();
+    }
+
+    public BaseModel getBaseModel() {
+
+        return baseModel;
+    }
+
+    public void setBaseModel(final BaseModel baseModel) {
+
+        this.baseModel = baseModel;
+    }
+
+    public void setCustomPaint(final Consumer<Graphics> customPaint) {
+
+        this.customPaint = customPaint;
+        repaint();
+    }
+
+    @Override
+    public CustomMainWrapperContainer getFormContainer() {
+
+        return (CustomMainWrapperContainer) form_container;
+    }
+
+    /**
      Called when the reply button is clicked.
 
-     @param e The MouseEvent that triggered the reply button click.
+     @param e
+     The MouseEvent that triggered the reply button click.
      */
     @Override
     protected void replyButtonClicked(MouseEvent e) {
@@ -230,7 +343,8 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     /**
      Called when the mouse hovers over the action label.
 
-     @param e The MouseEvent that triggered the mouse enter event.
+     @param e
+     The MouseEvent that triggered the mouse enter event.
      */
     @Override
     protected void actionLabelMouseEntered(MouseEvent e) {
@@ -240,7 +354,8 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     /**
      Called when the mouse clicks the action label.
 
-     @param e The MouseEvent that triggered the mouse click event.
+     @param e
+     The MouseEvent that triggered the mouse click event.
      */
     @Override
     protected void actionLabelMouseClicked(MouseEvent e) {
@@ -250,7 +365,8 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
     /**
      Called when the mouse pointer exits the area of the action label.
 
-     @param e The MouseEvent that triggered the mouse exit event.
+     @param e
+     The MouseEvent that triggered the mouse exit event.
      */
     @Override
     protected void actionLabelMouseExited(MouseEvent e) {
@@ -263,13 +379,66 @@ public class PanelRightImpl extends PanelRight implements CommentInterface {
         return super.getContainer();
     }
 
-    /**
-     Called when the component is resized.
-
-     @param e The ComponentEvent that triggered the resize event.
-     */
     @Override
-    protected void thisComponentResized(ComponentEvent e) {
+    protected void layeredContainerMouseEntered(final MouseEvent e) {
 
+        //border
+        borderHandler.highlightBorder();
+
+        //popup menu
+//        if (popupMenu == null) {
+//
+//            ReactionPanelDTO reactionPanelDTO = new ReactionPanelDTO(baseModel, mainFrame.getUsername(), mainFrame.getWebsocketClient(),
+//                                                                     mainFrame.getObjectMapper());
+//
+//            popupMenu = new ReactionPopupMenuImpl(reactionPanelDTO);
+//            popupMenu.setPopupMenuUp();
+//            popupMenu.initializePopupHandler();
+//        }
+
+        //start timer and show popup menu
+        popupMenu.startAnimation();
+    }
+
+    @Override
+    protected void layeredContainerMouseExited(final MouseEvent e) {
+
+        //border
+        borderHandler.revertBorderColor();
+
+        //popup menu
+        if (!popupMenu.isVisible() || popupMenu.mouseLeftContainerCompletely(e)) {
+
+            popupMenu.dispose(e);
+        }
+
+        popupMenu.stopAnimation();
+    }
+
+    @Override
+    protected void layeredContainerMousePressed(final MouseEvent e) {
+
+        //make text beneath the popup menu selectable
+        super.passMouseEventToJTextPane(e, form_layeredContainer, form_container);
+    }
+
+    @Override
+    protected void layeredContainerComponentResized(final ComponentEvent e) {
+
+        if (reactionSticker != null) {
+
+            reactionSticker.revalidateStickerCount();
+            reactionSticker.repositionSticker();
+
+            revalidate();
+            repaint();
+        }
+    }
+
+    @Override
+    protected void layeredContainerMouseDragged(final MouseEvent e) {
+
+        //make text beneath the popup menu selectable
+        super.passMouseEventToJTextPane(e, form_layeredContainer, form_container);
     }
 }
