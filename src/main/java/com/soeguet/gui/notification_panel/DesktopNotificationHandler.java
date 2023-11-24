@@ -45,10 +45,17 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
         return notificationStatusHandler.getNotificationStatus();
     }
 
-    @Override
-    public void createDesktopNotification(final String message,
-            final NotificationStatus notificationStatus) {
-
+    /**
+     * Sends a notification signal to the user interface.
+     * 
+     * This method forces the focus of the graphical user interface (GUI) on the program, causing it
+     * to become the active window. It also makes the symbol on the system task bar blink to grab
+     * the user's attention. Additionally, it brings the main frame of the program to the front of
+     * other windows.
+     * 
+     * @throws ClassCastException if the mainFrame object is not an instance of Component or Window
+     */
+    public void sendNotificationSignal() throws ClassCastException {
         // force focus of gui on program
         Toolkit.getDefaultToolkit().getSystemEventQueue()
                 .postEvent(new FocusEvent((Component) mainFrame, FocusEvent.FOCUS_GAINED));
@@ -57,6 +64,24 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
                 .postEvent(new WindowEvent((Window) mainFrame, WindowEvent.WINDOW_ACTIVATED));
         // ((Frame) this.mainFrame).setState(java.awt.Frame.ICONIFIED);
         ((Window) this.mainFrame).toFront();
+    }
+
+    /**
+     * Creates a desktop notification with the given message and notification status.
+     * 
+     * @param message The message to be displayed in the desktop notification.
+     * @param notificationStatus The status of the notification, which determines how it is handled.
+     *        Possible values are: - INTERNAL_ONLY: Only an internal notification is displayed. -
+     *        EXTERNAL_ONLY: Only an external notification is displayed. - ALL_ALLOWED: Both
+     *        internal and external notifications are displayed. - ALL_DENIED: No notification is
+     *        displayed. - STARTUP: No notification is displayed.
+     * @throws NullPointerException if the message is null.
+     */
+    @Override
+    public void createDesktopNotification(final String message,
+            final NotificationStatus notificationStatus) throws NullPointerException {
+
+        sendNotificationSignal();
 
         // check if notifications are even wanted
         switch (notificationStatus) {
@@ -86,6 +111,7 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
             }
         }
     }
+
 
     /**
      * Handles the remaining capacity in the active notifications queue.
