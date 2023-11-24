@@ -18,7 +18,6 @@ import com.soeguet.model.jackson.PictureModel;
 import com.soeguet.util.NotificationStatus;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.FocusEvent;
@@ -56,7 +55,7 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
         // let symbol on system task bar blink
         Toolkit.getDefaultToolkit().getSystemEventQueue()
                 .postEvent(new WindowEvent((Window) mainFrame, WindowEvent.WINDOW_ACTIVATED));
-        ((Frame) this.mainFrame).setState(java.awt.Frame.ICONIFIED);
+        // ((Frame) this.mainFrame).setState(java.awt.Frame.ICONIFIED);
         ((Window) this.mainFrame).toFront();
 
         // check if notifications are even wanted
