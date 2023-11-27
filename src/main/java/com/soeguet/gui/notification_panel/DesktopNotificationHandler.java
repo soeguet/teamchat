@@ -16,13 +16,10 @@ import com.soeguet.model.jackson.LinkModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
 import com.soeguet.util.NotificationStatus;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.Window;
-import java.awt.event.FocusEvent;
-import java.awt.event.WindowEvent;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.Timer;
 
 public class DesktopNotificationHandler implements DesktopNotificationHandlerInterface {
@@ -56,14 +53,11 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
      * @throws ClassCastException if the mainFrame object is not an instance of Component or Window
      */
     public void sendNotificationSignal() throws ClassCastException {
-        // force focus of gui on program
-        Toolkit.getDefaultToolkit().getSystemEventQueue()
-                .postEvent(new FocusEvent((Component) mainFrame, FocusEvent.FOCUS_GAINED));
-        // let symbol on system task bar blink
-        Toolkit.getDefaultToolkit().getSystemEventQueue()
-                .postEvent(new WindowEvent((Window) mainFrame, WindowEvent.WINDOW_ACTIVATED));
-        // ((Frame) this.mainFrame).setState(java.awt.Frame.ICONIFIED);
-        ((Window) this.mainFrame).toFront();
+
+        if (!((JFrame) this.mainFrame).isFocused()) {
+
+            ((JFrame) this.mainFrame).toFront();
+        }
     }
 
     /**
@@ -81,7 +75,7 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
     public void createDesktopNotification(final String message,
             final NotificationStatus notificationStatus) throws NullPointerException {
 
-        sendNotificationSignal();
+        this.sendNotificationSignal();
 
         // check if notifications are even wanted
         switch (notificationStatus) {

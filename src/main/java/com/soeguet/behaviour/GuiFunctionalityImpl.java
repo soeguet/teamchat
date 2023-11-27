@@ -228,7 +228,7 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
                 spamBuffer();
 
                 // notification
-                createDesktopNotification(message);
+                this.createDesktopNotification(message);
             }
         }
 
@@ -632,12 +632,11 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
      */
     private void scrollMainPanelDownToLastMessage(JScrollPane scrollPane) {
 
-        final int scrollBarMaxValue = getMaximumVerticalScrollbarValue(scrollPane);
-
         repaintMainFrame();
 
         SwingUtilities.invokeLater(() -> {
 
+            final int scrollBarMaxValue = getMaximumVerticalScrollbarValue(scrollPane);
             scrollPane.getVerticalScrollBar().setValue(scrollBarMaxValue);
         });
     }

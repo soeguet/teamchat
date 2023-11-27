@@ -20,23 +20,25 @@ public class Main {
 
     public static void main(String... args) {
 
-        //set up dependencies
+        // set up dependencies
         final ThemeSetter themeSetter = new ThemeSetterImpl();
         final ThemeManager themeManager = new ThemeManagerImpl(themeSetter);
-        //FEATURE make themes configurable
+        // FEATURE make themes configurable
         themeManager.applyTheme(Themes.INTELLIJ);
 
         final UserInteractionInterface userInteraction = new UserInteractionImpl();
         final EnvDataProviderInterface envDataProvider = new EnvDataProviderImpl();
-        final EnvVarHandlerInterface envVarHandler = new EnvVarHandler(envDataProvider, userInteraction);
+        final EnvVarHandlerInterface envVarHandler =
+                new EnvVarHandler(envDataProvider, userInteraction);
 
-        //collect environment variables from system or user input
+        // collect environment variables from system or user input
         final EnvVariables environmentVariables = envVarHandler.collectEnvVariables();
 
-        //initialize program and pass dependencies
+        // initialize program and pass dependencies
         final MainFrameInitInterface mainFrame = new ChatMainFrameImpl();
         final ProgramInit programInit = new ProgramInit(mainFrame);
 
         programInit.initializeGUI(environmentVariables);
     }
 }
+
