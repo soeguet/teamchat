@@ -185,15 +185,26 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
         this.mainFrame.getTextEditorPane().setText("");
     }
 
-    @Override
-    public void internalNotificationHandling(final String message) {
+/**
+ * Handles internal notifications by creating desktop notifications.
+ *
+ * @param message The message to be displayed in the desktop notification.
+ * @throws NullPointerException if the message is null.
+ */
+@Override
+public void internalNotificationHandling(final String message) throws NullPointerException {
 
-        DesktopNotificationHandlerInterface desktopNotificationHandler =
-                new DesktopNotificationHandler(mainFrame);
-        final NotificationStatus notificationStatus =
-                desktopNotificationHandler.determineDesktopNotificationStatus();
-        desktopNotificationHandler.createDesktopNotification(message, notificationStatus);
-    }
+// Create a desktop notification handler
+    DesktopNotificationHandlerInterface desktopNotificationHandler =
+            new DesktopNotificationHandler(mainFrame);
+
+    // Determine the desktop notification status
+    final NotificationStatus notificationStatus =
+            desktopNotificationHandler.determineDesktopNotificationStatus();
+
+    // Create a desktop notification with the given message and status
+    desktopNotificationHandler.createDesktopNotification(message, notificationStatus);
+}
 
     /**
      * Called when a message is received.
