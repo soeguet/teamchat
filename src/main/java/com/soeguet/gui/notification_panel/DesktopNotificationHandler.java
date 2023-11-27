@@ -20,6 +20,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 public class DesktopNotificationHandler implements DesktopNotificationHandlerInterface {
@@ -54,9 +55,23 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
      */
     public void sendNotificationSignal() throws ClassCastException {
 
-        if (!((JFrame) this.mainFrame).isFocused()) {
+        int frameStatus = ((JFrame) this.mainFrame).getExtendedState();
 
-            ((JFrame) this.mainFrame).toFront();
+        JFrame frame = (JFrame) this.mainFrame;
+
+        if (frameStatus == JFrame.ICONIFIED) {
+
+            frame.toFront();
+        } else if (frameStatus == JFrame.NORMAL) {
+
+            if (!frame.isFocused()) {
+
+                SwingUtilities.invokeLater(() -> {
+                    frame.setFocusableWindowState(false);
+                    frame.toFront();
+                    frame.setFocusableWindowState(true);
+                });
+            }
         }
     }
 
@@ -75,6 +90,7 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
     public void createDesktopNotification(final String message,
             final NotificationStatus notificationStatus) throws NullPointerException {
 
+        // let icon blink even with turned off notifications
         this.sendNotificationSignal();
 
         // check if notifications are even wanted
