@@ -135,8 +135,12 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
             reactionPopupMenu.stopAnimation();
         }
 
-        dispatchEvent(e);
+        SwingUtilities.invokeLater(() -> {
 
+            this.mainFrame.repaint();
+        });
+
+        dispatchEvent(e);
     }
 
     // getter & setter -- start
