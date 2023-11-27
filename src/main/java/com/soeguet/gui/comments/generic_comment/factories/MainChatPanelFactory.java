@@ -10,7 +10,7 @@ import com.soeguet.gui.comments.util.CommentTypeEnum;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.BaseModel;
 
-//THIS IS THE MAIN CHAT PANEL FACTORY
+// THIS IS THE MAIN CHAT PANEL FACTORY
 public class MainChatPanelFactory {
 
     // variables -- start
@@ -21,7 +21,7 @@ public class MainChatPanelFactory {
 
     // constructors -- start
     public MainChatPanelFactory(final MainFrameGuiInterface mainFrame, BaseModel baseModel,
-                                CommentTypeEnum commentType) {
+            CommentTypeEnum commentType) {
 
         this.mainFrame = mainFrame;
         this.baseModel = baseModel;
@@ -36,32 +36,35 @@ public class MainChatPanelFactory {
      */
     public CustomCommentPanel create() {
 
-        //SIDE
-        CommentSidePanel commentSidePanel = new SidePanelFactory(mainFrame, baseModel, commentType).create();
+        // SIDE
+        CommentSidePanel commentSidePanel =
+                new SidePanelFactory(mainFrame, baseModel, commentType).create();
 
-        //NEXT TO SIDE -> CONTENT
-        // setup of content container -> will not be populated with content yet -- #generateCommentPanel
+        // NEXT TO SIDE -> CONTENT
+        // setup of content container -> will not be populated with content yet --
+        // #generateCommentPanel
         CustomContentContainer customContentContainer = new ContentContainerFactory().create();
 
-        //WRAPS SIDE AND CONTENT!
+        // WRAPS SIDE AND CONTENT!
         // CustomCommentPanel can't since the LayoutManger needs to be OverlayLayout
         // -> it needs to bind TransparentTopPanel and CustomMainWrapperContainer
-        CustomMainWrapperContainer customMainWrapperContainer = new CustomMainWrapperContainer(commentType);
+        CustomMainWrapperContainer customMainWrapperContainer =
+                new CustomMainWrapperContainer(commentType);
         customMainWrapperContainer.setMainWrapperContainerLayoutManager();
 
-        //set dependencies
+        // set dependencies
         final CustomCommentPanel customCommentPanel = createCustomCommentPanel(commentSidePanel,
-                                                                               customContentContainer,
-                                                                               customMainWrapperContainer);
+                customContentContainer, customMainWrapperContainer);
 
         return customCommentPanel;
     }
 
     private CustomCommentPanel createCustomCommentPanel(final CommentSidePanel commentSidePanel,
-                                                        final CustomContentContainer customContentContainer,
-                                                        final CustomMainWrapperContainer customMainWrapperContainer) {
+            final CustomContentContainer customContentContainer,
+            final CustomMainWrapperContainer customMainWrapperContainer) {
 
-        //TODO 06.11. this panel is not needed anymore. added a panel for the content panel itself -> topPanel
+        // TODO 06.11. this panel is not needed anymore. added a panel for the content panel itself
+        // -> topPanel
         // floating over it
         CustomCommentPanel customCommentPanel = new CustomCommentPanel();
 
@@ -74,9 +77,10 @@ public class MainChatPanelFactory {
         customCommentPanel.setCustomMainWrapperContainer(customMainWrapperContainer);
 
         ReactionPanelDTO reactionPanelDTO = new ReactionPanelDTO(baseModel, mainFrame.getUsername(),
-                                                                 mainFrame.getWebsocketClient(),mainFrame.getObjectMapper());
+                mainFrame.getWebsocketClient(), mainFrame.getObjectMapper());
 
-        customCommentPanel.setTopContainer(new TransparentTopPanel(customCommentPanel,reactionPanelDTO));
+        customCommentPanel.setTopContainer(
+                new TransparentTopPanel(this.mainFrame, customCommentPanel, reactionPanelDTO));
 
         generateCommentPanel(customCommentPanel);
 
@@ -85,8 +89,8 @@ public class MainChatPanelFactory {
 
     private void generateCommentPanel(CustomCommentPanel customCommentPanel) {
 
-        //assemble -> this is where basemodel is differentiated -> message, link, picture
-        customCommentPanel.prepareInteractionButtons(); //will be needed in .addComponents()
+        // assemble -> this is where basemodel is differentiated -> message, link, picture
+        customCommentPanel.prepareInteractionButtons(); // will be needed in .addComponents()
         customCommentPanel.setLayoutManager();
         customCommentPanel.addComponents();
         customCommentPanel.addContext();

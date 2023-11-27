@@ -3,6 +3,7 @@ package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 import com.soeguet.gui.comments.generic_comment.gui_elements.util.ChatBubblePaintHandler;
 import com.soeguet.gui.comments.reaction_panel.ReactionPopupMenuImpl;
 import com.soeguet.gui.comments.reaction_panel.dtos.ReactionPanelDTO;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Point;
@@ -15,6 +16,7 @@ import javax.swing.SwingUtilities;
 public class TransparentTopPanel extends JPanel implements MouseListener, MouseMotionListener {
 
     // variables -- start
+    private final MainFrameGuiInterface mainFrame;
     private final CustomCommentPanel customCommentPanel;
     private final ReactionPanelDTO reactionPanelDTO;
     private ReactionPopupMenuImpl reactionPopupMenu;
@@ -23,8 +25,10 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
     // variables -- end
 
     // constructors -- start
-    public TransparentTopPanel(final CustomCommentPanel customCommentPanel, ReactionPanelDTO reactionPanelDTO) {
+    public TransparentTopPanel(MainFrameGuiInterface mainFrame,
+            final CustomCommentPanel customCommentPanel, ReactionPanelDTO reactionPanelDTO) {
 
+        this.mainFrame = mainFrame;
         this.customCommentPanel = customCommentPanel;
         this.reactionPanelDTO = reactionPanelDTO;
 
@@ -37,14 +41,14 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
     // constructors -- end
 
     /**
-     Dispatches a MouseEvent to the appropriate component. Else top panel grabs all events!
-
-     @param e
-     the MouseEvent to dispatch.
+     * Dispatches a MouseEvent to the appropriate component. Else top panel grabs all events!
+     * 
+     * @param e the MouseEvent to dispatch.
      */
     private void dispatchEvent(MouseEvent e) {
 
-        final Component deepComponent = SwingUtilities.getDeepestComponentAt(mainContentPanel, e.getX(), e.getY());
+        final Component deepComponent =
+                SwingUtilities.getDeepestComponentAt(mainContentPanel, e.getX(), e.getY());
 
         if (deepComponent == null) {
             return;
@@ -52,15 +56,17 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
 
         Point pt = SwingUtilities.convertPoint(this, e.getPoint(), deepComponent);
 
-        final Component actualComponent = SwingUtilities.getDeepestComponentAt(deepComponent, pt.x, pt.y);
+        final Component actualComponent =
+                SwingUtilities.getDeepestComponentAt(deepComponent, pt.x, pt.y);
 
         if (actualComponent == null) {
             return;
         }
 
         if (!(actualComponent instanceof TransparentTopPanel)) {
-            MouseEvent e2 = new MouseEvent(actualComponent, e.getID(), e.getWhen(), e.getModifiersEx(), pt.x, pt.y,
-                                           e.getClickCount(), e.isPopupTrigger(), e.getButton());
+            MouseEvent e2 =
+                    new MouseEvent(actualComponent, e.getID(), e.getWhen(), e.getModifiersEx(),
+                            pt.x, pt.y, e.getClickCount(), e.isPopupTrigger(), e.getButton());
 
             actualComponent.dispatchEvent(e2);
         }
@@ -110,6 +116,11 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
 
             reactionPopupMenu.startAnimation();
         }
+
+        SwingUtilities.invokeLater(() -> {
+
+            this.mainFrame.repaint();
+        });
 
         dispatchEvent(e);
     }
