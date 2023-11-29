@@ -185,26 +185,26 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
         this.mainFrame.getTextEditorPane().setText("");
     }
 
-/**
- * Handles internal notifications by creating desktop notifications.
- *
- * @param message The message to be displayed in the desktop notification.
- * @throws NullPointerException if the message is null.
- */
-@Override
-public void internalNotificationHandling(final String message) throws NullPointerException {
+    /**
+     * Handles internal notifications by creating desktop notifications.
+     *
+     * @param message The message to be displayed in the desktop notification.
+     * @throws NullPointerException if the message is null.
+     */
+    @Override
+    public void internalNotificationHandling(final String message) throws NullPointerException {
 
-// Create a desktop notification handler
-    DesktopNotificationHandlerInterface desktopNotificationHandler =
-            new DesktopNotificationHandler(mainFrame);
+        // Create a desktop notification handler
+        DesktopNotificationHandlerInterface desktopNotificationHandler =
+                new DesktopNotificationHandler(mainFrame);
 
-    // Determine the desktop notification status
-    final NotificationStatus notificationStatus =
-            desktopNotificationHandler.determineDesktopNotificationStatus();
+        // Determine the desktop notification status
+        final NotificationStatus notificationStatus =
+                desktopNotificationHandler.determineDesktopNotificationStatus();
 
-    // Create a desktop notification with the given message and status
-    desktopNotificationHandler.createDesktopNotification(message, notificationStatus);
-}
+        // Create a desktop notification with the given message and status
+        desktopNotificationHandler.createDesktopNotification(message, notificationStatus);
+    }
 
     /**
      * Called when a message is received.
@@ -655,6 +655,62 @@ public void internalNotificationHandling(final String message) throws NullPointe
     private int getMaximumVerticalScrollbarValue(final JScrollPane scrollPane) {
 
         return scrollPane.getVerticalScrollBar().getMaximum();
+    }
+
+    /**
+     * @return the mainFrame
+     */
+    public MainFrameGuiInterface getMainFrame() {
+        return mainFrame;
+    }
+
+    /**
+     * @return the objectMapper
+     */
+    public ObjectMapper getObjectMapper() {
+        return objectMapper;
+    }
+
+    /**
+     * @return the logger
+     */
+    public Logger getLogger() {
+        return logger;
+    }
+
+    /**
+     * @return the cacheManager
+     */
+    public CacheManager getCacheManager() {
+        return cacheManager;
+    }
+
+    /**
+     * @return the commentManager
+     */
+    public CommentManager getCommentManager() {
+        return commentManager;
+    }
+
+    /**
+     * @param commentManager the commentManager to set
+     */
+    public void setCommentManager(CommentManager commentManager) {
+        this.commentManager = commentManager;
+    }
+
+    /**
+     * @return the messageDisplayHandler
+     */
+    public MessageDisplayHandlerInterface getMessageDisplayHandler() {
+        return messageDisplayHandler;
+    }
+
+    /**
+     * @param messageDisplayHandler the messageDisplayHandler to set
+     */
+    public void setMessageDisplayHandler(MessageDisplayHandlerInterface messageDisplayHandler) {
+        this.messageDisplayHandler = messageDisplayHandler;
     }
 
 }

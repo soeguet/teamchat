@@ -17,8 +17,9 @@ import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
 import com.soeguet.util.NotificationStatus;
 import java.awt.Dimension;
-import java.awt.SystemTray;
 import java.awt.Toolkit;
+import java.awt.TrayIcon;
+import java.awt.TrayIcon.MessageType;
 import java.util.logging.Logger;
 import javax.swing.Timer;
 
@@ -27,12 +28,12 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
     private final Logger logger = Logger.getLogger(DesktopNotificationHandler.class.getName());
     private final MainFrameGuiInterface mainFrame;
     private CacheManager cacheManager = CacheManagerFactory.getCacheManager();
-    private final SystemTray tray;
+    private final TrayIcon trayIcon;
 
     public DesktopNotificationHandler(final MainFrameGuiInterface mainFrame) {
 
         this.mainFrame = mainFrame;
-        this.tray = mainFrame.getSystemTray();
+        this.trayIcon = mainFrame.getTrayIcon();
     }
 
     @Override
@@ -42,40 +43,6 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
                 new NotificationStatusHandler(this.mainFrame);
 
         return notificationStatusHandler.getNotificationStatus();
-    }
-
-    /**
-     * Sends a notification signal to the user interface.
-     * 
-     * This method forces the focus of the graphical user interface (GUI) on the program, causing it
-     * to become the active window. It also makes the symbol on the system task bar blink to grab
-     * the user's attention. Additionally, it brings the main frame of the program to the front of
-     * other windows.
-     * 
-     * @throws ClassCastException if the mainFrame object is not an instance of Component or Window
-     */
-    public void sendNotificationSignal() throws ClassCastException {
-
-        // int frameStatus = ((JFrame) this.mainFrame).getExtendedState();
-        //
-        // JFrame frame = (JFrame) this.mainFrame;
-        //
-        // if (frameStatus == JFrame.ICONIFIED) {
-        //
-        // frame.toFront();
-        //
-        // } else if (frameStatus == JFrame.NORMAL) {
-        //
-        // if (!frame.isFocused()) {
-        //
-        // SwingUtilities.invokeLater(() -> {
-        //
-        // frame.setAutoRequestFocus(false);
-        // frame.toFront();
-        // frame.setAutoRequestFocus(true);
-        // });
-        // }
-        // }
     }
 
     /**
@@ -92,9 +59,6 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
     @Override
     public void createDesktopNotification(final String message,
             final NotificationStatus notificationStatus) throws NullPointerException {
-
-        // let icon blink even with turned off notifications
-        this.sendNotificationSignal();
 
         // check if notifications are even wanted
         switch (notificationStatus) {
@@ -205,20 +169,33 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
      */
     private synchronized void internalNotificationHandling(String message, BaseModel baseModel) {
 
-        if (cacheManager.getCache(
-                "ActiveNotificationQueue") instanceof ActiveNotificationQueue activeNotificationQueue) {
-
-            // only post notification if there is no active notification -> trying to fix the wonky
-            // behavior
-            if (activeNotificationQueue.getRemainingCapacity() < 3) {
-
-                addIncomingNotificationToQueue(message);
-
-            } else {
-
-                displayUpToThreeNotifications(baseModel, activeNotificationQueue);
+        // let icon blink even with turned off notifications
+        switch (baseModel) {
+            case MessageModel messageModel -> {
+                trayIcon.displayMessage(baseModel.getTime() + " - " + baseModel.getSender(), messageModel.getMessage(), MessageType.NONE);
+            }
+            case PictureModel pictureModel -> {
+                trayIcon.displayMessage(baseModel.getTime() + " - " + baseModel.getSender(), "[picture]" + System.lineSeparator() + pictureModel.getDescription(), MessageType.NONE);
+            }
+            case LinkModel linkModel -> {
+                trayIcon.displayMessage(baseModel.getTime() + " - " + baseModel.getSender(), "[link]" + System.lineSeparator() + linkModel.getComment(), MessageType.NONE);
             }
         }
+        
+        // if (cacheManager.getCache(
+        //         "ActiveNotificationQueue") instanceof ActiveNotificationQueue activeNotificationQueue) {
+        //
+        //     // only post notification if there is no active notification -> trying to fix the wonky
+        //     // behavior
+        //     if (activeNotificationQueue.getRemainingCapacity() < 3) {
+        //
+        //         addIncomingNotificationToQueue(message);
+        //
+        //     } else {
+        //
+        //         displayUpToThreeNotifications(baseModel, activeNotificationQueue);
+        //     }
+        // }
     }
 
     /**

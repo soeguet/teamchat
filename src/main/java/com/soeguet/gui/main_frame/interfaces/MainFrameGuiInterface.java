@@ -6,7 +6,7 @@ import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.notification_panel.NotificationImpl;
 import com.soeguet.properties.dto.CustomUserPropertiesDTO;
 import com.soeguet.socket_client.CustomWebsocketClient;
-import java.awt.SystemTray;
+import java.awt.TrayIcon;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -196,6 +196,6 @@ public interface MainFrameGuiInterface {
 
     void repaint();
 
-    SystemTray getSystemTray();
+    TrayIcon getTrayIcon();
 }
 

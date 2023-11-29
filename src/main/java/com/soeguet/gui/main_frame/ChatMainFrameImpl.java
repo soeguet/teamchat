@@ -36,9 +36,7 @@ import com.soeguet.socket_client.CustomWebsocketClient;
 import com.soeguet.socket_client.interfaces.ClientController;
 import java.awt.AWTException;
 import java.awt.Frame;
-import java.awt.Image;
 import java.awt.SystemTray;
-import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
@@ -144,7 +142,10 @@ public class ChatMainFrameImpl extends ChatPanel
      * Timer for blocking all messages.
      */
     private Timer blockTimer;
+
+    private TrayIcon trayIcon;
     // variables -- end
+
 
     // constructors -- start
     /**
@@ -154,234 +155,6 @@ public class ChatMainFrameImpl extends ChatPanel
 
     }
     // constructors -- end
-
-    private String chatVersion() {
-
-        Properties properties = new Properties();
-        InputStream inputStream =
-                getClass().getClassLoader().getResourceAsStream("version.properties");
-
-        if (inputStream != null) {
-
-            try {
-
-                properties.load(inputStream);
-                return properties.getProperty("version") + " - ";
-
-            } catch (IOException e) {
-
-                throw new RuntimeException(e);
-            }
-
-        } else {
-
-            return "";
-        }
-    }
-
-    private SystemTray tray;
-
-    public void setupTrayIcon() {
-
-        URL sendUrl = ChatMainFrameImpl.class.getResource("/emojis/$+1f4e8$+.png");
-
-        if (sendUrl != null) {
-
-            // Hinzufügen eines TrayIcons, wenn das SystemTray unterstützt wird
-            if (SystemTray.isSupported()) {
-
-                try {
-
-                    tray = SystemTray.getSystemTray();
-                    Image image = Toolkit.getDefaultToolkit().getImage(sendUrl);
-                    TrayIcon trayIcon = new TrayIcon(image, "Tray Demo");
-                    trayIcon.setImageAutoSize(true);
-                    trayIcon.setToolTip("System tray icon demo");
-                    tray.add(trayIcon);
-
-                    // Anzeigen einer Nachricht im Tray
-                    trayIcon.displayMessage("Hello, World", "This is a test notification",
-                            TrayIcon.MessageType.INFO);
-
-                } catch (AWTException e) {
-
-                    System.err.println("TrayIcon could not be added.");
-                }
-
-            } else {
-
-                System.err.println("System tray is not supported.");
-            }
-        }
-    }
-
-    /**
-     * Method used to repaint the main frame.
-     * <p>
-     * This method revalidates and repaints the main frame component, ensuring that any changes to
-     * its layout or appearance are correctly displayed on the screen.
-     */
-    private void repaintMainFrame() {
-
-        String version = retrieveJarVersion();
-        this.setTitle("teamchat - " + version + " - client name: " + this.getUsername());
-
-        this.revalidate();
-        this.repaint();
-    }
-
-
-    /**
-     * Method used to retrieve the version of the JAR file.
-     * <p>
-     * This method uses reflection to get the implementation version of the JAR file containing the
-     * class. It is assumed that the JAR file has its version specified in its manifest file.
-     * 
-     * @return The version of the JAR file as a string, or null if the version cannot be determined.
-     */
-    String retrieveJarVersion() {
-
-        return getClass().getPackage().getImplementationVersion();
-    }
-
-    /**
-     * Removes all messages from the chat panel.
-     * <p>
-     * The method uses `SwingUtilities.invokeLater()` to ensure that the removal of messages is
-     * performed on the event dispatch thread, as it involves modifications to the GUI.
-     * <p>
-     * Within the method, the `form_mainTextPanel.removeAll()` is called to remove all components
-     * from the chat panel. Additionally, the `repaintMainFrame()` method is called to repaint the
-     * main frame, ensuring that the changes are immediately visible to the user.
-     */
-    private void removeAllMessagesOnChatPanel() {
-
-        SwingUtilities.invokeLater(() -> {
-
-            this.form_mainTextPanel.removeAll();
-            repaintMainFrame();
-        });
-    }
-
-    /**
-     * Sends a typing status message to the websocket server. The method forms a JSON object
-     * representing the typing status and sends it to the websocket client. If an error occurs while
-     * processing the JSON, a RuntimeException is thrown.
-     * 
-     * @throws RuntimeException if an error occurs while processing the JSON.
-     */
-    private void sendIsTypingStatusToWebsocket() {
-
-        try {
-
-            ArrayList<String> array = new ArrayList<>();
-            array.add(this.getUsername());
-            final byte[] jsonTypingStatus =
-                    objectMapper.writeValueAsBytes(new StatusTransferDTO("typing", array));
-
-            clientController.getWebsocketClient().send(jsonTypingStatus);
-
-        } catch (JsonProcessingException e) {
-
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    /**
-     * Appends a new line to the text editor pane.
-     * 
-     * <p>
-     * Retrieves the current text in the text editor pane and appends a new line character at the
-     * end of it.
-     */
-    private void appendNewLineToTextEditorPane() {
-
-        final int caretPosition = form_textEditorPane.getCaretPosition();
-        form_textEditorPane.setSelectionStart(0);
-        form_textEditorPane.setSelectionEnd(caretPosition);
-        form_textEditorPane.replaceSelection(form_textEditorPane.getSelectedText() + "\n");
-
-        final int endPosition = form_textEditorPane.getCaretPosition();
-        form_textEditorPane.setSelectionStart(endPosition);
-        form_textEditorPane.setSelectionEnd(endPosition);
-    }
-
-    /**
-     * Handles a key press event when the enter key is pressed without pressing the shift key.
-     * 
-     * <p>
-     * Retrieves the content of the text editor pane, trims any leading or trailing space, and
-     * checks if it is empty. If the content is empty, it clears the text editor pane. Otherwise, it
-     * calls the `sendMessageToSocket` method to clear the text pane and send the current content to
-     * a socket.
-     */
-    private void handleNonShiftEnterKeyPress() {
-
-        // emoji to text -> text extraction
-        emojiHandler.replaceImageIconWithEmojiDescription(form_textEditorPane);
-        String textPaneContent = form_textEditorPane.getText().trim();
-
-        if (textPaneContent.isEmpty()) {
-
-            // empty -> reset
-            form_textEditorPane.setText("");
-
-        } else {
-
-            this.sendMessageToSocket();
-        }
-    }
-
-    private void sendMessageToSocket() {
-
-        String textFromInput = guiFunctionality.getTextFromInput();
-
-        MessageModel messageModel = new MessageModel();
-        messageModel.setMessage(textFromInput);
-        messageModel.setTime(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
-        messageModel.setSender(this.getUsername());
-        messageModel.setMessageType(MessageTypes.NORMAL);
-
-        String serializedTextFromInput = guiFunctionality.convertUserTextToJSON(messageModel);
-        if (serializedTextFromInput != null) {
-            guiFunctionality.sendMessageToSocket(serializedTextFromInput);
-            guiFunctionality.notifyClientsSendStatus();
-        }
-        guiFunctionality.clearTextPane();
-    }
-
-    private void initializePopupMessage(final String x, final String x1) {
-
-        PopupInterface popup = new PopupPanelImpl(this);
-        popup.getMessageTextField().setText(x + System.lineSeparator() + x1);
-        popup.configurePopupPanelPlacement();
-        popup.initiatePopupTimer(3_000);
-    }
-
-    private void initializeNewMessageBlockTimer() {
-
-        // blocking for 5 Minutes
-        blockTimer = new Timer(1_000 * 60 * 5, e1 -> {
-
-            form_allNotificationsMenuItem.setSelected(false);
-
-            // show popup
-            initializePopupMessage("Notifications status", "reverted");
-        });
-
-        blockTimer.setRepeats(false);
-        blockTimer.start();
-    }
-
-    private void resetMessageBlockTimer() {
-
-        if (blockTimer != null) {
-
-            blockTimer.stop();
-            blockTimer = null;
-        }
-    }
 
     /**
      * This method is used to reposition the chat frame for testing purposes. It retrieves the value
@@ -418,6 +191,7 @@ public class ChatMainFrameImpl extends ChatPanel
             setUsername(this.envVariables.getChatUsername());
         }
     }
+
 
     /**
      * Initializes the emoji list.
@@ -591,85 +365,6 @@ public class ChatMainFrameImpl extends ChatPanel
     }
 
     /**
-     * Method called when the component is resized.
-     * 
-     * @param e The ComponentEvent object representing the resize event.
-     */
-    @Override
-    protected void thisComponentResized(ComponentEvent e) {
-
-        final int rightBorderMargin = e.getComponent().getWidth() - JSCROLLPANE_MARGIN_RIGHT_BORDER;
-        final int bottomBorderMargin = e.getComponent().getHeight()
-                - form_interactionAreaPanel.getHeight() - JSCROLLPANE_MARGIN_BOTTOM_BORDER;
-
-        this.form_mainTextBackgroundScrollPane.setBounds(1, 1, rightBorderMargin,
-                bottomBorderMargin);
-
-        repaintMainFrame();
-    }
-
-    /**
-     * Called when the mouse is pressed on the property menu item.
-     * 
-     * @param e The MouseEvent object representing the event.
-     */
-    @Override
-    protected void propertiesMenuItemMousePressed(MouseEvent e) {
-
-        SwingUtilities.invokeLater(() -> {
-
-            PropertiesInterface properties = new PropertiesPanelImpl(this);
-            properties.setPosition();
-            properties.setupOwnTabbedPane();
-            properties.setupClientsTabbedPane();
-
-            properties.setVisible(true);
-        });
-    }
-
-    /**
-     * Called when the state of internal notifications menu item is changed.
-     * 
-     * @param e The ItemEvent object representing the event.
-     */
-    @Override
-    protected void internalNotificationsMenuItemItemStateChanged(final ItemEvent e) {
-
-        if (cacheManager.getCache(
-                "waitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
-
-            PopupInterface popup = new PopupPanelImpl(this);
-
-            // remove all remaining and queued notifications
-            if (e.getStateChange() == ItemEvent.DESELECTED) {
-
-                // getter call since this one is synchronized
-                waitingNotificationQueue.removeAll();
-
-                popup.getMessageTextField().setText("Internal notifications disabled");
-
-            } else {
-
-                popup.getMessageTextField().setText("Internal notifications enabled");
-            }
-
-            popup.configurePopupPanelPlacement();
-            popup.initiatePopupTimer(2_000);
-        }
-    }
-
-    /**
-     * Called when the connection details button is pressed.
-     * 
-     * @param e The MouseEvent object representing the event.
-     */
-    @Override
-    protected void connectionDetailsButtonMousePressed(final MouseEvent e) {
-
-        clientController.serverInformationOptionPane();
-    }
-
-    /**
      * Resets the connection when the reset connection menu item is pressed.
      * 
      * @param e The mouse event that triggered the method.
@@ -692,188 +387,6 @@ public class ChatMainFrameImpl extends ChatPanel
         // reconnect to socket
         clientController.connectToWebsocket();
         this.logger.info("Reconnecting websocket client");
-    }
-
-    /**
-     * Handles the event when the mouse presses the exit menu item. Sets the default close operation
-     * for the current JFrame to EXIT_ON_CLOSE and disposes of the current JFrame.
-     * 
-     * @param e the MouseEvent object that triggered this event
-     */
-    @Override
-    protected void exitMenuItemMousePressed(MouseEvent e) {
-
-        SwingUtilities.invokeLater(() -> {
-
-            // make the window close on exit just to be sure
-            this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            this.dispose();
-
-            System.exit(0);
-        });
-    }
-
-    /**
-     * Called when a key is pressed in the text editor pane. If the pressed key is not the Enter
-     * key, the method simply returns. If the pressed key is the Enter key, it consumes the event
-     * and performs the appropriate action based on whether the Shift key is pressed or not.
-     * 
-     * @param e The KeyEvent object representing the key press event.
-     */
-    @Override
-    protected void textEditorPaneKeyPressed(KeyEvent e) {
-
-        // typing.. status
-        if (e.getKeyCode() != KeyEvent.VK_ENTER) {
-
-            sendIsTypingStatusToWebsocket();
-            return;
-        }
-
-        // shift + enter -> new line
-        if (e.isShiftDown()) {
-
-            appendNewLineToTextEditorPane();
-            return;
-        }
-
-        e.consume();
-
-        // send message
-        handleNonShiftEnterKeyPress();
-    }
-
-    /**
-     * Handles the event when the mouse clicks the picture button in the current JFrame.
-     * 
-     * @param e the MouseEvent object that triggered this event
-     */
-    @Override
-    protected void pictureButtonMouseClicked(MouseEvent e) {
-
-        ImageInterface imagePanel = new ImagePanelImpl(this);
-
-        imagePanel.setPosition();
-        imagePanel.setLayeredPaneLayerPositions();
-        imagePanel.setupPictureScrollPaneScrollSpeed();
-        imagePanel.populateImagePanelFromClipboard();
-    }
-
-    /**
-     * Invoked when the emoji button is clicked in the chat GUI.
-     * 
-     * <p>
-     * This method is an override of the emojiButton method from the superclass. It is called when
-     * the emoji button is clicked.
-     * 
-     * @param e the ActionEvent object generated when the emoji button is clicked
-     */
-    @Override
-    protected void emojiButton(ActionEvent e) {
-
-        EmojiPopupInterface emojiPopup =
-                new EmojiPopUpMenuHandler(this, form_textEditorPane, form_emojiButton);
-        emojiPopup.createEmojiPopupMenu();
-    }
-
-    /**
-     * Handles the event when the send-button is clicked. Clears the text pane in the GUI and sends
-     * the message to the socket.
-     * 
-     * @param e the ActionEvent object that triggered this event
-     */
-    @Override
-    protected void sendButton(ActionEvent e) {
-
-        // first replace emoji with text
-        emojiHandler.replaceImageIconWithEmojiDescription(getTextEditorPane());
-
-        if (form_textEditorPane.getText().trim().isEmpty()) {
-
-            return;
-        }
-
-        this.sendMessageToSocket();
-    }
-
-    /**
-     * Handles the item state change event of the external notifications menu item. Updates the
-     * state of the external notifications and displays a popup message accordingly.
-     * 
-     * @param e the ItemEvent object that triggered this event
-     */
-    @Override
-    protected void externalNotificationsMenuItemItemStateChanged(final ItemEvent e) {
-
-        PopupInterface popup = new PopupPanelImpl(this);
-
-        if (e.getStateChange() == ItemEvent.SELECTED) {
-
-            popup.getMessageTextField().setText("External notifications enabled!");
-
-        } else if (e.getStateChange() == ItemEvent.DESELECTED) {
-
-            popup.getMessageTextField().setText("External notifications disabled!");
-        }
-
-        popup.configurePopupPanelPlacement();
-        popup.initiatePopupTimer(2_000);
-    }
-
-    /**
-     * Handles the event when the window is closed.
-     * 
-     * @param e the WindowEvent object that triggered this event
-     */
-    @Override
-    protected void thisWindowClosing(final WindowEvent e) {
-
-        setState(Frame.ICONIFIED);
-    }
-
-    /**
-     * Handles the event when the interrupt menu item is pressed.
-     * 
-     * @param e the MouseEvent object that triggered this event
-     */
-    @Override
-    protected void interruptMenuItemMousePressed(final MouseEvent e) {
-
-        InterruptDialogInterface interruptDialogInterface = new InterruptDialogImpl(this);
-
-        interruptDialogInterface
-                .populateDialogWithAllRegisteredClients(chatClientPropertiesHashMap);
-        interruptDialogInterface.pack();
-        interruptDialogInterface.setLocationRelativeTo(this);
-        interruptDialogInterface.setVisible(true);
-    }
-
-    /**
-     * Handles the event when the state of the allNotificationsMenuItem changes.
-     * 
-     * @param e the ItemEvent object that triggered this event
-     */
-    @Override
-    protected void allNotificationsMenuItemItemStateChanged(final ItemEvent e) {
-
-        // any kind of change needs to get rid of an existing timer
-        resetMessageBlockTimer();
-
-        // block all notifications for 5 minutes
-        if (e.getStateChange() == ItemEvent.SELECTED) {
-
-            if (cacheManager.getCache(
-                    "waitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
-
-                // getter call since this one is synchronized
-                waitingNotificationQueue.removeAll();
-            }
-
-            initializeNewMessageBlockTimer();
-
-            // show popup
-            initializePopupMessage("All notifications disabled", "for 5 minutes");
-        }
     }
 
     /**
@@ -1208,16 +721,487 @@ public class ChatMainFrameImpl extends ChatPanel
     }
 
     /**
-     * @return the tray
+     * Method called when the component is resized.
+     * 
+     * @param e The ComponentEvent object representing the resize event.
      */
-    public SystemTray getTray() {
-        return tray;
+    @Override
+    protected void thisComponentResized(ComponentEvent e) {
+
+        final int rightBorderMargin = e.getComponent().getWidth() - JSCROLLPANE_MARGIN_RIGHT_BORDER;
+        final int bottomBorderMargin = e.getComponent().getHeight()
+                - form_interactionAreaPanel.getHeight() - JSCROLLPANE_MARGIN_BOTTOM_BORDER;
+
+        this.form_mainTextBackgroundScrollPane.setBounds(1, 1, rightBorderMargin,
+                bottomBorderMargin);
+
+        repaintMainFrame();
     }
 
     /**
-     * @param tray the tray to set
+     * Called when the mouse is pressed on the property menu item.
+     * 
+     * @param e The MouseEvent object representing the event.
      */
-    public void setTray(SystemTray tray) {
-        this.tray = tray;
+    @Override
+    protected void propertiesMenuItemMousePressed(MouseEvent e) {
+
+        SwingUtilities.invokeLater(() -> {
+
+            PropertiesInterface properties = new PropertiesPanelImpl(this);
+            properties.setPosition();
+            properties.setupOwnTabbedPane();
+            properties.setupClientsTabbedPane();
+
+            properties.setVisible(true);
+        });
+    }
+
+    /**
+     * Called when the state of internal notifications menu item is changed.
+     * 
+     * @param e The ItemEvent object representing the event.
+     */
+    @Override
+    protected void internalNotificationsMenuItemItemStateChanged(final ItemEvent e) {
+
+        if (cacheManager.getCache(
+                "waitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
+
+            PopupInterface popup = new PopupPanelImpl(this);
+
+            // remove all remaining and queued notifications
+            if (e.getStateChange() == ItemEvent.DESELECTED) {
+
+                // getter call since this one is synchronized
+                waitingNotificationQueue.removeAll();
+
+                popup.getMessageTextField().setText("Internal notifications disabled");
+
+            } else {
+
+                popup.getMessageTextField().setText("Internal notifications enabled");
+            }
+
+            popup.configurePopupPanelPlacement();
+            popup.initiatePopupTimer(2_000);
+        }
+    }
+
+    /**
+     * Called when the connection details button is pressed.
+     * 
+     * @param e The MouseEvent object representing the event.
+     */
+    @Override
+    protected void connectionDetailsButtonMousePressed(final MouseEvent e) {
+
+        clientController.serverInformationOptionPane();
+    }
+
+    /**
+     * Handles the event when the mouse presses the exit menu item. Sets the default close operation
+     * for the current JFrame to EXIT_ON_CLOSE and disposes of the current JFrame.
+     * 
+     * @param e the MouseEvent object that triggered this event
+     */
+    @Override
+    protected void exitMenuItemMousePressed(MouseEvent e) {
+
+        SwingUtilities.invokeLater(() -> {
+
+            // make the window close on exit just to be sure
+            this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            this.dispose();
+
+            System.exit(0);
+        });
+    }
+
+    /**
+     * Called when a key is pressed in the text editor pane. If the pressed key is not the Enter
+     * key, the method simply returns. If the pressed key is the Enter key, it consumes the event
+     * and performs the appropriate action based on whether the Shift key is pressed or not.
+     * 
+     * @param e The KeyEvent object representing the key press event.
+     */
+    @Override
+    protected void textEditorPaneKeyPressed(KeyEvent e) {
+
+        // typing.. status
+        if (e.getKeyCode() != KeyEvent.VK_ENTER) {
+
+            sendIsTypingStatusToWebsocket();
+            return;
+        }
+
+        // shift + enter -> new line
+        if (e.isShiftDown()) {
+
+            appendNewLineToTextEditorPane();
+            return;
+        }
+
+        e.consume();
+
+        // send message
+        handleNonShiftEnterKeyPress();
+    }
+
+    /**
+     * Handles the event when the mouse clicks the picture button in the current JFrame.
+     * 
+     * @param e the MouseEvent object that triggered this event
+     */
+    @Override
+    protected void pictureButtonMouseClicked(MouseEvent e) {
+
+        ImageInterface imagePanel = new ImagePanelImpl(this);
+
+        imagePanel.setPosition();
+        imagePanel.setLayeredPaneLayerPositions();
+        imagePanel.setupPictureScrollPaneScrollSpeed();
+        imagePanel.populateImagePanelFromClipboard();
+    }
+
+    /**
+     * Invoked when the emoji button is clicked in the chat GUI.
+     * 
+     * <p>
+     * This method is an override of the emojiButton method from the superclass. It is called when
+     * the emoji button is clicked.
+     * 
+     * @param e the ActionEvent object generated when the emoji button is clicked
+     */
+    @Override
+    protected void emojiButton(ActionEvent e) {
+
+        EmojiPopupInterface emojiPopup =
+                new EmojiPopUpMenuHandler(this, form_textEditorPane, form_emojiButton);
+        emojiPopup.createEmojiPopupMenu();
+    }
+
+    /**
+     * Handles the event when the send-button is clicked. Clears the text pane in the GUI and sends
+     * the message to the socket.
+     * 
+     * @param e the ActionEvent object that triggered this event
+     */
+    @Override
+    protected void sendButton(ActionEvent e) {
+
+        // first replace emoji with text
+        emojiHandler.replaceImageIconWithEmojiDescription(getTextEditorPane());
+
+        if (form_textEditorPane.getText().trim().isEmpty()) {
+
+            return;
+        }
+
+        this.sendMessageToSocket();
+    }
+
+    /**
+     * Handles the item state change event of the external notifications menu item. Updates the
+     * state of the external notifications and displays a popup message accordingly.
+     * 
+     * @param e the ItemEvent object that triggered this event
+     */
+    @Override
+    protected void externalNotificationsMenuItemItemStateChanged(final ItemEvent e) {
+
+        PopupInterface popup = new PopupPanelImpl(this);
+
+        if (e.getStateChange() == ItemEvent.SELECTED) {
+
+            popup.getMessageTextField().setText("External notifications enabled!");
+
+        } else if (e.getStateChange() == ItemEvent.DESELECTED) {
+
+            popup.getMessageTextField().setText("External notifications disabled!");
+        }
+
+        popup.configurePopupPanelPlacement();
+        popup.initiatePopupTimer(2_000);
+    }
+
+    /**
+     * Handles the event when the window is closed.
+     * 
+     * @param e the WindowEvent object that triggered this event
+     */
+    @Override
+    protected void thisWindowClosing(final WindowEvent e) {
+
+        setState(Frame.ICONIFIED);
+    }
+
+    /**
+     * Handles the event when the interrupt menu item is pressed.
+     * 
+     * @param e the MouseEvent object that triggered this event
+     */
+    @Override
+    protected void interruptMenuItemMousePressed(final MouseEvent e) {
+
+        InterruptDialogInterface interruptDialogInterface = new InterruptDialogImpl(this);
+
+        interruptDialogInterface
+                .populateDialogWithAllRegisteredClients(chatClientPropertiesHashMap);
+        interruptDialogInterface.pack();
+        interruptDialogInterface.setLocationRelativeTo(this);
+        interruptDialogInterface.setVisible(true);
+    }
+
+    /**
+     * Handles the event when the state of the allNotificationsMenuItem changes.
+     * 
+     * @param e the ItemEvent object that triggered this event
+     */
+    @Override
+    protected void allNotificationsMenuItemItemStateChanged(final ItemEvent e) {
+
+        // any kind of change needs to get rid of an existing timer
+        resetMessageBlockTimer();
+
+        // block all notifications for 5 minutes
+        if (e.getStateChange() == ItemEvent.SELECTED) {
+
+            if (cacheManager.getCache(
+                    "waitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
+
+                // getter call since this one is synchronized
+                waitingNotificationQueue.removeAll();
+            }
+
+            initializeNewMessageBlockTimer();
+
+            // show popup
+            initializePopupMessage("All notifications disabled", "for 5 minutes");
+        }
+    }
+
+    /**
+     * Method used to retrieve the version of the JAR file.
+     * <p>
+     * This method uses reflection to get the implementation version of the JAR file containing the
+     * class. It is assumed that the JAR file has its version specified in its manifest file.
+     * 
+     * @return The version of the JAR file as a string, or null if the version cannot be determined.
+     */
+    String retrieveJarVersion() {
+
+        return getClass().getPackage().getImplementationVersion();
+    }
+
+    private String chatVersion() {
+
+        Properties properties = new Properties();
+        InputStream inputStream =
+                getClass().getClassLoader().getResourceAsStream("version.properties");
+
+        if (inputStream != null) {
+
+            try {
+
+                properties.load(inputStream);
+                return properties.getProperty("version") + " - ";
+
+            } catch (IOException e) {
+
+                throw new RuntimeException(e);
+            }
+
+        } else {
+
+            return "";
+        }
+    }
+
+    /**
+     * Method used to repaint the main frame.
+     * <p>
+     * This method revalidates and repaints the main frame component, ensuring that any changes to
+     * its layout or appearance are correctly displayed on the screen.
+     */
+    private void repaintMainFrame() {
+
+        String version = retrieveJarVersion();
+        this.setTitle("teamchat - " + version + " - client name: " + this.getUsername());
+
+        this.revalidate();
+        this.repaint();
+    }
+
+    /**
+     * Removes all messages from the chat panel.
+     * <p>
+     * The method uses `SwingUtilities.invokeLater()` to ensure that the removal of messages is
+     * performed on the event dispatch thread, as it involves modifications to the GUI.
+     * <p>
+     * Within the method, the `form_mainTextPanel.removeAll()` is called to remove all components
+     * from the chat panel. Additionally, the `repaintMainFrame()` method is called to repaint the
+     * main frame, ensuring that the changes are immediately visible to the user.
+     */
+    private void removeAllMessagesOnChatPanel() {
+
+        SwingUtilities.invokeLater(() -> {
+
+            this.form_mainTextPanel.removeAll();
+            repaintMainFrame();
+        });
+    }
+
+    /**
+     * Sends a typing status message to the websocket server. The method forms a JSON object
+     * representing the typing status and sends it to the websocket client. If an error occurs while
+     * processing the JSON, a RuntimeException is thrown.
+     * 
+     * @throws RuntimeException if an error occurs while processing the JSON.
+     */
+    private void sendIsTypingStatusToWebsocket() {
+
+        try {
+
+            ArrayList<String> array = new ArrayList<>();
+            array.add(this.getUsername());
+            final byte[] jsonTypingStatus =
+                    objectMapper.writeValueAsBytes(new StatusTransferDTO("typing", array));
+
+            clientController.getWebsocketClient().send(jsonTypingStatus);
+
+        } catch (JsonProcessingException e) {
+
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    /**
+     * Appends a new line to the text editor pane.
+     * 
+     * <p>
+     * Retrieves the current text in the text editor pane and appends a new line character at the
+     * end of it.
+     */
+    private void appendNewLineToTextEditorPane() {
+
+        final int caretPosition = form_textEditorPane.getCaretPosition();
+        form_textEditorPane.setSelectionStart(0);
+        form_textEditorPane.setSelectionEnd(caretPosition);
+        form_textEditorPane.replaceSelection(form_textEditorPane.getSelectedText() + "\n");
+
+        final int endPosition = form_textEditorPane.getCaretPosition();
+        form_textEditorPane.setSelectionStart(endPosition);
+        form_textEditorPane.setSelectionEnd(endPosition);
+    }
+
+    /**
+     * Handles a key press event when the enter key is pressed without pressing the shift key.
+     * 
+     * <p>
+     * Retrieves the content of the text editor pane, trims any leading or trailing space, and
+     * checks if it is empty. If the content is empty, it clears the text editor pane. Otherwise, it
+     * calls the `sendMessageToSocket` method to clear the text pane and send the current content to
+     * a socket.
+     */
+    private void handleNonShiftEnterKeyPress() {
+
+        // emoji to text -> text extraction
+        emojiHandler.replaceImageIconWithEmojiDescription(form_textEditorPane);
+        String textPaneContent = form_textEditorPane.getText().trim();
+
+        if (textPaneContent.isEmpty()) {
+
+            // empty -> reset
+            form_textEditorPane.setText("");
+
+        } else {
+
+            this.sendMessageToSocket();
+        }
+    }
+
+    private void sendMessageToSocket() {
+
+        String textFromInput = guiFunctionality.getTextFromInput();
+
+        MessageModel messageModel = new MessageModel();
+        messageModel.setMessage(textFromInput);
+        messageModel.setTime(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
+        messageModel.setSender(this.getUsername());
+        messageModel.setMessageType(MessageTypes.NORMAL);
+
+        String serializedTextFromInput = guiFunctionality.convertUserTextToJSON(messageModel);
+        if (serializedTextFromInput != null) {
+            guiFunctionality.sendMessageToSocket(serializedTextFromInput);
+            guiFunctionality.notifyClientsSendStatus();
+        }
+        guiFunctionality.clearTextPane();
+    }
+
+    private void initializePopupMessage(final String x, final String x1) {
+
+        PopupInterface popup = new PopupPanelImpl(this);
+        popup.getMessageTextField().setText(x + System.lineSeparator() + x1);
+        popup.configurePopupPanelPlacement();
+        popup.initiatePopupTimer(3_000);
+    }
+
+    private void initializeNewMessageBlockTimer() {
+
+        // blocking for 5 Minutes
+        blockTimer = new Timer(1_000 * 60 * 5, e1 -> {
+
+            form_allNotificationsMenuItem.setSelected(false);
+
+            // show popup
+            initializePopupMessage("Notifications status", "reverted");
+        });
+
+        blockTimer.setRepeats(false);
+        blockTimer.start();
+    }
+
+    private void resetMessageBlockTimer() {
+
+        if (blockTimer != null) {
+
+            blockTimer.stop();
+            blockTimer = null;
+        }
+    }
+
+    @Override
+    public TrayIcon getTrayIcon() {
+
+        return trayIcon;
+    }
+
+    @Override
+    public void setupSystemTrayIcon() {
+
+        if (SystemTray.isSupported()) {
+
+            URL iconURL = ChatMainFrameImpl.class.getResource("/icon.png");
+            assert iconURL != null;
+            ImageIcon icon = new ImageIcon(iconURL);
+
+            try {
+
+                SystemTray tray = SystemTray.getSystemTray();
+                trayIcon = new TrayIcon(icon.getImage(), "teamchat");
+                trayIcon.setImageAutoSize(true);
+                tray.add(trayIcon);
+
+            } catch (AWTException e) {
+
+                System.err.println("TrayIcon could not be added.");
+            }
+
+        } else {
+
+            System.err.println("System tray is not supported.");
+        }
     }
 }

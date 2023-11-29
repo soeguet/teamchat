@@ -32,4 +32,6 @@ public interface MainFrameInitInterface {
     void initEmojiHandler();
 
     void setFixedScrollSpeed(int i);
+
+    void setupSystemTrayIcon();
 }

@@ -46,6 +46,9 @@ public class ProgramInit {
             this.initializeMainFrame();
             this.mainFrame.loadUsernameFromEnvVariables(envVariables);
 
+            // add system tray icon
+            this.mainFrame.setupSystemTrayIcon();
+
             //operating system specific settings - margins for JScrollPane
             this.mainFrame.setScrollPaneMargins();
 
