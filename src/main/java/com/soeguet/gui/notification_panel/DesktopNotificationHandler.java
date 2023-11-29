@@ -20,6 +20,7 @@ import java.awt.Dimension;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.util.logging.Logger;
+import javax.swing.Timer;
 
 public class DesktopNotificationHandler implements DesktopNotificationHandlerInterface {
 
