@@ -17,20 +17,21 @@ import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
 import com.soeguet.util.NotificationStatus;
 import java.awt.Dimension;
+import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
-import javax.swing.Timer;
 
 public class DesktopNotificationHandler implements DesktopNotificationHandlerInterface {
 
     private final Logger logger = Logger.getLogger(DesktopNotificationHandler.class.getName());
     private final MainFrameGuiInterface mainFrame;
-    CacheManager cacheManager = CacheManagerFactory.getCacheManager();
+    private CacheManager cacheManager = CacheManagerFactory.getCacheManager();
+    private final SystemTray tray;
 
     public DesktopNotificationHandler(final MainFrameGuiInterface mainFrame) {
 
         this.mainFrame = mainFrame;
+        this.tray = mainFrame.getSystemTray();
     }
 
     @Override
@@ -54,15 +55,10 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
      */
     public void sendNotificationSignal() throws ClassCastException {
 
-        int frameStatus = ((JFrame) this.mainFrame).getExtendedState();
-
-        JFrame frame = (JFrame) this.mainFrame;
-
-        frame.setAutoRequestFocus(false);
-        frame.toFront();
-
-        frame.setAutoRequestFocus(false);
-
+        // int frameStatus = ((JFrame) this.mainFrame).getExtendedState();
+        //
+        // JFrame frame = (JFrame) this.mainFrame;
+        //
         // if (frameStatus == JFrame.ICONIFIED) {
         //
         // frame.toFront();
@@ -73,14 +69,9 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
         //
         // SwingUtilities.invokeLater(() -> {
         //
-        // frame.setFocusableWindowState(false);
+        // frame.setAutoRequestFocus(false);
         // frame.toFront();
-        // try {
-        // Thread.sleep(100);
-        // } catch (InterruptedException e) {
-        // e.printStackTrace();
-        // }
-        // frame.setFocusableWindowState(true);
+        // frame.setAutoRequestFocus(true);
         // });
         // }
         // }
