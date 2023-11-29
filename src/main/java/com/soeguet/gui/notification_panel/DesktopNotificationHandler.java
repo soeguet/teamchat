@@ -20,7 +20,6 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 public class DesktopNotificationHandler implements DesktopNotificationHandlerInterface {
@@ -59,20 +58,32 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
 
         JFrame frame = (JFrame) this.mainFrame;
 
-        if (frameStatus == JFrame.ICONIFIED) {
+        frame.setAutoRequestFocus(false);
+        frame.toFront();
 
-            frame.toFront();
-        } else if (frameStatus == JFrame.NORMAL) {
+        frame.setAutoRequestFocus(false);
 
-            if (!frame.isFocused()) {
-
-                SwingUtilities.invokeLater(() -> {
-                    frame.setFocusableWindowState(false);
-                    frame.toFront();
-                    frame.setFocusableWindowState(true);
-                });
-            }
-        }
+        // if (frameStatus == JFrame.ICONIFIED) {
+        //
+        // frame.toFront();
+        //
+        // } else if (frameStatus == JFrame.NORMAL) {
+        //
+        // if (!frame.isFocused()) {
+        //
+        // SwingUtilities.invokeLater(() -> {
+        //
+        // frame.setFocusableWindowState(false);
+        // frame.toFront();
+        // try {
+        // Thread.sleep(100);
+        // } catch (InterruptedException e) {
+        // e.printStackTrace();
+        // }
+        // frame.setFocusableWindowState(true);
+        // });
+        // }
+        // }
     }
 
     /**
