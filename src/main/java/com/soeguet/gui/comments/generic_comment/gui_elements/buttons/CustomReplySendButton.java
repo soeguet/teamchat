@@ -6,15 +6,19 @@ import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomReplyP
 import com.soeguet.gui.main_frame.ChatMainFrameImpl;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.MessageTypes;
-import com.soeguet.model.jackson.*;
+import com.soeguet.model.jackson.BaseModel;
+import com.soeguet.model.jackson.LinkModel;
+import com.soeguet.model.jackson.MessageModel;
+import com.soeguet.model.jackson.PictureModel;
+import com.soeguet.model.jackson.QuoteModel;
 import com.soeguet.socket_client.CustomWebsocketClient;
-
-import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.net.URL;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 
 public class CustomReplySendButton extends JButton implements MouseListener {
 
@@ -84,6 +88,10 @@ public class CustomReplySendButton extends JButton implements MouseListener {
 
     @Override
     public void mouseClicked(final MouseEvent e) {
+
+        // make main textPanel editable again
+        mainFrame.getTextEditorPane().setFocusable(true);
+        mainFrame.getTextEditorPane().requestFocus();
 
         final CustomWebsocketClient websocketClient = mainFrame.getWebsocketClient();
         final ObjectMapper objectMapper = mainFrame.getObjectMapper();

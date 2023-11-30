@@ -98,7 +98,7 @@ public class CustomReferencePanel extends JPanel {
             jTextPane.setEditorKit(new WrapEditorKit());
 
             //FIXME: 02.11.23
-            //            jTextPane.setText("messageModel.getQuotedMessageText())");
+            //jTextPane.setText("messageModel.getQuotedMessageText())");
             jTextPane.setEnabled(false);
             super.add(jTextPane, "cell 0 1");
         }
