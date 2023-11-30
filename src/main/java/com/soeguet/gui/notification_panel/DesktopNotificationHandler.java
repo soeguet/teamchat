@@ -167,18 +167,29 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
      */
     private synchronized void internalNotificationHandling(String message, BaseModel baseModel) {
 
+        Notify notify = Notify.Companion.create();
+        notify.title(baseModel.getTime() + " " + baseModel.getSender());
+        notify.position(Position.TOP_RIGHT);
+        notify.setHideAfterDurationInMillis(3000);
+
         // let icon blink even with turned off notifications
         switch (baseModel) {
             case MessageModel messageModel -> {
-                Notify.Companion.create()
-                        .title(messageModel.getTime() + " " + messageModel.getSender())
-                        .text(messageModel.getMessage()).position(Position.TOP_RIGHT).show();
+
+                notify.text(messageModel.getMessage());
+
             }
             case PictureModel pictureModel -> {
+
+                notify.text("[picture] " + pictureModel.getDescription());
             }
             case LinkModel linkModel -> {
+
+                notify.text("[link] " + linkModel.getComment());
             }
         }
+
+        notify.show();
 
         // if (cacheManager.getCache(
         // "ActiveNotificationQueue") instanceof ActiveNotificationQueue activeNotificationQueue) {
