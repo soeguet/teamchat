@@ -16,10 +16,10 @@ import com.soeguet.model.jackson.LinkModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
 import com.soeguet.util.NotificationStatus;
+import dorkbox.notify.Notify;
+import dorkbox.notify.Position;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.TrayIcon;
-import java.awt.TrayIcon.MessageType;
 import java.util.logging.Logger;
 import javax.swing.Timer;
 
@@ -28,12 +28,10 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
     private final Logger logger = Logger.getLogger(DesktopNotificationHandler.class.getName());
     private final MainFrameGuiInterface mainFrame;
     private CacheManager cacheManager = CacheManagerFactory.getCacheManager();
-    private final TrayIcon trayIcon;
 
     public DesktopNotificationHandler(final MainFrameGuiInterface mainFrame) {
 
         this.mainFrame = mainFrame;
-        this.trayIcon = mainFrame.getTrayIcon();
     }
 
     @Override
@@ -172,29 +170,29 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
         // let icon blink even with turned off notifications
         switch (baseModel) {
             case MessageModel messageModel -> {
-                trayIcon.displayMessage(baseModel.getTime() + " - " + baseModel.getSender(), messageModel.getMessage(), MessageType.NONE);
+                Notify.Companion.create()
+                        .title(messageModel.getTime() + " " + messageModel.getSender())
+                        .text(messageModel.getMessage()).position(Position.TOP_RIGHT).show();
             }
             case PictureModel pictureModel -> {
-                trayIcon.displayMessage(baseModel.getTime() + " - " + baseModel.getSender(), "[picture]" + System.lineSeparator() + pictureModel.getDescription(), MessageType.NONE);
             }
             case LinkModel linkModel -> {
-                trayIcon.displayMessage(baseModel.getTime() + " - " + baseModel.getSender(), "[link]" + System.lineSeparator() + linkModel.getComment(), MessageType.NONE);
             }
         }
-        
+
         // if (cacheManager.getCache(
-        //         "ActiveNotificationQueue") instanceof ActiveNotificationQueue activeNotificationQueue) {
+        // "ActiveNotificationQueue") instanceof ActiveNotificationQueue activeNotificationQueue) {
         //
-        //     // only post notification if there is no active notification -> trying to fix the wonky
-        //     // behavior
-        //     if (activeNotificationQueue.getRemainingCapacity() < 3) {
+        // // only post notification if there is no active notification -> trying to fix the wonky
+        // // behavior
+        // if (activeNotificationQueue.getRemainingCapacity() < 3) {
         //
-        //         addIncomingNotificationToQueue(message);
+        // addIncomingNotificationToQueue(message);
         //
-        //     } else {
+        // } else {
         //
-        //         displayUpToThreeNotifications(baseModel, activeNotificationQueue);
-        //     }
+        // displayUpToThreeNotifications(baseModel, activeNotificationQueue);
+        // }
         // }
     }
 
