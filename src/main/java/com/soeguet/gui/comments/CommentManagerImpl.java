@@ -1,5 +1,7 @@
 package com.soeguet.gui.comments;
 
+import javax.swing.JPanel;
+
 import com.soeguet.gui.comments.generic_comment.factories.MainChatPanelFactory;
 import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomCommentPanel;
 import com.soeguet.gui.comments.generic_comment.util.Side;
@@ -11,7 +13,6 @@ import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.LinkModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
-import javax.swing.JPanel;
 
 public class CommentManagerImpl implements CommentManager {
 
@@ -28,7 +29,7 @@ public class CommentManagerImpl implements CommentManager {
 
     private void addCommentPanelToMainChatPanel(final JPanel commentPanel, final CommentTypeEnum commentType) {
 
-        Side side = new SideHandler().determineSide(commentType);
+        final Side side = new SideHandler().determineSide(commentType);
 
         /*
         wrap -> else all fields will not stack on top of each other
@@ -83,7 +84,7 @@ public class CommentManagerImpl implements CommentManager {
         //TEST this
         switch (baseModel) {
 
-            case MessageModel messageModel -> {
+            case final MessageModel messageModel -> {
 
                 if (doesClientMatchSender(messageModel.getSender())) {
 
@@ -95,7 +96,7 @@ public class CommentManagerImpl implements CommentManager {
                 }
             }
 
-            case PictureModel pictureModel -> {
+            case final PictureModel pictureModel -> {
 
                 if (doesClientMatchSender(pictureModel.getSender())) {
 
@@ -107,7 +108,7 @@ public class CommentManagerImpl implements CommentManager {
                 }
             }
 
-            case LinkModel linkModel -> {
+            case final LinkModel linkModel -> {
 
                 if (doesClientMatchSender(linkModel.getSender())) {
 
@@ -123,11 +124,13 @@ public class CommentManagerImpl implements CommentManager {
 
     /**
      Sets up a message on the main chat panel based on the given MessageHandlerDTO. Core Method!
+
+     @return void
      */
     @Override
-    public void setupMessage(BaseModel baseModel, CommentTypeEnum commentType) {
+    public void setupMessage(final BaseModel baseModel, final CommentTypeEnum commentType) {
 
-        CustomCommentPanel customCommentPanel = new MainChatPanelFactory(mainFrame, baseModel, commentType).create();
+        final CustomCommentPanel customCommentPanel = new MainChatPanelFactory(mainFrame, baseModel, commentType).create();
         this.addCommentPanelToMainChatPanel(customCommentPanel, commentType);
 
         repaintMainFrame();

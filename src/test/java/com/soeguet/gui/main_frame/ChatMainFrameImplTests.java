@@ -1,6 +1,5 @@
 package com.soeguet.gui.main_frame;
 
-import com.soeguet.util.NotificationStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -59,7 +58,6 @@ class ChatMainFrameImplTests {
         assertEquals(27, chatMainFrame.getJSCROLLPANE_MARGIN_BOTTOM_BORDER());
         assertEquals(4, chatMainFrame.getJSCROLLPANE_MARGIN_RIGHT_BORDER());
     }
-
 
     @Test
     void testJCheckMenuItemsInGeneral() {

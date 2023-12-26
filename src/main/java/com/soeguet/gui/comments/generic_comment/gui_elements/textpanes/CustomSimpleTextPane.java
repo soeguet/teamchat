@@ -1,15 +1,16 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.textpanes;
 
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
+import javax.swing.JPopupMenu;
+import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
+
 import com.soeguet.gui.comments.generic_comment.gui_elements.menu_items.CopyTextMenuItem;
 import com.soeguet.gui.comments.util.EmojiSwingWorker;
 import com.soeguet.gui.comments.util.WrapEditorKit;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
-
-import javax.swing.*;
-import javax.swing.text.Document;
-import javax.swing.text.StyledDocument;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 public class CustomSimpleTextPane extends JTextPane implements MouseListener {
 

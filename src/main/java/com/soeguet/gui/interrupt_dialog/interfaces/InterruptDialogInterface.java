@@ -1,11 +1,9 @@
 package com.soeguet.gui.interrupt_dialog.interfaces;
 
-import com.soeguet.gui.main_frame.ChatMainFrameImpl;
-import com.soeguet.properties.CustomUserProperties;
-import com.soeguet.properties.dto.CustomUserPropertiesDTO;
-
-import java.awt.*;
+import java.awt.Component;
 import java.util.HashMap;
+
+import com.soeguet.properties.dto.CustomUserPropertiesDTO;
 
 public interface InterruptDialogInterface {
 

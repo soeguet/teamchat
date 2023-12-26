@@ -1,19 +1,19 @@
 package com.soeguet.gui.interrupt_dialog;
 
-import com.soeguet.gui.interrupt_dialog.generated.InterruptDialog;
-import com.soeguet.gui.interrupt_dialog.interfaces.InterruptDialogInterface;
-import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
-import com.soeguet.properties.CustomUserProperties;
-import com.soeguet.properties.dto.CustomUserPropertiesDTO;
-import com.soeguet.util.ByteArrayHandler;
-import com.soeguet.util.interfaces.ByteArrayHandlerInterface;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.swing.JCheckBox;
+
+import com.soeguet.gui.interrupt_dialog.generated.InterruptDialog;
+import com.soeguet.gui.interrupt_dialog.interfaces.InterruptDialogInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
+import com.soeguet.properties.dto.CustomUserPropertiesDTO;
+import com.soeguet.util.ByteArrayHandler;
+import com.soeguet.util.interfaces.ByteArrayHandlerInterface;
 
 public class InterruptDialogImpl extends InterruptDialog implements InterruptDialogInterface {
 

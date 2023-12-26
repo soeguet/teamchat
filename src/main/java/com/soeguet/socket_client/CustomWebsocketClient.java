@@ -1,19 +1,19 @@
 package com.soeguet.socket_client;
 
-import com.soeguet.behaviour.interfaces.GuiFunctionalityInterface;
-import com.soeguet.behaviour.interfaces.SocketToGuiInterface;
-import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
-import com.soeguet.gui.popups.PopupPanelImpl;
-import com.soeguet.gui.popups.interfaces.PopupInterface;
+import java.net.URI;
+import java.nio.ByteBuffer;
+import java.util.logging.Logger;
+
 import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ServerHandshake;
 
-import java.net.URI;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.logging.Logger;
+import com.soeguet.behaviour.interfaces.GuiFunctionalityInterface;
+import com.soeguet.behaviour.interfaces.SocketToGuiInterface;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
+import com.soeguet.gui.popups.PopupPanelImpl;
+import com.soeguet.gui.popups.interfaces.PopupInterface;
 
 public class CustomWebsocketClient extends WebSocketClient {
 

@@ -1,16 +1,6 @@
 package com.soeguet.properties;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
-import com.soeguet.gui.popups.PopupPanelImpl;
-import com.soeguet.gui.popups.interfaces.PopupInterface;
-import com.soeguet.initialization.interfaces.MainFrameInitInterface;
-import com.soeguet.properties.dto.CustomUserPropertiesDTO;
-import com.soeguet.properties.interfaces.CustomPropertiesInterface;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,6 +9,15 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
+import com.soeguet.gui.popups.PopupPanelImpl;
+import com.soeguet.gui.popups.interfaces.PopupInterface;
+import com.soeguet.initialization.interfaces.MainFrameInitInterface;
+import com.soeguet.properties.dto.CustomUserPropertiesDTO;
+import com.soeguet.properties.interfaces.CustomPropertiesInterface;
 
 public class CustomProperties extends Properties implements CustomPropertiesInterface {
 
@@ -214,22 +213,6 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
         popup.initiatePopupTimer(2_000);
 
         createPropertiesFile(configFilePath);
-    }
-
-    private boolean loadDataSuccessful() {
-
-        try (FileInputStream input = new FileInputStream(configFilePath)) {
-
-            load(input);
-            return true;
-
-        } catch (IOException e) {
-
-            logger.log(java.util.logging.Level.SEVERE, "Could not load config file, creating..", e);
-            logger.log(java.util.logging.Level.SEVERE, "CustomProperties > loadDataSuccessful()", e);
-
-            return false;
-        }
     }
 
     public CustomUserPropertiesDTO loaderThisClientProperties() {

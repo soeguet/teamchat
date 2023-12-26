@@ -62,4 +62,12 @@ public class CustomUserProperties {
 
         this.nickname = nickname;
     }
+
+	public String getBorderColor() {
+		return borderColor;
+	}
+
+	public void setBorderColor(String borderColor) {
+		this.borderColor = borderColor;
+	}
 }

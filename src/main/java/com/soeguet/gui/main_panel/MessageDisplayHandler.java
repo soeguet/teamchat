@@ -1,16 +1,16 @@
 package com.soeguet.gui.main_panel;
 
+import java.awt.Component;
+import java.awt.Toolkit;
+
 import com.soeguet.cache.implementations.MessageQueue;
 import com.soeguet.cache.manager.CacheManager;
 import com.soeguet.gui.comments.interfaces.CommentInterface;
 import com.soeguet.gui.comments.interfaces.CommentManager;
 import com.soeguet.gui.comments.util.CommentTypeEnum;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
-import com.soeguet.gui.main_panel.dtos.MessageHandlerDTO;
 import com.soeguet.gui.main_panel.interfaces.MessageDisplayHandlerInterface;
 import com.soeguet.model.jackson.BaseModel;
-
-import java.awt.*;
 
 public class MessageDisplayHandler implements MessageDisplayHandlerInterface {
 

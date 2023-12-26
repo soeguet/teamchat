@@ -48,13 +48,12 @@ public class EmojiSwingWorker extends SwingWorker<Void, Object> {
             }
         }
 
-        //publish last block if not empty
+        // publish last block if not empty
         if (!textBuilder.isEmpty()) {
             publish(textBuilder.toString());
         }
 
         return null;
-
     }
 
     private int processWord(final String word, final StringBuilder textBuilder, int wordCounter, final int chunkSize) {
@@ -76,7 +75,7 @@ public class EmojiSwingWorker extends SwingWorker<Void, Object> {
 
         if (emojiIcon != null) {
 
-            //publish everything up until now
+            // publish everything up until now
             if (!textBuilder.isEmpty()) {
 
                 wordCounter = publishAndResetText(textBuilder);
@@ -88,18 +87,17 @@ public class EmojiSwingWorker extends SwingWorker<Void, Object> {
         return wordCounter;
     }
 
-    private int publishAndResetText(StringBuilder textBuilder){
+    private int publishAndResetText(StringBuilder textBuilder) {
 
         publish(textBuilder.toString());
         textBuilder.setLength(0);
-        return  0;
+        return 0;
     }
 
     @Override
     protected void process(List<Object> chunks) {
 
-
-        SwingUtilities.invokeLater(()-> {
+        SwingUtilities.invokeLater(() -> {
 
             try {
 
@@ -115,7 +113,7 @@ public class EmojiSwingWorker extends SwingWorker<Void, Object> {
                     } else if (chunk instanceof String string) {
 
                         // Insert the text
-                        doc.insertString(doc.getLength(), string, null);
+                        doc.insertString(doc.getLength(), string + "asdsa asd asd!", null);
                     }
                 }
 

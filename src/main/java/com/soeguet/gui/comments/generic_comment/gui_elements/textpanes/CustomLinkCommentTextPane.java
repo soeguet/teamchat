@@ -4,8 +4,6 @@ import com.soeguet.gui.comments.util.LinkWrapEditorKit;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.LinkModel;
 
-import java.util.logging.Logger;
-
 public class CustomLinkCommentTextPane extends CustomTextPane {
 
     // variables -- start
@@ -14,7 +12,7 @@ public class CustomLinkCommentTextPane extends CustomTextPane {
 
     // constructors -- start
     public CustomLinkCommentTextPane(MainFrameGuiInterface mainFrame, final boolean lineWrap,
-                                     final LinkModel linkModel) {
+            final LinkModel linkModel) {
 
         // FIXME: 02.11.23 -> this is a hack
         super(mainFrame, lineWrap, linkModel.getComment());

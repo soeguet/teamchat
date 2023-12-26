@@ -5,6 +5,24 @@ import com.soeguet.gui.comments.util.CommentTypeEnum;
 import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 
+/**
+ * Wrapper for Sidepanel and Contentpanel<br>
+ * Is set on top of the CustomCommentPanel {@link CustomCommentPanel}<br>
+ * <br>
+ * SCHEMA: Main Panel - wraps everything<br>
+ * <br>
+ * LEFT >>"[" [Side Panel][Content Panel] "]"<<<br>
+ * <br>
+ * RIGHT >>"[" [Content Panel][Side Panel] "]"<<<br>
+ * <br>
+ * ## search for: TEXT MESSAGES -> CustomTextAndQuoteForBubblePanel &<br>
+ * TextMessageFactory<br>
+ * PICTURES -> CustomPictureWrapperPanel & PicturePanelFactory LINKS -><br>
+ * CustomLinkWrapperPanel & LinkPanelFactory<br>
+ *
+ * @see CustomCommentPanel {@link CustomCommentPanel}
+ * @see CommentTypeEnum {@link CommentTypeEnum}
+ */
 public class CustomMainWrapperContainer extends JPanel {
 
     // variables -- start
@@ -12,27 +30,23 @@ public class CustomMainWrapperContainer extends JPanel {
     // variables -- end
 
     // constructors -- start
+    /**
+     * Wrapper for Sidepanel and Contentpanel<br>
+     * Is set on top of the CustomCommentPanel {@link CustomCommentPanel}<br>
+     * <br>
+     * 
+     * @param commentType {@link CommentTypeEnum}
+     */
     public CustomMainWrapperContainer(CommentTypeEnum commentType) {
 
         this.side = determineSide(commentType);
     }
     // constructors -- end
 
+    /**
+     * Sets the LayoutManager for the MainWrapperContainer
+     */
     public void setMainWrapperContainerLayoutManager() {
-
-
-        /*
-         * 
-         * SCHEMA: Main Panel - wraps everything
-         * 
-         * LEFT >>"[" [Side Panel][Content Panel] "]"<<
-         * 
-         * RIGHT >>"[" [Content Panel][Side Panel] "]"<<
-         * 
-         * ## search for: TEXT MESSAGES -> CustomTextAndQuoteForBubblePanel & TextMessageFactory
-         * PICTURES -> CustomPictureWrapperPanel & PicturePanelFactory LINKS ->
-         * CustomLinkWrapperPanel & LinkPanelFactory
-         */
 
         switch (this.getSide()) {
 
@@ -50,6 +64,12 @@ public class CustomMainWrapperContainer extends JPanel {
         }
     }
 
+    /**
+     * Check on which side the incoming message will be displayed.
+     *
+     * @param commentType {@link CommentTypeEnum}
+     * @return Side {@link Side}
+     */
     private Side determineSide(final CommentTypeEnum commentType) {
 
         return switch (commentType) {
@@ -60,6 +80,11 @@ public class CustomMainWrapperContainer extends JPanel {
     }
 
     // getter & setter -- start
+    /**
+     * Getter for Side parameter. <br>
+     *
+     * @return Side {@link Side}
+     */
     public Side getSide() {
 
         return side;

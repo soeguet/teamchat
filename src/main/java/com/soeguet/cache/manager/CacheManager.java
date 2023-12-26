@@ -1,11 +1,11 @@
 package com.soeguet.cache.manager;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.soeguet.cache.CustomCache;
 import com.soeguet.cache.implementations.ActiveNotificationQueue;
 import com.soeguet.cache.implementations.MessageQueue;
 import com.soeguet.cache.implementations.WaitingNotificationQueue;
-
-import java.util.concurrent.ConcurrentHashMap;
 
 public class CacheManager {
 

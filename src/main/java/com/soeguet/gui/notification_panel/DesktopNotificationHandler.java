@@ -1,5 +1,11 @@
 package com.soeguet.gui.notification_panel;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.util.logging.Logger;
+
+import javax.swing.Timer;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.cache.factory.CacheManagerFactory;
@@ -16,12 +22,9 @@ import com.soeguet.model.jackson.LinkModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
 import com.soeguet.util.NotificationStatus;
+
 import dorkbox.notify.Notify;
 import dorkbox.notify.Position;
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.util.logging.Logger;
-import javax.swing.Timer;
 
 public class DesktopNotificationHandler implements DesktopNotificationHandlerInterface {
 
@@ -215,15 +218,15 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
      * @throws RuntimeException if there is an IllegalStateException while adding to the waiting
      *         notification queue.
      */
-    private void addIncomingNotificationToQueue(final String message) {
-
-        if (cacheManager.getCache(
-                "WaitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
-
-            // add to queue and skip the rest
-            waitingNotificationQueue.addLast(message);
-        }
-    }
+    // private void addIncomingNotificationToQueue(final String message) {
+    //
+    //     if (cacheManager.getCache(
+    //             "WaitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
+    //
+    //         // add to queue and skip the rest
+    //         waitingNotificationQueue.addLast(message);
+    //     }
+    // }
 
     /**
      * Displays up to three notifications.

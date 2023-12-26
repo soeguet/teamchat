@@ -1,10 +1,9 @@
 package com.soeguet.gui.typing_panel;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import javax.swing.SwingUtilities;
+
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.typing_panel.interfaces.TypingPanelHandlerInterface;
-
-import javax.swing.*;
 
 public class TypingPanelHandler implements TypingPanelHandlerInterface {
 

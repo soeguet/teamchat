@@ -1,13 +1,21 @@
 package com.soeguet.gui.comments.reaction_sticker;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagLayout;
+import java.awt.RenderingHints;
+
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 public class CustomStickerContainer extends JPanel {
 
     private final String username;
+
     public CustomStickerContainer(ImageIcon imageIcon) {
 
         this.username = imageIcon.getDescription();
@@ -25,6 +33,7 @@ public class CustomStickerContainer extends JPanel {
 
         add(innerPanel, BorderLayout.CENTER);
     }
+
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(31, 31);
@@ -35,11 +44,15 @@ public class CustomStickerContainer extends JPanel {
 
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                             RenderingHints.VALUE_ANTIALIAS_ON);
+                RenderingHints.VALUE_ANTIALIAS_ON);
 
         g2d.setColor(Color.BLACK);
-        g2d.drawOval(0,0, 30, 30);
+        g2d.drawOval(0, 0, 30, 30);
         g2d.setColor(Color.WHITE);
-        g2d.fillOval(1,1, 29, 29);
+        g2d.fillOval(1, 1, 29, 29);
+    }
+
+    public String getUsername() {
+        return username;
     }
 }

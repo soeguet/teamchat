@@ -13,35 +13,51 @@ import java.awt.Color;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.OverlayLayout;
+import javax.swing.border.LineBorder;
 
+/**
+ * This panel is placed on the GUI as the main comment panel.<br>
+ * It covers one row on the scrollpane and will be pushed up the more of these
+ * are added.<br>
+ * One is added per row and it covers the whole width.<br>
+ * <p>
+ * It contains everything else related to a chat message:<br>
+ * - the side panel {@link CommentSidePanel}<br>
+ * - the top panel {@link TransparentTopPanel}<br>
+ * - the main content panel<br>
+ * - the text panel<br>
+ */
 public class CustomCommentPanel extends JPanel {
 
     // variables -- start
     private MainFrameGuiInterface mainFrame;
     /**
-     Represents a side of the comment - LEFT or RIGHT.
+     * Represents a side of the comment - LEFT or RIGHT.
      */
     private Side side;
     /**
-     Represents the main information Model of this app.
-
-     @see BaseModel
+     * Represents the main information Model of this app.
+     * 
+     * @see BaseModel
      */
     private BaseModel baseModel;
     private CommentTypeEnum commentType;
     private CommentSidePanel sidePanel;
     /**
-     The top level container will be used for MouseEvents as well as reaction emojis.
-
-     @see JPanel
+     * The top level container will be used for MouseEvents as well as reaction
+     * emojis.
+     * 
+     * @see JPanel
      */
     private TransparentTopPanel topContainer;
     /**
-     The main container panel will be used for the side panel as well as the content container.
+     * The main container panel will be used for the side panel as well as the
+     * content container.
      */
     private CustomMainWrapperContainer customMainWrapperContainer;
     /**
-     The content container will be used for the text and picture content as well as the quoted comments.
+     * The content container will be used for the text and picture content as well
+     * as the quoted comments.
      */
     private CustomContentContainer customContentContainer;
     private JTextPane jTextPane;
@@ -52,6 +68,7 @@ public class CustomCommentPanel extends JPanel {
     // constructors -- start
     public CustomCommentPanel() {
 
+        super.setBorder(new LineBorder(Color.RED, 1));
     }
     // constructors -- end
 
@@ -68,12 +85,13 @@ public class CustomCommentPanel extends JPanel {
     public void addComponents() {
 
         /*
-        CONSTRAINS EXPLAINED
-                cell 1 1 1 2
-                colum 1, row 1, span col 1, span row 2
+         * CONSTRAINS EXPLAINED
+         * cell 1 1 1 2
+         * colum 1, row 1, span col 1, span row 2
          */
 
-        // MainPanel - MigLayout - wraps SIDE and CONTENT - wrapped by CustomCommentPanel (OverlayLayout)
+        // MainPanel - MigLayout - wraps SIDE and CONTENT - wrapped by
+        // CustomCommentPanel (OverlayLayout)
         final CustomMainWrapperContainer mainPanel = this.getCustomMainWrapperContainer();
 
         // wrapped by CustomCommentPanel (OverlayLayout)
@@ -82,8 +100,10 @@ public class CustomCommentPanel extends JPanel {
         // wrapped by CustomMainWrapperContainer -- SIDE
         final CommentSidePanel commentSidePanel = this.getSidePanel();
 
-        // TODO: 06.11.23  - this works but it needs to be cleaned up -> contentStackPanel is new
-        // wrapped by CustomMainWrapperContainer -- CONTENT -> again wrapped by contentStackPanel -> topPanel and mainContentPanel
+        // TODO: 06.11.23 - this works but it needs to be cleaned up ->
+        // contentStackPanel is new
+        // wrapped by CustomMainWrapperContainer -- CONTENT -> again wrapped by
+        // contentStackPanel -> topPanel and mainContentPanel
         // everything else is a hassle to adjust the right alignment of the top panel
 
         JPanel contentStackPanel = new JPanel();
@@ -98,19 +118,19 @@ public class CustomCommentPanel extends JPanel {
 
             case LEFT -> {
 
-                //SIDE
+                // SIDE
                 mainPanel.add(commentSidePanel, "cell 0 0 1 2, dock west");
 
-                //CONTENT
+                // CONTENT
                 mainPanel.add(contentStackPanel, "cell 1 0 1 2, dock west, gapleft 5, gapright 50");
             }
 
             case RIGHT -> {
 
-                //SIDE
+                // SIDE
                 mainPanel.add(commentSidePanel, "cell 1 0 1 2, dock east");
 
-                //CONTENT
+                // CONTENT
                 mainPanel.add(contentStackPanel, "cell 0 0 1 2, dock east, gapright 5, gapleft 50, grow");
             }
         }
@@ -120,7 +140,7 @@ public class CustomCommentPanel extends JPanel {
 
     public void addContext() {
 
-        //setup
+        // setup
         final CustomContentContainer contentContainer = this.getCustomContentContainer();
         final Side commentSide = this.getSide();
 
@@ -137,7 +157,7 @@ public class CustomCommentPanel extends JPanel {
 
     private void processIncomingLinkMessage(final Side commentSide, final CustomContentContainer contentContainer) {
 
-        CustomLinkPanel customLinkPanel = new LinkPanelFactory(mainFrame,baseModel).create();
+        CustomLinkPanel customLinkPanel = new LinkPanelFactory(mainFrame, baseModel).create();
 
         switch (commentSide) {
 
@@ -157,7 +177,7 @@ public class CustomCommentPanel extends JPanel {
 
     private void processIncomingPictureMessage(final Side commentSide, final CustomContentContainer contentContainer) {
 
-        CustomPictureWrapperPanel pictureLabel = new PicturePanelFactory(mainFrame,baseModel).create();
+        CustomPictureWrapperPanel pictureLabel = new PicturePanelFactory(mainFrame, baseModel).create();
 
         switch (commentSide) {
 
@@ -177,11 +197,11 @@ public class CustomCommentPanel extends JPanel {
 
     private void processIncomingTextMessage(final Side commentSide, final CustomContentContainer contentContainer) {
 
-        //TODO factory method maybe?
+        // TODO factory method maybe?
         if (baseModel instanceof MessageModel messageModel) {
 
-            CustomTextAndQuoteForBubblePanel customTextAndQuoteForBubblePanel =
-                    new TextMessageFactory(mainFrame,messageModel).create();
+            CustomTextAndQuoteForBubblePanel customTextAndQuoteForBubblePanel = new TextMessageFactory(mainFrame,
+                    messageModel).create();
 
             switch (commentSide) {
 
@@ -206,7 +226,7 @@ public class CustomCommentPanel extends JPanel {
         // TODO: 02.11.23 border color implementation
         this.setBorderColor(new Color(23, 0, 146));
         chatBubblePaintHandler = new ChatBubblePaintHandler(getCustomContentContainer(),
-                                                                                   commentSide, this.getBorderColor());
+                commentSide, this.getBorderColor());
 
         chatBubblePaintHandler.setupChatBubble();
     }
@@ -215,7 +235,6 @@ public class CustomCommentPanel extends JPanel {
 
         return chatBubblePaintHandler;
     }
-
 
     public void setSide() {
 

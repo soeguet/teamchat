@@ -1,22 +1,16 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.labels;
 
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
+import javax.swing.JLabel;
+import javax.swing.JPopupMenu;
+
 import com.soeguet.gui.comments.generic_comment.gui_elements.interfaces.ContentInterface;
 import com.soeguet.gui.comments.generic_comment.gui_elements.menu_items.CustomPictureMaximizeMenuItem;
 import com.soeguet.gui.comments.util.PictureSwingWorker;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.PictureModel;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-
-import static javax.imageio.ImageIO.read;
 
 public class CustomPictureLabel extends JLabel implements ContentInterface, MouseListener {
 
