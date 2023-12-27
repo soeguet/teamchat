@@ -67,8 +67,6 @@ public class CustomCommentPanel extends JPanel {
 
     // constructors -- start
     public CustomCommentPanel() {
-
-        super.setBorder(new LineBorder(Color.RED, 1));
     }
     // constructors -- end
 

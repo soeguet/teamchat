@@ -56,7 +56,8 @@ public class EmojiSwingWorker extends SwingWorker<Void, Object> {
         return null;
     }
 
-    private int processWord(final String word, final StringBuilder textBuilder, int wordCounter, final int chunkSize) {
+    private int processWord(final String word, final StringBuilder textBuilder, int wordCounter,
+            final int chunkSize) {
 
         textBuilder.append(word).append(" ");
         wordCounter++;
@@ -113,7 +114,7 @@ public class EmojiSwingWorker extends SwingWorker<Void, Object> {
                     } else if (chunk instanceof String string) {
 
                         // Insert the text
-                        doc.insertString(doc.getLength(), string + "asdsa asd asd!", null);
+                        doc.insertString(doc.getLength(), string, null);
                     }
                 }
 
