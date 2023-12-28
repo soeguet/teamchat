@@ -1,11 +1,11 @@
 package com.soeguet.gui.option_pane.links;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import com.soeguet.gui.option_pane.links.dtos.MetadataStorageRecord;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 class LinkDialogImplTest {
 
@@ -16,7 +16,8 @@ class LinkDialogImplTest {
 
         Mockito.when(linkDialogHandler.checkStatusCodeOfLink(Mockito.anyString())).thenReturn(400);
 
-        final MetadataStorageRecord metadataStorageRecord = linkDialogHandler.checkForMetaData("https://www.goasdogle.com");
+        final MetadataStorageRecord metadataStorageRecord =
+                linkDialogHandler.checkForMetaData("https://www.goasdogle.com");
         assertNull(metadataStorageRecord);
     }
 
@@ -24,7 +25,8 @@ class LinkDialogImplTest {
     void checkIfStatusCodeIs1000() {
 
         LinkDialogHandler linkDialogHandler = Mockito.spy(new LinkDialogHandler());
-        final int statusCodeOfLink = linkDialogHandler.checkStatusCodeOfLink("https://www.googsssle.com");
+        final int statusCodeOfLink =
+                linkDialogHandler.checkStatusCodeOfLink("https://www.googsssle.com");
 
         assertEquals(1000, statusCodeOfLink);
     }
@@ -33,7 +35,8 @@ class LinkDialogImplTest {
     void checkIfStatusCodeIs200() {
 
         LinkDialogHandler linkDialogHandler = Mockito.spy(new LinkDialogHandler());
-        final int statusCodeOfLink = linkDialogHandler.checkStatusCodeOfLink("https://www.google.com");
+        final int statusCodeOfLink =
+                linkDialogHandler.checkStatusCodeOfLink("https://www.google.com");
 
         assertEquals(200, statusCodeOfLink);
     }

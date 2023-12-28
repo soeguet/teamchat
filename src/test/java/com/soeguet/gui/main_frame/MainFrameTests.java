@@ -1,18 +1,17 @@
 package com.soeguet.gui.main_frame;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import com.soeguet.emoji.EmojiInitializer;
 import com.soeguet.gui.notification_panel.NotificationStatusHandler;
 import com.soeguet.model.EnvVariables;
 import com.soeguet.util.NotificationStatus;
+import java.util.HashMap;
+import javax.swing.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-
-import javax.swing.*;
-import java.util.HashMap;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 public class MainFrameTests {
 
@@ -55,7 +54,8 @@ public class MainFrameTests {
 
         frame.loadUsernameFromEnvVariables(envVariables);
 
-        assertEquals("Paul", frame.getUsername(), "should return \"Paul\" from environment variables");
+        assertEquals(
+                "Paul", frame.getUsername(), "should return \"Paul\" from environment variables");
     }
 
     @Test
@@ -69,20 +69,20 @@ public class MainFrameTests {
     @Test
     void testIfEmojiListInitializationWorksProperly() {
 
-        //mock dependency
+        // mock dependency
         EmojiInitializer mockEmojiInitializer = mock(EmojiInitializer.class);
 
-        //mock hashmap
+        // mock hashmap
         HashMap<String, ImageIcon> fakeEmojiList = new HashMap<>();
         fakeEmojiList.put("fakeEmoji", new ImageIcon());
 
-        //return hashmap
+        // return hashmap
         when(mockEmojiInitializer.createEmojiList()).thenReturn(fakeEmojiList);
 
-        //call method
+        // call method
         chatMainFrame.initEmojiList(mockEmojiInitializer);
 
-        //assert
+        // assert
         assertFalse(chatMainFrame.getEmojiList().isEmpty());
     }
 
@@ -101,12 +101,14 @@ public class MainFrameTests {
         ChatMainFrameImpl obj = new ChatMainFrameImpl();
         assertTrue(obj.isStartUp());
     }
+
     @Test
     void checkIfNotificationStatusIsAllDenied() {
 
         ChatMainFrameImpl obj = new ChatMainFrameImpl();
         NotificationStatusHandler notificationStatusHandler = new NotificationStatusHandler(obj);
-        assertEquals(notificationStatusHandler.getNotificationStatus(), NotificationStatus.ALL_DENIED);
+        assertEquals(
+                notificationStatusHandler.getNotificationStatus(), NotificationStatus.ALL_DENIED);
     }
 
     @Test

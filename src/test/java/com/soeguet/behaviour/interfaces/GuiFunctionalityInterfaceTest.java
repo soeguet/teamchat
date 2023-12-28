@@ -1,14 +1,13 @@
 package com.soeguet.behaviour.interfaces;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.soeguet.behaviour.GuiFunctionalityImpl;
 import com.soeguet.gui.main_frame.ChatMainFrameImpl;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
+import javax.swing.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-
-import javax.swing.*;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class GuiFunctionalityInterfaceTest {
 

@@ -4,10 +4,9 @@ import com.soeguet.gui.comments.generic_comment.gui_elements.buttons.CustomInter
 import com.soeguet.gui.comments.generic_comment.util.Side;
 import com.soeguet.gui.comments.generic_comment.util.SideHandler;
 import com.soeguet.gui.comments.util.CommentTypeEnum;
-import net.miginfocom.swing.MigLayout;
-
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
+import net.miginfocom.swing.MigLayout;
 
 public class CommentSidePanel extends JPanel {
 
@@ -16,6 +15,7 @@ public class CommentSidePanel extends JPanel {
     private JLabel nameLabel;
     private JLabel timeLabel;
     private CustomInteractionButton interactionButton;
+
     // variables -- end
 
     // constructors -- start
@@ -27,6 +27,7 @@ public class CommentSidePanel extends JPanel {
 
         this.componentConfig();
     }
+
     // constructors -- end
 
     public void setSidePanelLayoutManager() {
@@ -49,29 +50,34 @@ public class CommentSidePanel extends JPanel {
          */
 
         if (side == Side.LEFT) {
-            super.setLayout(new MigLayout("insets 0",
-                                          // columns
-                                          "[][]10",
-                                          // rows - push is needed -> text will float
-                                          "push[shrink][shrink]"));
+            super.setLayout(
+                    new MigLayout(
+                            "insets 0",
+                            // columns
+                            "[][]10",
+                            // rows - push is needed -> text will float
+                            "push[shrink][shrink]"));
         } else {
-            super.setLayout(new MigLayout("insets 0",
-                                          // columns
-                                          "10[][]",
-                                          // rows - push is needed -> text will float
-                                          "push[shrink][shrink]"));
+            super.setLayout(
+                    new MigLayout(
+                            "insets 0",
+                            // columns
+                            "10[][]",
+                            // rows - push is needed -> text will float
+                            "push[shrink][shrink]"));
         }
     }
 
     private void componentConfig() {
 
-        //timestamp
+        // timestamp
         final JLabel timeStampLabel = this.getTimeLabel();
         final Font timeStampLabelFont = timeStampLabel.getFont();
         timeStampLabel.setEnabled(false);
-        timeStampLabel.setFont(new Font(timeStampLabelFont.getName(), Font.ITALIC, timeStampLabelFont.getSize()));
+        timeStampLabel.setFont(
+                new Font(timeStampLabelFont.getName(), Font.ITALIC, timeStampLabelFont.getSize()));
 
-        //name
+        // name
         final JLabel nameLabel = this.getNameLabel();
         final Font nameLabelFont = nameLabel.getFont();
         nameLabel.setEnabled(false);

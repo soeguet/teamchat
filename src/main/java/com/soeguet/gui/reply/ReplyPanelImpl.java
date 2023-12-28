@@ -41,10 +41,11 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
 
         this.setBorder(new LineBorder(Color.BLACK, 1));
 
-
         if (baseModel instanceof MessageModel messageModel) {
 
-            new EmojiHandler(mainFrame).replaceEmojiDescriptionWithActualImageIcon(getMainQuoteTextField(), messageModel.getMessage());
+            new EmojiHandler(mainFrame)
+                    .replaceEmojiDescriptionWithActualImageIcon(
+                            getMainQuoteTextField(), messageModel.getMessage());
             form_quotedSender.setText(baseModel.getSender());
             form_quotedTime.setText(baseModel.getTime());
         }
@@ -58,7 +59,7 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
 
         int height = (int) this.getPreferredSize().getHeight();
 
-        //make it look a little less stuffed
+        // make it look a little less stuffed
         if (this.getPreferredSize().getWidth() > 500) {
             height += 100;
         } else {
@@ -75,13 +76,13 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
     @Override
     public void requestAllFocus() {
 
-        SwingUtilities.invokeLater(() -> {
+        SwingUtilities.invokeLater(
+                () -> {
+                    this.setBorder(new LineBorder(Color.BLUE));
 
-            this.setBorder(new LineBorder(Color.BLUE));
-
-            this.getReplyTextPane().requestFocus();
-            this.getReplyTextPane().grabFocus();
-        });
+                    this.getReplyTextPane().requestFocus();
+                    this.getReplyTextPane().grabFocus();
+                });
     }
 
     @Override
@@ -122,7 +123,10 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
 
         if (!getReplyTextPane().hasFocus()) {
 
-            if (e.getX() < 0 || e.getY() < 0 || e.getX() > this.getWidth() - 1 || e.getY() > this.getHeight() - 1) {
+            if (e.getX() < 0
+                    || e.getY() < 0
+                    || e.getX() > this.getWidth() - 1
+                    || e.getY() > this.getHeight() - 1) {
 
                 this.setBorder(border);
             }
@@ -130,14 +134,10 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
     }
 
     @Override
-    protected void thisFocusLost(FocusEvent e) {
-
-    }
+    protected void thisFocusLost(FocusEvent e) {}
 
     @Override
-    protected void replyTextPaneFocusLost(FocusEvent e) {
-
-    }
+    protected void replyTextPaneFocusLost(FocusEvent e) {}
 
     @Override
     protected void replyTextPaneKeyPressed(final KeyEvent e) {
@@ -146,7 +146,8 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
 
             if (e.isShiftDown()) {
 
-                this.getReplyTextPane().setText(this.getReplyTextPane().getText() + System.lineSeparator());
+                this.getReplyTextPane()
+                        .setText(this.getReplyTextPane().getText() + System.lineSeparator());
 
             } else {
 
@@ -158,13 +159,15 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
     @Override
     protected void quotePanelPictureButtonMouseClicked(final MouseEvent e) {
 
-        //FEATURE implement picture sending as reply
+        // FEATURE implement picture sending as reply
     }
 
     @Override
     protected void quotePanelEmojiButtonMouseClicked(MouseEvent e) {
 
-        EmojiPopupInterface emojiPopup = new EmojiPopUpMenuHandler(mainFrame, this.getReplyTextPane(), this.form_quotePanelEmojiButton);
+        EmojiPopupInterface emojiPopup =
+                new EmojiPopUpMenuHandler(
+                        mainFrame, this.getReplyTextPane(), this.form_quotePanelEmojiButton);
         emojiPopup.createEmojiPopupMenu();
     }
 
@@ -173,19 +176,22 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
 
         new EmojiHandler(mainFrame).replaceImageIconWithEmojiDescription(this.getReplyTextPane());
 
-        //FIXME is this right?
-        if (isTextPaneBlank()) {return;}
+        // FIXME is this right?
+        if (isTextPaneBlank()) {
+            return;
+        }
 
         MessageModel sendModel = new MessageModel();
 
-        //type
+        // type
         sendModel.setMessageType(MessageTypes.NORMAL);
-        //quoted message
+        // quoted message
         // FIXME: 02.11.23
-//        sendModel.setQuotedMessageSender(this.mainFrame.getUsername());
-//        sendModel.setQuotedMessageText(this.getReplyTextPane().getText());
-//        sendModel.setQuotedMessageTime(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
-        //this client
+        //        sendModel.setQuotedMessageSender(this.mainFrame.getUsername());
+        //        sendModel.setQuotedMessageText(this.getReplyTextPane().getText());
+        //
+        // sendModel.setQuotedMessageTime(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
+        // this client
         sendModel.setSender(this.baseModel.getSender());
 
         if (baseModel instanceof MessageModel messageModel) {
@@ -197,7 +203,11 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
 
         try {
 
-            final String serializedMessage = mainFrame.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(sendModel);
+            final String serializedMessage =
+                    mainFrame
+                            .getObjectMapper()
+                            .writerWithDefaultPrettyPrinter()
+                            .writeValueAsString(sendModel);
 
             mainFrame.getWebsocketClient().send(serializedMessage);
 

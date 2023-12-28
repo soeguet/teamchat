@@ -1,15 +1,14 @@
 package com.soeguet.gui.comments.interfaces;
 
-import com.soeguet.gui.comments.util.CommentTypeEnum;
 import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomMainWrapperContainer;
+import com.soeguet.gui.comments.util.CommentTypeEnum;
 import com.soeguet.model.UserInteraction;
 import com.soeguet.model.jackson.BaseModel;
-
-import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.util.List;
 import java.util.function.Consumer;
+import javax.swing.*;
+import javax.swing.border.Border;
 
 public interface CommentInterface {
 

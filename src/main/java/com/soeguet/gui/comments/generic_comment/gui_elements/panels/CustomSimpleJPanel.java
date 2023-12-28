@@ -1,7 +1,7 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public class CustomSimpleJPanel extends JPanel {
 

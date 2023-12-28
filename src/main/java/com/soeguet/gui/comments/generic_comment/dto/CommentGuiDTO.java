@@ -6,7 +6,6 @@ import com.soeguet.gui.comments.generic_comment.gui_elements.panels.TransparentT
 import com.soeguet.gui.comments.util.CommentTypeEnum;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.BaseModel;
-
 import javax.swing.*;
 
 public record CommentGuiDTO(
@@ -16,7 +15,4 @@ public record CommentGuiDTO(
         CommentSidePanel sidePanel,
         TransparentTopPanel topContainer,
         CustomContentContainer customContentContainer,
-        JPanel mainContainer
-) {
-
-}
+        JPanel mainContainer) {}

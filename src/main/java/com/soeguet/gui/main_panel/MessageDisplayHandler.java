@@ -1,8 +1,5 @@
 package com.soeguet.gui.main_panel;
 
-import java.awt.Component;
-import java.awt.Toolkit;
-
 import com.soeguet.cache.implementations.MessageQueue;
 import com.soeguet.cache.manager.CacheManager;
 import com.soeguet.gui.comments.interfaces.CommentInterface;
@@ -11,27 +8,32 @@ import com.soeguet.gui.comments.util.CommentTypeEnum;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.main_panel.interfaces.MessageDisplayHandlerInterface;
 import com.soeguet.model.jackson.BaseModel;
+import java.awt.Component;
+import java.awt.Toolkit;
 
 public class MessageDisplayHandler implements MessageDisplayHandlerInterface {
 
-// variables -- start
+    // variables -- start
     private final MainFrameGuiInterface mainFrame;
     private final CommentManager commentManager;
     private CacheManager cacheManager;
-// variables -- end
 
-// constructors -- start
-    public MessageDisplayHandler(final MainFrameGuiInterface mainFrame, final CommentManager commentManager) {
+    // variables -- end
+
+    // constructors -- start
+    public MessageDisplayHandler(
+            final MainFrameGuiInterface mainFrame, final CommentManager commentManager) {
 
         this.mainFrame = mainFrame;
         this.commentManager = commentManager;
     }
-// constructors -- end
+
+    // constructors -- end
 
     /**
-     Retrieves and removes the first message from the message queue cache.
-
-     @return The first message in the message queue, or null if the cache is empty.
+     * Retrieves and removes the first message from the message queue cache.
+     *
+     * @return The first message in the message queue, or null if the cache is empty.
      */
     @Override
     public String pollMessageFromCache() {
@@ -45,12 +47,10 @@ public class MessageDisplayHandler implements MessageDisplayHandlerInterface {
     }
 
     /**
-     Processes and displays a message based on the message model, nickname, and comment type.
-
-     @param baseModel
-     The message model representing the message.
-     @param nickname
-     The nickname of the client.
+     * Processes and displays a message based on the message model, nickname, and comment type.
+     *
+     * @param baseModel The message model representing the message.
+     * @param nickname The nickname of the client.
      */
     @Override
     public void processAndDisplayMessage(final BaseModel baseModel) {
@@ -77,9 +77,10 @@ public class MessageDisplayHandler implements MessageDisplayHandlerInterface {
 
                     commentInterface.setBaseModel(baseModel);
 
-                    commentInterface.initializeReactionStickerHandler(baseModel.getUserInteractions());
+                    commentInterface.initializeReactionStickerHandler(
+                            baseModel.getUserInteractions());
 
-                    //TODO implement notification for client
+                    // TODO implement notification for client
                     Toolkit.getDefaultToolkit().beep();
 
                     mainFrame.revalidate();

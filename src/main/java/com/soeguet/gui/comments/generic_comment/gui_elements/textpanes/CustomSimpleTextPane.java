@@ -1,21 +1,20 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.textpanes;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-
-import javax.swing.JPopupMenu;
-import javax.swing.JTextPane;
-import javax.swing.SwingUtilities;
-
 import com.soeguet.gui.comments.generic_comment.gui_elements.menu_items.CopyTextMenuItem;
 import com.soeguet.gui.comments.util.EmojiSwingWorker;
 import com.soeguet.gui.comments.util.WrapEditorKit;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import javax.swing.JPopupMenu;
+import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
 
 public class CustomSimpleTextPane extends JTextPane implements MouseListener {
 
     // variables -- start
     private final MainFrameGuiInterface mainFrame;
+
     // variables -- end
 
     // constructors -- start
@@ -35,6 +34,7 @@ public class CustomSimpleTextPane extends JTextPane implements MouseListener {
 
         super.addMouseListener(this);
     }
+
     // constructors -- end
 
     public void replaceEmojiDescriptionWithActualImageIcon(final String message) {
@@ -48,29 +48,21 @@ public class CustomSimpleTextPane extends JTextPane implements MouseListener {
         if (SwingUtilities.isRightMouseButton(e)) {
 
             JPopupMenu popupMenu = new JPopupMenu();
-            CopyTextMenuItem copy = new CopyTextMenuItem(this,"Copy");
+            CopyTextMenuItem copy = new CopyTextMenuItem(this, "Copy");
             popupMenu.add(copy);
             popupMenu.show(this, e.getX(), e.getY());
         }
     }
 
     @Override
-    public void mousePressed(final MouseEvent e) {
-
-    }
+    public void mousePressed(final MouseEvent e) {}
 
     @Override
-    public void mouseReleased(final MouseEvent e) {
-
-    }
+    public void mouseReleased(final MouseEvent e) {}
 
     @Override
-    public void mouseEntered(final MouseEvent e) {
-
-    }
+    public void mouseEntered(final MouseEvent e) {}
 
     @Override
-    public void mouseExited(final MouseEvent e) {
-
-    }
+    public void mouseExited(final MouseEvent e) {}
 }

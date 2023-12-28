@@ -1,7 +1,7 @@
 package com.soeguet.emoji.interfaces;
 
-import javax.swing.*;
 import java.util.HashMap;
+import javax.swing.*;
 
 public interface EmojiInitializerInterface {
 

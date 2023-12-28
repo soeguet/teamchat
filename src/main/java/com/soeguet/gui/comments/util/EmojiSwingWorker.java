@@ -14,6 +14,7 @@ public class EmojiSwingWorker extends SwingWorker<Void, Object> {
     private final JTextPane textPane;
     private final HashMap<String, ImageIcon> emojiList;
     private final String text;
+
     // variables -- end
 
     // constructors -- start
@@ -23,6 +24,7 @@ public class EmojiSwingWorker extends SwingWorker<Void, Object> {
         this.emojiList = emojiList;
         this.text = text;
     }
+
     // constructors -- end
 
     @Override
@@ -56,7 +58,10 @@ public class EmojiSwingWorker extends SwingWorker<Void, Object> {
         return null;
     }
 
-    private int processWord(final String word, final StringBuilder textBuilder, int wordCounter,
+    private int processWord(
+            final String word,
+            final StringBuilder textBuilder,
+            int wordCounter,
             final int chunkSize) {
 
         textBuilder.append(word).append(" ");
@@ -98,30 +103,30 @@ public class EmojiSwingWorker extends SwingWorker<Void, Object> {
     @Override
     protected void process(List<Object> chunks) {
 
-        SwingUtilities.invokeLater(() -> {
+        SwingUtilities.invokeLater(
+                () -> {
+                    try {
 
-            try {
+                        StyledDocument doc = textPane.getStyledDocument();
 
-                StyledDocument doc = textPane.getStyledDocument();
+                        for (Object chunk : chunks) {
 
-                for (Object chunk : chunks) {
+                            if (chunk instanceof ImageIcon imageIcon) {
 
-                    if (chunk instanceof ImageIcon imageIcon) {
+                                // Insert the ImageIcon
+                                textPane.insertIcon(imageIcon);
 
-                        // Insert the ImageIcon
-                        textPane.insertIcon(imageIcon);
+                            } else if (chunk instanceof String string) {
 
-                    } else if (chunk instanceof String string) {
+                                // Insert the text
+                                doc.insertString(doc.getLength(), string, null);
+                            }
+                        }
 
-                        // Insert the text
-                        doc.insertString(doc.getLength(), string, null);
+                    } catch (Exception e) {
+
+                        throw new RuntimeException(e);
                     }
-                }
-
-            } catch (Exception e) {
-
-                throw new RuntimeException(e);
-            }
-        });
+                });
     }
 }

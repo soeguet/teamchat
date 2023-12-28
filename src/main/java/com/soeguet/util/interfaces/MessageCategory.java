@@ -9,5 +9,4 @@ public interface MessageCategory {
     int LEFT_SIDE_TEXT_MESSAGE = 201;
     int LEFT_SIDE_PICTURE_MESSAGE = 202;
     int LEFT_SIDE_LINK_MESSAGE = 203;
-
 }

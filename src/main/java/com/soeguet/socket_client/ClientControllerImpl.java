@@ -3,13 +3,12 @@ package com.soeguet.socket_client;
 import com.soeguet.behaviour.interfaces.GuiFunctionalityInterface;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.socket_client.interfaces.ClientController;
-import net.miginfocom.swing.MigLayout;
-
-import javax.swing.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
 import java.util.logging.Logger;
+import javax.swing.*;
+import net.miginfocom.swing.MigLayout;
 
 public class ClientControllerImpl implements ClientController {
 
@@ -19,7 +18,9 @@ public class ClientControllerImpl implements ClientController {
     private URI serverUri;
     private CustomWebsocketClient websocketClient;
 
-    public ClientControllerImpl(final MainFrameGuiInterface mainFrame, final GuiFunctionalityInterface guiFunctionality) {
+    public ClientControllerImpl(
+            final MainFrameGuiInterface mainFrame,
+            final GuiFunctionalityInterface guiFunctionality) {
 
         this.mainFrame = mainFrame;
         this.guiFunctionality = guiFunctionality;
@@ -67,11 +68,18 @@ public class ClientControllerImpl implements ClientController {
         JTextField serverIpTextField = new JTextField(7);
         JTextField serverPortTextField = new JTextField(7);
 
-        final JPanel serverInfoPanel = createServerInfoPanel(serverIpTextField, serverPortTextField);
+        final JPanel serverInfoPanel =
+                createServerInfoPanel(serverIpTextField, serverPortTextField);
 
-        int result = JOptionPane.showConfirmDialog(null, serverInfoPanel, "please enter ip and port values", JOptionPane.OK_CANCEL_OPTION);
+        int result =
+                JOptionPane.showConfirmDialog(
+                        null,
+                        serverInfoPanel,
+                        "please enter ip and port values",
+                        JOptionPane.OK_CANCEL_OPTION);
 
-        validateServerInformationInputByUser(serverIpTextField.getText(), serverPortTextField.getText());
+        validateServerInformationInputByUser(
+                serverIpTextField.getText(), serverPortTextField.getText());
 
         if (result == JOptionPane.OK_OPTION) {
 
@@ -84,20 +92,23 @@ public class ClientControllerImpl implements ClientController {
         return new URI("ws://" + serverIp + ":" + serverPort);
     }
 
-    private JPanel createServerInfoPanel(final JTextField serverIpTextField, final JTextField serverPortTextField) {
+    private JPanel createServerInfoPanel(
+            final JTextField serverIpTextField, final JTextField serverPortTextField) {
 
         JPanel myPanel = new JPanel(new MigLayout("wrap 2"));
 
-        //port information
+        // port information
         myPanel.add(new JLabel("Port:"));
         String defaultServerIp = "127.0.0.1";
-        serverIpTextField.setText(readServerIp().isEmpty() ? defaultServerIp : readServerIp().get());
+        serverIpTextField.setText(
+                readServerIp().isEmpty() ? defaultServerIp : readServerIp().get());
         myPanel.add(serverIpTextField);
 
-        //ip information
+        // ip information
         myPanel.add(new JLabel("Ip:"));
         String defaultServerPort = "8100";
-        serverPortTextField.setText(readServerPort().isEmpty() ? defaultServerPort : readServerPort().get());
+        serverPortTextField.setText(
+                readServerPort().isEmpty() ? defaultServerPort : readServerPort().get());
 
         myPanel.add(serverPortTextField);
 
@@ -106,7 +117,8 @@ public class ClientControllerImpl implements ClientController {
         return myPanel;
     }
 
-    private void validateServerInformationInputByUser(final String serverIpText, final String serverPortText) {
+    private void validateServerInformationInputByUser(
+            final String serverIpText, final String serverPortText) {
 
         StringBuilder errorMessage = new StringBuilder();
 
@@ -123,11 +135,18 @@ public class ClientControllerImpl implements ClientController {
         }
 
         if (!errorMessage.isEmpty()) {
-            SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, errorMessage.toString(), "Error", JOptionPane.ERROR_MESSAGE));
+            SwingUtilities.invokeLater(
+                    () ->
+                            JOptionPane.showMessageDialog(
+                                    null,
+                                    errorMessage.toString(),
+                                    "Error",
+                                    JOptionPane.ERROR_MESSAGE));
         }
     }
 
-    private void processValidatedServerInformation(final JTextField serverIpTextField, final JTextField serverPortTextField) {
+    private void processValidatedServerInformation(
+            final JTextField serverIpTextField, final JTextField serverPortTextField) {
 
         String serverIp = serverIpTextField.getText();
         String serverPort = serverPortTextField.getText();
@@ -152,21 +171,22 @@ public class ClientControllerImpl implements ClientController {
     }
 
     /**
-     Prepares the application for reconnection.
-
-     Resets the websocket client to null, sets the last message sender name and timestamp to null,
-     and sets the startUp flag to true to disable notifications during initial message flood.
+     * Prepares the application for reconnection.
+     *
+     * <p>Resets the websocket client to null, sets the last message sender name and timestamp to
+     * null, and sets the startUp flag to true to disable notifications during initial message
+     * flood.
      */
     @Override
     public void prepareReconnection() {
 
         this.websocketClient = null;
 
-        //new evaluation of last sender and time
+        // new evaluation of last sender and time
         mainFrame.setLastMessageSenderName(null);
         mainFrame.setLastMessageTimeStamp(null);
 
-        //no notifications during initial message flood
+        // no notifications during initial message flood
         mainFrame.setStartUp(true);
     }
 

@@ -3,7 +3,6 @@ package com.soeguet.gui.comments.generic_comment.factories;
 import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomReplyPanel;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.BaseModel;
-
 import javax.swing.*;
 
 public class ReplyPanelFactory {
@@ -12,6 +11,7 @@ public class ReplyPanelFactory {
     private final MainFrameGuiInterface mainFrame;
     private final BaseModel baseModel;
     private CustomReplyPanel customReplyPanel;
+
     // variables -- end
 
     // constructors -- start
@@ -20,6 +20,7 @@ public class ReplyPanelFactory {
         this.mainFrame = mainFrame;
         this.baseModel = baseModel;
     }
+
     // constructors -- end
 
     public void create() {

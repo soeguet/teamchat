@@ -2,16 +2,15 @@ package com.soeguet.emoji;
 
 import com.soeguet.emoji.interfaces.EmojiPopupInterface;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
-import net.miginfocom.swing.MigLayout;
-
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
-import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.util.logging.Logger;
+import net.miginfocom.swing.MigLayout;
 
 public class EmojiPopUpMenuHandler implements EmojiPopupInterface {
 
@@ -21,7 +20,8 @@ public class EmojiPopUpMenuHandler implements EmojiPopupInterface {
 
     private final Logger logger = Logger.getLogger(EmojiPopUpMenuHandler.class.getName());
 
-    public EmojiPopUpMenuHandler(MainFrameGuiInterface mainFrame, JTextPane textPane, JButton emojiButton) {
+    public EmojiPopUpMenuHandler(
+            MainFrameGuiInterface mainFrame, JTextPane textPane, JButton emojiButton) {
 
         this.mainFrame = mainFrame;
         this.textPane = textPane;
@@ -29,10 +29,10 @@ public class EmojiPopUpMenuHandler implements EmojiPopupInterface {
     }
 
     /**
-     Creates a pop-up menu with emojis.
-
-     <p>This method is responsible for creating a pop-up menu and adding emojis to it. The pop-up
-     menu is then displayed at the position of the emoji button.
+     * Creates a pop-up menu with emojis.
+     *
+     * <p>This method is responsible for creating a pop-up menu and adding emojis to it. The pop-up
+     * menu is then displayed at the position of the emoji button.
      */
     @Override
     public void createEmojiPopupMenu() {
@@ -40,22 +40,26 @@ public class EmojiPopUpMenuHandler implements EmojiPopupInterface {
         JPopupMenu emojiPopupMenu = new JPopupMenu();
         JPanel emojiPanelWrapper = createEmojiPanel();
 
-        mainFrame.getEmojiList().forEach((key, emoji) -> {
-            JPanel emojiPanelForOneEmoji = createEmojiPanelForOneEmoji(key, emoji);
-            emojiPanelWrapper.add(emojiPanelForOneEmoji);
-        });
+        mainFrame
+                .getEmojiList()
+                .forEach(
+                        (key, emoji) -> {
+                            JPanel emojiPanelForOneEmoji = createEmojiPanelForOneEmoji(key, emoji);
+                            emojiPanelWrapper.add(emojiPanelForOneEmoji);
+                        });
 
         emojiPopupMenu.add(emojiPanelWrapper);
-        emojiPopupMenu.show(emojiButton, emojiButton.getMousePosition().x, emojiButton.getMousePosition().y);
+        emojiPopupMenu.show(
+                emojiButton, emojiButton.getMousePosition().x, emojiButton.getMousePosition().y);
     }
 
     /**
-     Creates a panel for displaying emojis.
-
-     <p>This method creates a JPanel and sets its layout to MigLayout with "wrap 10"
-     constraints to display emojis in a grid-like fashion. The panel is then returned.
-
-     @return The JPanel for displaying emojis.
+     * Creates a panel for displaying emojis.
+     *
+     * <p>This method creates a JPanel and sets its layout to MigLayout with "wrap 10" constraints
+     * to display emojis in a grid-like fashion. The panel is then returned.
+     *
+     * @return The JPanel for displaying emojis.
      */
     private JPanel createEmojiPanel() {
 
@@ -65,12 +69,11 @@ public class EmojiPopUpMenuHandler implements EmojiPopupInterface {
     }
 
     /**
-     Creates a JPanel for displaying a single emoji.
-
-     @param key   the key associated with the emoji
-     @param emoji the ImageIcon representing the emoji
-
-     @return the JPanel containing the emoji
+     * Creates a JPanel for displaying a single emoji.
+     *
+     * @param key the key associated with the emoji
+     * @param emoji the ImageIcon representing the emoji
+     * @return the JPanel containing the emoji
      */
     private JPanel createEmojiPanelForOneEmoji(String key, ImageIcon emoji) {
 
@@ -85,39 +88,41 @@ public class EmojiPopUpMenuHandler implements EmojiPopupInterface {
     }
 
     /**
-     Adds a mouse listener to the specified emoji panel.
-
-     @param emojiPanelForOneEmoji the JPanel to add the mouse listener to
-     @param key                   the key associated with the emoji
-     @param emoji                 the ImageIcon representing the emoji
+     * Adds a mouse listener to the specified emoji panel.
+     *
+     * @param emojiPanelForOneEmoji the JPanel to add the mouse listener to
+     * @param key the key associated with the emoji
+     * @param emoji the ImageIcon representing the emoji
      */
-    private void addMouseListenerToEmojiPanel(JPanel emojiPanelForOneEmoji, String key, ImageIcon emoji) {
+    private void addMouseListenerToEmojiPanel(
+            JPanel emojiPanelForOneEmoji, String key, ImageIcon emoji) {
 
-        emojiPanelForOneEmoji.addMouseListener(new java.awt.event.MouseAdapter() {
+        emojiPanelForOneEmoji.addMouseListener(
+                new java.awt.event.MouseAdapter() {
 
-            @Override
-            public void mousePressed(MouseEvent e) {
+                    @Override
+                    public void mousePressed(MouseEvent e) {
 
-                insertEmojiAtCaretPosition(key, emoji);
-            }
+                        insertEmojiAtCaretPosition(key, emoji);
+                    }
 
-            public void mouseEntered(MouseEvent evt) {
+                    public void mouseEntered(MouseEvent evt) {
 
-                emojiPanelForOneEmoji.setBackground(new Color(0, 136, 191));
-            }
+                        emojiPanelForOneEmoji.setBackground(new Color(0, 136, 191));
+                    }
 
-            public void mouseExited(MouseEvent evt) {
+                    public void mouseExited(MouseEvent evt) {
 
-                emojiPanelForOneEmoji.setBackground(null);
-            }
-        });
+                        emojiPanelForOneEmoji.setBackground(null);
+                    }
+                });
     }
 
     /**
-     Inserts an emoji at the current caret position in the text editor pane.
-
-     @param key   the key associated with the emoji
-     @param emoji the ImageIcon representing the emoji
+     * Inserts an emoji at the current caret position in the text editor pane.
+     *
+     * @param key the key associated with the emoji
+     * @param emoji the ImageIcon representing the emoji
      */
     private void insertEmojiAtCaretPosition(String key, ImageIcon emoji) {
 
@@ -136,7 +141,6 @@ public class EmojiPopUpMenuHandler implements EmojiPopupInterface {
 
             logger.log(java.util.logging.Level.WARNING, e.getMessage(), e);
             throw new RuntimeException();
-
         }
     }
 }

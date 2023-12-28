@@ -6,9 +6,7 @@ public class EnvVariables {
     String chatIp;
     String chatPort;
 
-    public EnvVariables() {
-
-    }
+    public EnvVariables() {}
 
     public EnvVariables(final String chatUsername) {
 
@@ -55,10 +53,16 @@ public class EnvVariables {
     @Override
     public String toString() {
 
-        return "EnvVariables{" +
-                "chatUsername='" + chatUsername + '\'' +
-                ", chatIp='" + chatIp + '\'' +
-                ", chatPort='" + chatPort + '\'' +
-                '}';
+        return "EnvVariables{"
+                + "chatUsername='"
+                + chatUsername
+                + '\''
+                + ", chatIp='"
+                + chatIp
+                + '\''
+                + ", chatPort='"
+                + chatPort
+                + '\''
+                + '}';
     }
 }

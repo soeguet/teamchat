@@ -9,6 +9,7 @@ public class LinkPanelFactory {
     private final MainFrameGuiInterface mainFrame;
     // variables -- start
     private final BaseModel baseModel;
+
     // variables -- end
 
     // constructors -- start
@@ -18,6 +19,7 @@ public class LinkPanelFactory {
 
         this.baseModel = baseModel;
     }
+
     // constructors -- end
 
     public CustomLinkPanel create() {

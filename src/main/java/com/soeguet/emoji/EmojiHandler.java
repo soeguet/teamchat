@@ -2,11 +2,10 @@ package com.soeguet.emoji;
 
 import com.soeguet.emoji.interfaces.EmojiHandlerInterface;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
-
-import javax.swing.*;
-import javax.swing.text.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.*;
+import javax.swing.text.*;
 
 public class EmojiHandler implements EmojiHandlerInterface {
 
@@ -19,9 +18,9 @@ public class EmojiHandler implements EmojiHandlerInterface {
     }
 
     /**
-     Replaces image icons with emoji descriptions in a JTextPane.
-
-     @param jTextPane the JTextPane in which to replace the image icons
+     * Replaces image icons with emoji descriptions in a JTextPane.
+     *
+     * @param jTextPane the JTextPane in which to replace the image icons
      */
     public void replaceImageIconWithEmojiDescription(JTextPane jTextPane) {
 
@@ -35,11 +34,12 @@ public class EmojiHandler implements EmojiHandlerInterface {
     }
 
     /**
-     Finds image icons within an element and replaces them with their corresponding emoji descriptions.
-
-     @param element the element to search for image icons
-
-     @throws BadLocationException if an invalid location is encountered while inserting the emoji description
+     * Finds image icons within an element and replaces them with their corresponding emoji
+     * descriptions.
+     *
+     * @param element the element to search for image icons
+     * @throws BadLocationException if an invalid location is encountered while inserting the emoji
+     *     description
      */
     private void findImagesInElement(Element element) throws BadLocationException {
 
@@ -52,7 +52,9 @@ public class EmojiHandler implements EmojiHandlerInterface {
                 ImageIcon foundIcon = (ImageIcon) StyleConstants.getIcon(attributes);
                 String description = foundIcon.getDescription();
 
-                childElement.getDocument().insertString(childElement.getEndOffset(), description + " ", null);
+                childElement
+                        .getDocument()
+                        .insertString(childElement.getEndOffset(), description + " ", null);
             }
 
             findImagesInElement(childElement);
@@ -60,9 +62,11 @@ public class EmojiHandler implements EmojiHandlerInterface {
     }
 
     /**
-     Process the given text in order to replace any known emoji words with their corresponding emoji icons within a JTextPane.@param actualTextPane the JTextPane where the text is being processed
-
-     @param text the text to be processed
+     * Process the given text in order to replace any known emoji words with their corresponding
+     * emoji icons within a JTextPane.@param actualTextPane the JTextPane where the text is being
+     * processed
+     *
+     * @param text the text to be processed
      */
     @Override
     public void replaceEmojiDescriptionWithActualImageIcon(JTextPane actualTextPane, String text) {
@@ -79,7 +83,6 @@ public class EmojiHandler implements EmojiHandlerInterface {
 
                     doc.insertString(doc.getLength(), word + " ", null);
                 }
-
             }
 
         } catch (Exception e) {
@@ -89,10 +92,9 @@ public class EmojiHandler implements EmojiHandlerInterface {
         }
     }
 
-    /**
-
-     */
-    private void processEmoji(JTextPane actualTextPane, MainFrameGuiInterface gui, StyledDocument doc, String word) {
+    /** */
+    private void processEmoji(
+            JTextPane actualTextPane, MainFrameGuiInterface gui, StyledDocument doc, String word) {
 
         Style style = createImageStyle(actualTextPane, gui, word);
 
@@ -108,15 +110,15 @@ public class EmojiHandler implements EmojiHandlerInterface {
     }
 
     /**
-     Creates a style with an image icon for a given word.
-
-     @param actualTextPane the JTextPane where the style will be applied
-     @param gui            the MainFrameInterface object for accessing the emoji list
-     @param word           the word for which the image style is created
-
-     @return the created style with the image icon
+     * Creates a style with an image icon for a given word.
+     *
+     * @param actualTextPane the JTextPane where the style will be applied
+     * @param gui the MainFrameInterface object for accessing the emoji list
+     * @param word the word for which the image style is created
+     * @return the created style with the image icon
      */
-    private Style createImageStyle(JTextPane actualTextPane, MainFrameGuiInterface gui, String word) {
+    private Style createImageStyle(
+            JTextPane actualTextPane, MainFrameGuiInterface gui, String word) {
 
         Style style = actualTextPane.addStyle("Image", null);
 

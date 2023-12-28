@@ -1,19 +1,17 @@
 package com.soeguet.gui.main_frame;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-
-import javax.swing.*;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
+import javax.swing.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+
 class ChatMainFrameImplTests {
 
-    @Mock
-    ChatMainFrameImpl chatMainFrame;
+    @Mock ChatMainFrameImpl chatMainFrame;
 
     @BeforeEach
     void setUp() {

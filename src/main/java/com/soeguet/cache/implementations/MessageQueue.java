@@ -1,7 +1,6 @@
 package com.soeguet.cache.implementations;
 
 import com.soeguet.cache.CustomCache;
-
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class MessageQueue implements CustomCache<String> {

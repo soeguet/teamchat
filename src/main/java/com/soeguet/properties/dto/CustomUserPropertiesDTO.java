@@ -6,6 +6,7 @@ public record CustomUserPropertiesDTO(String username, String nickname, String b
 
         return borderColor == null ? -1 : Integer.parseInt(borderColor);
     }
+
     public CustomUserPropertiesDTO withUsername(final String updatedUsername) {
 
         return new CustomUserPropertiesDTO(updatedUsername, nickname, borderColor);

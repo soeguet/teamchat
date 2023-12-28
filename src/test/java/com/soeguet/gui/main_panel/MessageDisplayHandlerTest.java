@@ -1,13 +1,13 @@
 package com.soeguet.gui.main_panel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import com.soeguet.cache.implementations.MessageQueue;
 import com.soeguet.cache.manager.CacheManager;
 import com.soeguet.gui.main_panel.interfaces.MessageDisplayHandlerInterface;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class MessageDisplayHandlerTest {
 
@@ -16,7 +16,8 @@ public class MessageDisplayHandlerTest {
 
         CacheManager cacheManager = Mockito.mock(CacheManager.class);
 
-        MessageDisplayHandlerInterface messageDisplayHandlerInterface = new MessageDisplayHandler(null, null);
+        MessageDisplayHandlerInterface messageDisplayHandlerInterface =
+                new MessageDisplayHandler(null, null);
         messageDisplayHandlerInterface.setCacheManager(cacheManager);
 
         assertNull(messageDisplayHandlerInterface.pollMessageFromCache());
@@ -25,7 +26,8 @@ public class MessageDisplayHandlerTest {
     @Test
     public void pollFromEmptyCache() {
 
-        MessageDisplayHandlerInterface messageDisplayHandlerInterface = new MessageDisplayHandler(null, null);
+        MessageDisplayHandlerInterface messageDisplayHandlerInterface =
+                new MessageDisplayHandler(null, null);
         messageDisplayHandlerInterface.setCacheManager(new CacheManager());
 
         assertNull(messageDisplayHandlerInterface.pollMessageFromCache());
@@ -40,7 +42,8 @@ public class MessageDisplayHandlerTest {
 
         Mockito.when(cacheManager.getCache("messageQueue")).thenReturn(messageQueue);
 
-        MessageDisplayHandlerInterface messageDisplayHandlerInterface = new MessageDisplayHandler(null, null);
+        MessageDisplayHandlerInterface messageDisplayHandlerInterface =
+                new MessageDisplayHandler(null, null);
         messageDisplayHandlerInterface.setCacheManager(cacheManager);
 
         assertEquals("test", messageDisplayHandlerInterface.pollMessageFromCache());

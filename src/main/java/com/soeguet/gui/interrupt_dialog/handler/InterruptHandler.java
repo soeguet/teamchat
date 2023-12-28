@@ -4,9 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.gui.interrupt_dialog.interfaces.InterruptHandlerInterface;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
-
-import javax.swing.*;
 import java.io.IOException;
+import javax.swing.*;
 
 public class InterruptHandler implements InterruptHandlerInterface {
 
@@ -25,7 +24,8 @@ public class InterruptHandler implements InterruptHandlerInterface {
     /**
      * Force the chat GUI to the front and perform a visual effect.
      *
-     * @param clientUserName the timeAndUsername to check if it matches the current timeAndUsername of the main frame
+     * @param clientUserName the timeAndUsername to check if it matches the current timeAndUsername
+     *     of the main frame
      */
     @Override
     public void forceChatGuiToFront(final String clientUserName) {
@@ -37,27 +37,27 @@ public class InterruptHandler implements InterruptHandlerInterface {
                 gui.setAlwaysOnTop(true);
                 gui.toFront();
 
-                SwingUtilities.invokeLater(() -> {
+                SwingUtilities.invokeLater(
+                        () -> {
+                            try {
 
-                    try {
+                                Thread.sleep(100);
+                                gui.setLocation(gui.getLocation().x, gui.getLocation().y + 100);
+                                Thread.sleep(100);
+                                gui.setLocation(gui.getLocation().x + 100, gui.getLocation().y);
+                                Thread.sleep(100);
+                                gui.setLocation(gui.getLocation().x, gui.getLocation().y - 100);
+                                Thread.sleep(100);
+                                gui.setLocation(gui.getLocation().x - 100, gui.getLocation().y);
+                                Thread.sleep(100);
 
-                        Thread.sleep(100);
-                        gui.setLocation(gui.getLocation().x, gui.getLocation().y + 100);
-                        Thread.sleep(100);
-                        gui.setLocation(gui.getLocation().x + 100, gui.getLocation().y);
-                        Thread.sleep(100);
-                        gui.setLocation(gui.getLocation().x, gui.getLocation().y - 100);
-                        Thread.sleep(100);
-                        gui.setLocation(gui.getLocation().x - 100, gui.getLocation().y);
-                        Thread.sleep(100);
+                                gui.setLocationRelativeTo(null);
 
-                        gui.setLocationRelativeTo(null);
+                            } catch (InterruptedException e) {
 
-                    } catch (InterruptedException e) {
-
-                        throw new RuntimeException(e);
-                    }
-                });
+                                throw new RuntimeException(e);
+                            }
+                        });
 
                 gui.requestFocus();
                 gui.setAlwaysOnTop(false);

@@ -5,14 +5,16 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.soeguet.model.UserInteraction;
-
 import java.util.ArrayList;
 import java.util.List;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "subclass")
-@JsonSubTypes({@JsonSubTypes.Type(value = MessageModel.class, name = "text"), @JsonSubTypes.Type(value =
-        PictureModel.class, name = "image"), @JsonSubTypes.Type(value = LinkModel.class, name = "link")})
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = MessageModel.class, name = "text"),
+    @JsonSubTypes.Type(value = PictureModel.class, name = "image"),
+    @JsonSubTypes.Type(value = LinkModel.class, name = "link")
+})
 public abstract sealed class BaseModel permits LinkModel, MessageModel, PictureModel {
 
     // variables -- start
@@ -23,6 +25,7 @@ public abstract sealed class BaseModel permits LinkModel, MessageModel, PictureM
     protected String sender;
     protected String time;
     protected QuoteModel<? extends BaseModel> quotedMessage;
+
     // variables -- end
 
     public Long getId() {

@@ -1,19 +1,17 @@
 package com.soeguet.socket_client;
 
-import java.net.URI;
-import java.nio.ByteBuffer;
-import java.util.logging.Logger;
-
-import org.java_websocket.WebSocket;
-import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.framing.Framedata;
-import org.java_websocket.handshake.ServerHandshake;
-
 import com.soeguet.behaviour.interfaces.GuiFunctionalityInterface;
 import com.soeguet.behaviour.interfaces.SocketToGuiInterface;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.popups.PopupPanelImpl;
 import com.soeguet.gui.popups.interfaces.PopupInterface;
+import java.net.URI;
+import java.nio.ByteBuffer;
+import java.util.logging.Logger;
+import org.java_websocket.WebSocket;
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.framing.Framedata;
+import org.java_websocket.handshake.ServerHandshake;
 
 public class CustomWebsocketClient extends WebSocketClient {
 
@@ -21,7 +19,10 @@ public class CustomWebsocketClient extends WebSocketClient {
     private final MainFrameGuiInterface mainFrame;
     private final SocketToGuiInterface socketToGuiInterface;
 
-    public CustomWebsocketClient(URI serverUri, MainFrameGuiInterface mainFrame, final GuiFunctionalityInterface guiFunctionality) {
+    public CustomWebsocketClient(
+            URI serverUri,
+            MainFrameGuiInterface mainFrame,
+            final GuiFunctionalityInterface guiFunctionality) {
 
         super(serverUri);
         this.mainFrame = mainFrame;
@@ -32,14 +33,15 @@ public class CustomWebsocketClient extends WebSocketClient {
 
         } else {
 
-            throw new IllegalArgumentException("socketToGuiInterface must implement SocketToGuiInterface");
+            throw new IllegalArgumentException(
+                    "socketToGuiInterface must implement SocketToGuiInterface");
         }
     }
 
     @Override
     public void onWebsocketPing(final WebSocket conn, final Framedata f) {
 
-        //remove typing label
+        // remove typing label
         mainFrame.getTypingLabel().setText(" ");
 
         super.onWebsocketPing(conn, f);
@@ -48,7 +50,7 @@ public class CustomWebsocketClient extends WebSocketClient {
     @Override
     public void onWebsocketPong(WebSocket conn, Framedata f) {
 
-        //remove typing label
+        // remove typing label
         mainFrame.getTypingLabel().setText(" ");
 
         super.onWebsocketPong(conn, f);
@@ -80,7 +82,8 @@ public class CustomWebsocketClient extends WebSocketClient {
         logger.info(String.valueOf(remote));
 
         PopupInterface popup = new PopupPanelImpl(mainFrame);
-        popup.getMessageTextField().setText("Connection closed." + System.lineSeparator() + reason + " " + code);
+        popup.getMessageTextField()
+                .setText("Connection closed." + System.lineSeparator() + reason + " " + code);
         popup.configurePopupPanelPlacement();
         popup.initiatePopupTimer(2_000);
     }
@@ -95,7 +98,6 @@ public class CustomWebsocketClient extends WebSocketClient {
         popup.getMessageTextField().setText("Error: " + ex.getMessage());
         popup.configurePopupPanelPlacement();
         popup.initiatePopupTimer(2_000);
-
 
         throw new RuntimeException(ex);
     }

@@ -1,19 +1,17 @@
 package com.soeguet.gui.interrupt_dialog;
 
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.swing.JCheckBox;
-
 import com.soeguet.gui.interrupt_dialog.generated.InterruptDialog;
 import com.soeguet.gui.interrupt_dialog.interfaces.InterruptDialogInterface;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.properties.dto.CustomUserPropertiesDTO;
 import com.soeguet.util.ByteArrayHandler;
 import com.soeguet.util.interfaces.ByteArrayHandlerInterface;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import javax.swing.JCheckBox;
 
 public class InterruptDialogImpl extends InterruptDialog implements InterruptDialogInterface {
 
@@ -28,21 +26,23 @@ public class InterruptDialogImpl extends InterruptDialog implements InterruptDia
     }
 
     @Override
-    public void populateDialogWithAllRegisteredClients(HashMap<String, CustomUserPropertiesDTO> clientPropertiesMap) {
+    public void populateDialogWithAllRegisteredClients(
+            HashMap<String, CustomUserPropertiesDTO> clientPropertiesMap) {
 
-        clientPropertiesMap.forEach((id, client) -> {
+        clientPropertiesMap.forEach(
+                (id, client) -> {
 
-            //we don't need this client in the list
-            if (!client.username().equals("own")) {
+                    // we don't need this client in the list
+                    if (!client.username().equals("own")) {
 
-                JCheckBox clientCheckBox = new JCheckBox();
+                        JCheckBox clientCheckBox = new JCheckBox();
 
-                clientCheckBox.setText(client.username());
+                        clientCheckBox.setText(client.username());
 
-                clientCheckBoxList.add(clientCheckBox);
-                form_checkBoxPanel.add(clientCheckBox,-1);
-            }
-        });
+                        clientCheckBoxList.add(clientCheckBox);
+                        form_checkBoxPanel.add(clientCheckBox, -1);
+                    }
+                });
     }
 
     @Override
@@ -50,13 +50,13 @@ public class InterruptDialogImpl extends InterruptDialog implements InterruptDia
 
         List<String> selectedClients = new ArrayList<>();
 
-        clientCheckBoxList.forEach(box -> {
+        clientCheckBoxList.forEach(
+                box -> {
+                    if (box.isSelected()) {
 
-            if (box.isSelected()) {
-
-                selectedClients.add(box.getText());
-            }
-        });
+                        selectedClients.add(box.getText());
+                    }
+                });
 
         ByteArrayHandlerInterface byteArrayHandler = new ByteArrayHandler();
         byte[] clientByteArray = byteArrayHandler.convertListToByteArray(selectedClients);

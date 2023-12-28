@@ -2,8 +2,6 @@ package com.soeguet.emoji;
 
 import com.soeguet.emoji.interfaces.EmojiInitializerInterface;
 import com.soeguet.gui.main_frame.ChatMainFrameImpl;
-
-import javax.swing.*;
 import java.io.IOException;
 import java.net.URL;
 import java.security.CodeSource;
@@ -12,19 +10,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import javax.swing.*;
 
 public class EmojiInitializer implements EmojiInitializerInterface {
 
     private final Logger logger = Logger.getLogger(EmojiInitializer.class.getName());
 
-    public EmojiInitializer() {
-
-    }
+    public EmojiInitializer() {}
 
     /**
-     Creates a list of ImageIcons for emojis.
-
-     @return an ArrayList of ImageIcons representing emojis
+     * Creates a list of ImageIcons for emojis.
+     *
+     * @return an ArrayList of ImageIcons representing emojis
      */
     @Override
     public HashMap<String, ImageIcon> createEmojiList() {
@@ -49,14 +46,14 @@ public class EmojiInitializer implements EmojiInitializerInterface {
     }
 
     /**
-     Processes the entries in a zip file and adds the emoji images to the provided ArrayList.
-
-     @param imageIcons the ArrayList to store the emoji images
-     @param zip        the ZipInputStream representing the zip file to process
-
-     @throws IOException if an I/O error occurs while reading the zip file
+     * Processes the entries in a zip file and adds the emoji images to the provided ArrayList.
+     *
+     * @param imageIcons the ArrayList to store the emoji images
+     * @param zip the ZipInputStream representing the zip file to process
+     * @throws IOException if an I/O error occurs while reading the zip file
      */
-    private void processZipEntries(HashMap<String, ImageIcon> imageIcons, ZipInputStream zip) throws IOException {
+    private void processZipEntries(HashMap<String, ImageIcon> imageIcons, ZipInputStream zip)
+            throws IOException {
 
         ZipEntry ze;
 
@@ -72,12 +69,11 @@ public class EmojiInitializer implements EmojiInitializerInterface {
     }
 
     /**
-     Checks if the given entry name is an emoji entry.
-
-     @param entryName the name of the entry to check
-
-     @return true if the entry name starts with "emojis/" and is not equal to "emojis/", false
-     otherwise
+     * Checks if the given entry name is an emoji entry.
+     *
+     * @param entryName the name of the entry to check
+     * @return true if the entry name starts with "emojis/" and is not equal to "emojis/", false
+     *     otherwise
      */
     private boolean isEmojiEntry(String entryName) {
 
@@ -85,10 +81,10 @@ public class EmojiInitializer implements EmojiInitializerInterface {
     }
 
     /**
-     Creates an ImageIcon from a given entry name and adds it to the given list of ImageIcons.
-
-     @param imageIcons the list of ImageIcons to add the created ImageIcon to
-     @param entryName  the name of the entry to createQuoteTopTextPane the ImageIcon from
+     * Creates an ImageIcon from a given entry name and adds it to the given list of ImageIcons.
+     *
+     * @param imageIcons the list of ImageIcons to add the created ImageIcon to
+     * @param entryName the name of the entry to createQuoteTopTextPane the ImageIcon from
      */
     private void createAndAddImageIcon(HashMap<String, ImageIcon> imageIcons, String entryName) {
 

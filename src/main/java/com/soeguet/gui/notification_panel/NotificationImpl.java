@@ -14,11 +14,10 @@ import com.soeguet.gui.reply.interfaces.ReplyInterface;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
-
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
+import javax.swing.*;
 
 public class NotificationImpl extends Notification implements NotificationInterface {
 
@@ -56,15 +55,14 @@ public class NotificationImpl extends Notification implements NotificationInterf
     @Override
     protected void notificationReplySendActionPerformed(final ActionEvent e) {
 
-        SwingUtilities.invokeLater(() -> {
-
-            ReplyInterface replyPanel = new ReplyPanelImpl(this.mainFrame, this.baseModel);
-            replyPanel.populatePanel();
-            replyPanel.setPosition();
-            replyPanel.requestAllFocus();
-            replyPanel.addPanelToMainFrame();
-
-        });
+        SwingUtilities.invokeLater(
+                () -> {
+                    ReplyInterface replyPanel = new ReplyPanelImpl(this.mainFrame, this.baseModel);
+                    replyPanel.populatePanel();
+                    replyPanel.setPosition();
+                    replyPanel.requestAllFocus();
+                    replyPanel.addPanelToMainFrame();
+                });
 
         bringChatGuiToFront();
     }
@@ -72,16 +70,19 @@ public class NotificationImpl extends Notification implements NotificationInterf
     @Override
     protected void closeAllNotificationsActionPerformed(final ActionEvent e) {
 
-        this.mainFrame.getNotificationList().forEach(notification -> {
+        this.mainFrame
+                .getNotificationList()
+                .forEach(
+                        notification -> {
+                            if (notification.getTimer() != null
+                                    && notification.getTimer().isRunning()) {
 
-            if (notification.getTimer() != null && notification.getTimer().isRunning()) {
+                                notification.getTimer().stop();
+                            }
 
-                notification.getTimer().stop();
-            }
-
-            notification.setVisible(false);
-            notification.dispose();
-        });
+                            notification.setVisible(false);
+                            notification.dispose();
+                        });
     }
 
     public Timer getTimer() {
@@ -127,13 +128,17 @@ public class NotificationImpl extends Notification implements NotificationInterf
 
         int MARGIN_RIGHT = 10;
 
-        SwingUtilities.invokeLater(() -> {
-
-            setBounds(screenResolutionWidth - getWidth() - MARGIN_RIGHT, newYPosition + MARGIN_TOP, getWidth(), getHeight());
-            setAlwaysOnTop(true);
-            getScrollPane1().getVerticalScrollBar().setValue(0);
-            setVisible(true);
-        });
+        SwingUtilities.invokeLater(
+                () -> {
+                    setBounds(
+                            screenResolutionWidth - getWidth() - MARGIN_RIGHT,
+                            newYPosition + MARGIN_TOP,
+                            getWidth(),
+                            getHeight());
+                    setAlwaysOnTop(true);
+                    getScrollPane1().getVerticalScrollBar().setValue(0);
+                    setVisible(true);
+                });
     }
 
     private void retainInformationAboutThisNotification(final int newYPosition) {
@@ -152,7 +157,8 @@ public class NotificationImpl extends Notification implements NotificationInterf
     private void replaceEmojiTextToIconOnTextPane(final String message) {
 
         EmojiHandlerInterface emojiHandler = new EmojiHandler(mainFrame);
-        emojiHandler.replaceEmojiDescriptionWithActualImageIcon(this.form_notificationMainMessage, message);
+        emojiHandler.replaceEmojiDescriptionWithActualImageIcon(
+                this.form_notificationMainMessage, message);
     }
 
     private void processNotificationQueue() {
@@ -160,8 +166,10 @@ public class NotificationImpl extends Notification implements NotificationInterf
         setVisible(false);
         dispose();
 
-        ActiveNotificationQueue activeNotificationsCache = (ActiveNotificationQueue) cacheManager.getCache("ActiveNotificationQueue");
-        WaitingNotificationQueue waitingNotificationsCache = (WaitingNotificationQueue) cacheManager.getCache("WaitingNotificationQueue");
+        ActiveNotificationQueue activeNotificationsCache =
+                (ActiveNotificationQueue) cacheManager.getCache("ActiveNotificationQueue");
+        WaitingNotificationQueue waitingNotificationsCache =
+                (WaitingNotificationQueue) cacheManager.getCache("WaitingNotificationQueue");
 
         final boolean remove = activeNotificationsCache.remove(this.baseModel);
 

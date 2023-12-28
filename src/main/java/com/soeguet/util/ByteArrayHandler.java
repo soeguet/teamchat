@@ -1,7 +1,6 @@
 package com.soeguet.util;
 
 import com.soeguet.util.interfaces.ByteArrayHandlerInterface;
-
 import java.util.List;
 
 public class ByteArrayHandler implements ByteArrayHandlerInterface {
@@ -23,8 +22,8 @@ public class ByteArrayHandler implements ByteArrayHandlerInterface {
     }
 
     /**
-     * Formats a list of strings into a single StringBuilder object representing
-     * a formatted JSON array.
+     * Formats a list of strings into a single StringBuilder object representing a formatted JSON
+     * array.
      *
      * @param selectedClients the list of strings to format
      * @return the StringBuilder object containing the formatted JSON array
@@ -35,16 +34,16 @@ public class ByteArrayHandler implements ByteArrayHandlerInterface {
 
         stringBuilder.append("[");
 
-        selectedClients.forEach(client -> {
+        selectedClients.forEach(
+                client -> {
+                    stringBuilder.append("\"");
+                    stringBuilder.append(client);
+                    stringBuilder.append("\"");
 
-            stringBuilder.append("\"");
-            stringBuilder.append(client);
-            stringBuilder.append("\"");
-
-            if (selectedClients.indexOf(client) != selectedClients.size() - 1) {
-                stringBuilder.append(",");
-            }
-        });
+                    if (selectedClients.indexOf(client) != selectedClients.size() - 1) {
+                        stringBuilder.append(",");
+                    }
+                });
 
         stringBuilder.append("]");
         return stringBuilder;

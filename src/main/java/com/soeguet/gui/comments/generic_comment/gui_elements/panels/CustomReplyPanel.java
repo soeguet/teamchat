@@ -33,6 +33,7 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
     private boolean isResizing = false;
     private boolean isMoving = false;
     private CustomSimpleTextPane textPane;
+
     // variables -- end
 
     // constructors -- start
@@ -46,6 +47,7 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
 
         super.setBorder(new LineBorder(Color.DARK_GRAY, 2));
     }
+
     // constructors -- end
 
     public void setCustomReplyPanelLayoutManger() {
@@ -59,11 +61,13 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
                                                                                             #sendButton
          */
 
-        super.setLayout(new MigLayout("insets 0",
-                                      //columns
-                                      "[fill,grow,center]",
-                                      //rows
-                                      "[fill][fill,grow][fill,bottom]"));
+        super.setLayout(
+                new MigLayout(
+                        "insets 0",
+                        // columns
+                        "[fill,grow,center]",
+                        // rows
+                        "[fill][fill,grow][fill,bottom]"));
     }
 
     public void moveReplyPanelToCenter() {
@@ -89,24 +93,27 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
 
     public void populateCustomReplyPanel() {
 
-        //TITLE
+        // TITLE
         this.populateReplyPanelTitle();
 
-        //REFERENCE
+        // REFERENCE
         this.populateReplyPanelReferenceSection();
 
-        //BOTTOM
+        // BOTTOM
         this.populateReplyPanelBottomSection();
     }
 
     private void populateReplyPanelBottomSection() {
 
-        //create panel itself -> bottomPanel
-        CustomSimpleJPanel bottomPanel = new CustomSimpleJPanel(new MigLayout("",
-                                                                              //columns
-                                                                              "[fill,grow][fill]",
-                                                                              //rows
-                                                                              "[fill]"));
+        // create panel itself -> bottomPanel
+        CustomSimpleJPanel bottomPanel =
+                new CustomSimpleJPanel(
+                        new MigLayout(
+                                "",
+                                // columns
+                                "[fill,grow][fill]",
+                                // rows
+                                "[fill]"));
 
         // -> TEXT PANE
         this.textPane = new CustomSimpleTextPane(mainFrame);
@@ -116,15 +123,18 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
         bottomPanel.add(this.textPane, "cell 0 0");
 
         // -> BUTTON PANEL
-        CustomSimpleJPanel buttonPanel = new CustomSimpleJPanel(new MigLayout("",
-                                                                              //columns
-                                                                              "[fill][fill][fill]",
-                                                                              //rows
-                                                                              "[fill]"));
+        CustomSimpleJPanel buttonPanel =
+                new CustomSimpleJPanel(
+                        new MigLayout(
+                                "",
+                                // columns
+                                "[fill][fill][fill]",
+                                // rows
+                                "[fill]"));
         this.populateButtonPanel(buttonPanel);
         bottomPanel.add(buttonPanel, "cell 1 0");
 
-        //add panel to reply panel
+        // add panel to reply panel
         super.add(bottomPanel, "cell 0 2");
         this.textPane.requestFocus();
     }
@@ -142,7 +152,8 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
         buttonPanel.add(attachButton, "cell 1 0");
 
         // [3] SEND BUTTON
-        CustomReplySendButton sendButton = new CustomReplySendButton(this.mainFrame, this.baseModel, this);
+        CustomReplySendButton sendButton =
+                new CustomReplySendButton(this.mainFrame, this.baseModel, this);
         buttonPanel.add(sendButton, "cell 2 0");
     }
 
@@ -160,11 +171,13 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
         JPanel titlePanel = new JPanel();
 
         titlePanel.setBackground(new Color(189, 189, 189, 255));
-        titlePanel.setLayout(new MigLayout("",
-                                           //columns
-                                           "[fill,grow][fill]",
-                                           //rows
-                                           "[fill, center]"));
+        titlePanel.setLayout(
+                new MigLayout(
+                        "",
+                        // columns
+                        "[fill,grow][fill]",
+                        // rows
+                        "[fill, center]"));
 
         JLabel titleLabel = new JLabel("Reply to: " + baseModel.getSender());
         titlePanel.add(titleLabel, "cell 0 0");
@@ -183,17 +196,17 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
 
     public void setFocusOnTextPane() {
 
-        SwingUtilities.invokeLater(() -> {
-
-            textPane.requestFocus(true);
-            textPane.requestFocusInWindow();
-        });
+        SwingUtilities.invokeLater(
+                () -> {
+                    textPane.requestFocus(true);
+                    textPane.requestFocusInWindow();
+                });
     }
 
     @Override
     protected void paintComponent(final Graphics g) {
 
-        //right bottom corner -- resize area
+        // right bottom corner -- resize area
 
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
@@ -248,20 +261,16 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
             this.setLocation(x, y);
         }
 
-        //this is needed, else the panel will not adjust to the new size
+        // this is needed, else the panel will not adjust to the new size
         revalidate();
         repaint();
     }
 
     @Override
-    public void mouseMoved(final MouseEvent e) {
-
-    }
+    public void mouseMoved(final MouseEvent e) {}
 
     @Override
-    public void mouseClicked(final java.awt.event.MouseEvent e) {
-
-    }
+    public void mouseClicked(final java.awt.event.MouseEvent e) {}
 
     @Override
     public void mousePressed(final java.awt.event.MouseEvent e) {
@@ -286,14 +295,10 @@ public class CustomReplyPanel extends JPanel implements MouseListener, MouseMoti
     }
 
     @Override
-    public void mouseEntered(final java.awt.event.MouseEvent e) {
-
-    }
+    public void mouseEntered(final java.awt.event.MouseEvent e) {}
 
     @Override
-    public void mouseExited(final java.awt.event.MouseEvent e) {
-
-    }
+    public void mouseExited(final java.awt.event.MouseEvent e) {}
 
     // getter & setter -- start
 

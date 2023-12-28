@@ -1,19 +1,20 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.menu_items;
 
-import javax.swing.*;
-import javax.swing.text.html.HTMLDocument;
-import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.StringWriter;
+import javax.swing.*;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 
 public class CopyTextMenuItem extends JMenuItem implements MouseListener {
 
     // variables -- start
     private final JTextPane textPane;
+
     // variables -- end
 
     // constructors -- start
@@ -25,6 +26,7 @@ public class CopyTextMenuItem extends JMenuItem implements MouseListener {
 
         super.addMouseListener(this);
     }
+
     // constructors -- end
 
     private String extractTextForClipboard() {
@@ -39,8 +41,11 @@ public class CopyTextMenuItem extends JMenuItem implements MouseListener {
 
         } else {
 
-            JOptionPane.showMessageDialog(SwingUtilities.getRootPane(textPane), "Nothing to copy!", ("No text " +
-                                                                                                     "selected").formatted(), JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(
+                    SwingUtilities.getRootPane(textPane),
+                    "Nothing to copy!",
+                    ("No text " + "selected").formatted(),
+                    JOptionPane.INFORMATION_MESSAGE);
             return null;
         }
     }
@@ -55,7 +60,11 @@ public class CopyTextMenuItem extends JMenuItem implements MouseListener {
 
             try {
 
-                editorKit.write(writer, document, document.getStartPosition().getOffset(), document.getLength());
+                editorKit.write(
+                        writer,
+                        document,
+                        document.getStartPosition().getOffset(),
+                        document.getLength());
                 String textOnly = writer.toString();
 
                 return textOnly.replaceAll("<[^>]+>", "").trim();
@@ -73,9 +82,7 @@ public class CopyTextMenuItem extends JMenuItem implements MouseListener {
     }
 
     @Override
-    public void mouseClicked(final MouseEvent e) {
-
-    }
+    public void mouseClicked(final MouseEvent e) {}
 
     @Override
     public void mousePressed(final MouseEvent e) {
@@ -93,26 +100,20 @@ public class CopyTextMenuItem extends JMenuItem implements MouseListener {
                 selectedText = "%s [...]".formatted(selectedText.substring(0, 50));
             }
 
-            JOptionPane.showMessageDialog(SwingUtilities.getRootPane(textPane),
-                                          "\"%s\" %s copied to clipboard".formatted(selectedText,
-                                                                                    System.lineSeparator()), "Copied " +
-                                                                                                             "to clipboard", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(
+                    SwingUtilities.getRootPane(textPane),
+                    "\"%s\" %s copied to clipboard".formatted(selectedText, System.lineSeparator()),
+                    "Copied " + "to clipboard",
+                    JOptionPane.INFORMATION_MESSAGE);
         }
-
     }
 
     @Override
-    public void mouseReleased(final MouseEvent e) {
-
-    }
+    public void mouseReleased(final MouseEvent e) {}
 
     @Override
-    public void mouseEntered(final MouseEvent e) {
-
-    }
+    public void mouseEntered(final MouseEvent e) {}
 
     @Override
-    public void mouseExited(final MouseEvent e) {
-
-    }
+    public void mouseExited(final MouseEvent e) {}
 }

@@ -1,11 +1,10 @@
 package com.soeguet.cache.manager;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.soeguet.cache.CustomCache;
 import com.soeguet.cache.implementations.ActiveNotificationQueue;
 import com.soeguet.cache.implementations.MessageQueue;
 import com.soeguet.cache.implementations.WaitingNotificationQueue;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CacheManager {
 
@@ -24,10 +23,11 @@ public class CacheManager {
         if (!cacheList.containsKey(lowercaseCacheName)) {
 
             switch (lowercaseCacheName) {
+                case "waitingnotificationqueue" -> cacheList.put(
+                        lowercaseCacheName, new WaitingNotificationQueue());
 
-                case "waitingnotificationqueue" -> cacheList.put(lowercaseCacheName, new WaitingNotificationQueue());
-
-                case "activenotificationqueue" -> cacheList.put(lowercaseCacheName, new ActiveNotificationQueue());
+                case "activenotificationqueue" -> cacheList.put(
+                        lowercaseCacheName, new ActiveNotificationQueue());
 
                 case "messagequeue" -> cacheList.put(lowercaseCacheName, new MessageQueue());
 
@@ -42,10 +42,9 @@ public class CacheManager {
 
     public synchronized void invalidateCache() {
 
-        cacheList.forEach((key, value) -> {
-
-            value.invalidateCache();
-        });
+        cacheList.forEach(
+                (key, value) -> {
+                    value.invalidateCache();
+                });
     }
-
 }

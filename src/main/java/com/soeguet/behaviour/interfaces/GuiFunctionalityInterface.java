@@ -4,8 +4,6 @@ import com.soeguet.model.jackson.MessageModel;
 
 public interface GuiFunctionalityInterface {
 
-
-
     void overrideTransferHandlerOfTextPane();
 
     void internalNotificationHandling(String message);

@@ -4,9 +4,7 @@ import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomConten
 
 public class ContentContainerFactory {
 
-    public ContentContainerFactory() {
-
-    }
+    public ContentContainerFactory() {}
 
     public CustomContentContainer create() {
 

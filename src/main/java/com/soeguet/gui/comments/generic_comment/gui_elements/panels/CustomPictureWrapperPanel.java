@@ -1,14 +1,11 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 
-import net.miginfocom.swing.MigLayout;
-
 import javax.swing.*;
+import net.miginfocom.swing.MigLayout;
 
 public class CustomPictureWrapperPanel extends JPanel {
 
-    public CustomPictureWrapperPanel() {
-
-    }
+    public CustomPictureWrapperPanel() {}
 
     public void setPictureWrapperPanelLayoutManager() {
 
@@ -20,11 +17,12 @@ public class CustomPictureWrapperPanel extends JPanel {
         [DESCRIPTION/TEXT]
          */
 
-        super.setLayout(new MigLayout("",
-                                      //columns
-                                      "[fill,grow]",
-                                      //rows
-                                      "[fill,grow][fill,grow][fill,grow]")
-                       );
+        super.setLayout(
+                new MigLayout(
+                        "",
+                        // columns
+                        "[fill,grow]",
+                        // rows
+                        "[fill,grow][fill,grow][fill,grow]"));
     }
 }

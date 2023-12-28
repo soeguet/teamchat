@@ -2,9 +2,7 @@ package com.soeguet.initialization.themes.interfaces;
 
 import com.soeguet.initialization.enums.Themes;
 
-/**
- * Interface for managing the theme settings of the UI.
- */
+/** Interface for managing the theme settings of the UI. */
 public interface ThemeManager {
 
     /**

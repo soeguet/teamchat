@@ -15,6 +15,7 @@ public class PicturePanelFactory {
     // variables -- start
     private final MainFrameGuiInterface mainFrame;
     private final PictureModel pictureModel;
+
     // variables -- end
 
     // constructors -- start
@@ -24,6 +25,7 @@ public class PicturePanelFactory {
 
         this.pictureModel = (PictureModel) baseModel;
     }
+
     // constructors -- end
 
     public CustomPictureWrapperPanel create() {
@@ -36,10 +38,11 @@ public class PicturePanelFactory {
         DESCRIPTION/TEXT
          */
 
-        //WRAPPER: this is the main wrapper panel that is returned
-        final CustomPictureWrapperPanel customPictureWrapperPanel = generateCustomPictureWrapperPanel();
+        // WRAPPER: this is the main wrapper panel that is returned
+        final CustomPictureWrapperPanel customPictureWrapperPanel =
+                generateCustomPictureWrapperPanel();
 
-        //QUOTE PART if not null!
+        // QUOTE PART if not null!
         final QuoteModel<? extends BaseModel> quotedMessageModel = pictureModel.getQuotedMessage();
 
         if (quotedMessageModel != null) {
@@ -50,15 +53,16 @@ public class PicturePanelFactory {
             customPictureWrapperPanel.add(customQuoteTextPane, "cell 0 0");
         }
 
-        //PICTURE PART
+        // PICTURE PART
         final CustomPictureLabel customPictureLabel = generateCustomPictureLabel();
         customPictureWrapperPanel.add(customPictureLabel, "cell 0 1, center");
 
-        //DESCRIPTION/TEXT PART if not null!
+        // DESCRIPTION/TEXT PART if not null!
         if (pictureModel.getDescription() != null && !pictureModel.getDescription().isBlank()) {
 
             CustomSimpleTextPane customSimpleTextPane = new CustomSimpleTextPane(mainFrame);
-            customSimpleTextPane.replaceEmojiDescriptionWithActualImageIcon(pictureModel.getDescription());
+            customSimpleTextPane.replaceEmojiDescriptionWithActualImageIcon(
+                    pictureModel.getDescription());
             customPictureWrapperPanel.add(customSimpleTextPane, "cell 0 2");
         }
 
@@ -66,35 +70,31 @@ public class PicturePanelFactory {
     }
 
     /**
-     Extracts the quoted text from a given QuoteModel object.
-
-     @param quotedMessageModel
-     The QuoteModel object to extract the quoted text from.
-
-     @return The quoted text, depending on the type of BaseModel.
-
-     @throws IllegalArgumentException
-     if the baseModel is null.
+     * Extracts the quoted text from a given QuoteModel object.
+     *
+     * @param quotedMessageModel The QuoteModel object to extract the quoted text from.
+     * @return The quoted text, depending on the type of BaseModel.
+     * @throws IllegalArgumentException if the baseModel is null.
      */
     private String extractQuotedText(final QuoteModel<? extends BaseModel> quotedMessageModel) {
 
         final BaseModel baseModel = quotedMessageModel.t();
 
         return switch (baseModel) {
-
             case MessageModel messageModel -> messageModel.getMessage();
 
             case PictureModel pictureMod -> pictureMod.getDescription();
 
-            case LinkModel linkModel -> linkModel.getLink() + System.lineSeparator() + linkModel.getComment();
-
+            case LinkModel linkModel -> linkModel.getLink()
+                    + System.lineSeparator()
+                    + linkModel.getComment();
         };
     }
 
     /**
-     Generates a CustomPictureLabel based on the pictureModel.
-
-     @return the generated CustomPictureLabel object
+     * Generates a CustomPictureLabel based on the pictureModel.
+     *
+     * @return the generated CustomPictureLabel object
      */
     private CustomPictureLabel generateCustomPictureLabel() {
 
@@ -104,9 +104,9 @@ public class PicturePanelFactory {
     }
 
     /**
-     Generates a CustomPictureWrapperPanel.
-
-     @return the generated CustomPictureWrapperPanel object
+     * Generates a CustomPictureWrapperPanel.
+     *
+     * @return the generated CustomPictureWrapperPanel object
      */
     private CustomPictureWrapperPanel generateCustomPictureWrapperPanel() {
 

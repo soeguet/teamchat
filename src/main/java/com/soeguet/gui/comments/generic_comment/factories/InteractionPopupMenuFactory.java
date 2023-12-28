@@ -4,7 +4,6 @@ import com.soeguet.gui.comments.generic_comment.gui_elements.CustomInteractionPo
 import com.soeguet.gui.comments.generic_comment.gui_elements.menu_items.CustomReplyMenuItem;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.BaseModel;
-
 import javax.swing.*;
 
 public class InteractionPopupMenuFactory {
@@ -12,6 +11,7 @@ public class InteractionPopupMenuFactory {
     // variables -- start
     private final MainFrameGuiInterface mainFrame;
     private final BaseModel baseModel;
+
     // variables -- end
 
     // constructors -- start
@@ -20,13 +20,15 @@ public class InteractionPopupMenuFactory {
         this.mainFrame = mainFrame;
         this.baseModel = baseModel;
     }
+
     // constructors -- end
 
     public CustomInteractionPopupMenu create() {
 
         CustomInteractionPopupMenu customInteractionPopupMenu = new CustomInteractionPopupMenu();
 
-        final CustomReplyMenuItem customReplyMenuItem = new CustomReplyMenuItem(mainFrame, baseModel);
+        final CustomReplyMenuItem customReplyMenuItem =
+                new CustomReplyMenuItem(mainFrame, baseModel);
 
         customInteractionPopupMenu.add(customReplyMenuItem);
         customInteractionPopupMenu.addSeparator();

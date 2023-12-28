@@ -8,14 +8,13 @@ import com.soeguet.gui.option_pane.links.LinkDialogHandler;
 import com.soeguet.gui.option_pane.links.LinkDialogImpl;
 import com.soeguet.gui.option_pane.links.dtos.MetadataStorageRecord;
 import com.soeguet.gui.option_pane.links.interfaces.LinkDialogInterface;
-
-import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.logging.Logger;
+import javax.swing.*;
 
 public class CustomTransferHandler extends TransferHandler {
 
@@ -34,7 +33,7 @@ public class CustomTransferHandler extends TransferHandler {
 
         if (transferable.isDataFlavorSupported(DataFlavor.imageFlavor)) {
 
-            //image route
+            // image route
 
             // image to text pane -> activate image panel
             callImagePanel();
@@ -43,14 +42,14 @@ public class CustomTransferHandler extends TransferHandler {
 
         } else if (transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
 
-            //FEATURE maybe emoji detection?
-            
-            //string route
+            // FEATURE maybe emoji detection?
+
+            // string route
             final String data = extractStringFromTransferable(transferable);
 
-            //check if link
+            // check if link
             if (checkDataForLinks(data)) {
-                //don't append the link to the text pane
+                // don't append the link to the text pane
                 return false;
             }
 
@@ -60,7 +59,7 @@ public class CustomTransferHandler extends TransferHandler {
             throw new RuntimeException("Unsupported data flavor");
         }
 
-        //append what was pasted to the text pane
+        // append what was pasted to the text pane
         return originalTransferHandler.importData(jComponent, transferable);
     }
 
@@ -68,10 +67,10 @@ public class CustomTransferHandler extends TransferHandler {
 
         if (data.startsWith("http://") || data.startsWith("https://")) {
 
-            //send the link
+            // send the link
             SwingUtilities.invokeLater(() -> callLinkConfirmationDialog(data));
 
-            //don't append the link to the text pane
+            // don't append the link to the text pane
             return true;
         }
         return false;
@@ -85,8 +84,7 @@ public class CustomTransferHandler extends TransferHandler {
 
             data = (String) transferable.getTransferData(DataFlavor.stringFlavor);
 
-        } catch (UnsupportedFlavorException |
-                 IOException e) {
+        } catch (UnsupportedFlavorException | IOException e) {
 
             logger.log(java.util.logging.Level.SEVERE, "Error importing data", e);
             throw new RuntimeException(e);
@@ -94,9 +92,7 @@ public class CustomTransferHandler extends TransferHandler {
         return data;
     }
 
-    /**
-     Calls the methods of the ImageInterface to set up the ImagePanel.
-     */
+    /** Calls the methods of the ImageInterface to set up the ImagePanel. */
     private void callImagePanel() {
 
         ImageInterface imagePanel = new ImagePanelImpl(mainFrame);
@@ -108,10 +104,9 @@ public class CustomTransferHandler extends TransferHandler {
     }
 
     /**
-     Calls the link confirmation dialog with the given link.
-
-     @param link
-     the link to be displayed in the dialog
+     * Calls the link confirmation dialog with the given link.
+     *
+     * @param link the link to be displayed in the dialog
      */
     private void callLinkConfirmationDialog(String link) {
 
@@ -120,13 +115,12 @@ public class CustomTransferHandler extends TransferHandler {
     }
 
     /**
-     Creates a link dialog interface with the given link. It checks if there is metadata associated with the link and adds the corresponding metadata
-     panel to the content panel of the dialog if it exists.
-
-     @param link
-     the link to be associated with the dialog
-
-     @return the created link dialog interface
+     * Creates a link dialog interface with the given link. It checks if there is metadata
+     * associated with the link and adds the corresponding metadata panel to the content panel of
+     * the dialog if it exists.
+     *
+     * @param link the link to be associated with the dialog
+     * @return the created link dialog interface
      */
     private LinkDialogInterface createLinkDialog(final String link) {
 
@@ -148,12 +142,10 @@ public class CustomTransferHandler extends TransferHandler {
     }
 
     /**
-     Initializes a LinkDialogInterface with the given link.
-
-     @param link
-     the link to be displayed in the dialog
-
-     @return the initialized LinkDialogInterface
+     * Initializes a LinkDialogInterface with the given link.
+     *
+     * @param link the link to be displayed in the dialog
+     * @return the initialized LinkDialogInterface
      */
     private LinkDialogInterface initializeLinkDialog(final String link) {
 

@@ -22,11 +22,14 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
     private ReactionPopupMenuImpl reactionPopupMenu;
     private ChatBubblePaintHandler chatBubblePaintHandler;
     private CustomContentContainer mainContentPanel;
+
     // variables -- end
 
     // constructors -- start
-    public TransparentTopPanel(MainFrameGuiInterface mainFrame,
-            final CustomCommentPanel customCommentPanel, ReactionPanelDTO reactionPanelDTO) {
+    public TransparentTopPanel(
+            MainFrameGuiInterface mainFrame,
+            final CustomCommentPanel customCommentPanel,
+            ReactionPanelDTO reactionPanelDTO) {
 
         this.mainFrame = mainFrame;
         this.customCommentPanel = customCommentPanel;
@@ -38,11 +41,12 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
     }
+
     // constructors -- end
 
     /**
      * Dispatches a MouseEvent to the appropriate component. Else top panel grabs all events!
-     * 
+     *
      * @param e the MouseEvent to dispatch.
      */
     private void dispatchEvent(MouseEvent e) {
@@ -65,8 +69,16 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
 
         if (!(actualComponent instanceof TransparentTopPanel)) {
             MouseEvent e2 =
-                    new MouseEvent(actualComponent, e.getID(), e.getWhen(), e.getModifiersEx(),
-                            pt.x, pt.y, e.getClickCount(), e.isPopupTrigger(), e.getButton());
+                    new MouseEvent(
+                            actualComponent,
+                            e.getID(),
+                            e.getWhen(),
+                            e.getModifiersEx(),
+                            pt.x,
+                            pt.y,
+                            e.getClickCount(),
+                            e.isPopupTrigger(),
+                            e.getButton());
 
             actualComponent.dispatchEvent(e2);
         }
@@ -117,10 +129,10 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
             reactionPopupMenu.startAnimation();
         }
 
-        SwingUtilities.invokeLater(() -> {
-
-            this.mainFrame.repaint();
-        });
+        SwingUtilities.invokeLater(
+                () -> {
+                    this.mainFrame.repaint();
+                });
 
         dispatchEvent(e);
     }
@@ -135,10 +147,10 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
             reactionPopupMenu.stopAnimation();
         }
 
-        SwingUtilities.invokeLater(() -> {
-
-            this.mainFrame.repaint();
-        });
+        SwingUtilities.invokeLater(
+                () -> {
+                    this.mainFrame.repaint();
+                });
 
         dispatchEvent(e);
     }

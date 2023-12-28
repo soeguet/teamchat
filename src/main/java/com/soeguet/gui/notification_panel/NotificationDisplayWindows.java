@@ -1,7 +1,6 @@
 package com.soeguet.gui.notification_panel;
 
 import com.soeguet.gui.notification_panel.interfaces.NotificationDisplayInterface;
-
 import java.io.IOException;
 
 public class NotificationDisplayWindows implements NotificationDisplayInterface {
@@ -15,16 +14,21 @@ public class NotificationDisplayWindows implements NotificationDisplayInterface 
     @Override
     public void displayNotification(final String sender, final String message) {
 
-        String script = "[void] [System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms');"
-                + "$objNotifyIcon = New-Object System.Windows.Forms.NotifyIcon;"
-                + "$objNotifyIcon.Icon = [System.Drawing.SystemIcons]::Information;"
-                + "$objNotifyIcon.BalloonTipIcon = 'None';"
-                + "$objNotifyIcon.BalloonTipText = '"+ message+"';"
-                + "$objNotifyIcon.BalloonTipTitle = '"+sender+"';"
-                + "$objNotifyIcon.Visible = $True;"
-                + "$objNotifyIcon.ShowBalloonTip(7000);"
-                + "Start-Sleep -Seconds 7;"
-                + "$objNotifyIcon.Dispose();";
+        String script =
+                "[void] [System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms');"
+                        + "$objNotifyIcon = New-Object System.Windows.Forms.NotifyIcon;"
+                        + "$objNotifyIcon.Icon = [System.Drawing.SystemIcons]::Information;"
+                        + "$objNotifyIcon.BalloonTipIcon = 'None';"
+                        + "$objNotifyIcon.BalloonTipText = '"
+                        + message
+                        + "';"
+                        + "$objNotifyIcon.BalloonTipTitle = '"
+                        + sender
+                        + "';"
+                        + "$objNotifyIcon.Visible = $True;"
+                        + "$objNotifyIcon.ShowBalloonTip(7000);"
+                        + "Start-Sleep -Seconds 7;"
+                        + "$objNotifyIcon.Dispose();";
 
         String[] cmd = {"powershell", "-Command", script};
 

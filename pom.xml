@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.soeguet</groupId>
@@ -13,12 +10,12 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>21</maven.compiler.release> <!-- Setzt die Java-Version -->
+        <maven.compiler.release>21</maven.compiler.release>
+        <!-- Setzt die Java-Version -->
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <maven.compiler.compilerArgs>--enable-preview</maven.compiler.compilerArgs>
     </properties>
-
 
     <dependencies>
 
@@ -94,8 +91,8 @@
         <resources>
 
             <resource>
-                <directory>src/main/resources</directory>
                 <filtering>true</filtering>
+                <directory>src/main/resources</directory>
             </resource>
 
         </resources>
@@ -124,15 +121,16 @@
 
                     <execution>
 
-                        <phase>package</phase>
-
                         <goals>
                             <goal>shade</goal>
                         </goals>
 
+                        <phase>package</phase>
+
                         <configuration>
 
-                            <release>21</release> <!-- Set your Java version -->
+                            <release>21</release>
+                            <!-- Set your Java version -->
                             <compilerArgs>
                                 <arg>--enable-preview</arg>
                             </compilerArgs>
@@ -149,14 +147,11 @@
                             </filters>
 
                             <transformers>
-                                <transformer
-                                    implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>com.soeguet.Main</mainClass>
                                 </transformer>
-                                <transformer
-                                    implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer" />
-                                <transformer
-                                    implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer" />
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"></transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer"></transformer>
                             </transformers>
 
                         </configuration>
@@ -165,6 +160,65 @@
 
                 </executions>
 
+            </plugin>
+
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>2.41.1</version>
+                <configuration>
+                    <pom>
+                        <!-- These are the defaults, you can override if you want -->
+                        <includes>
+                            <include>pom.xml</include>
+                        </includes>
+
+                        <sortPom>
+                            <nrOfIndentSpace>4</nrOfIndentSpace>
+                            <!-- Indentation -->
+                            <expandEmptyElements>true</expandEmptyElements>
+                            <!-- Should empty elements be expanded-->
+                        </sortPom>
+
+                    </pom>
+                    <java>
+                        <!-- These are the defaults, you can override if you want -->
+                        <includes>
+                            <include>src/main/java/**/*.java</include>
+                            <include>src/test/java/**/*.java</include>
+                        </includes>
+
+                        <!-- Cleanthat will refactor your code, but it may break your style: apply it before your formatter -->
+                        <!-- <cleanthat /> -->
+                        <!-- has its own section below -->
+                        <googleJavaFormat>
+                            <!-- <version>21</version> -->
+                            <!-- optional, 1.8 is minimum supported version -->
+                            <!-- <style>GOOGLE</style> -->
+                            <style>AOSP</style>
+                            <!-- or AOSP (optional) -->
+                            <reflowLongStrings>true</reflowLongStrings>
+                            <!-- optional -->
+                            <formatJavadoc>true</formatJavadoc>
+                            <!-- optional -->
+                            <!-- optional: custom group artifact (you probably don't need this) -->
+                            <groupArtifact>com.google.googlejavaformat:google-java-format</groupArtifact>
+                        </googleJavaFormat>
+
+                        <!-- <importOrder /> -->
+                        <!-- </importOrder> -->
+
+                        <removeUnusedImports></removeUnusedImports>
+
+                        <formatAnnotations></formatAnnotations>
+                        <!-- fixes formatting of type annotations, see below -->
+
+                        <!-- <licenseHeader> -->
+                        <!--     <content>/* (C)$YEAR */</content> -->
+                        <!-- or <file>${project.basedir}/license-header</file> -->
+                        <!-- </licenseHeader> -->
+                    </java>
+                </configuration>
             </plugin>
         </plugins>
     </build>

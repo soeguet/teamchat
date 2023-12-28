@@ -1,9 +1,9 @@
 package com.soeguet.gui.interrupt_dialog.handler;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class InterruptHandlerTest {
 

@@ -20,32 +20,35 @@ public class NotificationStatusHandler implements NotificationStatusHandlerInter
     @Override
     public NotificationStatus getNotificationStatus() {
 
-        //on program startup
+        // on program startup
         if (mainFrame.isStartUp()) {
 
             return NotificationStatus.ALL_DENIED;
         }
 
-        //all = no -- needs to be first since it will reset after 5 minutes
+        // all = no -- needs to be first since it will reset after 5 minutes
         if (mainFrame.getAllNotificationMenuItem().isSelected()) {
 
             return NotificationStatus.ALL_DENIED;
         }
 
-        //external = yes && internal = yes
-        if (mainFrame.getInternalNotificationsMenuItem().isSelected() && mainFrame.getExternalNotificationsMenuItem().isSelected()) {
+        // external = yes && internal = yes
+        if (mainFrame.getInternalNotificationsMenuItem().isSelected()
+                && mainFrame.getExternalNotificationsMenuItem().isSelected()) {
 
             return NotificationStatus.ALL_ALLOWED;
         }
 
-        //external = yes && internal = no
-        if (mainFrame.getExternalNotificationsMenuItem().isSelected() && !mainFrame.getInternalNotificationsMenuItem().isSelected()) {
+        // external = yes && internal = no
+        if (mainFrame.getExternalNotificationsMenuItem().isSelected()
+                && !mainFrame.getInternalNotificationsMenuItem().isSelected()) {
 
             return NotificationStatus.EXTERNAL_ONLY;
         }
 
-        //external = no && internal = yes
-        if (!mainFrame.getExternalNotificationsMenuItem().isSelected() && mainFrame.getInternalNotificationsMenuItem().isSelected()) {
+        // external = no && internal = yes
+        if (!mainFrame.getExternalNotificationsMenuItem().isSelected()
+                && mainFrame.getInternalNotificationsMenuItem().isSelected()) {
 
             return NotificationStatus.INTERNAL_ONLY;
         }

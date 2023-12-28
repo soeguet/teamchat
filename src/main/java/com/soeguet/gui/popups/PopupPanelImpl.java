@@ -6,9 +6,8 @@ import com.soeguet.cache.manager.CacheManager;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.popups.generated.PopupPanel;
 import com.soeguet.gui.popups.interfaces.PopupInterface;
-
-import javax.swing.*;
 import java.awt.event.MouseEvent;
+import javax.swing.*;
 
 public class PopupPanelImpl extends PopupPanel implements PopupInterface {
 
@@ -22,7 +21,7 @@ public class PopupPanelImpl extends PopupPanel implements PopupInterface {
 
     @Override
     protected void messageTextFieldMouseClicked(final MouseEvent e) {
-        //TODO is this needed?
+        // TODO is this needed?
         removeThisPopup();
     }
 
@@ -36,29 +35,30 @@ public class PopupPanelImpl extends PopupPanel implements PopupInterface {
     }
 
     /**
-     Implements a popup with the given delay in milliseconds.
-
-     @param delayMilliseconds The delay in milliseconds before the popup is displayed.
+     * Implements a popup with the given delay in milliseconds.
+     *
+     * @param delayMilliseconds The delay in milliseconds before the popup is displayed.
      */
     public void implementPopup(int delayMilliseconds) {
-
 
         initiatePopupTimer(delayMilliseconds);
     }
 
     /**
-     Initiates a timer to trigger a popup with the given delay in milliseconds.
-
-     @param delayMilliseconds The delay in milliseconds before the popup is displayed.
+     * Initiates a timer to trigger a popup with the given delay in milliseconds.
+     *
+     * @param delayMilliseconds The delay in milliseconds before the popup is displayed.
      */
     @Override
     public void initiatePopupTimer(int delayMilliseconds) {
 
-        Timer swingTimer = new Timer(delayMilliseconds, event -> {
-
-            removeThisPopup();
-            checkForMorePopupsInQueue();
-        });
+        Timer swingTimer =
+                new Timer(
+                        delayMilliseconds,
+                        event -> {
+                            removeThisPopup();
+                            checkForMorePopupsInQueue();
+                        });
 
         swingTimer.setRepeats(false);
         swingTimer.start();
@@ -82,10 +82,12 @@ public class PopupPanelImpl extends PopupPanel implements PopupInterface {
     }
 
     /**
-     Recursively processes strings in the message queue until it is empty.
-     Throws InterruptedException if the thread is interrupted while waiting for a message to be available in the queue.
-
-     @throws InterruptedException If the thread is interrupted while waiting for a message to be available in the queue.
+     * Recursively processes strings in the message queue until it is empty. Throws
+     * InterruptedException if the thread is interrupted while waiting for a message to be available
+     * in the queue.
+     *
+     * @throws InterruptedException If the thread is interrupted while waiting for a message to be
+     *     available in the queue.
      */
     private void recursivelyProcessStringsInQueue() throws InterruptedException {
 
@@ -96,9 +98,9 @@ public class PopupPanelImpl extends PopupPanel implements PopupInterface {
     }
 
     /**
-     Generates a popup with the given message.
-
-     @param message The message to be displayed in the popup.
+     * Generates a popup with the given message.
+     *
+     * @param message The message to be displayed in the popup.
      */
     private void generatePopup(final String message) {
 
@@ -108,13 +110,12 @@ public class PopupPanelImpl extends PopupPanel implements PopupInterface {
         popup.initiatePopupTimer(2_000);
     }
 
-    /**
-     Configures the placement of the popup panel within the main GUI.
-     */
+    /** Configures the placement of the popup panel within the main GUI. */
     @Override
     public void configurePopupPanelPlacement() {
 
-        this.setBounds((this.mainFrame.getMainTextPanelLayeredPane().getWidth() - 250) / 2, 100, 250, 100);
+        this.setBounds(
+                (this.mainFrame.getMainTextPanelLayeredPane().getWidth() - 250) / 2, 100, 250, 100);
         this.mainFrame.getMainTextPanelLayeredPane().add(this, JLayeredPane.POPUP_LAYER);
     }
 }

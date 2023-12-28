@@ -18,16 +18,19 @@ public class PictureSwingWorker extends SwingWorker<Void, Object> {
     private final MainFrameGuiInterface mainFrame;
     private final PictureModel pictureModel;
     private final JLabel pictureLabel;
+
     // variables -- end
 
     // constructors -- start
-    public PictureSwingWorker(MainFrameGuiInterface mainFrame, PictureModel pictureModel, JLabel pictureLabel) {
+    public PictureSwingWorker(
+            MainFrameGuiInterface mainFrame, PictureModel pictureModel, JLabel pictureLabel) {
 
         this.mainFrame = mainFrame;
 
         this.pictureModel = pictureModel;
         this.pictureLabel = pictureLabel;
     }
+
     // constructors -- end
 
     private ImageIcon scaleImageIfTooBig() {
@@ -55,11 +58,13 @@ public class PictureSwingWorker extends SwingWorker<Void, Object> {
 
                 if (icon.getIconWidth() > 500) {
 
-                    return new ImageIcon(bufferedImage.getScaledInstance(500, -1, Image.SCALE_SMOOTH));
+                    return new ImageIcon(
+                            bufferedImage.getScaledInstance(500, -1, Image.SCALE_SMOOTH));
 
                 } else {
 
-                    return new ImageIcon(bufferedImage.getScaledInstance(-1, 350, Image.SCALE_SMOOTH));
+                    return new ImageIcon(
+                            bufferedImage.getScaledInstance(-1, 350, Image.SCALE_SMOOTH));
                 }
 
             } catch (Exception ex) {
@@ -85,9 +90,11 @@ public class PictureSwingWorker extends SwingWorker<Void, Object> {
         this.mainFrame.revalidate();
         this.mainFrame.repaint();
 
-        //scroll to end after finishing the loading
-        final JScrollBar verticalScrollBar = mainFrame.getMainTextBackgroundScrollPane().getVerticalScrollBar();
-    SwingUtilities.invokeLater(() -> verticalScrollBar.setValue(verticalScrollBar.getMaximum()));
+        // scroll to end after finishing the loading
+        final JScrollBar verticalScrollBar =
+                mainFrame.getMainTextBackgroundScrollPane().getVerticalScrollBar();
+        SwingUtilities.invokeLater(
+                () -> verticalScrollBar.setValue(verticalScrollBar.getMaximum()));
 
         super.done();
     }

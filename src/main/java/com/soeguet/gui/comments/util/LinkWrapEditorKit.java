@@ -9,9 +9,7 @@ public class LinkWrapEditorKit extends HTMLEditorKit {
 
     private final ViewFactory defaultFactory = new WrapColumnFactory();
 
-    public LinkWrapEditorKit() {
-
-    }
+    public LinkWrapEditorKit() {}
 
     @Override
     public ViewFactory getViewFactory() {
@@ -30,7 +28,6 @@ public class LinkWrapEditorKit extends HTMLEditorKit {
         public float getMinimumSpan(int axis) {
 
             return switch (axis) {
-
                 case View.X_AXIS -> 0;
 
                 case View.Y_AXIS -> super.getMinimumSpan(axis);
@@ -45,7 +42,7 @@ public class LinkWrapEditorKit extends HTMLEditorKit {
         private final ViewFactory htmlFactory = new HTMLEditorKit().getViewFactory();
 
         public WrapColumnFactory() {
-            //FIXME make css work -- not working right now
+            // FIXME make css work -- not working right now
             HTMLEditorKit htmlKit = new HTMLEditorKit();
             StyleSheet styles = htmlKit.getStyleSheet();
             styles.addRule("a { text-decoration: underline; color: red; }");

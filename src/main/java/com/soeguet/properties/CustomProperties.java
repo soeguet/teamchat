@@ -1,5 +1,13 @@
 package com.soeguet.properties;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
+import com.soeguet.gui.popups.PopupPanelImpl;
+import com.soeguet.gui.popups.interfaces.PopupInterface;
+import com.soeguet.initialization.interfaces.MainFrameInitInterface;
+import com.soeguet.properties.dto.CustomUserPropertiesDTO;
+import com.soeguet.properties.interfaces.CustomPropertiesInterface;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,15 +17,6 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
-import com.soeguet.gui.popups.PopupPanelImpl;
-import com.soeguet.gui.popups.interfaces.PopupInterface;
-import com.soeguet.initialization.interfaces.MainFrameInitInterface;
-import com.soeguet.properties.dto.CustomUserPropertiesDTO;
-import com.soeguet.properties.interfaces.CustomPropertiesInterface;
 
 public class CustomProperties extends Properties implements CustomPropertiesInterface {
 
@@ -50,28 +49,29 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
 
         } else {
 
-            throw new IllegalArgumentException("ERROR: MainFrameInitInterface must be of type MainFrameGuiInterface!");
+            throw new IllegalArgumentException(
+                    "ERROR: MainFrameInitInterface must be of type MainFrameGuiInterface!");
         }
     }
 
     @Override
     public boolean checkIfConfigFileExists() {
 
-        //TEST this
+        // TEST this
 
-        //handle the path in os filesystem
+        // handle the path in os filesystem
         String userHome = System.getProperty("user.home");
         String appDirPath = userHome + File.separator + ".teamchat";
         configFilePath = appDirPath + File.separator + "config.properties";
 
-        //handle folder
+        // handle folder
         File appDir = new File(appDirPath);
         createFolderIfNotPresent(appDir);
 
-        //try loading data from file
+        // try loading data from file
         if (!new File(configFilePath).exists()) {
 
-            //createQuoteTopTextPane file if not present
+            // createQuoteTopTextPane file if not present
             createPropertiesFile(configFilePath);
             return true;
         }
@@ -97,21 +97,28 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
 
         ObjectMapper mapper = mainFrame.getObjectMapper();
 
-        stringPropertyNames().forEach(key -> {
+        stringPropertyNames()
+                .forEach(
+                        key -> {
+                            try {
 
-            try {
+                                CustomUserPropertiesDTO userProperties =
+                                        mapper.readValue(
+                                                getProperty(key), CustomUserPropertiesDTO.class);
 
-                CustomUserPropertiesDTO userProperties = mapper.readValue(getProperty(key), CustomUserPropertiesDTO.class);
+                                mainFrame
+                                        .getChatClientPropertiesHashMap()
+                                        .replace(key, userProperties);
 
-                mainFrame.getChatClientPropertiesHashMap().replace(key, userProperties);
+                            } catch (IOException e) {
 
-            } catch (IOException e) {
-
-                logger.log(java.util.logging.Level.SEVERE, "Could not load user " + key, e);
-                throw new RuntimeException(e);
-            }
-        });
-
+                                logger.log(
+                                        java.util.logging.Level.SEVERE,
+                                        "Could not load user " + key,
+                                        e);
+                                throw new RuntimeException(e);
+                            }
+                        });
     }
 
     @Override
@@ -119,22 +126,25 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
 
         ObjectMapper mapper = mainFrame.getObjectMapper();
 
-        this.userPropertiesHashSet.forEach(user -> {
+        this.userPropertiesHashSet.forEach(
+                user -> {
+                    String json = null;
 
-            String json = null;
+                    try {
 
-            try {
+                        json = mapper.writeValueAsString(user);
 
-                json = mapper.writeValueAsString(user);
+                    } catch (IOException e) {
 
-            } catch (IOException e) {
+                        logger.log(
+                                java.util.logging.Level.SEVERE,
+                                "ERROR: Could not save user " + user.username(),
+                                e);
+                        throw new RuntimeException();
+                    }
 
-                logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not save user " + user.username(), e);
-                throw new RuntimeException();
-            }
-
-            setProperty(user.username(), json);
-        });
+                    setProperty(user.username(), json);
+                });
 
         PopupInterface popup = new PopupPanelImpl(mainFrame);
         popup.getMessageTextField().setText("properties saved");
@@ -154,7 +164,11 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
     public CustomUserPropertiesDTO getCustomUserProperties(final String username) {
 
         final Optional<CustomUserPropertiesDTO> userProperty =
-                userPropertiesHashSet.stream().filter(customUserProperties -> customUserProperties.username().equals(username)).findFirst();
+                userPropertiesHashSet.stream()
+                        .filter(
+                                customUserProperties ->
+                                        customUserProperties.username().equals(username))
+                        .findFirst();
 
         return userProperty.orElseThrow();
     }
@@ -167,7 +181,9 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
 
             if (!mkdir) {
 
-                logger.log(java.util.logging.Level.SEVERE, "ERROR! Could not createQuoteTopTextPane app dir!");
+                logger.log(
+                        java.util.logging.Level.SEVERE,
+                        "ERROR! Could not createQuoteTopTextPane app dir!");
                 throw new RuntimeException();
             }
         }
@@ -181,7 +197,10 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
 
         } catch (IOException e) {
 
-            logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not createQuoteTopTextPane config file!", e);
+            logger.log(
+                    java.util.logging.Level.SEVERE,
+                    "ERROR: Could not createQuoteTopTextPane config file!",
+                    e);
             throw new RuntimeException(e);
         }
     }
@@ -190,22 +209,27 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
 
         ObjectMapper mapper = mainFrame.getObjectMapper();
 
-        mainFrame.getChatClientPropertiesHashMap().forEach((key, value) -> {
+        mainFrame
+                .getChatClientPropertiesHashMap()
+                .forEach(
+                        (key, value) -> {
+                            String json = null;
 
-            String json = null;
+                            try {
 
-            try {
+                                json = mapper.writeValueAsString(value);
 
-                json = mapper.writeValueAsString(value);
+                            } catch (IOException e) {
 
-            } catch (IOException e) {
+                                logger.log(
+                                        java.util.logging.Level.SEVERE,
+                                        "ERROR: Could not save user " + key,
+                                        e);
+                                throw new RuntimeException();
+                            }
 
-                logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not save user " + key, e);
-                throw new RuntimeException();
-            }
-
-            setProperty(key, json);
-        });
+                            setProperty(key, json);
+                        });
 
         PopupInterface popup = new PopupPanelImpl(mainFrame);
         popup.getMessageTextField().setText("properties saved");
@@ -219,7 +243,7 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
 
         final String clientProperties = getProperty("own");
 
-        //replace "own" preset timeAndUsername
+        // replace "own" preset timeAndUsername
         if (this.mainFrame.getUsername() != null) {
 
             return new CustomUserPropertiesDTO(this.mainFrame.getUsername(), null, null);
@@ -232,12 +256,17 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
 
         try {
 
-            return this.mainFrame.getObjectMapper().readValue(clientProperties, CustomUserPropertiesDTO.class);
+            return this.mainFrame
+                    .getObjectMapper()
+                    .readValue(clientProperties, CustomUserPropertiesDTO.class);
 
         } catch (JsonProcessingException e) {
 
             logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not load own properties!", e);
-            logger.log(java.util.logging.Level.SEVERE, "CustomProperties > loaderThisClientProperties()", e);
+            logger.log(
+                    java.util.logging.Level.SEVERE,
+                    "CustomProperties > loaderThisClientProperties()",
+                    e);
         }
 
         return null;

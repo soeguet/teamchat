@@ -3,16 +3,13 @@ package com.soeguet.gui.comments.generic_comment.util;
 import com.soeguet.gui.comments.util.CommentTypeEnum;
 
 /**
- * This class represents a SideHandler, which is responsible for determining the side of a comment based on its type.
+ * This class represents a SideHandler, which is responsible for determining the side of a comment
+ * based on its type.
  */
 public class SideHandler {
 
-    /**
-     * Creates a new instance of the SideHandler class.
-     */
-    public SideHandler() {
-
-    }
+    /** Creates a new instance of the SideHandler class. */
+    public SideHandler() {}
 
     /**
      * Determines the side of a comment based on the given comment type.
@@ -33,5 +30,4 @@ public class SideHandler {
             default -> throw new IllegalArgumentException("Unknown comment type: " + commentType);
         }
     }
-
 }

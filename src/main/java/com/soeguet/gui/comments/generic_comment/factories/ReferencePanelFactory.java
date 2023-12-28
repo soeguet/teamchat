@@ -9,6 +9,7 @@ public class ReferencePanelFactory {
     // variables -- start
     private final MainFrameGuiInterface mainFrame;
     private final BaseModel baseModel;
+
     // variables -- end
 
     // constructors -- start
@@ -17,6 +18,7 @@ public class ReferencePanelFactory {
         this.mainFrame = mainFrame;
         this.baseModel = baseModel;
     }
+
     // constructors -- end
 
     public CustomReferencePanel createReferencePanel() {

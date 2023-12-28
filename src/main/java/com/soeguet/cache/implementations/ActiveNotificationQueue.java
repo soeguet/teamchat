@@ -2,7 +2,6 @@ package com.soeguet.cache.implementations;
 
 import com.soeguet.cache.CustomCache;
 import com.soeguet.model.jackson.BaseModel;
-
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class ActiveNotificationQueue implements CustomCache<BaseModel> {

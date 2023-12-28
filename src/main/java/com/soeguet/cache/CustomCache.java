@@ -11,5 +11,4 @@ public interface CustomCache<T> {
     void removeAll();
 
     boolean isEmpty();
-
 }

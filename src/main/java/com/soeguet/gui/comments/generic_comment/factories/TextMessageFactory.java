@@ -5,11 +5,10 @@ import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.MessageModel;
 
 /**
- * Produces a CustomTextAndQuoteForBubblePanel which contains the text panel as
- * well as the quote panel.
- * <p>
- * SCHEMA:
- * <br>
+ * Produces a CustomTextAndQuoteForBubblePanel which contains the text panel as well as the quote
+ * panel.
+ *
+ * <p>SCHEMA: <br>
  * CustomTextAndQuoteForBubblePanel:<br>
  * __________________<br>
  * | [quoted stuff] | <- this is what we produce<br>
@@ -17,7 +16,7 @@ import com.soeguet.model.jackson.MessageModel;
  * ------------------
  *
  * @param MainFrameGuiInterface {@link MainFrameGuiInterface}
- * @param MessageModel          {@link MessageModel}
+ * @param MessageModel {@link MessageModel}
  */
 public class TextMessageFactory {
 
@@ -25,11 +24,11 @@ public class TextMessageFactory {
     private final MessageModel messageModel;
 
     /**
-     * Produces a CustomTextAndQuoteForBubblePanel which contains the text panel as
-     * well as the quote panel.
-     * 
+     * Produces a CustomTextAndQuoteForBubblePanel which contains the text panel as well as the
+     * quote panel.
+     *
      * @param MainFrameGuiInterface mainFrame {@link MainFrameGuiInterface}
-     * @param MessageModel          messageModel {@link MessageModel}
+     * @param MessageModel messageModel {@link MessageModel}
      */
     public TextMessageFactory(MainFrameGuiInterface mainFrame, final MessageModel messageModel) {
 
@@ -38,16 +37,15 @@ public class TextMessageFactory {
     }
 
     /**
-     * Creates a CustomTextAndQuoteForBubblePanel which contains the text panel as
-     * well as the quote panel.
+     * Creates a CustomTextAndQuoteForBubblePanel which contains the text panel as well as the quote
+     * panel.
      *
-     * @return CustomTextAndQuoteForBubblePanel
-     *         {@link CustomTextAndQuoteForBubblePanel}
+     * @return CustomTextAndQuoteForBubblePanel {@link CustomTextAndQuoteForBubblePanel}
      */
     public CustomTextAndQuoteForBubblePanel create() {
 
-        CustomTextAndQuoteForBubblePanel customTextAndQuoteForBubblePanel = new CustomTextAndQuoteForBubblePanel(
-                mainFrame, messageModel);
+        CustomTextAndQuoteForBubblePanel customTextAndQuoteForBubblePanel =
+                new CustomTextAndQuoteForBubblePanel(mainFrame, messageModel);
 
         customTextAndQuoteForBubblePanel.setTextAndQuoteBubbleLayoutManager();
 

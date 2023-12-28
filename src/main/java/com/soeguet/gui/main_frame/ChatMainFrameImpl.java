@@ -60,9 +60,7 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
-/**
- * Main GUI method
- */
+/** Main GUI method */
 public class ChatMainFrameImpl extends ChatPanel
         implements MainFrameGuiInterface, MainFrameInitInterface {
 
@@ -79,81 +77,69 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /////////////////////////
     private final Logger logger = Logger.getLogger(ChatMainFrameImpl.class.getName());
-    /**
-     * Instance of the object mapper used to convert objects to json and vice versa.
-     */
+
+    /** Instance of the object mapper used to convert objects to json and vice versa. */
     private final ObjectMapper objectMapper = new ObjectMapper();
+
     /**
      * Instance of cache manager primarily storing data structures of the collections api to help
      * cache some data.
      */
     private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
-    /**
-     * Instance of class, holding a few environment variables
-     */
+
+    /** Instance of class, holding a few environment variables */
     private EnvVariables envVariables;
-    /**
-     * Instance of client controller handling everything socket related.
-     */
+
+    /** Instance of client controller handling everything socket related. */
     private ClientController clientController;
-    /**
-     * Instance of the gui functionality handler.
-     */
+
+    /** Instance of the gui functionality handler. */
     private GuiFunctionalityInterface guiFunctionality;
-    /**
-     * The margin east border for the JScrollPane.
-     */
+
+    /** The margin east border for the JScrollPane. */
     private int JSCROLLPANE_MARGIN_RIGHT_BORDER;
-    /**
-     * The margin bottom border for the JScrollPane.
-     */
+
+    /** The margin bottom border for the JScrollPane. */
     private int JSCROLLPANE_MARGIN_BOTTOM_BORDER;
-    /**
-     * Hashmap of all available emojis.
-     */
+
+    /** Hashmap of all available emojis. */
     private HashMap<String, ImageIcon> emojiList;
-    /**
-     * Instance of the emoji handler, which switches emojis with strings and vice versa.
-     */
+
+    /** Instance of the emoji handler, which switches emojis with strings and vice versa. */
     private EmojiHandler emojiHandler;
+
     /**
      * Variable representing the timeAndUsername of this pc's client. The timeAndUsername on the
      * right side
      */
     private String username;
+
     /**
      * Represents the Y position of a notification. Will be updated everytime a notification is
      * generated
      */
     private volatile int notificationPositionY = 0;
-    /**
-     * Indicates whether the start-up process has already been completed.
-     */
+
+    /** Indicates whether the start-up process has already been completed. */
     private boolean startUp = true;
-    /**
-     * The name of the client which was last posted on the main panel.
-     */
+
+    /** The name of the client which was last posted on the main panel. */
     private String lastMessageSenderName;
-    /**
-     * The last time someone posted on the main panel.
-     */
+
+    /** The last time someone posted on the main panel. */
     private String lastMessageTimeStamp;
-    /**
-     * Timer for blocking all messages.
-     */
+
+    /** Timer for blocking all messages. */
     private Timer blockTimer;
 
     private TrayIcon trayIcon;
+
     // variables -- end
 
-
     // constructors -- start
-    /**
-     * Creates a new instance of ChatMainFrameImpl.
-     */
-    public ChatMainFrameImpl() {
+    /** Creates a new instance of ChatMainFrameImpl. */
+    public ChatMainFrameImpl() {}
 
-    }
     // constructors -- end
 
     /**
@@ -170,11 +156,11 @@ public class ChatMainFrameImpl extends ChatPanel
 
         if (chatXPosition != null) {
 
-            SwingUtilities.invokeLater(() -> {
-
-                final int chatFrameXPosition = Integer.parseInt(chatXPosition);
-                setLocation(chatFrameXPosition, 100);
-            });
+            SwingUtilities.invokeLater(
+                    () -> {
+                        final int chatFrameXPosition = Integer.parseInt(chatXPosition);
+                        setLocation(chatFrameXPosition, 100);
+                    });
         }
     }
 
@@ -192,16 +178,16 @@ public class ChatMainFrameImpl extends ChatPanel
         }
     }
 
-
     /**
      * Initializes the emoji list.
-     * <p>
-     * This method initializes the emoji list by creating a new instance of the EmojiInitializer
+     *
+     * <p>This method initializes the emoji list by creating a new instance of the EmojiInitializer
      * class and calling the createEmojiList() method to obtain the list of emojis. The emoji list
      * is then assigned to the emojiList instance variable of the current object.
-     * <p>
-     * The EmojiInitializer class is responsible for creating and initializing the list of emojis.
-     * 
+     *
+     * <p>The EmojiInitializer class is responsible for creating and initializing the list of
+     * emojis.
+     *
      * @see EmojiInitializer
      * @see EmojiInitializerInterface
      */
@@ -212,8 +198,8 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Sets the scroll pane margins.
-     * <p>
-     * This method determines the appropriate margin values for the scroll pane based on the
+     *
+     * <p>This method determines the appropriate margin values for the scroll pane based on the
      * operating system and desktop environment.
      */
     public void setScrollPaneMargins() {
@@ -257,16 +243,16 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Sets the icons for the buttons in the chat form.
-     * <p>
-     * The icons are obtained from the resources folder and are used to set the icons for the emoji,
-     * and picture buttons in the chat form.
-     * <p>
-     * The resource URLs for the icons are retrieved using the ChatMainFrameImpl class and the
+     *
+     * <p>The icons are obtained from the resources folder and are used to set the icons for the
+     * emoji, and picture buttons in the chat form.
+     *
+     * <p>The resource URLs for the icons are retrieved using the ChatMainFrameImpl class and the
      * corresponding file paths.
-     * <p>
-     * This method assumes that the required icons exist in the resources folder and will throw an
-     * AssertionError if any of the resource URLs are null.
-     * 
+     *
+     * <p>This method assumes that the required icons exist in the resources folder and will throw
+     * an AssertionError if any of the resource URLs are null.
+     *
      * @throws AssertionError if any of the required resource URLs are null.
      */
     public void setButtonIcons() {
@@ -319,10 +305,10 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Initializes the GUI functionality.
-     * <p>
-     * This method creates a new instance of the GuiFunctionality class, passing a reference to the
-     * current object as a constructor argument. The GuiFunctionality object is then assigned to the
-     * guiFunctionality instance variable of the current object.
+     *
+     * <p>This method creates a new instance of the GuiFunctionality class, passing a reference to
+     * the current object as a constructor argument. The GuiFunctionality object is then assigned to
+     * the guiFunctionality instance variable of the current object.
      */
     public void initGuiFunctionality() {
 
@@ -332,11 +318,11 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Initializes the client controller.
-     * <p>
-     * This method creates a new instance of the ClientControllerImpl class, passing in the current
-     * instance of the ChatMainFrameImpl class and the guiFunctionality object. It then calls the
-     * determineWebsocketURI() method and the connectToWebsocket() method on the clientController
-     * object.
+     *
+     * <p>This method creates a new instance of the ClientControllerImpl class, passing in the
+     * current instance of the ChatMainFrameImpl class and the guiFunctionality object. It then
+     * calls the determineWebsocketURI() method and the connectToWebsocket() method on the
+     * clientController object.
      */
     public void initializeClientController() {
 
@@ -347,11 +333,11 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Initializes the emoji handler.
-     * <p>
-     * This method creates a new instance of the EmojiHandler class and assigns it to the
+     *
+     * <p>This method creates a new instance of the EmojiHandler class and assigns it to the
      * emojiHandler instance variable of the current object.
-     * <p>
-     * The EmojiHandler class handles emoji functionality within the application.
+     *
+     * <p>The EmojiHandler class handles emoji functionality within the application.
      */
     public void initEmojiHandler() {
 
@@ -366,7 +352,7 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Resets the connection when the reset connection menu item is pressed.
-     * 
+     *
      * @param e The mouse event that triggered the method.
      */
     @Override
@@ -391,7 +377,7 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Returns the websocket client associated with this instance.
-     * 
+     *
      * @return the websocket client
      */
     @Override
@@ -402,7 +388,7 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Gets the ObjectMapper instance used for converting JSON to Java objects and vice versa.
-     * 
+     *
      * @return the ObjectMapper instance
      */
     @Override
@@ -413,7 +399,7 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Retrieves the GuiFunctionality.
-     * 
+     *
      * @return the GuiFunctionality object.
      */
     @Override
@@ -424,7 +410,7 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Retrieves the name of the last message.
-     * 
+     *
      * @return the name of the last message.
      */
     @Override
@@ -435,7 +421,7 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Sets the name of the last message.
-     * 
+     *
      * @param lastMessageSenderName the name of the last message.
      */
     @Override
@@ -446,7 +432,7 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Retrieves the timestamp of the last message.
-     * 
+     *
      * @return the timestamp of the last message.
      */
     @Override
@@ -457,7 +443,7 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Sets the timestamp of the last message.
-     * 
+     *
      * @param lastMessageTimeStamp the timestamp of the last message to be set.
      */
     @Override
@@ -468,7 +454,7 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Retrieves the timeAndUsername.
-     * 
+     *
      * @return the timeAndUsername as a String.
      */
     @Override
@@ -479,7 +465,7 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Sets the timeAndUsername.
-     * 
+     *
      * @param username the timeAndUsername to set.
      */
     @Override
@@ -490,12 +476,11 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Returns a HashMap containing the list of emojis and their corresponding image icons.
-     * 
-     * <p>
-     * This method returns the emojiList HashMap, which contains the emojis and their corresponding
-     * image icons. The key in the HashMap represents the emoji text, and the value represents the
-     * corresponding image icon.
-     * 
+     *
+     * <p>This method returns the emojiList HashMap, which contains the emojis and their
+     * corresponding image icons. The key in the HashMap represents the emoji text, and the value
+     * represents the corresponding image icon.
+     *
      * @return the HashMap containing the list of emojis and their corresponding image icons
      */
     @Override
@@ -506,12 +491,11 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Returns a HashMap containing the chat client properties.
-     * 
-     * <p>
-     * This method returns the chatClientPropertiesHashMap, which contains the chat client
+     *
+     * <p>This method returns the chatClientPropertiesHashMap, which contains the chat client
      * properties. The key in the HashMap represents the property name, and the value represents the
      * corresponding value.
-     * 
+     *
      * @return the HashMap containing the chat client properties
      */
     @Override
@@ -522,7 +506,7 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Returns the Y position of the notification.
-     * 
+     *
      * @return the Y position of the notification.
      */
     @Override
@@ -533,7 +517,7 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Sets the Y position of the notification.
-     * 
+     *
      * @param notificationPositionY the Y position of the notification.
      */
     @Override
@@ -544,7 +528,7 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Gets the list of notifications.
-     * 
+     *
      * @return the list of notifications.
      */
     @Override
@@ -555,7 +539,7 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Retrieves the comment hash map.
-     * 
+     *
      * @return the comments hash map
      */
     public LinkedHashMap<Long, CommentInterface> getCommentsHashMap() {
@@ -571,7 +555,7 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Sets the startUp flag to indicate whether the system is starting up.
-     * 
+     *
      * @param startUp the startUp flag
      */
     @Override
@@ -582,7 +566,7 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Returns the name of the operating system.
-     * 
+     *
      * @return the name of the operating system.
      */
     public String getOSName() {
@@ -594,9 +578,9 @@ public class ChatMainFrameImpl extends ChatPanel
     /**
      * Returns the name of the user's current desktop environment on linux. The method retrieves the
      * value of the environment variable "XDG_CURRENT_DESKTOP".
-     * 
+     *
      * @return the name of the user's current desktop environment or null if the variable is not
-     *         set.
+     *     set.
      */
     public String getDesktopEnv() {
 
@@ -605,9 +589,9 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Returns the emoji handler.
-     * <p>
-     * This method returns the emoji handler associated with the current object.
-     * 
+     *
+     * <p>This method returns the emoji handler associated with the current object.
+     *
      * @return the emoji handler.
      */
     public EmojiHandler getEmojiHandler() {
@@ -617,7 +601,7 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Retrieves the value of the JSCROLLPANE_MARGIN_BOTTOM_BORDER constant.
-     * 
+     *
      * @return The value of the JSCROLLPANE_MARGIN_BOTTOM_BORDER constant.
      */
     public int getJSCROLLPANE_MARGIN_BOTTOM_BORDER() {
@@ -627,13 +611,14 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Retrieves the value of the JSCROLLPANE_MARGIN_RIGHT_BORDER constant.
-     * 
+     *
      * @return The value of the JSCROLLPANE_MARGIN_RIGHT_BORDER constant.
      */
     public int getJSCROLLPANE_MARGIN_RIGHT_BORDER() {
 
         return JSCROLLPANE_MARGIN_RIGHT_BORDER;
     }
+
     // getter & setter -- end
 
     /**
@@ -722,51 +707,53 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Method called when the component is resized.
-     * 
+     *
      * @param e The ComponentEvent object representing the resize event.
      */
     @Override
     protected void thisComponentResized(ComponentEvent e) {
 
         final int rightBorderMargin = e.getComponent().getWidth() - JSCROLLPANE_MARGIN_RIGHT_BORDER;
-        final int bottomBorderMargin = e.getComponent().getHeight()
-                - form_interactionAreaPanel.getHeight() - JSCROLLPANE_MARGIN_BOTTOM_BORDER;
+        final int bottomBorderMargin =
+                e.getComponent().getHeight()
+                        - form_interactionAreaPanel.getHeight()
+                        - JSCROLLPANE_MARGIN_BOTTOM_BORDER;
 
-        this.form_mainTextBackgroundScrollPane.setBounds(1, 1, rightBorderMargin,
-                bottomBorderMargin);
+        this.form_mainTextBackgroundScrollPane.setBounds(
+                1, 1, rightBorderMargin, bottomBorderMargin);
 
         repaintMainFrame();
     }
 
     /**
      * Called when the mouse is pressed on the property menu item.
-     * 
+     *
      * @param e The MouseEvent object representing the event.
      */
     @Override
     protected void propertiesMenuItemMousePressed(MouseEvent e) {
 
-        SwingUtilities.invokeLater(() -> {
+        SwingUtilities.invokeLater(
+                () -> {
+                    PropertiesInterface properties = new PropertiesPanelImpl(this);
+                    properties.setPosition();
+                    properties.setupOwnTabbedPane();
+                    properties.setupClientsTabbedPane();
 
-            PropertiesInterface properties = new PropertiesPanelImpl(this);
-            properties.setPosition();
-            properties.setupOwnTabbedPane();
-            properties.setupClientsTabbedPane();
-
-            properties.setVisible(true);
-        });
+                    properties.setVisible(true);
+                });
     }
 
     /**
      * Called when the state of internal notifications menu item is changed.
-     * 
+     *
      * @param e The ItemEvent object representing the event.
      */
     @Override
     protected void internalNotificationsMenuItemItemStateChanged(final ItemEvent e) {
 
-        if (cacheManager.getCache(
-                "waitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
+        if (cacheManager.getCache("waitingNotificationQueue")
+                instanceof WaitingNotificationQueue waitingNotificationQueue) {
 
             PopupInterface popup = new PopupPanelImpl(this);
 
@@ -790,7 +777,7 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Called when the connection details button is pressed.
-     * 
+     *
      * @param e The MouseEvent object representing the event.
      */
     @Override
@@ -802,27 +789,28 @@ public class ChatMainFrameImpl extends ChatPanel
     /**
      * Handles the event when the mouse presses the exit menu item. Sets the default close operation
      * for the current JFrame to EXIT_ON_CLOSE and disposes of the current JFrame.
-     * 
+     *
      * @param e the MouseEvent object that triggered this event
      */
     @Override
     protected void exitMenuItemMousePressed(MouseEvent e) {
 
-        SwingUtilities.invokeLater(() -> {
+        SwingUtilities.invokeLater(
+                () -> {
 
-            // make the window close on exit just to be sure
-            this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            this.dispose();
+                    // make the window close on exit just to be sure
+                    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    this.dispose();
 
-            System.exit(0);
-        });
+                    System.exit(0);
+                });
     }
 
     /**
      * Called when a key is pressed in the text editor pane. If the pressed key is not the Enter
      * key, the method simply returns. If the pressed key is the Enter key, it consumes the event
      * and performs the appropriate action based on whether the Shift key is pressed or not.
-     * 
+     *
      * @param e The KeyEvent object representing the key press event.
      */
     @Override
@@ -850,7 +838,7 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Handles the event when the mouse clicks the picture button in the current JFrame.
-     * 
+     *
      * @param e the MouseEvent object that triggered this event
      */
     @Override
@@ -866,11 +854,10 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Invoked when the emoji button is clicked in the chat GUI.
-     * 
-     * <p>
-     * This method is an override of the emojiButton method from the superclass. It is called when
-     * the emoji button is clicked.
-     * 
+     *
+     * <p>This method is an override of the emojiButton method from the superclass. It is called
+     * when the emoji button is clicked.
+     *
      * @param e the ActionEvent object generated when the emoji button is clicked
      */
     @Override
@@ -884,7 +871,7 @@ public class ChatMainFrameImpl extends ChatPanel
     /**
      * Handles the event when the send-button is clicked. Clears the text pane in the GUI and sends
      * the message to the socket.
-     * 
+     *
      * @param e the ActionEvent object that triggered this event
      */
     @Override
@@ -904,7 +891,7 @@ public class ChatMainFrameImpl extends ChatPanel
     /**
      * Handles the item state change event of the external notifications menu item. Updates the
      * state of the external notifications and displays a popup message accordingly.
-     * 
+     *
      * @param e the ItemEvent object that triggered this event
      */
     @Override
@@ -927,7 +914,7 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Handles the event when the window is closed.
-     * 
+     *
      * @param e the WindowEvent object that triggered this event
      */
     @Override
@@ -938,7 +925,7 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Handles the event when the interrupt menu item is pressed.
-     * 
+     *
      * @param e the MouseEvent object that triggered this event
      */
     @Override
@@ -946,8 +933,8 @@ public class ChatMainFrameImpl extends ChatPanel
 
         InterruptDialogInterface interruptDialogInterface = new InterruptDialogImpl(this);
 
-        interruptDialogInterface
-                .populateDialogWithAllRegisteredClients(chatClientPropertiesHashMap);
+        interruptDialogInterface.populateDialogWithAllRegisteredClients(
+                chatClientPropertiesHashMap);
         interruptDialogInterface.pack();
         interruptDialogInterface.setLocationRelativeTo(this);
         interruptDialogInterface.setVisible(true);
@@ -955,7 +942,7 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Handles the event when the state of the allNotificationsMenuItem changes.
-     * 
+     *
      * @param e the ItemEvent object that triggered this event
      */
     @Override
@@ -967,8 +954,8 @@ public class ChatMainFrameImpl extends ChatPanel
         // block all notifications for 5 minutes
         if (e.getStateChange() == ItemEvent.SELECTED) {
 
-            if (cacheManager.getCache(
-                    "waitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
+            if (cacheManager.getCache("waitingNotificationQueue")
+                    instanceof WaitingNotificationQueue waitingNotificationQueue) {
 
                 // getter call since this one is synchronized
                 waitingNotificationQueue.removeAll();
@@ -983,10 +970,10 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Method used to retrieve the version of the JAR file.
-     * <p>
-     * This method uses reflection to get the implementation version of the JAR file containing the
-     * class. It is assumed that the JAR file has its version specified in its manifest file.
-     * 
+     *
+     * <p>This method uses reflection to get the implementation version of the JAR file containing
+     * the class. It is assumed that the JAR file has its version specified in its manifest file.
+     *
      * @return The version of the JAR file as a string, or null if the version cannot be determined.
      */
     String retrieveJarVersion() {
@@ -1020,9 +1007,9 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Method used to repaint the main frame.
-     * <p>
-     * This method revalidates and repaints the main frame component, ensuring that any changes to
-     * its layout or appearance are correctly displayed on the screen.
+     *
+     * <p>This method revalidates and repaints the main frame component, ensuring that any changes
+     * to its layout or appearance are correctly displayed on the screen.
      */
     private void repaintMainFrame() {
 
@@ -1035,28 +1022,28 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Removes all messages from the chat panel.
-     * <p>
-     * The method uses `SwingUtilities.invokeLater()` to ensure that the removal of messages is
+     *
+     * <p>The method uses `SwingUtilities.invokeLater()` to ensure that the removal of messages is
      * performed on the event dispatch thread, as it involves modifications to the GUI.
-     * <p>
-     * Within the method, the `form_mainTextPanel.removeAll()` is called to remove all components
+     *
+     * <p>Within the method, the `form_mainTextPanel.removeAll()` is called to remove all components
      * from the chat panel. Additionally, the `repaintMainFrame()` method is called to repaint the
      * main frame, ensuring that the changes are immediately visible to the user.
      */
     private void removeAllMessagesOnChatPanel() {
 
-        SwingUtilities.invokeLater(() -> {
-
-            this.form_mainTextPanel.removeAll();
-            repaintMainFrame();
-        });
+        SwingUtilities.invokeLater(
+                () -> {
+                    this.form_mainTextPanel.removeAll();
+                    repaintMainFrame();
+                });
     }
 
     /**
      * Sends a typing status message to the websocket server. The method forms a JSON object
      * representing the typing status and sends it to the websocket client. If an error occurs while
      * processing the JSON, a RuntimeException is thrown.
-     * 
+     *
      * @throws RuntimeException if an error occurs while processing the JSON.
      */
     private void sendIsTypingStatusToWebsocket() {
@@ -1074,14 +1061,12 @@ public class ChatMainFrameImpl extends ChatPanel
 
             throw new RuntimeException(e);
         }
-
     }
 
     /**
      * Appends a new line to the text editor pane.
-     * 
-     * <p>
-     * Retrieves the current text in the text editor pane and appends a new line character at the
+     *
+     * <p>Retrieves the current text in the text editor pane and appends a new line character at the
      * end of it.
      */
     private void appendNewLineToTextEditorPane() {
@@ -1098,9 +1083,8 @@ public class ChatMainFrameImpl extends ChatPanel
 
     /**
      * Handles a key press event when the enter key is pressed without pressing the shift key.
-     * 
-     * <p>
-     * Retrieves the content of the text editor pane, trims any leading or trailing space, and
+     *
+     * <p>Retrieves the content of the text editor pane, trims any leading or trailing space, and
      * checks if it is empty. If the content is empty, it clears the text editor pane. Otherwise, it
      * calls the `sendMessageToSocket` method to clear the text pane and send the current content to
      * a socket.
@@ -1151,13 +1135,15 @@ public class ChatMainFrameImpl extends ChatPanel
     private void initializeNewMessageBlockTimer() {
 
         // blocking for 5 Minutes
-        blockTimer = new Timer(1_000 * 60 * 5, e1 -> {
+        blockTimer =
+                new Timer(
+                        1_000 * 60 * 5,
+                        e1 -> {
+                            form_allNotificationsMenuItem.setSelected(false);
 
-            form_allNotificationsMenuItem.setSelected(false);
-
-            // show popup
-            initializePopupMessage("Notifications status", "reverted");
-        });
+                            // show popup
+                            initializePopupMessage("Notifications status", "reverted");
+                        });
 
         blockTimer.setRepeats(false);
         blockTimer.start();

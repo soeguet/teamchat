@@ -5,15 +5,16 @@ import java.util.function.Consumer;
 import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 
-public class CustomContentContainer extends JPanel  {
+public class CustomContentContainer extends JPanel {
 
     // variables -- start
     private Consumer<Graphics> customPaint;
+
     // variables -- end
 
     // constructors -- start
-    public CustomContentContainer() {
-    }
+    public CustomContentContainer() {}
+
     // constructors -- end
 
     public void setContentContainerLayoutManager() {
@@ -31,11 +32,13 @@ public class CustomContentContainer extends JPanel  {
 
          */
 
-        super.setLayout(new MigLayout("",
-                                      // columns
-                                      "[grow,fill]",
-                                      // rows
-                                      "[fill]"));
+        super.setLayout(
+                new MigLayout(
+                        "",
+                        // columns
+                        "[grow,fill]",
+                        // rows
+                        "[fill]"));
     }
 
     public void overrideCustomPaint(final Consumer<Graphics> customPaint) {
@@ -43,7 +46,6 @@ public class CustomContentContainer extends JPanel  {
         this.customPaint = customPaint;
         repaint();
     }
-
 
     @Override
     protected void paintComponent(Graphics graphics) {

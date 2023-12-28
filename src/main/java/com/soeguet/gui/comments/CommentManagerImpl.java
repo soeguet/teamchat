@@ -1,7 +1,5 @@
 package com.soeguet.gui.comments;
 
-import javax.swing.JPanel;
-
 import com.soeguet.gui.comments.generic_comment.factories.MainChatPanelFactory;
 import com.soeguet.gui.comments.generic_comment.gui_elements.panels.CustomCommentPanel;
 import com.soeguet.gui.comments.generic_comment.util.Side;
@@ -13,11 +11,13 @@ import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.LinkModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
+import javax.swing.JPanel;
 
 public class CommentManagerImpl implements CommentManager {
 
     // variables -- start
     private final MainFrameGuiInterface mainFrame;
+
     // variables -- end
 
     // constructors -- start
@@ -25,9 +25,11 @@ public class CommentManagerImpl implements CommentManager {
 
         this.mainFrame = mainFrame;
     }
+
     // constructors -- end
 
-    private void addCommentPanelToMainChatPanel(final JPanel commentPanel, final CommentTypeEnum commentType) {
+    private void addCommentPanelToMainChatPanel(
+            final JPanel commentPanel, final CommentTypeEnum commentType) {
 
         final Side side = new SideHandler().determineSide(commentType);
 
@@ -69,23 +71,18 @@ public class CommentManagerImpl implements CommentManager {
         return mainFrame.getUsername().equals(messageModel);
     }
 
-
     /**
-     Categorizes messages received from a socket based on the given BaseModel.
-
-     @param baseModel
-     the BaseModel representing the message received from the socket
-
-     @return an integer value representing the category of the message
+     * Categorizes messages received from a socket based on the given BaseModel.
+     *
+     * @param baseModel the BaseModel representing the message received from the socket
+     * @return an integer value representing the category of the message
      */
     @Override
     public CommentTypeEnum categorizeMessageFromSocket(final BaseModel baseModel) {
 
-        //TEST this
+        // TEST this
         switch (baseModel) {
-
             case final MessageModel messageModel -> {
-
                 if (doesClientMatchSender(messageModel.getSender())) {
 
                     return CommentTypeEnum.RIGHT_TEXT;
@@ -97,7 +94,6 @@ public class CommentManagerImpl implements CommentManager {
             }
 
             case final PictureModel pictureModel -> {
-
                 if (doesClientMatchSender(pictureModel.getSender())) {
 
                     return CommentTypeEnum.RIGHT_PICTURE;
@@ -109,7 +105,6 @@ public class CommentManagerImpl implements CommentManager {
             }
 
             case final LinkModel linkModel -> {
-
                 if (doesClientMatchSender(linkModel.getSender())) {
 
                     return CommentTypeEnum.RIGHT_LINK;
@@ -123,14 +118,15 @@ public class CommentManagerImpl implements CommentManager {
     }
 
     /**
-     Sets up a message on the main chat panel based on the given MessageHandlerDTO. Core Method!
-
-     @return void
+     * Sets up a message on the main chat panel based on the given MessageHandlerDTO. Core Method!
+     *
+     * @return void
      */
     @Override
     public void setupMessage(final BaseModel baseModel, final CommentTypeEnum commentType) {
 
-        final CustomCommentPanel customCommentPanel = new MainChatPanelFactory(mainFrame, baseModel, commentType).create();
+        final CustomCommentPanel customCommentPanel =
+                new MainChatPanelFactory(mainFrame, baseModel, commentType).create();
         this.addCommentPanelToMainChatPanel(customCommentPanel, commentType);
 
         repaintMainFrame();

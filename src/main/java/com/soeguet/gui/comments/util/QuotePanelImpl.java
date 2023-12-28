@@ -2,21 +2,21 @@ package com.soeguet.gui.comments.util;
 
 import com.soeguet.gui.comments.util.generated.QuotePanel;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class QuotePanelImpl extends QuotePanel {
 
     private final Logger logger = Logger.getLogger(QuotePanelImpl.class.getName());
     private final MainFrameGuiInterface mainFrame;
 
-    public QuotePanelImpl(MainFrameGuiInterface mainFrame, String text, String sender, String time) {
+    public QuotePanelImpl(
+            MainFrameGuiInterface mainFrame, String text, String sender, String time) {
 
         this.mainFrame = mainFrame;
 
@@ -26,7 +26,6 @@ public class QuotePanelImpl extends QuotePanel {
         this.getQuoteSender().setText(sender);
         this.getQuoteTime().setText(time);
     }
-
 
     private void createTextOnPane(JTextPane actualTextPane, String text) {
 
@@ -47,7 +46,6 @@ public class QuotePanelImpl extends QuotePanel {
 
                     styledDocument.insertString(styledDocument.getLength(), word + " ", null);
                 }
-
             }
 
         } catch (Exception e) {
@@ -56,7 +54,6 @@ public class QuotePanelImpl extends QuotePanel {
             throw new RuntimeException();
         }
     }
-
 
     /**
      * Process an emoji in the given text pane and insert it into the styled document.
@@ -79,7 +76,6 @@ public class QuotePanelImpl extends QuotePanel {
             throw new RuntimeException();
         }
     }
-
 
     /**
      * Creates a style for inserting an image into a JTextPane.

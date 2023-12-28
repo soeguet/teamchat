@@ -5,12 +5,12 @@ public non-sealed class PictureModel extends BaseModel {
     // variables -- start
     protected byte[] picture;
     protected String description;
+
     // variables -- end
 
     // constructors -- start
-    public PictureModel() {
+    public PictureModel() {}
 
-    }
     // constructors -- end
 
     // getter & setter -- start

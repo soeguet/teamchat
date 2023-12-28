@@ -5,6 +5,7 @@ public non-sealed class LinkModel extends BaseModel {
     // variables -- start
     protected String link;
     protected String comment;
+
     // variables -- end
 
     // getter & setter -- start

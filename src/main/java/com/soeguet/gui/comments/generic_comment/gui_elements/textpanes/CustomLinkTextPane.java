@@ -3,17 +3,17 @@ package com.soeguet.gui.comments.generic_comment.gui_elements.textpanes;
 import com.soeguet.gui.comments.generic_comment.gui_elements.menu_items.CopyTextMenuItem;
 import com.soeguet.gui.comments.util.LinkWrapEditorKit;
 import com.soeguet.model.jackson.LinkModel;
-
-import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.List;
+import javax.swing.*;
 
 public class CustomLinkTextPane extends JTextPane implements MouseListener {
 
     // variables -- start
     private final LinkModel linkModel;
+
     // variables -- end
 
     // constructors -- start
@@ -28,6 +28,7 @@ public class CustomLinkTextPane extends JTextPane implements MouseListener {
 
         super.addMouseListener(this);
     }
+
     // constructors -- end
 
     public void create() {
@@ -36,23 +37,30 @@ public class CustomLinkTextPane extends JTextPane implements MouseListener {
 
         if (linkModel.getComment().isEmpty()) {
 
-            hyperlinkHtml = """
+            hyperlinkHtml =
+                    """
                     <a href="%s"
                     style="text-decoration:underline; color:blue; font-size:15;">
                     %s
                     </a>
-                    """.formatted(linkModel.getLink(), linkModel.getLink());
+                    """
+                            .formatted(linkModel.getLink(), linkModel.getLink());
 
         } else {
 
             // contains additional <p></p> tags
-            hyperlinkHtml = """
+            hyperlinkHtml =
+                    """
                     <a href="%s"
                     style="text-decoration:underline; color:blue; font-size:15;">
                     %s
                     </a>
                     <p>%s</p>
-                    """.formatted(linkModel.getLink(), linkModel.getLink(), linkModel.getComment());
+                    """
+                            .formatted(
+                                    linkModel.getLink(),
+                                    linkModel.getLink(),
+                                    linkModel.getComment());
         }
 
         super.setText(hyperlinkHtml);
@@ -75,7 +83,7 @@ public class CustomLinkTextPane extends JTextPane implements MouseListener {
 
         if (SwingUtilities.isLeftMouseButton(e)) {
 
-            //LEFT CLICK -> OPEN LINK IN BROWSER
+            // LEFT CLICK -> OPEN LINK IN BROWSER
             ProcessBuilder processBuilder = new ProcessBuilder();
             prepareProcessBuilder(processBuilder);
 
@@ -90,7 +98,7 @@ public class CustomLinkTextPane extends JTextPane implements MouseListener {
 
         } else {
 
-            //RIGHT CLICK -> COPY LINK
+            // RIGHT CLICK -> COPY LINK
             JPopupMenu popupMenu = new JPopupMenu();
             CopyTextMenuItem copy = new CopyTextMenuItem(this, "Copy");
             popupMenu.add(copy);
@@ -99,22 +107,14 @@ public class CustomLinkTextPane extends JTextPane implements MouseListener {
     }
 
     @Override
-    public void mousePressed(final MouseEvent e) {
-
-    }
+    public void mousePressed(final MouseEvent e) {}
 
     @Override
-    public void mouseReleased(final MouseEvent e) {
-
-    }
+    public void mouseReleased(final MouseEvent e) {}
 
     @Override
-    public void mouseEntered(final MouseEvent e) {
-
-    }
+    public void mouseEntered(final MouseEvent e) {}
 
     @Override
-    public void mouseExited(final MouseEvent e) {
-
-    }
+    public void mouseExited(final MouseEvent e) {}
 }

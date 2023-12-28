@@ -18,49 +18,48 @@ public class ProgramInit {
     }
 
     /**
-     Initializes the graphical user interface of the application.
-     This method creates a new instance of the Chatthis.mainFrameImpl class,
-     which represents the main frame of the chat application.
-     The creation of the main frame is performed on the Event Dispatch Thread
-     using the SwingUtilities.invokeLater() method, ensuring that the GUI is
-     created and updated on the correct thread.
-
-     @param envVariables the environment variables to be used by the application
-     This object contains any required configuration variables
-     or settings needed for the proper initialization of the GUI.
-     It is up to the caller to provide a valid EnvVariables object.
+     * Initializes the graphical user interface of the application. This method creates a new
+     * instance of the Chatthis.mainFrameImpl class, which represents the main frame of the chat
+     * application. The creation of the main frame is performed on the Event Dispatch Thread using
+     * the SwingUtilities.invokeLater() method, ensuring that the GUI is created and updated on the
+     * correct thread.
+     *
+     * @param envVariables the environment variables to be used by the application This object
+     *     contains any required configuration variables or settings needed for the proper
+     *     initialization of the GUI. It is up to the caller to provide a valid EnvVariables object.
      */
     public void initializeGUI(EnvVariables envVariables) {
 
-        SwingUtilities.invokeLater(() -> {
+        SwingUtilities.invokeLater(
+                () -> {
 
-            //REMOVE remove later on
-            this.mainFrame.repositionChatFrameForTestingPurposes();
+                    // REMOVE remove later on
+                    this.mainFrame.repositionChatFrameForTestingPurposes();
 
-            //setup emojis
-            final EmojiInitializerInterface emojiInitializer = new EmojiInitializer();
-            this.mainFrame.initEmojiList(emojiInitializer);
+                    // setup emojis
+                    final EmojiInitializerInterface emojiInitializer = new EmojiInitializer();
+                    this.mainFrame.initEmojiList(emojiInitializer);
 
-            //setup functionality
-            this.initializeProperties(envVariables);
-            this.initializeMainFrame();
-            this.mainFrame.loadUsernameFromEnvVariables(envVariables);
+                    // setup functionality
+                    this.initializeProperties(envVariables);
+                    this.initializeMainFrame();
+                    this.mainFrame.loadUsernameFromEnvVariables(envVariables);
 
-            // add system tray icon
-            this.mainFrame.setupSystemTrayIcon();
+                    // add system tray icon
+                    this.mainFrame.setupSystemTrayIcon();
 
-            //operating system specific settings - margins for JScrollPane
-            this.mainFrame.setScrollPaneMargins();
+                    // operating system specific settings - margins for JScrollPane
+                    this.mainFrame.setScrollPaneMargins();
 
-            //setup GUI
-            this.mainFrame.setMainFrameTitle();
-            this.mainFrame.setFixedScrollSpeed(25);
-            this.mainFrame.setGuiIcon();
+                    // setup GUI
+                    this.mainFrame.setMainFrameTitle();
+                    this.mainFrame.setFixedScrollSpeed(25);
+                    this.mainFrame.setGuiIcon();
 
-            this.mainFrame.setButtonIcons();
+                    this.mainFrame.setButtonIcons();
 
-            this.mainFrame.setVisible(true);
-        });
+                    this.mainFrame.setVisible(true);
+                });
     }
 
     private void initializeProperties(final EnvVariables envVariables) {
@@ -71,7 +70,8 @@ public class ProgramInit {
 
         if (customProperties.checkIfConfigFileExists()) {
 
-            customProperties.addCustomerToHashSet(new CustomUserPropertiesDTO(envVariables.getChatUsername(), null, null));
+            customProperties.addCustomerToHashSet(
+                    new CustomUserPropertiesDTO(envVariables.getChatUsername(), null, null));
 
             customProperties.saveProperties();
         }

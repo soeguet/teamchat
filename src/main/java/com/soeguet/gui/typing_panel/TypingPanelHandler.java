@@ -1,9 +1,8 @@
 package com.soeguet.gui.typing_panel;
 
-import javax.swing.SwingUtilities;
-
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.gui.typing_panel.interfaces.TypingPanelHandlerInterface;
+import javax.swing.SwingUtilities;
 
 public class TypingPanelHandler implements TypingPanelHandlerInterface {
 
@@ -20,9 +19,9 @@ public class TypingPanelHandler implements TypingPanelHandlerInterface {
         return mainFrame.getTypingLabel().getText();
     }
 
-
     @Override
-    public StringBuilder generateTypingLabel(final String textOnTypingLabel, final String typingUsername) {
+    public StringBuilder generateTypingLabel(
+            final String textOnTypingLabel, final String typingUsername) {
 
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -46,6 +45,7 @@ public class TypingPanelHandler implements TypingPanelHandlerInterface {
     @Override
     public void displayUpdatedTypingLabel(final StringBuilder stringBuilder) {
 
-        SwingUtilities.invokeLater(() -> mainFrame.getTypingLabel().setText(stringBuilder.toString()));
+        SwingUtilities.invokeLater(
+                () -> mainFrame.getTypingLabel().setText(stringBuilder.toString()));
     }
 }

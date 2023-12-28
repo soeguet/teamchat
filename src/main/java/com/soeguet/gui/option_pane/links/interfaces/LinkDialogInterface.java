@@ -1,12 +1,10 @@
 package com.soeguet.gui.option_pane.links.interfaces;
 
 import com.soeguet.gui.option_pane.links.dtos.MetadataStorageRecord;
-
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public interface LinkDialogInterface {
-
 
     MetadataStorageRecord checkForMetaData(final String link);
 
@@ -15,8 +13,10 @@ public interface LinkDialogInterface {
     void add(Component comp, Object constraints);
 
     void generate();
+
     JPanel getContentPanel();
 
     JTextPane getLinkTextPane();
+
     JTextPane getCommentTextPane();
 }

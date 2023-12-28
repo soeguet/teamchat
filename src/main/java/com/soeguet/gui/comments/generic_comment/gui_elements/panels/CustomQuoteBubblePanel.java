@@ -4,20 +4,21 @@ import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomLin
 import com.soeguet.gui.comments.generic_comment.gui_elements.textpanes.CustomSimpleTextPane;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.jackson.*;
-import net.miginfocom.swing.MigLayout;
-
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
+import net.miginfocom.swing.MigLayout;
 
 public class CustomQuoteBubblePanel extends JPanel {
 
     // variables -- start
     private final MainFrameGuiInterface mainFrame;
     private final QuoteModel<? extends BaseModel> quoteModel;
+
     // variables -- end
 
     // constructors -- start
-    public CustomQuoteBubblePanel(MainFrameGuiInterface mainFrame, final QuoteModel<? extends BaseModel> quoteModel) {
+    public CustomQuoteBubblePanel(
+            MainFrameGuiInterface mainFrame, final QuoteModel<? extends BaseModel> quoteModel) {
 
         this.mainFrame = mainFrame;
 
@@ -25,6 +26,7 @@ public class CustomQuoteBubblePanel extends JPanel {
         super.setBackground(new Color(240, 240, 240, 255));
         super.setOpaque(true);
     }
+
     // constructors -- end
 
     public void setQuoteBubbleLayoutManager() {
@@ -37,12 +39,12 @@ public class CustomQuoteBubblePanel extends JPanel {
         [QUOTED STUFF]
          */
 
-        super.setLayout(new MigLayout(
-
-                "", // Layout Constraints
-                "[fill]", // Column constraints
-                "[fill][fill]" // Row constraints
-        ));
+        super.setLayout(
+                new MigLayout(
+                        "", // Layout Constraints
+                        "[fill]", // Column constraints
+                        "[fill][fill]" // Row constraints
+                        ));
     }
 
     public void addTopNameAndTimeTextPane() {
@@ -50,9 +52,10 @@ public class CustomQuoteBubblePanel extends JPanel {
         final BaseModel baseModel = quoteModel.t();
 
         CustomSimpleTextPane nameAndTimeTextPane = new CustomSimpleTextPane(mainFrame);
-        //modifications -> maybe custom class
+        // modifications -> maybe custom class
         nameAndTimeTextPane.setEnabled(false);
-        nameAndTimeTextPane.setFont(new Font(nameAndTimeTextPane.getFont().getName(), Font.ITALIC, 10));
+        nameAndTimeTextPane.setFont(
+                new Font(nameAndTimeTextPane.getFont().getName(), Font.ITALIC, 10));
 
         nameAndTimeTextPane.setText(baseModel.getSender() + " - " + baseModel.getTime());
 
@@ -64,32 +67,29 @@ public class CustomQuoteBubblePanel extends JPanel {
         final BaseModel baseModel = quoteModel.t();
 
         switch (baseModel) {
-
             case MessageModel messageModel -> {
-
                 CustomSimpleTextPane customSimpleTextPane = new CustomSimpleTextPane(mainFrame);
-                customSimpleTextPane.replaceEmojiDescriptionWithActualImageIcon(messageModel.getMessage());
+                customSimpleTextPane.replaceEmojiDescriptionWithActualImageIcon(
+                        messageModel.getMessage());
 
                 super.add(customSimpleTextPane, "cell 0 1");
             }
 
             case PictureModel pictureModel -> {
-
                 CustomSimpleTextPane customSimpleTextPane = new CustomSimpleTextPane(mainFrame);
-                customSimpleTextPane.replaceEmojiDescriptionWithActualImageIcon(pictureModel.getDescription());
+                customSimpleTextPane.replaceEmojiDescriptionWithActualImageIcon(
+                        pictureModel.getDescription());
 
                 super.add(customSimpleTextPane, "cell 0 1");
             }
 
             case LinkModel linkModel -> {
-
                 CustomLinkTextPane customLinkTextPane = new CustomLinkTextPane(linkModel);
                 customLinkTextPane.create();
 
                 super.add(customLinkTextPane, "cell 0 1");
             }
         }
-
     }
 
     @Override

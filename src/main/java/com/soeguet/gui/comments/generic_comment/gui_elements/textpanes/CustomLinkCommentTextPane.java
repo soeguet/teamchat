@@ -8,11 +8,12 @@ public class CustomLinkCommentTextPane extends CustomTextPane {
 
     // variables -- start
     private final LinkModel linkModel;
+
     // variables -- end
 
     // constructors -- start
-    public CustomLinkCommentTextPane(MainFrameGuiInterface mainFrame, final boolean lineWrap,
-            final LinkModel linkModel) {
+    public CustomLinkCommentTextPane(
+            MainFrameGuiInterface mainFrame, final boolean lineWrap, final LinkModel linkModel) {
 
         // FIXME: 02.11.23 -> this is a hack
         super(mainFrame, lineWrap, linkModel.getComment());
@@ -20,6 +21,7 @@ public class CustomLinkCommentTextPane extends CustomTextPane {
         super.setEditorKit(new LinkWrapEditorKit());
         this.linkModel = linkModel;
     }
+
     // constructors -- end
 
     public boolean setUp() {

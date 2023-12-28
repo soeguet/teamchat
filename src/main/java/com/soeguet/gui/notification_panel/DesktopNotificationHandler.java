@@ -1,11 +1,5 @@
 package com.soeguet.gui.notification_panel;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.util.logging.Logger;
-
-import javax.swing.Timer;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.cache.factory.CacheManagerFactory;
@@ -22,9 +16,12 @@ import com.soeguet.model.jackson.LinkModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
 import com.soeguet.util.NotificationStatus;
-
 import dorkbox.notify.Notify;
 import dorkbox.notify.Position;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.util.logging.Logger;
+import javax.swing.Timer;
 
 public class DesktopNotificationHandler implements DesktopNotificationHandlerInterface {
 
@@ -48,58 +45,53 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
 
     /**
      * Creates a desktop notification with the given message and notification status.
-     * 
+     *
      * @param message The message to be displayed in the desktop notification.
      * @param notificationStatus The status of the notification, which determines how it is handled.
-     *        Possible values are: - INTERNAL_ONLY: Only an internal notification is displayed. -
-     *        EXTERNAL_ONLY: Only an external notification is displayed. - ALL_ALLOWED: Both
-     *        internal and external notifications are displayed. - ALL_DENIED: No notification is
-     *        displayed. - STARTUP: No notification is displayed.
+     *     Possible values are: - INTERNAL_ONLY: Only an internal notification is displayed. -
+     *     EXTERNAL_ONLY: Only an external notification is displayed. - ALL_ALLOWED: Both internal
+     *     and external notifications are displayed. - ALL_DENIED: No notification is displayed. -
+     *     STARTUP: No notification is displayed.
      * @throws NullPointerException if the message is null.
      */
     @Override
-    public void createDesktopNotification(final String message,
-            final NotificationStatus notificationStatus) throws NullPointerException {
+    public void createDesktopNotification(
+            final String message, final NotificationStatus notificationStatus)
+            throws NullPointerException {
 
         // check if notifications are even wanted
         switch (notificationStatus) {
-
             case INTERNAL_ONLY -> {
-
                 internalNotificationHandling(message);
                 Toolkit.getDefaultToolkit().beep();
             }
 
             case EXTERNAL_ONLY -> {
-
                 externalNotificationHandling(message);
                 Toolkit.getDefaultToolkit().beep();
             }
 
             case ALL_ALLOWED -> {
-
                 internalNotificationHandling(message);
                 externalNotificationHandling(message);
                 Toolkit.getDefaultToolkit().beep();
             }
 
             case ALL_DENIED, STARTUP -> {
-
                 return;
             }
         }
     }
 
-
     /**
      * Handles the remaining capacity in the active notifications queue.
-     * 
+     *
      * @param activeNotificationsCache The active notifications cache.
      */
     private void handleRemainingCapacityInQueue(ActiveNotificationQueue activeNotificationsCache) {
 
-        if (cacheManager.getCache(
-                "WaitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
+        if (cacheManager.getCache("WaitingNotificationQueue")
+                instanceof WaitingNotificationQueue waitingNotificationQueue) {
 
             // if there is still space in the active notifications queue and there are still
             // notifications in the waiting queue
@@ -116,42 +108,43 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
 
     /**
      * Creates a notification based on the given BaseModel object.
-     * 
+     *
      * @param baseModel The BaseModel object representing the notification content.
-     * 
      * @throws IllegalArgumentException if the BaseModel object is of unknown type.
      */
     private void createNotification(final BaseModel baseModel) {
 
         switch (baseModel) {
-
             case MessageModel text -> {
-
-                Timer timer = new Timer(500, e -> {
-                    NotificationInterface notification = new NotificationImpl(this.mainFrame, text);
-                    notification.setNotificationText();
-                    notification.setMaximumSize(new Dimension(400, 300));
-                });
+                Timer timer =
+                        new Timer(
+                                500,
+                                e -> {
+                                    NotificationInterface notification =
+                                            new NotificationImpl(this.mainFrame, text);
+                                    notification.setNotificationText();
+                                    notification.setMaximumSize(new Dimension(400, 300));
+                                });
                 timer.setRepeats(false);
                 timer.start();
             }
 
             case PictureModel picture -> {
+                Timer timer =
+                        new Timer(
+                                500,
+                                e -> {
+                                    NotificationInterface notification =
+                                            new NotificationImpl(this.mainFrame, picture);
 
-                Timer timer = new Timer(500, e -> {
-                    NotificationInterface notification =
-                            new NotificationImpl(this.mainFrame, picture);
-
-                    notification.setNotificationPicture();
-                    notification.setMaximumSize(new Dimension(400, 300));
-
-                });
+                                    notification.setNotificationPicture();
+                                    notification.setMaximumSize(new Dimension(400, 300));
+                                });
                 timer.setRepeats(false);
                 timer.start();
             }
 
             default -> {
-
                 logger.info("Unknown message type");
                 throw new IllegalArgumentException();
             }
@@ -161,12 +154,11 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
     /**
      * Handles internal notifications by adding them to the active notification queue and creating
      * notifications.
-     * 
+     *
      * @param message The message to be handled.
      * @param baseModel The base model associated with the notification.
-     * 
      * @throws RuntimeException if there is an IllegalStateException while adding to the active
-     *         notification queue.
+     *     notification queue.
      */
     private synchronized void internalNotificationHandling(String message, BaseModel baseModel) {
 
@@ -178,16 +170,12 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
         // let icon blink even with turned off notifications
         switch (baseModel) {
             case MessageModel messageModel -> {
-
                 notify.text(messageModel.getMessage());
-
             }
             case PictureModel pictureModel -> {
-
                 notify.text("[picture] " + pictureModel.getDescription());
             }
             case LinkModel linkModel -> {
-
                 notify.text("[link] " + linkModel.getComment());
             }
         }
@@ -212,16 +200,16 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
 
     /**
      * Adds an incoming notification to the waiting notification queue.
-     * 
+     *
      * @param message The message of the incoming notification.
-     * 
      * @throws RuntimeException if there is an IllegalStateException while adding to the waiting
-     *         notification queue.
+     *     notification queue.
      */
     // private void addIncomingNotificationToQueue(final String message) {
     //
     //     if (cacheManager.getCache(
-    //             "WaitingNotificationQueue") instanceof WaitingNotificationQueue waitingNotificationQueue) {
+    //             "WaitingNotificationQueue") instanceof WaitingNotificationQueue
+    // waitingNotificationQueue) {
     //
     //         // add to queue and skip the rest
     //         waitingNotificationQueue.addLast(message);
@@ -230,15 +218,14 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
 
     /**
      * Displays up to three notifications.
-     * 
+     *
      * @param baseModel The BaseModel object representing the notification to display.
      * @param activeNotificationQueue The ActiveNotificationQueue object to add the notification to.
-     * 
      * @throws RuntimeException if there is an IllegalStateException while adding to the active
-     *         notification queue.
+     *     notification queue.
      */
-    private void displayUpToThreeNotifications(final BaseModel baseModel,
-            final ActiveNotificationQueue activeNotificationQueue) {
+    private void displayUpToThreeNotifications(
+            final BaseModel baseModel, final ActiveNotificationQueue activeNotificationQueue) {
 
         activeNotificationQueue.addLast(baseModel);
         createNotification(baseModel);
@@ -247,9 +234,8 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
 
     /**
      * Handles external notifications based on the given message.
-     * 
+     *
      * @param message The message to be handled.
-     * 
      * @throws RuntimeException if there is an IOException while handling the notification.
      */
     private void externalNotificationHandling(final String message) {
@@ -258,49 +244,41 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
         NotificationDisplayInterface notificationDisplayInterface;
 
         switch (baseModel) {
-
             case MessageModel text -> {
-
                 switch (mainFrame.getOSName()) {
-
                     case "Linux" -> {
-
                         notificationDisplayInterface = new NotificationDisplayLinux();
-                        notificationDisplayInterface.displayNotification(text.getSender(),
-                                text.getMessage());
+                        notificationDisplayInterface.displayNotification(
+                                text.getSender(), text.getMessage());
                     }
 
                     case "Windows 10", "WINDOWS_NT" -> {
-
                         notificationDisplayInterface = new NotificationDisplayWindows();
-                        notificationDisplayInterface.displayNotification(text.getSender(),
-                                text.getMessage());
+                        notificationDisplayInterface.displayNotification(
+                                text.getSender(), text.getMessage());
                     }
                 }
             }
 
             case PictureModel picture -> {
-
                 switch (mainFrame.getOSName()) {
-
                     case "Linux" -> {
-
                         notificationDisplayInterface = new NotificationDisplayLinux();
-                        notificationDisplayInterface.displayNotification(picture.getSender(),
+                        notificationDisplayInterface.displayNotification(
+                                picture.getSender(),
                                 "[picture]" + System.lineSeparator() + picture.getDescription());
                     }
 
                     case "Windows 10", "WINDOWS_NT" -> {
-
                         notificationDisplayInterface = new NotificationDisplayWindows();
-                        notificationDisplayInterface.displayNotification(picture.getSender(),
+                        notificationDisplayInterface.displayNotification(
+                                picture.getSender(),
                                 "[picture]" + System.lineSeparator() + picture.getDescription());
                     }
                 }
             }
 
             case LinkModel link -> {
-
                 throw new RuntimeException("LinkModel not supported yet");
             }
         }
@@ -309,7 +287,7 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
     /**
      * Handles internal notifications by converting a message into a base model and calling another
      * internalNotificationHandling method.
-     * 
+     *
      * @param message The notification message to handle.
      */
     public synchronized void internalNotificationHandling(String message) {
@@ -322,11 +300,9 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
 
     /**
      * Converts a JSON string to a MessageModel object.
-     * 
+     *
      * @param message the JSON string to be converted
-     * 
      * @return the MessageModel object representing the converted JSON string
-     * 
      * @throws IllegalArgumentException if the JSON string is malformed
      */
     private BaseModel convertMessageToBaseModel(String message) {
@@ -342,4 +318,3 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
         }
     }
 }
-

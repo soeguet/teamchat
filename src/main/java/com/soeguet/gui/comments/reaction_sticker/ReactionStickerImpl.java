@@ -2,10 +2,9 @@ package com.soeguet.gui.comments.reaction_sticker;
 
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.UserInteraction;
-
-import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+import javax.swing.*;
 
 public class ReactionStickerImpl {
 
@@ -14,7 +13,10 @@ public class ReactionStickerImpl {
     private final List<UserInteraction> userInteractions;
     private JPanel stickerPanel;
 
-    public ReactionStickerImpl(final MainFrameGuiInterface mainFrame, final JLayeredPane layeredPane, final List<UserInteraction> userInteractions) {
+    public ReactionStickerImpl(
+            final MainFrameGuiInterface mainFrame,
+            final JLayeredPane layeredPane,
+            final List<UserInteraction> userInteractions) {
 
         this.mainFrame = mainFrame;
         this.container = layeredPane;
@@ -26,15 +28,17 @@ public class ReactionStickerImpl {
         stickerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         stickerPanel.setOpaque(false);
 
-        userInteractions.forEach(userInteraction -> {
+        userInteractions.forEach(
+                userInteraction -> {
+                    final ImageIcon imageIcon =
+                            mainFrame.getEmojiList().get(userInteraction.emoji());
+                    imageIcon.setDescription(userInteraction.timeAndUsername());
 
-            final ImageIcon imageIcon = mainFrame.getEmojiList().get(userInteraction.emoji());
-            imageIcon.setDescription(userInteraction.timeAndUsername());
+                    CustomStickerContainer customStickerContainer =
+                            new CustomStickerContainer(imageIcon);
 
-            CustomStickerContainer customStickerContainer = new CustomStickerContainer(imageIcon);
-
-            stickerPanel.add(customStickerContainer);
-        });
+                    stickerPanel.add(customStickerContainer);
+                });
 
         setStickerPanelBounds();
         container.add(stickerPanel, 0);
@@ -44,8 +48,11 @@ public class ReactionStickerImpl {
 
         int panelHeight = 30;
         int panelHeightWithMargin = panelHeight + 5;
-        stickerPanel.setBounds(0, container.getHeight() - panelHeightWithMargin - 1, stickerPanel.getPreferredSize().width,
-                               stickerPanel.getPreferredSize().height);
+        stickerPanel.setBounds(
+                0,
+                container.getHeight() - panelHeightWithMargin - 1,
+                stickerPanel.getPreferredSize().width,
+                stickerPanel.getPreferredSize().height);
     }
 
     public void repositionSticker() {
@@ -57,9 +64,10 @@ public class ReactionStickerImpl {
     }
 
     /**
-     Revalidates the sticker count based on the maximum number of slots for emotes and the number of available slots in the sticker panel container.
-     This is determined by the width of the container divided by the width of the emote slot. This method hides or shows the components in the sticker
-     panel based on the maximum number of slots for emotes.
+     * Revalidates the sticker count based on the maximum number of slots for emotes and the number
+     * of available slots in the sticker panel container. This is determined by the width of the
+     * container divided by the width of the emote slot. This method hides or shows the components
+     * in the sticker panel based on the maximum number of slots for emotes.
      */
     public void revalidateStickerCount() {
 

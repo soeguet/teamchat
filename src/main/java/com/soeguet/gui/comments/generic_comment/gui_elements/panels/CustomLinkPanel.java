@@ -13,6 +13,7 @@ public class CustomLinkPanel extends JPanel {
     private final MainFrameGuiInterface mainFrame;
     // variables -- start
     private final LinkModel linkModel;
+
     // variables -- end
 
     // constructors -- start
@@ -23,18 +24,19 @@ public class CustomLinkPanel extends JPanel {
         this.linkModel = (LinkModel) baseModel;
         super.setOpaque(false);
     }
+
     // constructors -- end
 
-    /**
-     Sets the layout manager of the current instance.
-     */
+    /** Sets the layout manager of the current instance. */
     public void setLayoutManager() {
 
-        super.setLayout(new MigLayout("",
-                                      //columns
-                                      "[fill,grow]",
-                                      //rows
-                                      "[fill,grow][fill,grow]"));
+        super.setLayout(
+                new MigLayout(
+                        "",
+                        // columns
+                        "[fill,grow]",
+                        // rows
+                        "[fill,grow][fill,grow]"));
     }
 
     public void addLinkToPanel() {
@@ -43,7 +45,6 @@ public class CustomLinkPanel extends JPanel {
         customLinkTextPane.create();
         this.add(customLinkTextPane, "cell 0 1, growy");
     }
-
 
     public void addQuoteToLinkPanel() {
 
@@ -54,7 +55,7 @@ public class CustomLinkPanel extends JPanel {
             return;
         }
 
-        CustomReferencePanel customQuotePanel = new CustomReferencePanel(mainFrame,linkModel);
+        CustomReferencePanel customQuotePanel = new CustomReferencePanel(mainFrame, linkModel);
 
         customQuotePanel.setLayoutManager();
         customQuotePanel.createQuotedTextPane();

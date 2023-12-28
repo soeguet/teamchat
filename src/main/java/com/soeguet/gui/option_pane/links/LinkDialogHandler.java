@@ -25,17 +25,15 @@ import org.jsoup.nodes.Element;
 
 public class LinkDialogHandler {
 
-    public LinkDialogHandler() {
-
-    }
+    public LinkDialogHandler() {}
 
     public MetadataStorageRecord checkForMetaData(final String link) {
 
-        //if GET request is ok -> look for metadata
+        // if GET request is ok -> look for metadata
         int statusCode = checkStatusCodeOfLink(link);
         if (statusCode < 400) {
 
-            //check if it is an absolute link -> if not, there are most likely no metadata
+            // check if it is an absolute link -> if not, there are most likely no metadata
             AbsoluteLinkRecord absoluteLinkRecord = validateUri(link);
 
             if (absoluteLinkRecord.isAbsoluteLink()) {
@@ -48,7 +46,7 @@ public class LinkDialogHandler {
 
                 } else {
 
-                    //fetch metadata -> title and preview image
+                    // fetch metadata -> title and preview image
                     return fetchMetaDataFromLink(doc);
                 }
             }
@@ -57,35 +55,38 @@ public class LinkDialogHandler {
     }
 
     /**
-     Sends an HTTP request to the given link and returns the status code of the response.
-
-     @param link the URL of the link to check
-
-     @return the status code of the response, or 1000 if an error occurred
+     * Sends an HTTP request to the given link and returns the status code of the response.
+     *
+     * @param link the URL of the link to check
+     * @return the status code of the response, or 1000 if an error occurred
      */
     public int checkStatusCodeOfLink(final String link) {
 
         final AtomicReference<HttpResponse<String>> response = new AtomicReference<>();
 
-        new Thread(() -> {
+        new Thread(
+                        () -> {
+                            try {
 
-            try {
+                                HttpClient client = HttpClient.newHttpClient();
+                                HttpRequest request;
 
-                HttpClient client = HttpClient.newHttpClient();
-                HttpRequest request;
+                                request = HttpRequest.newBuilder().uri(new URI(link)).build();
 
-                request = HttpRequest.newBuilder()
-                .uri(new URI(link))
-                .build();
+                                response.set(
+                                        client.send(request, HttpResponse.BodyHandlers.ofString()));
 
-                response.set(client.send(request, HttpResponse.BodyHandlers.ofString()));
+                            } catch (IOException
+                                    | InterruptedException
+                                    | URISyntaxException
+                                    | IllegalArgumentException e) {
 
-            } catch (IOException | InterruptedException | URISyntaxException | IllegalArgumentException e) {
-
-                System.err.println("Failed to connect or send the HTTP request: " + e.getMessage());
-            }
-                 
-        }).start();
+                                System.err.println(
+                                        "Failed to connect or send the HTTP request: "
+                                                + e.getMessage());
+                            }
+                        })
+                .start();
 
         return response.get() == null ? 1_000 : response.get().statusCode();
     }
@@ -166,13 +167,13 @@ public class LinkDialogHandler {
     }
 
     /**
-     Sends a link message to the websocket server.
-
-     @param mainFrame the main frame interface
-     @param linkTransferDTO the message to send
+     * Sends a link message to the websocket server.
+     *
+     * @param mainFrame the main frame interface
+     * @param linkTransferDTO the message to send
      */
-    public void sendLinkToWebsocket(final MainFrameGuiInterface mainFrame, final LinkTransferDTO linkTransferDTO) {
-
+    public void sendLinkToWebsocket(
+            final MainFrameGuiInterface mainFrame, final LinkTransferDTO linkTransferDTO) {
 
         LinkModel linkModel = new LinkModel();
         linkModel.setMessageType(MessageTypes.LINK);

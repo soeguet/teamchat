@@ -1,19 +1,18 @@
 package com.soeguet.initialization.implementations;
 
 import com.soeguet.initialization.interfaces.UserInteractionInterface;
-
 import javax.swing.*;
 
 /**
- Implementation of the UserInteraction interface.
- Provides methods for user interaction in a graphical user interface (GUI) using JOptionPane.
+ * Implementation of the UserInteraction interface. Provides methods for user interaction in a
+ * graphical user interface (GUI) using JOptionPane.
  */
 public class UserInteractionImpl implements UserInteractionInterface {
 
     /**
-     Asks the user to enter their timeAndUsername.
-
-     @return The timeAndUsername entered by the user.
+     * Asks the user to enter their timeAndUsername.
+     *
+     * @return The timeAndUsername entered by the user.
      */
     @Override
     public String askForUsername() {
@@ -22,9 +21,9 @@ public class UserInteractionImpl implements UserInteractionInterface {
     }
 
     /**
-     Displays an error message dialog box with the specified message.
-
-     @param message the error message to be displayed
+     * Displays an error message dialog box with the specified message.
+     *
+     * @param message the error message to be displayed
      */
     @Override
     public void showError(final String message) {

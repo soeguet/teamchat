@@ -41,5 +41,4 @@ class ThemeManagerImplTest {
         themeManager.applyTheme(Themes.INTELLIJ);
         Mockito.verify(mockThemeSetter, Mockito.times(1)).setIntelliJ();
     }
-
 }

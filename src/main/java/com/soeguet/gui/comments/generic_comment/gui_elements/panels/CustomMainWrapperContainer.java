@@ -27,6 +27,7 @@ public class CustomMainWrapperContainer extends JPanel {
 
     // variables -- start
     private final Side side;
+
     // variables -- end
 
     // constructors -- start
@@ -34,33 +35,35 @@ public class CustomMainWrapperContainer extends JPanel {
      * Wrapper for Sidepanel and Contentpanel<br>
      * Is set on top of the CustomCommentPanel {@link CustomCommentPanel}<br>
      * <br>
-     * 
+     *
      * @param commentType {@link CommentTypeEnum}
      */
     public CustomMainWrapperContainer(CommentTypeEnum commentType) {
 
         this.side = determineSide(commentType);
     }
+
     // constructors -- end
 
-    /**
-     * Sets the LayoutManager for the MainWrapperContainer
-     */
+    /** Sets the LayoutManager for the MainWrapperContainer */
     public void setMainWrapperContainerLayoutManager() {
 
         switch (this.getSide()) {
-
-            case LEFT -> super.setLayout(new MigLayout("insets 0",
-                    // columns
-                    "[left,shrink][fill,left]",
-                    // rows
-                    "[shrink]"));
-            case RIGHT -> super.setLayout(new MigLayout("",
-                    // columns
-                    // -> grow is needed -> else right sight will collapse
-                    "[grow,fill,right]20[shrink,right]",
-                    // rows
-                    "[shrink]"));
+            case LEFT -> super.setLayout(
+                    new MigLayout(
+                            "insets 0",
+                            // columns
+                            "[left,shrink][fill,left]",
+                            // rows
+                            "[shrink]"));
+            case RIGHT -> super.setLayout(
+                    new MigLayout(
+                            "",
+                            // columns
+                            // -> grow is needed -> else right sight will collapse
+                            "[grow,fill,right]20[shrink,right]",
+                            // rows
+                            "[shrink]"));
         }
     }
 
@@ -73,7 +76,6 @@ public class CustomMainWrapperContainer extends JPanel {
     private Side determineSide(final CommentTypeEnum commentType) {
 
         return switch (commentType) {
-
             case LEFT_LINK, LEFT_PICTURE, LEFT_TEXT -> Side.LEFT;
             case RIGHT_LINK, RIGHT_PICTURE, RIGHT_TEXT -> Side.RIGHT;
         };

@@ -3,7 +3,6 @@ package com.soeguet.gui.comments.generic_comment.gui_elements.textpanes;
 import com.soeguet.emoji.EmojiHandler;
 import com.soeguet.gui.comments.generic_comment.gui_elements.interfaces.ContentInterface;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
-
 import javax.swing.*;
 import javax.swing.text.*;
 
@@ -13,7 +12,8 @@ public class CustomTextPane extends JTextPane implements ContentInterface {
     private final boolean lineWrap;
     private final String message;
 
-    public CustomTextPane(MainFrameGuiInterface mainFrame, final boolean lineWrap, final String message) {
+    public CustomTextPane(
+            MainFrameGuiInterface mainFrame, final boolean lineWrap, final String message) {
 
         this.mainFrame = mainFrame;
 
@@ -99,7 +99,8 @@ public class CustomTextPane extends JTextPane implements ContentInterface {
 
         } else {
 
-            return getParent() == null || getUI().getPreferredSize(this).width <= getParent().getSize().width;
+            return getParent() == null
+                    || getUI().getPreferredSize(this).width <= getParent().getSize().width;
         }
     }
 }

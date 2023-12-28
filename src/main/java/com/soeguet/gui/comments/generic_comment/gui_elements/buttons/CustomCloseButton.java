@@ -1,15 +1,14 @@
 package com.soeguet.gui.comments.generic_comment.gui_elements.buttons;
 
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
-
-import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import javax.swing.*;
 
 /**
- * A custom close button that extends JButton and implements MouseListener.
- * It provides functionality for removing a JComponent from its parent container
- * when clicked and re-requesting focus on the main text editor pane.
+ * A custom close button that extends JButton and implements MouseListener. It provides
+ * functionality for removing a JComponent from its parent container when clicked and re-requesting
+ * focus on the main text editor pane.
  */
 public class CustomCloseButton extends JButton implements MouseListener {
 
@@ -23,7 +22,8 @@ public class CustomCloseButton extends JButton implements MouseListener {
      * @param component The reference to the JComponent.
      * @param text The text to set for the button.
      */
-    public CustomCloseButton(final MainFrameGuiInterface mainFrame, JComponent component, String text) {
+    public CustomCloseButton(
+            final MainFrameGuiInterface mainFrame, JComponent component, String text) {
 
         this.mainFrame = mainFrame;
 
@@ -43,28 +43,20 @@ public class CustomCloseButton extends JButton implements MouseListener {
         component.removeAll();
         component.setVisible(false);
 
-        //re-request focus
+        // re-request focus
         mainFrame.getTextEditorPane().setFocusable(true);
         mainFrame.getTextEditorPane().requestFocus();
     }
 
     @Override
-    public void mousePressed(final MouseEvent e) {
-
-    }
+    public void mousePressed(final MouseEvent e) {}
 
     @Override
-    public void mouseReleased(final MouseEvent e) {
-
-    }
+    public void mouseReleased(final MouseEvent e) {}
 
     @Override
-    public void mouseEntered(final MouseEvent e) {
-
-    }
+    public void mouseEntered(final MouseEvent e) {}
 
     @Override
-    public void mouseExited(final MouseEvent e) {
-
-    }
+    public void mouseExited(final MouseEvent e) {}
 }

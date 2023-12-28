@@ -4,6 +4,7 @@ public non-sealed class MessageModel extends BaseModel {
 
     // variables -- start
     protected String message;
+
     // variables -- end
 
     // getter & setter -- start

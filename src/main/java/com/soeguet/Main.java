@@ -41,4 +41,3 @@ public class Main {
         programInit.initializeGUI(environmentVariables);
     }
 }
-

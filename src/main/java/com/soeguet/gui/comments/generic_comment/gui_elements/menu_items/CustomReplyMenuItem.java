@@ -12,6 +12,7 @@ public class CustomReplyMenuItem extends JMenuItem implements MouseListener {
     // variables -- start
     private final MainFrameGuiInterface mainFrame;
     private final BaseModel baseModel;
+
     // variables -- end
 
     // constructors -- start
@@ -23,17 +24,16 @@ public class CustomReplyMenuItem extends JMenuItem implements MouseListener {
         super.setText("reply");
         this.addMouseListener(this);
     }
+
     // constructors -- end
 
     @Override
-    public void mouseClicked(final MouseEvent e) {
-
-    }
+    public void mouseClicked(final MouseEvent e) {}
 
     @Override
     public void mousePressed(final MouseEvent e) {
 
-        ReplyPanelFactory replyPanelFactory = new ReplyPanelFactory(mainFrame,baseModel);
+        ReplyPanelFactory replyPanelFactory = new ReplyPanelFactory(mainFrame, baseModel);
         replyPanelFactory.create();
 
         // I don't know how to fix this otherwise. the damn text pane keeps stealing the focus
@@ -42,17 +42,11 @@ public class CustomReplyMenuItem extends JMenuItem implements MouseListener {
     }
 
     @Override
-    public void mouseReleased(final MouseEvent e) {
-
-    }
+    public void mouseReleased(final MouseEvent e) {}
 
     @Override
-    public void mouseEntered(final MouseEvent e) {
-
-    }
+    public void mouseEntered(final MouseEvent e) {}
 
     @Override
-    public void mouseExited(final MouseEvent e) {
-
-    }
+    public void mouseExited(final MouseEvent e) {}
 }

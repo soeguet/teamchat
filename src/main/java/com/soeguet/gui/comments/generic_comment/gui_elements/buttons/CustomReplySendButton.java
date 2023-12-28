@@ -26,11 +26,14 @@ public class CustomReplySendButton extends JButton implements MouseListener {
     private final MainFrameGuiInterface mainFrame;
     private final BaseModel baseModel;
     private final CustomReplyPanel customReplyPanel;
+
     // variables -- end
 
     // constructors -- start
-    public CustomReplySendButton(MainFrameGuiInterface mainFrame, BaseModel baseModel,
-                                 CustomReplyPanel customReplyPanel) {
+    public CustomReplySendButton(
+            MainFrameGuiInterface mainFrame,
+            BaseModel baseModel,
+            CustomReplyPanel customReplyPanel) {
 
         this.mainFrame = mainFrame;
         this.baseModel = baseModel;
@@ -41,6 +44,7 @@ public class CustomReplySendButton extends JButton implements MouseListener {
 
         super.addMouseListener(this);
     }
+
     // constructors -- end
 
     private void setCustomIcon() {
@@ -59,7 +63,8 @@ public class CustomReplySendButton extends JButton implements MouseListener {
 
         MessageModel messageModel = new MessageModel();
 
-        //FEATURE -> can't quote pictures -> they clutter the database this way -> need to find a way to reference them
+        // FEATURE -> can't quote pictures -> they clutter the database this way -> need to find a
+        // way to reference them
         if (quoteModel.t() instanceof PictureModel pictureModel) {
 
             pictureModel.setPicture(null);
@@ -113,22 +118,14 @@ public class CustomReplySendButton extends JButton implements MouseListener {
     }
 
     @Override
-    public void mousePressed(final MouseEvent e) {
-
-    }
+    public void mousePressed(final MouseEvent e) {}
 
     @Override
-    public void mouseReleased(final MouseEvent e) {
-
-    }
+    public void mouseReleased(final MouseEvent e) {}
 
     @Override
-    public void mouseEntered(final MouseEvent e) {
-
-    }
+    public void mouseEntered(final MouseEvent e) {}
 
     @Override
-    public void mouseExited(final MouseEvent e) {
-
-    }
+    public void mouseExited(final MouseEvent e) {}
 }
