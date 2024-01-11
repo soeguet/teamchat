@@ -204,24 +204,39 @@ public class ChatMainFrameImpl extends ChatPanel
      */
     public void setScrollPaneMargins() {
 
-        if (getOSName().toLowerCase().contains("windows")) {
+        try {
+            if (getOSName().isBlank()) {
 
-            JSCROLLPANE_MARGIN_BOTTOM_BORDER = 63;
-            JSCROLLPANE_MARGIN_RIGHT_BORDER = 20;
+                return;
 
-        } else {
+            } else if (getOSName().toLowerCase().contains("windows")) {
 
-            if (getDesktopEnv().toLowerCase().contains("gnome")) {
-
-                JSCROLLPANE_MARGIN_BOTTOM_BORDER = 27;
+                JSCROLLPANE_MARGIN_BOTTOM_BORDER = 63;
+                JSCROLLPANE_MARGIN_RIGHT_BORDER = 20;
 
             } else {
 
-                // e.g. KDE Plasma
-                JSCROLLPANE_MARGIN_BOTTOM_BORDER = 56;
-            }
+                if (getDesktopEnv().toLowerCase().contains("gnome")) {
 
-            JSCROLLPANE_MARGIN_RIGHT_BORDER = 4;
+                    JSCROLLPANE_MARGIN_BOTTOM_BORDER = 27;
+
+                } else if (getDesktopEnv().toLowerCase().contains("kde")) {
+
+                    // e.g. KDE Plasma
+                    JSCROLLPANE_MARGIN_BOTTOM_BORDER = 56;
+
+                } else {
+
+                    // e.g. KDE Plasma
+                    JSCROLLPANE_MARGIN_BOTTOM_BORDER = 56;
+                }
+
+                JSCROLLPANE_MARGIN_RIGHT_BORDER = 4;
+            }
+        }
+        catch (NullPointerException e) {
+
+            // do nothing
         }
     }
 

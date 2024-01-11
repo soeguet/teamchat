@@ -127,6 +127,8 @@ public class CommentManagerImpl implements CommentManager {
 
         final CustomCommentPanel customCommentPanel =
                 new MainChatPanelFactory(mainFrame, baseModel, commentType).create();
+
+        // finally the created chat bubble panel is added to the main frame
         this.addCommentPanelToMainChatPanel(customCommentPanel, commentType);
 
         repaintMainFrame();
