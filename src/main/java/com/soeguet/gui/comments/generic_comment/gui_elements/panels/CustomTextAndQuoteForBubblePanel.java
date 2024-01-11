@@ -25,7 +25,7 @@ public class CustomTextAndQuoteForBubblePanel extends JPanel {
 
     // constructors -- start
     public CustomTextAndQuoteForBubblePanel(
-            MainFrameGuiInterface mainFrame, MessageModel messageModel) {
+            final MainFrameGuiInterface mainFrame, final MessageModel messageModel) {
 
         this.mainFrame = mainFrame;
 
@@ -41,17 +41,17 @@ public class CustomTextAndQuoteForBubblePanel extends JPanel {
         super.setLayout(
                 new MigLayout(
                         "", // Layout Constraints
-                        "[fill,grow]", // Column constraints
-                        "[fill,grow][fill,grow]" // Row constraints
+                        "[shrink 0,fill,grow]", // Column constraints
+                        "[shrink 0,fill,grow][shrink 0,fill,grow]" // Row constraints
                         ));
     }
 
     public void addQuote() {
 
-        if (messageModel.getQuotedMessage() != null) {
+        if (this.messageModel.getQuotedMessage() != null) {
 
-            CustomQuoteBubblePanel customQuoteBubblePanel =
-                    new CustomQuoteBubblePanel(mainFrame, messageModel.getQuotedMessage());
+            final CustomQuoteBubblePanel customQuoteBubblePanel =
+                    new CustomQuoteBubblePanel(this.mainFrame, this.messageModel.getQuotedMessage());
 
             customQuoteBubblePanel.addTopNameAndTimeTextPane();
             customQuoteBubblePanel.setQuoteBubbleLayoutManager();
@@ -63,8 +63,8 @@ public class CustomTextAndQuoteForBubblePanel extends JPanel {
 
     public void addTextMessage() {
 
-        CustomSimpleTextPane customSimpleTextPane = new CustomSimpleTextPane(mainFrame);
-        customSimpleTextPane.replaceEmojiDescriptionWithActualImageIcon(messageModel.getMessage());
+        final CustomSimpleTextPane customSimpleTextPane = new CustomSimpleTextPane(this.mainFrame);
+        customSimpleTextPane.replaceEmojiDescriptionWithActualImageIcon(this.messageModel.getMessage());
 
         super.add(customSimpleTextPane, "cell 0 1");
     }
