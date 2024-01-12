@@ -69,7 +69,8 @@ public class ChatMainFrameImpl extends ChatPanel
     private final HashMap<String, CustomUserPropertiesDTO> chatClientPropertiesHashMap =
             new HashMap<>();
 
-    // FEATURE cache comments on pane for hot replacements as HashSet -> data structure ready,
+    // FEATURE cache comments on pane for hot replacements as HashSet -> data
+    // structure ready,
     // implementation missing
     // -> add to cache
     private final LinkedHashMap<Long, CommentInterface> commentsHashMap = new LinkedHashMap<>();
@@ -150,6 +151,7 @@ public class ChatMainFrameImpl extends ChatPanel
      * fixed y position of 100. This operation is performed asynchronously using
      * SwingUtilities.invokeLater() to ensure compatibility with Swing's event dispatching thread.
      */
+    @Override
     public void repositionChatFrameForTestingPurposes() {
 
         final String chatXPosition = System.getenv("CHAT_X_POSITION");
@@ -159,7 +161,7 @@ public class ChatMainFrameImpl extends ChatPanel
             SwingUtilities.invokeLater(
                     () -> {
                         final int chatFrameXPosition = Integer.parseInt(chatXPosition);
-                        setLocation(chatFrameXPosition, 100);
+                        this.setLocation(chatFrameXPosition, 100);
                     });
         }
     }
@@ -167,6 +169,7 @@ public class ChatMainFrameImpl extends ChatPanel
     /**
      * Loads the statusArray from the environment variables and assigns it to the appropriate field.
      */
+    @Override
     public void loadUsernameFromEnvVariables(final EnvVariables envVariables) {
 
         this.envVariables = envVariables;
@@ -174,7 +177,7 @@ public class ChatMainFrameImpl extends ChatPanel
         // override statusArray if saved in GUI by user
         if (!this.envVariables.getChatUsername().isEmpty()) {
 
-            setUsername(this.envVariables.getChatUsername());
+            this.setUsername(this.envVariables.getChatUsername());
         }
     }
 
@@ -191,9 +194,10 @@ public class ChatMainFrameImpl extends ChatPanel
      * @see EmojiInitializer
      * @see EmojiInitializerInterface
      */
-    public void initEmojiList(EmojiInitializerInterface emojiInitializer) {
+    @Override
+    public void initEmojiList(final EmojiInitializerInterface emojiInitializer) {
 
-        emojiList = emojiInitializer.createEmojiList();
+        this.emojiList = emojiInitializer.createEmojiList();
     }
 
     /**
@@ -202,58 +206,60 @@ public class ChatMainFrameImpl extends ChatPanel
      * <p>This method determines the appropriate margin values for the scroll pane based on the
      * operating system and desktop environment.
      */
+    @Override
     public void setScrollPaneMargins() {
 
         try {
-            if (getOSName().isBlank()) {
+            if (this.getOSName().isBlank()) {
 
                 return;
 
-            } else if (getOSName().toLowerCase().contains("windows")) {
+            } else if (this.getOSName().toLowerCase().contains("windows")) {
 
-                JSCROLLPANE_MARGIN_BOTTOM_BORDER = 63;
-                JSCROLLPANE_MARGIN_RIGHT_BORDER = 20;
+                this.JSCROLLPANE_MARGIN_BOTTOM_BORDER = 63;
+                this.JSCROLLPANE_MARGIN_RIGHT_BORDER = 20;
 
             } else {
 
-                if (getDesktopEnv().toLowerCase().contains("gnome")) {
+                if (this.getDesktopEnv().toLowerCase().contains("gnome")) {
 
-                    JSCROLLPANE_MARGIN_BOTTOM_BORDER = 27;
+                    this.JSCROLLPANE_MARGIN_BOTTOM_BORDER = 27;
 
-                } else if (getDesktopEnv().toLowerCase().contains("kde")) {
+                } else if (this.getDesktopEnv().toLowerCase().contains("kde")) {
 
                     // e.g. KDE Plasma
-                    JSCROLLPANE_MARGIN_BOTTOM_BORDER = 56;
+                    this.JSCROLLPANE_MARGIN_BOTTOM_BORDER = 56;
 
                 } else {
 
                     // e.g. KDE Plasma
-                    JSCROLLPANE_MARGIN_BOTTOM_BORDER = 56;
+                    this.JSCROLLPANE_MARGIN_BOTTOM_BORDER = 56;
                 }
 
-                JSCROLLPANE_MARGIN_RIGHT_BORDER = 4;
+                this.JSCROLLPANE_MARGIN_RIGHT_BORDER = 4;
             }
-        }
-        catch (NullPointerException e) {
+        } catch (final NullPointerException e) {
 
             // do nothing
         }
     }
 
+    @Override
     public void setMainFrameTitle() {
 
         final String title =
-                "teamchat" + " - " + this.chatVersion() + "statusArray: " + getUsername();
+                "teamchat" + " - " + this.chatVersion() + "client name: " + this.getUsername();
 
-        setTitle(title);
+        this.setTitle(title);
     }
 
+    @Override
     public void setGuiIcon() {
 
-        URL iconURL = ChatMainFrameImpl.class.getResource("/icon.png");
+        final URL iconURL = ChatMainFrameImpl.class.getResource("/icon.png");
         assert iconURL != null;
-        ImageIcon icon = new ImageIcon(iconURL);
-        setIconImage(icon.getImage());
+        final ImageIcon icon = new ImageIcon(iconURL);
+        this.setIconImage(icon.getImage());
     }
 
     /**
@@ -270,28 +276,30 @@ public class ChatMainFrameImpl extends ChatPanel
      *
      * @throws AssertionError if any of the required resource URLs are null.
      */
+    @Override
     public void setButtonIcons() {
 
-        URL sendUrl = ChatMainFrameImpl.class.getResource("/emojis/$+1f4e8$+.png");
-        URL emojiUrl = ChatMainFrameImpl.class.getResource("/emojis/$+1f60e$+.png");
-        URL pictureUrl = ChatMainFrameImpl.class.getResource("/emojis/$+1f4bb$+.png");
+        final URL sendUrl = ChatMainFrameImpl.class.getResource("/emojis/$+1f4e8$+.png");
+        final URL emojiUrl = ChatMainFrameImpl.class.getResource("/emojis/$+1f60e$+.png");
+        final URL pictureUrl = ChatMainFrameImpl.class.getResource("/emojis/$+1f4bb$+.png");
 
         if (sendUrl != null) {
 
-            form_sendButton.setIcon(new ImageIcon(sendUrl));
+            this.form_sendButton.setIcon(new ImageIcon(sendUrl));
         }
 
         if (emojiUrl != null) {
 
-            form_emojiButton.setIcon(new ImageIcon(emojiUrl));
+            this.form_emojiButton.setIcon(new ImageIcon(emojiUrl));
         }
 
         if (pictureUrl != null) {
 
-            form_pictureButton.setIcon(new ImageIcon(pictureUrl));
+            this.form_pictureButton.setIcon(new ImageIcon(pictureUrl));
         }
     }
 
+    @Override
     public void setEnvVariables(final EnvVariables envVariables) {
 
         this.envVariables = envVariables;
@@ -305,14 +313,15 @@ public class ChatMainFrameImpl extends ChatPanel
      * successfully loaded, the method sets the statusArray property to the statusArray obtained
      * from the CustomUserProperties object.
      */
+    @Override
     public void loadCustomProperties() {
 
-        CustomProperties customProperties = CustomProperties.getProperties();
+        final CustomProperties customProperties = CustomProperties.getProperties();
 
-        CustomUserPropertiesDTO client = customProperties.loaderThisClientProperties();
+        final CustomUserPropertiesDTO client = customProperties.loaderThisClientProperties();
 
         // only override statusArray if nothing is set on startup
-        if (client != null && username == null) {
+        if (client != null && this.username == null) {
 
             this.username = client.username();
         }
@@ -325,6 +334,7 @@ public class ChatMainFrameImpl extends ChatPanel
      * the current object as a constructor argument. The GuiFunctionality object is then assigned to
      * the guiFunctionality instance variable of the current object.
      */
+    @Override
     public void initGuiFunctionality() {
 
         this.guiFunctionality = new GuiFunctionalityImpl(this);
@@ -339,11 +349,12 @@ public class ChatMainFrameImpl extends ChatPanel
      * calls the determineWebsocketURI() method and the connectToWebsocket() method on the
      * clientController object.
      */
+    @Override
     public void initializeClientController() {
 
-        clientController = new ClientControllerImpl(this, guiFunctionality);
-        clientController.determineWebsocketURI();
-        clientController.connectToWebsocket();
+        this.clientController = new ClientControllerImpl(this, this.guiFunctionality);
+        this.clientController.determineWebsocketURI();
+        this.clientController.connectToWebsocket();
     }
 
     /**
@@ -354,6 +365,7 @@ public class ChatMainFrameImpl extends ChatPanel
      *
      * <p>The EmojiHandler class handles emoji functionality within the application.
      */
+    @Override
     public void initEmojiHandler() {
 
         this.emojiHandler = new EmojiHandler(this);
@@ -371,22 +383,22 @@ public class ChatMainFrameImpl extends ChatPanel
      * @param e The mouse event that triggered the method.
      */
     @Override
-    public void resetConnectionMenuItemMousePressed(MouseEvent e) {
+    public void resetConnectionMenuItemMousePressed(final MouseEvent e) {
 
         // clear the main text panel first
-        removeAllMessagesOnChatPanel();
+        this.removeAllMessagesOnChatPanel();
 
         // close the websocket client
-        clientController.closeConnection();
+        this.clientController.closeConnection();
 
         // set null to be sure + preparation for reconnect
-        clientController.prepareReconnection();
+        this.clientController.prepareReconnection();
 
         // invalidate all caches
-        cacheManager.invalidateCache();
+        this.cacheManager.invalidateCache();
 
         // reconnect to socket
-        clientController.connectToWebsocket();
+        this.clientController.connectToWebsocket();
         this.logger.info("Reconnecting websocket client");
     }
 
@@ -398,7 +410,7 @@ public class ChatMainFrameImpl extends ChatPanel
     @Override
     public CustomWebsocketClient getWebsocketClient() {
 
-        return clientController.getWebsocketClient();
+        return this.clientController.getWebsocketClient();
     }
 
     /**
@@ -409,7 +421,7 @@ public class ChatMainFrameImpl extends ChatPanel
     @Override
     public ObjectMapper getObjectMapper() {
 
-        return objectMapper;
+        return this.objectMapper;
     }
 
     /**
@@ -420,7 +432,7 @@ public class ChatMainFrameImpl extends ChatPanel
     @Override
     public GuiFunctionalityInterface getGuiFunctionality() {
 
-        return guiFunctionality;
+        return this.guiFunctionality;
     }
 
     /**
@@ -431,7 +443,7 @@ public class ChatMainFrameImpl extends ChatPanel
     @Override
     public String getLastMessageSenderName() {
 
-        return lastMessageSenderName;
+        return this.lastMessageSenderName;
     }
 
     /**
@@ -453,7 +465,7 @@ public class ChatMainFrameImpl extends ChatPanel
     @Override
     public String getLastMessageTimeStamp() {
 
-        return lastMessageTimeStamp;
+        return this.lastMessageTimeStamp;
     }
 
     /**
@@ -475,7 +487,7 @@ public class ChatMainFrameImpl extends ChatPanel
     @Override
     public String getUsername() {
 
-        return username;
+        return this.username;
     }
 
     /**
@@ -484,7 +496,7 @@ public class ChatMainFrameImpl extends ChatPanel
      * @param username the timeAndUsername to set.
      */
     @Override
-    public void setUsername(String username) {
+    public void setUsername(final String username) {
 
         this.username = username;
     }
@@ -501,7 +513,7 @@ public class ChatMainFrameImpl extends ChatPanel
     @Override
     public HashMap<String, ImageIcon> getEmojiList() {
 
-        return emojiList;
+        return this.emojiList;
     }
 
     /**
@@ -516,7 +528,7 @@ public class ChatMainFrameImpl extends ChatPanel
     @Override
     public HashMap<String, CustomUserPropertiesDTO> getChatClientPropertiesHashMap() {
 
-        return chatClientPropertiesHashMap;
+        return this.chatClientPropertiesHashMap;
     }
 
     /**
@@ -536,7 +548,7 @@ public class ChatMainFrameImpl extends ChatPanel
      * @param notificationPositionY the Y position of the notification.
      */
     @Override
-    public synchronized void setNotificationPositionY(int notificationPositionY) {
+    public synchronized void setNotificationPositionY(final int notificationPositionY) {
 
         this.notificationPositionY = notificationPositionY;
     }
@@ -549,7 +561,7 @@ public class ChatMainFrameImpl extends ChatPanel
     @Override
     public List<NotificationImpl> getNotificationList() {
 
-        return notificationList;
+        return this.notificationList;
     }
 
     /**
@@ -557,15 +569,16 @@ public class ChatMainFrameImpl extends ChatPanel
      *
      * @return the comments hash map
      */
+    @Override
     public LinkedHashMap<Long, CommentInterface> getCommentsHashMap() {
 
-        return commentsHashMap;
+        return this.commentsHashMap;
     }
 
     @Override
     public boolean isStartUp() {
 
-        return startUp;
+        return this.startUp;
     }
 
     /**
@@ -584,6 +597,7 @@ public class ChatMainFrameImpl extends ChatPanel
      *
      * @return the name of the operating system.
      */
+    @Override
     public String getOSName() {
 
         return System.getProperty("os.name");
@@ -611,7 +625,7 @@ public class ChatMainFrameImpl extends ChatPanel
      */
     public EmojiHandler getEmojiHandler() {
 
-        return emojiHandler;
+        return this.emojiHandler;
     }
 
     /**
@@ -621,7 +635,7 @@ public class ChatMainFrameImpl extends ChatPanel
      */
     public int getJSCROLLPANE_MARGIN_BOTTOM_BORDER() {
 
-        return JSCROLLPANE_MARGIN_BOTTOM_BORDER;
+        return this.JSCROLLPANE_MARGIN_BOTTOM_BORDER;
     }
 
     /**
@@ -631,7 +645,7 @@ public class ChatMainFrameImpl extends ChatPanel
      */
     public int getJSCROLLPANE_MARGIN_RIGHT_BORDER() {
 
-        return JSCROLLPANE_MARGIN_RIGHT_BORDER;
+        return this.JSCROLLPANE_MARGIN_RIGHT_BORDER;
     }
 
     // getter & setter -- end
@@ -640,69 +654,69 @@ public class ChatMainFrameImpl extends ChatPanel
      * @return the logger
      */
     public Logger getLogger() {
-        return logger;
+        return this.logger;
     }
 
     /**
      * @return the cacheManager
      */
     public CacheManager getCacheManager() {
-        return cacheManager;
+        return this.cacheManager;
     }
 
     /**
      * @return the envVariables
      */
     public EnvVariables getEnvVariables() {
-        return envVariables;
+        return this.envVariables;
     }
 
     /**
      * @return the clientController
      */
     public ClientController getClientController() {
-        return clientController;
+        return this.clientController;
     }
 
     /**
      * @param clientController the clientController to set
      */
-    public void setClientController(ClientController clientController) {
+    public void setClientController(final ClientController clientController) {
         this.clientController = clientController;
     }
 
     /**
      * @param guiFunctionality the guiFunctionality to set
      */
-    public void setGuiFunctionality(GuiFunctionalityInterface guiFunctionality) {
+    public void setGuiFunctionality(final GuiFunctionalityInterface guiFunctionality) {
         this.guiFunctionality = guiFunctionality;
     }
 
     /**
      * @param jSCROLLPANE_MARGIN_RIGHT_BORDER the jSCROLLPANE_MARGIN_RIGHT_BORDER to set
      */
-    public void setJSCROLLPANE_MARGIN_RIGHT_BORDER(int jSCROLLPANE_MARGIN_RIGHT_BORDER) {
-        JSCROLLPANE_MARGIN_RIGHT_BORDER = jSCROLLPANE_MARGIN_RIGHT_BORDER;
+    public void setJSCROLLPANE_MARGIN_RIGHT_BORDER(final int jSCROLLPANE_MARGIN_RIGHT_BORDER) {
+        this.JSCROLLPANE_MARGIN_RIGHT_BORDER = jSCROLLPANE_MARGIN_RIGHT_BORDER;
     }
 
     /**
      * @param jSCROLLPANE_MARGIN_BOTTOM_BORDER the jSCROLLPANE_MARGIN_BOTTOM_BORDER to set
      */
-    public void setJSCROLLPANE_MARGIN_BOTTOM_BORDER(int jSCROLLPANE_MARGIN_BOTTOM_BORDER) {
-        JSCROLLPANE_MARGIN_BOTTOM_BORDER = jSCROLLPANE_MARGIN_BOTTOM_BORDER;
+    public void setJSCROLLPANE_MARGIN_BOTTOM_BORDER(final int jSCROLLPANE_MARGIN_BOTTOM_BORDER) {
+        this.JSCROLLPANE_MARGIN_BOTTOM_BORDER = jSCROLLPANE_MARGIN_BOTTOM_BORDER;
     }
 
     /**
      * @param emojiList the emojiList to set
      */
-    public void setEmojiList(HashMap<String, ImageIcon> emojiList) {
+    public void setEmojiList(final HashMap<String, ImageIcon> emojiList) {
         this.emojiList = emojiList;
     }
 
     /**
      * @param emojiHandler the emojiHandler to set
      */
-    public void setEmojiHandler(EmojiHandler emojiHandler) {
+    public void setEmojiHandler(final EmojiHandler emojiHandler) {
         this.emojiHandler = emojiHandler;
     }
 
@@ -710,13 +724,13 @@ public class ChatMainFrameImpl extends ChatPanel
      * @return the blockTimer
      */
     public Timer getBlockTimer() {
-        return blockTimer;
+        return this.blockTimer;
     }
 
     /**
      * @param blockTimer the blockTimer to set
      */
-    public void setBlockTimer(Timer blockTimer) {
+    public void setBlockTimer(final Timer blockTimer) {
         this.blockTimer = blockTimer;
     }
 
@@ -726,18 +740,19 @@ public class ChatMainFrameImpl extends ChatPanel
      * @param e The ComponentEvent object representing the resize event.
      */
     @Override
-    protected void thisComponentResized(ComponentEvent e) {
+    protected void thisComponentResized(final ComponentEvent e) {
 
-        final int rightBorderMargin = e.getComponent().getWidth() - JSCROLLPANE_MARGIN_RIGHT_BORDER;
+        final int rightBorderMargin =
+                e.getComponent().getWidth() - this.JSCROLLPANE_MARGIN_RIGHT_BORDER;
         final int bottomBorderMargin =
                 e.getComponent().getHeight()
-                        - form_interactionAreaPanel.getHeight()
-                        - JSCROLLPANE_MARGIN_BOTTOM_BORDER;
+                        - this.form_interactionAreaPanel.getHeight()
+                        - this.JSCROLLPANE_MARGIN_BOTTOM_BORDER;
 
         this.form_mainTextBackgroundScrollPane.setBounds(
                 1, 1, rightBorderMargin, bottomBorderMargin);
 
-        repaintMainFrame();
+        this.repaintMainFrame();
     }
 
     /**
@@ -746,11 +761,11 @@ public class ChatMainFrameImpl extends ChatPanel
      * @param e The MouseEvent object representing the event.
      */
     @Override
-    protected void propertiesMenuItemMousePressed(MouseEvent e) {
+    protected void propertiesMenuItemMousePressed(final MouseEvent e) {
 
         SwingUtilities.invokeLater(
                 () -> {
-                    PropertiesInterface properties = new PropertiesPanelImpl(this);
+                    final PropertiesInterface properties = new PropertiesPanelImpl(this);
                     properties.setPosition();
                     properties.setupOwnTabbedPane();
                     properties.setupClientsTabbedPane();
@@ -767,10 +782,10 @@ public class ChatMainFrameImpl extends ChatPanel
     @Override
     protected void internalNotificationsMenuItemItemStateChanged(final ItemEvent e) {
 
-        if (cacheManager.getCache("waitingNotificationQueue")
-                instanceof WaitingNotificationQueue waitingNotificationQueue) {
+        if (this.cacheManager.getCache("waitingNotificationQueue")
+                instanceof final WaitingNotificationQueue waitingNotificationQueue) {
 
-            PopupInterface popup = new PopupPanelImpl(this);
+            final PopupInterface popup = new PopupPanelImpl(this);
 
             // remove all remaining and queued notifications
             if (e.getStateChange() == ItemEvent.DESELECTED) {
@@ -798,7 +813,7 @@ public class ChatMainFrameImpl extends ChatPanel
     @Override
     protected void connectionDetailsButtonMousePressed(final MouseEvent e) {
 
-        clientController.serverInformationOptionPane();
+        this.clientController.serverInformationOptionPane();
     }
 
     /**
@@ -808,7 +823,7 @@ public class ChatMainFrameImpl extends ChatPanel
      * @param e the MouseEvent object that triggered this event
      */
     @Override
-    protected void exitMenuItemMousePressed(MouseEvent e) {
+    protected void exitMenuItemMousePressed(final MouseEvent e) {
 
         SwingUtilities.invokeLater(
                 () -> {
@@ -829,26 +844,26 @@ public class ChatMainFrameImpl extends ChatPanel
      * @param e The KeyEvent object representing the key press event.
      */
     @Override
-    protected void textEditorPaneKeyPressed(KeyEvent e) {
+    protected void textEditorPaneKeyPressed(final KeyEvent e) {
 
         // typing.. status
         if (e.getKeyCode() != KeyEvent.VK_ENTER) {
 
-            sendIsTypingStatusToWebsocket();
+            this.sendIsTypingStatusToWebsocket();
             return;
         }
 
         // shift + enter -> new line
         if (e.isShiftDown()) {
 
-            appendNewLineToTextEditorPane();
+            this.appendNewLineToTextEditorPane();
             return;
         }
 
         e.consume();
 
         // send message
-        handleNonShiftEnterKeyPress();
+        this.handleNonShiftEnterKeyPress();
     }
 
     /**
@@ -857,9 +872,9 @@ public class ChatMainFrameImpl extends ChatPanel
      * @param e the MouseEvent object that triggered this event
      */
     @Override
-    protected void pictureButtonMouseClicked(MouseEvent e) {
+    protected void pictureButtonMouseClicked(final MouseEvent e) {
 
-        ImageInterface imagePanel = new ImagePanelImpl(this);
+        final ImageInterface imagePanel = new ImagePanelImpl(this);
 
         imagePanel.setPosition();
         imagePanel.setLayeredPaneLayerPositions();
@@ -876,10 +891,10 @@ public class ChatMainFrameImpl extends ChatPanel
      * @param e the ActionEvent object generated when the emoji button is clicked
      */
     @Override
-    protected void emojiButton(ActionEvent e) {
+    protected void emojiButton(final ActionEvent e) {
 
-        EmojiPopupInterface emojiPopup =
-                new EmojiPopUpMenuHandler(this, form_textEditorPane, form_emojiButton);
+        final EmojiPopupInterface emojiPopup =
+                new EmojiPopUpMenuHandler(this, this.form_textEditorPane, this.form_emojiButton);
         emojiPopup.createEmojiPopupMenu();
     }
 
@@ -890,12 +905,12 @@ public class ChatMainFrameImpl extends ChatPanel
      * @param e the ActionEvent object that triggered this event
      */
     @Override
-    protected void sendButton(ActionEvent e) {
+    protected void sendButton(final ActionEvent e) {
 
         // first replace emoji with text
-        emojiHandler.replaceImageIconWithEmojiDescription(getTextEditorPane());
+        this.emojiHandler.replaceImageIconWithEmojiDescription(this.getTextEditorPane());
 
-        if (form_textEditorPane.getText().trim().isEmpty()) {
+        if (this.form_textEditorPane.getText().trim().isEmpty()) {
 
             return;
         }
@@ -912,7 +927,7 @@ public class ChatMainFrameImpl extends ChatPanel
     @Override
     protected void externalNotificationsMenuItemItemStateChanged(final ItemEvent e) {
 
-        PopupInterface popup = new PopupPanelImpl(this);
+        final PopupInterface popup = new PopupPanelImpl(this);
 
         if (e.getStateChange() == ItemEvent.SELECTED) {
 
@@ -935,7 +950,7 @@ public class ChatMainFrameImpl extends ChatPanel
     @Override
     protected void thisWindowClosing(final WindowEvent e) {
 
-        setState(Frame.ICONIFIED);
+        this.setState(Frame.ICONIFIED);
     }
 
     /**
@@ -946,10 +961,10 @@ public class ChatMainFrameImpl extends ChatPanel
     @Override
     protected void interruptMenuItemMousePressed(final MouseEvent e) {
 
-        InterruptDialogInterface interruptDialogInterface = new InterruptDialogImpl(this);
+        final InterruptDialogInterface interruptDialogInterface = new InterruptDialogImpl(this);
 
         interruptDialogInterface.populateDialogWithAllRegisteredClients(
-                chatClientPropertiesHashMap);
+                this.chatClientPropertiesHashMap);
         interruptDialogInterface.pack();
         interruptDialogInterface.setLocationRelativeTo(this);
         interruptDialogInterface.setVisible(true);
@@ -964,22 +979,22 @@ public class ChatMainFrameImpl extends ChatPanel
     protected void allNotificationsMenuItemItemStateChanged(final ItemEvent e) {
 
         // any kind of change needs to get rid of an existing timer
-        resetMessageBlockTimer();
+        this.resetMessageBlockTimer();
 
         // block all notifications for 5 minutes
         if (e.getStateChange() == ItemEvent.SELECTED) {
 
-            if (cacheManager.getCache("waitingNotificationQueue")
-                    instanceof WaitingNotificationQueue waitingNotificationQueue) {
+            if (this.cacheManager.getCache("waitingNotificationQueue")
+                    instanceof final WaitingNotificationQueue waitingNotificationQueue) {
 
                 // getter call since this one is synchronized
                 waitingNotificationQueue.removeAll();
             }
 
-            initializeNewMessageBlockTimer();
+            this.initializeNewMessageBlockTimer();
 
             // show popup
-            initializePopupMessage("All notifications disabled", "for 5 minutes");
+            this.initializePopupMessage("All notifications disabled", "for 5 minutes");
         }
     }
 
@@ -993,14 +1008,17 @@ public class ChatMainFrameImpl extends ChatPanel
      */
     String retrieveJarVersion() {
 
-        return getClass().getPackage().getImplementationVersion();
+        return this.getClass().getPackage().getImplementationVersion();
     }
 
+    /**
+     * @return
+     */
     private String chatVersion() {
 
-        Properties properties = new Properties();
-        InputStream inputStream =
-                getClass().getClassLoader().getResourceAsStream("version.properties");
+        final Properties properties = new Properties();
+        final InputStream inputStream =
+                this.getClass().getClassLoader().getResourceAsStream("version.properties");
 
         if (inputStream != null) {
 
@@ -1009,7 +1027,7 @@ public class ChatMainFrameImpl extends ChatPanel
                 properties.load(inputStream);
                 return properties.getProperty("version") + " - ";
 
-            } catch (IOException e) {
+            } catch (final IOException e) {
 
                 throw new RuntimeException(e);
             }
@@ -1027,9 +1045,6 @@ public class ChatMainFrameImpl extends ChatPanel
      * to its layout or appearance are correctly displayed on the screen.
      */
     private void repaintMainFrame() {
-
-        String version = retrieveJarVersion();
-        this.setTitle("teamchat - " + version + " - client name: " + this.getUsername());
 
         this.revalidate();
         this.repaint();
@@ -1050,7 +1065,7 @@ public class ChatMainFrameImpl extends ChatPanel
         SwingUtilities.invokeLater(
                 () -> {
                     this.form_mainTextPanel.removeAll();
-                    repaintMainFrame();
+                    this.repaintMainFrame();
                 });
     }
 
@@ -1065,14 +1080,14 @@ public class ChatMainFrameImpl extends ChatPanel
 
         try {
 
-            ArrayList<String> array = new ArrayList<>();
+            final ArrayList<String> array = new ArrayList<>();
             array.add(this.getUsername());
             final byte[] jsonTypingStatus =
-                    objectMapper.writeValueAsBytes(new StatusTransferDTO("typing", array));
+                    this.objectMapper.writeValueAsBytes(new StatusTransferDTO("typing", array));
 
-            clientController.getWebsocketClient().send(jsonTypingStatus);
+            this.clientController.getWebsocketClient().send(jsonTypingStatus);
 
-        } catch (JsonProcessingException e) {
+        } catch (final JsonProcessingException e) {
 
             throw new RuntimeException(e);
         }
@@ -1086,14 +1101,15 @@ public class ChatMainFrameImpl extends ChatPanel
      */
     private void appendNewLineToTextEditorPane() {
 
-        final int caretPosition = form_textEditorPane.getCaretPosition();
-        form_textEditorPane.setSelectionStart(0);
-        form_textEditorPane.setSelectionEnd(caretPosition);
-        form_textEditorPane.replaceSelection(form_textEditorPane.getSelectedText() + "\n");
+        final int caretPosition = this.form_textEditorPane.getCaretPosition();
+        this.form_textEditorPane.setSelectionStart(0);
+        this.form_textEditorPane.setSelectionEnd(caretPosition);
+        this.form_textEditorPane.replaceSelection(
+                this.form_textEditorPane.getSelectedText() + "\n");
 
-        final int endPosition = form_textEditorPane.getCaretPosition();
-        form_textEditorPane.setSelectionStart(endPosition);
-        form_textEditorPane.setSelectionEnd(endPosition);
+        final int endPosition = this.form_textEditorPane.getCaretPosition();
+        this.form_textEditorPane.setSelectionStart(endPosition);
+        this.form_textEditorPane.setSelectionEnd(endPosition);
     }
 
     /**
@@ -1107,13 +1123,13 @@ public class ChatMainFrameImpl extends ChatPanel
     private void handleNonShiftEnterKeyPress() {
 
         // emoji to text -> text extraction
-        emojiHandler.replaceImageIconWithEmojiDescription(form_textEditorPane);
-        String textPaneContent = form_textEditorPane.getText().trim();
+        this.emojiHandler.replaceImageIconWithEmojiDescription(this.form_textEditorPane);
+        final String textPaneContent = this.form_textEditorPane.getText().trim();
 
         if (textPaneContent.isEmpty()) {
 
             // empty -> reset
-            form_textEditorPane.setText("");
+            this.form_textEditorPane.setText("");
 
         } else {
 
@@ -1123,25 +1139,26 @@ public class ChatMainFrameImpl extends ChatPanel
 
     private void sendMessageToSocket() {
 
-        String textFromInput = guiFunctionality.getTextFromInput();
+        final String textFromInput = this.guiFunctionality.getTextFromInput();
 
-        MessageModel messageModel = new MessageModel();
+        final MessageModel messageModel = new MessageModel();
         messageModel.setMessage(textFromInput);
         messageModel.setTime(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
         messageModel.setSender(this.getUsername());
         messageModel.setMessageType(MessageTypes.NORMAL);
 
-        String serializedTextFromInput = guiFunctionality.convertUserTextToJSON(messageModel);
+        final String serializedTextFromInput =
+                this.guiFunctionality.convertUserTextToJSON(messageModel);
         if (serializedTextFromInput != null) {
-            guiFunctionality.sendMessageToSocket(serializedTextFromInput);
-            guiFunctionality.notifyClientsSendStatus();
+            this.guiFunctionality.sendMessageToSocket(serializedTextFromInput);
+            this.guiFunctionality.notifyClientsSendStatus();
         }
-        guiFunctionality.clearTextPane();
+        this.guiFunctionality.clearTextPane();
     }
 
     private void initializePopupMessage(final String x, final String x1) {
 
-        PopupInterface popup = new PopupPanelImpl(this);
+        final PopupInterface popup = new PopupPanelImpl(this);
         popup.getMessageTextField().setText(x + System.lineSeparator() + x1);
         popup.configurePopupPanelPlacement();
         popup.initiatePopupTimer(3_000);
@@ -1150,33 +1167,33 @@ public class ChatMainFrameImpl extends ChatPanel
     private void initializeNewMessageBlockTimer() {
 
         // blocking for 5 Minutes
-        blockTimer =
+        this.blockTimer =
                 new Timer(
                         1_000 * 60 * 5,
                         e1 -> {
-                            form_allNotificationsMenuItem.setSelected(false);
+                            this.form_allNotificationsMenuItem.setSelected(false);
 
                             // show popup
-                            initializePopupMessage("Notifications status", "reverted");
+                            this.initializePopupMessage("Notifications status", "reverted");
                         });
 
-        blockTimer.setRepeats(false);
-        blockTimer.start();
+        this.blockTimer.setRepeats(false);
+        this.blockTimer.start();
     }
 
     private void resetMessageBlockTimer() {
 
-        if (blockTimer != null) {
+        if (this.blockTimer != null) {
 
-            blockTimer.stop();
-            blockTimer = null;
+            this.blockTimer.stop();
+            this.blockTimer = null;
         }
     }
 
     @Override
     public TrayIcon getTrayIcon() {
 
-        return trayIcon;
+        return this.trayIcon;
     }
 
     @Override
@@ -1184,18 +1201,18 @@ public class ChatMainFrameImpl extends ChatPanel
 
         if (SystemTray.isSupported()) {
 
-            URL iconURL = ChatMainFrameImpl.class.getResource("/icon.png");
+            final URL iconURL = ChatMainFrameImpl.class.getResource("/icon.png");
             assert iconURL != null;
-            ImageIcon icon = new ImageIcon(iconURL);
+            final ImageIcon icon = new ImageIcon(iconURL);
 
             try {
 
-                SystemTray tray = SystemTray.getSystemTray();
-                trayIcon = new TrayIcon(icon.getImage(), "teamchat");
-                trayIcon.setImageAutoSize(true);
-                tray.add(trayIcon);
+                final SystemTray tray = SystemTray.getSystemTray();
+                this.trayIcon = new TrayIcon(icon.getImage(), "teamchat");
+                this.trayIcon.setImageAutoSize(true);
+                tray.add(this.trayIcon);
 
-            } catch (AWTException e) {
+            } catch (final AWTException e) {
 
                 System.err.println("TrayIcon could not be added.");
             }

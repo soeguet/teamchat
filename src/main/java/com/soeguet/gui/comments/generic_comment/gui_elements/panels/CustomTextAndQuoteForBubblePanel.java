@@ -51,7 +51,8 @@ public class CustomTextAndQuoteForBubblePanel extends JPanel {
         if (this.messageModel.getQuotedMessage() != null) {
 
             final CustomQuoteBubblePanel customQuoteBubblePanel =
-                    new CustomQuoteBubblePanel(this.mainFrame, this.messageModel.getQuotedMessage());
+                    new CustomQuoteBubblePanel(
+                            this.mainFrame, this.messageModel.getQuotedMessage());
 
             customQuoteBubblePanel.addTopNameAndTimeTextPane();
             customQuoteBubblePanel.setQuoteBubbleLayoutManager();
@@ -64,7 +65,8 @@ public class CustomTextAndQuoteForBubblePanel extends JPanel {
     public void addTextMessage() {
 
         final CustomSimpleTextPane customSimpleTextPane = new CustomSimpleTextPane(this.mainFrame);
-        customSimpleTextPane.replaceEmojiDescriptionWithActualImageIcon(this.messageModel.getMessage());
+        customSimpleTextPane.replaceEmojiDescriptionWithActualImageIcon(
+                this.messageModel.getMessage());
 
         super.add(customSimpleTextPane, "cell 0 1");
     }

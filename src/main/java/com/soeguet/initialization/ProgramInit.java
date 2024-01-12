@@ -28,7 +28,7 @@ public class ProgramInit {
      *     contains any required configuration variables or settings needed for the proper
      *     initialization of the GUI. It is up to the caller to provide a valid EnvVariables object.
      */
-    public void initializeGUI(EnvVariables envVariables) {
+    public void initializeGUI(final EnvVariables envVariables) {
 
         SwingUtilities.invokeLater(
                 () -> {
@@ -64,7 +64,7 @@ public class ProgramInit {
 
     private void initializeProperties(final EnvVariables envVariables) {
 
-        CustomProperties customProperties = CustomProperties.getProperties();
+        final CustomProperties customProperties = CustomProperties.getProperties();
 
         customProperties.setMainFrame(this.mainFrame);
 

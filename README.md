@@ -77,6 +77,15 @@ start the application)
 - CHAT_IP e.g. "127.0.0.1"
 - CHAT_PORT e.g. "8100"
 
+## Dev
+
+### Spotless
+run spotless formatting on whole project
+```sh
+./mvnw spotless:apply
+```
+
+
 ## License
 
 TeamChat is licensed under the [MIT License](https://opensource.org/license/mit/).
