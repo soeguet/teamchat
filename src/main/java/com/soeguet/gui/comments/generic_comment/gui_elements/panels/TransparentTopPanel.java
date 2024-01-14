@@ -27,9 +27,9 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
 
     // constructors -- start
     public TransparentTopPanel(
-            MainFrameGuiInterface mainFrame,
+            final MainFrameGuiInterface mainFrame,
             final CustomCommentPanel customCommentPanel,
-            ReactionPanelDTO reactionPanelDTO) {
+            final ReactionPanelDTO reactionPanelDTO) {
 
         this.mainFrame = mainFrame;
         this.customCommentPanel = customCommentPanel;
@@ -49,16 +49,16 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
      *
      * @param e the MouseEvent to dispatch.
      */
-    private void dispatchEvent(MouseEvent e) {
+    private void dispatchEvent(final MouseEvent e) {
 
         final Component deepComponent =
-                SwingUtilities.getDeepestComponentAt(mainContentPanel, e.getX(), e.getY());
+                SwingUtilities.getDeepestComponentAt(this.mainContentPanel, e.getX(), e.getY());
 
         if (deepComponent == null) {
             return;
         }
 
-        Point pt = SwingUtilities.convertPoint(this, e.getPoint(), deepComponent);
+        final Point pt = SwingUtilities.convertPoint(this, e.getPoint(), deepComponent);
 
         final Component actualComponent =
                 SwingUtilities.getDeepestComponentAt(deepComponent, pt.x, pt.y);
@@ -68,7 +68,7 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
         }
 
         if (!(actualComponent instanceof TransparentTopPanel)) {
-            MouseEvent e2 =
+            final MouseEvent e2 =
                     new MouseEvent(
                             actualComponent,
                             e.getID(),
@@ -87,46 +87,46 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
     @Override
     public void mouseDragged(final MouseEvent e) {
 
-        dispatchEvent(e);
+        this.dispatchEvent(e);
     }
 
     @Override
     public void mouseMoved(final MouseEvent e) {
 
-        dispatchEvent(e);
+        this.dispatchEvent(e);
     }
 
     @Override
     public void mouseClicked(final MouseEvent e) {
 
-        dispatchEvent(e);
+        this.dispatchEvent(e);
     }
 
     @Override
     public void mousePressed(final MouseEvent e) {
 
-        dispatchEvent(e);
+        this.dispatchEvent(e);
     }
 
     @Override
     public void mouseReleased(final MouseEvent e) {
 
-        dispatchEvent(e);
+        this.dispatchEvent(e);
     }
 
     @Override
     public void mouseEntered(final MouseEvent e) {
 
-        if (reactionPopupMenu == null) {
+        if (this.reactionPopupMenu == null) {
 
-            reactionPopupMenu = new ReactionPopupMenuImpl(reactionPanelDTO, this);
-            reactionPopupMenu.setPopupMenuUp();
-            reactionPopupMenu.initializePopupHandler();
+            this.reactionPopupMenu = new ReactionPopupMenuImpl(this.reactionPanelDTO, this);
+            this.reactionPopupMenu.setPopupMenuUp();
+            this.reactionPopupMenu.initializePopupHandler();
         }
 
-        if (!reactionPopupMenu.isVisible()) {
+        if (!this.reactionPopupMenu.isVisible()) {
 
-            reactionPopupMenu.startAnimation();
+            this.reactionPopupMenu.startAnimation();
         }
 
         SwingUtilities.invokeLater(
@@ -134,17 +134,17 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
                     this.mainFrame.repaint();
                 });
 
-        dispatchEvent(e);
+        this.dispatchEvent(e);
     }
 
     @Override
     public void mouseExited(final MouseEvent e) {
 
-        getChatBubblePaintHandler().setBorderColor(customCommentPanel.getBorderColor());
+        this.getChatBubblePaintHandler().setBorderColor(this.customCommentPanel.getBorderColor());
 
-        if (reactionPopupMenu != null) {
+        if (this.reactionPopupMenu != null) {
 
-            reactionPopupMenu.stopAnimation();
+            this.reactionPopupMenu.stopAnimation();
         }
 
         SwingUtilities.invokeLater(
@@ -152,16 +152,16 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
                     this.mainFrame.repaint();
                 });
 
-        dispatchEvent(e);
+        this.dispatchEvent(e);
     }
 
     // getter & setter -- start
     public ChatBubblePaintHandler getChatBubblePaintHandler() {
 
-        if (chatBubblePaintHandler == null) {
-            chatBubblePaintHandler = customCommentPanel.getChatBubblePaintHandler();
+        if (this.chatBubblePaintHandler == null) {
+            this.chatBubblePaintHandler = this.customCommentPanel.getChatBubblePaintHandler();
         }
-        return chatBubblePaintHandler;
+        return this.chatBubblePaintHandler;
     }
 
     public void setReferenceToMainContentContainer(final CustomContentContainer mainContentPanel) {

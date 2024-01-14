@@ -106,7 +106,7 @@ public class CustomCommentPanel extends JPanel {
         // contentStackPanel -> topPanel and mainContentPanel
         // everything else is a hassle to adjust the right alignment of the top panel
 
-        JPanel contentStackPanel = new JPanel();
+        final JPanel contentStackPanel = new JPanel();
         contentStackPanel.setLayout(new OverlayLayout(contentStackPanel));
         final CustomContentContainer mainContentPanel = this.getCustomContentContainer();
         topPanel.setReferenceToMainContentContainer(mainContentPanel);
@@ -144,20 +144,23 @@ public class CustomCommentPanel extends JPanel {
         final CustomContentContainer contentContainer = this.getCustomContentContainer();
         final Side commentSide = this.getSide();
 
-        switch (commentType) {
-            case LEFT_TEXT, RIGHT_TEXT -> processIncomingTextMessage(commentSide, contentContainer);
-
-            case LEFT_PICTURE, RIGHT_PICTURE -> processIncomingPictureMessage(
+        switch (this.commentType) {
+            case LEFT_TEXT, RIGHT_TEXT -> this.processIncomingTextMessage(
                     commentSide, contentContainer);
 
-            case LEFT_LINK, RIGHT_LINK -> processIncomingLinkMessage(commentSide, contentContainer);
+            case LEFT_PICTURE, RIGHT_PICTURE -> this.processIncomingPictureMessage(
+                    commentSide, contentContainer);
+
+            case LEFT_LINK, RIGHT_LINK -> this.processIncomingLinkMessage(
+                    commentSide, contentContainer);
         }
     }
 
     private void processIncomingLinkMessage(
             final Side commentSide, final CustomContentContainer contentContainer) {
 
-        CustomLinkPanel customLinkPanel = new LinkPanelFactory(mainFrame, baseModel).create();
+        final CustomLinkPanel customLinkPanel =
+                new LinkPanelFactory(this.mainFrame, this.baseModel).create();
 
         switch (commentSide) {
             case LEFT -> {
@@ -175,8 +178,8 @@ public class CustomCommentPanel extends JPanel {
     private void processIncomingPictureMessage(
             final Side commentSide, final CustomContentContainer contentContainer) {
 
-        CustomPictureWrapperPanel pictureLabel =
-                new PicturePanelFactory(mainFrame, baseModel).create();
+        final CustomPictureWrapperPanel pictureLabel =
+                new PicturePanelFactory(this.mainFrame, this.baseModel).create();
 
         switch (commentSide) {
             case LEFT -> {
@@ -195,19 +198,19 @@ public class CustomCommentPanel extends JPanel {
             final Side commentSide, final CustomContentContainer contentContainer) {
 
         // TODO factory method maybe?
-        if (baseModel instanceof MessageModel messageModel) {
+        if (this.baseModel instanceof final MessageModel messageModel) {
 
-            CustomTextAndQuoteForBubblePanel customTextAndQuoteForBubblePanel =
-                    new TextMessageFactory(mainFrame, messageModel).create();
+            final CustomTextAndQuoteForBubblePanel customTextAndQuoteForBubblePanel =
+                    new TextMessageFactory(this.mainFrame, messageModel).create();
 
             switch (commentSide) {
                 case LEFT -> {
-                    String leftConstraints = "gapleft 15, grow";
+                    final String leftConstraints = "gapleft 15, grow";
                     contentContainer.add(customTextAndQuoteForBubblePanel, leftConstraints);
                 }
 
                 case RIGHT -> {
-                    String rightConstraints = "gapright 15, grow";
+                    final String rightConstraints = "gapright 15, grow";
                     contentContainer.add(customTextAndQuoteForBubblePanel, rightConstraints);
                 }
             }
@@ -219,16 +222,16 @@ public class CustomCommentPanel extends JPanel {
         final Side commentSide = this.getSide();
         // TODO: 02.11.23 border color implementation
         this.setBorderColor(new Color(23, 0, 146));
-        chatBubblePaintHandler =
+        this.chatBubblePaintHandler =
                 new ChatBubblePaintHandler(
-                        getCustomContentContainer(), commentSide, this.getBorderColor());
+                        this.getCustomContentContainer(), commentSide, this.getBorderColor());
 
-        chatBubblePaintHandler.setupChatBubble();
+        this.chatBubblePaintHandler.setupChatBubble();
     }
 
     public ChatBubblePaintHandler getChatBubblePaintHandler() {
 
-        return chatBubblePaintHandler;
+        return this.chatBubblePaintHandler;
     }
 
     public void setSide() {
@@ -245,7 +248,7 @@ public class CustomCommentPanel extends JPanel {
     // getter & setter -- start
     public BaseModel getBaseModel() {
 
-        return baseModel;
+        return this.baseModel;
     }
 
     public void setBaseModel(final BaseModel baseModel) {
@@ -255,7 +258,7 @@ public class CustomCommentPanel extends JPanel {
 
     public Color getBorderColor() {
 
-        return borderColor;
+        return this.borderColor;
     }
 
     public void setBorderColor(final Color borderColor) {
@@ -265,7 +268,7 @@ public class CustomCommentPanel extends JPanel {
 
     public CommentTypeEnum getCommentType() {
 
-        return commentType;
+        return this.commentType;
     }
 
     public void setCommentType(final CommentTypeEnum commentType) {
@@ -275,7 +278,7 @@ public class CustomCommentPanel extends JPanel {
 
     public CustomContentContainer getCustomContentContainer() {
 
-        return customContentContainer;
+        return this.customContentContainer;
     }
 
     public void setCustomContentContainer(final CustomContentContainer customContentContainer) {
@@ -285,7 +288,7 @@ public class CustomCommentPanel extends JPanel {
 
     public CustomMainWrapperContainer getCustomMainWrapperContainer() {
 
-        return customMainWrapperContainer;
+        return this.customMainWrapperContainer;
     }
 
     public void setCustomMainWrapperContainer(
@@ -296,7 +299,7 @@ public class CustomCommentPanel extends JPanel {
 
     public MainFrameGuiInterface getMainFrame() {
 
-        return mainFrame;
+        return this.mainFrame;
     }
 
     public void setMainFrame(final MainFrameGuiInterface mainFrame) {
@@ -306,12 +309,12 @@ public class CustomCommentPanel extends JPanel {
 
     public Side getSide() {
 
-        return side;
+        return this.side;
     }
 
     public CommentSidePanel getSidePanel() {
 
-        return sidePanel;
+        return this.sidePanel;
     }
 
     public void setSidePanel(final CommentSidePanel sidePanel) {
@@ -321,7 +324,7 @@ public class CustomCommentPanel extends JPanel {
 
     public TransparentTopPanel getTopContainer() {
 
-        return topContainer;
+        return this.topContainer;
     }
 
     public void setTopContainer(final TransparentTopPanel topContainer) {
@@ -331,7 +334,7 @@ public class CustomCommentPanel extends JPanel {
 
     public JTextPane getjTextPane() {
 
-        return jTextPane;
+        return this.jTextPane;
     }
 
     public void setTextPane(final JTextPane jTextPane) {
