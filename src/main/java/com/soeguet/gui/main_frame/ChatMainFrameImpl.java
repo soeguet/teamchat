@@ -219,13 +219,19 @@ public class ChatMainFrameImpl extends ChatPanel
                 this.JSCROLLPANE_MARGIN_BOTTOM_BORDER = 63;
                 this.JSCROLLPANE_MARGIN_RIGHT_BORDER = 20;
 
-            } else {
+            } else if (this.getOSName().toLowerCase().contains("linux")) {
 
-                if (this.getDesktopEnv().toLowerCase().contains("gnome")) {
+                String desktopEnv = this.getDesktopEnv().toLowerCase();
+
+                if (desktopEnv.contains("unity")) {
+
+                    // PopOs!
+                    this.JSCROLLPANE_MARGIN_BOTTOM_BORDER = 62;
+                } else if (desktopEnv.contains("gnome")) {
 
                     this.JSCROLLPANE_MARGIN_BOTTOM_BORDER = 27;
 
-                } else if (this.getDesktopEnv().toLowerCase().contains("kde")) {
+                } else if (desktopEnv.contains("kde")) {
 
                     // e.g. KDE Plasma
                     this.JSCROLLPANE_MARGIN_BOTTOM_BORDER = 56;
