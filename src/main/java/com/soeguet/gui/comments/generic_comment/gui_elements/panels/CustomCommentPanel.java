@@ -13,6 +13,7 @@ import java.awt.Color;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.OverlayLayout;
+import javax.swing.border.EmptyBorder;
 
 /**
  * This panel is placed on the GUI as the main comment panel.<br>
@@ -111,8 +112,13 @@ public class CustomCommentPanel extends JPanel {
         final CustomContentContainer mainContentPanel = this.getCustomContentContainer();
         topPanel.setReferenceToMainContentContainer(mainContentPanel);
 
+        // hella hacky approach, but I need that margin for the emoticons
+        JPanel marginPanel = new JPanel();
+        marginPanel.setBorder(new EmptyBorder(0, 0, 12, 0));
+        marginPanel.add(mainContentPanel);
+
         contentStackPanel.add(topPanel);
-        contentStackPanel.add(mainContentPanel);
+        contentStackPanel.add(marginPanel);
 
         switch (this.getSide()) {
             case LEFT -> {

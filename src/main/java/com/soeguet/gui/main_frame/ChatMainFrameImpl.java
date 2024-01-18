@@ -222,7 +222,6 @@ public class ChatMainFrameImpl extends ChatPanel
             } else if (this.getOSName().toLowerCase().contains("linux")) {
 
                 String desktopEnv = this.getDesktopEnv().toLowerCase();
-                System.out.println(desktopEnv);
 
                 if (desktopEnv.contains("pop") || desktopEnv.contains("unity")) {
 

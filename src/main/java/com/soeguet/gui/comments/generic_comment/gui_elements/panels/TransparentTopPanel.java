@@ -3,15 +3,15 @@ package com.soeguet.gui.comments.generic_comment.gui_elements.panels;
 import com.soeguet.gui.comments.generic_comment.gui_elements.util.ChatBubblePaintHandler;
 import com.soeguet.gui.comments.reaction_panel.ReactionPopupMenuImpl;
 import com.soeguet.gui.comments.reaction_panel.dtos.ReactionPanelDTO;
+import com.soeguet.gui.main_frame.ChatMainFrameImpl;
 import com.soeguet.gui.main_frame.interfaces.MainFrameGuiInterface;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import java.net.URL;
+import javax.swing.*;
+import javax.swing.border.LineBorder;
 
 public class TransparentTopPanel extends JPanel implements MouseListener, MouseMotionListener {
 
@@ -40,6 +40,25 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
 
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
+        this.setLayout(new BorderLayout());
+
+        this.setBorder(new LineBorder(Color.RED, 1));
+        JPanel jPanel = new JPanel();
+        jPanel.setMinimumSize(new Dimension(0, 20));
+        jPanel.setBorder(new LineBorder(Color.RED, 1));
+        jPanel.setLayout(new BorderLayout());
+        jPanel.setOpaque(false);
+        this.add(jPanel, BorderLayout.SOUTH);
+
+        // new imageicon
+
+        final URL sendUrl = ChatMainFrameImpl.class.getResource("/emojis/$+1f4e8$+.png");
+
+        if (sendUrl != null) {
+
+            final ImageIcon imageIcon = new ImageIcon(sendUrl);
+            jPanel.add(new JLabel(imageIcon), BorderLayout.SOUTH);
+        }
     }
 
     // constructors -- end
@@ -129,10 +148,7 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
             this.reactionPopupMenu.startAnimation();
         }
 
-        SwingUtilities.invokeLater(
-                () -> {
-                    this.mainFrame.repaint();
-                });
+        SwingUtilities.invokeLater(this.mainFrame::repaint);
 
         this.dispatchEvent(e);
     }
@@ -147,10 +163,7 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
             this.reactionPopupMenu.stopAnimation();
         }
 
-        SwingUtilities.invokeLater(
-                () -> {
-                    this.mainFrame.repaint();
-                });
+        SwingUtilities.invokeLater(this.mainFrame::repaint);
 
         this.dispatchEvent(e);
     }
