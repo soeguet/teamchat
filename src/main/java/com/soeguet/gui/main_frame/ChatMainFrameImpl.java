@@ -222,8 +222,9 @@ public class ChatMainFrameImpl extends ChatPanel
             } else if (this.getOSName().toLowerCase().contains("linux")) {
 
                 String desktopEnv = this.getDesktopEnv().toLowerCase();
+                System.out.println(desktopEnv);
 
-                if (desktopEnv.contains("unity")) {
+                if (desktopEnv.contains("pop") || desktopEnv.contains("unity")) {
 
                     // PopOs!
                     this.JSCROLLPANE_MARGIN_BOTTOM_BORDER = 62;
