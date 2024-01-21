@@ -1,10 +1,12 @@
 package com.soeguet.generic_comment.reaction_panel;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.dtos.ReactionPanelDTO;
 import com.soeguet.model.MessageTypes;
 import com.soeguet.model.UserInteraction;
 import com.soeguet.model.jackson.BaseModel;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -14,25 +16,25 @@ import java.time.format.DateTimeFormatter;
 import java.util.logging.Logger;
 import javax.swing.*;
 
+import com.soeguet.socket_client.ClientRegister;
 import com.soeguet.socket_client.CustomWebsocketClient;
 import net.miginfocom.swing.MigLayout;
 
 public class ReactionPopupMenuImpl extends JPopupMenu {
 
     private final ReactionPanelDTO reactionPanelDTO;
-    private final CustomWebsocketClient customWebsocketClient;
     private final JPanel topPanel;
     Logger logger = Logger.getLogger(ReactionPopupMenuImpl.class.getName());
     private ReactionPopupHandler reactionPopupHandler;
 
     /**
-     * This class represents a reaction popup menu implementation. It provides functionality to
-     * handle reactions in a popup menu.
+     This class represents a reaction popup menu implementation. It provides functionality to handle reactions in a
+     popup
+     menu.
      */
-    public ReactionPopupMenuImpl(final ReactionPanelDTO reactionPanelDTO, CustomWebsocketClient customWebsocketClient, JPanel topPanel) {
+    public ReactionPopupMenuImpl(final ReactionPanelDTO reactionPanelDTO, JPanel topPanel) {
 
         this.reactionPanelDTO = reactionPanelDTO;
-        this.customWebsocketClient = customWebsocketClient;
         this.topPanel = topPanel;
     }
 
@@ -55,10 +57,12 @@ public class ReactionPopupMenuImpl extends JPopupMenu {
     }
 
     /**
-     * Adds an item with the specified image to the given menu panel.
-     *
-     * @param jPanel the menu panel to add the item to
-     * @param item the path to the image for the item
+     Adds an item with the specified image to the given menu panel.
+
+     @param jPanel
+     the menu panel to add the item to
+     @param item
+     the path to the image for the item
      */
     private void addItemToMenu(final JPanel jPanel, final String item) {
 
@@ -81,83 +85,79 @@ public class ReactionPopupMenuImpl extends JPopupMenu {
 
         JPanel panel = new JPanel();
 
-        panel.addMouseListener(
-                new MouseAdapter() {
+        ObjectMapper objectMapper = new ObjectMapper();
 
-                    @Override
-                    public void mouseClicked(final MouseEvent e) {
+        panel.addMouseListener(new MouseAdapter() {
 
-                        for (Component component : panel.getComponents()) {
+            @Override
+            public void mouseClicked(final MouseEvent e) {
 
-                            if (component instanceof JLabel) {
+                for (Component component : panel.getComponents()) {
 
-                                ImageIcon icon = (ImageIcon) ((JLabel) component).getIcon();
-                                String description = icon.getDescription();
+                    if (component instanceof JLabel) {
 
-                                BaseModel baseModel = reactionPanelDTO.baseModel();
+                        ImageIcon icon = (ImageIcon) ((JLabel) component).getIcon();
+                        String description = icon.getDescription();
 
-                                baseModel.setMessageType(MessageTypes.INTERACTED);
+                        BaseModel baseModel = reactionPanelDTO.baseModel();
 
-                                final String timeAndUsername =
-                                        LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))
-                                                + " - "
-                                                + reactionPanelDTO.username();
-                                UserInteraction userInteraction =
-                                        new UserInteraction(timeAndUsername, description);
+                        baseModel.setMessageType(MessageTypes.INTERACTED);
 
-                                baseModel.getUserInteractions().add(userInteraction);
+                        final String timeAndUsername =
+                                LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")) + " - " + reactionPanelDTO.username();
+                        UserInteraction userInteraction = new UserInteraction(timeAndUsername, description);
 
-                                String serializedBaseModel;
+                        baseModel.getUserInteractions().add(userInteraction);
 
-                                try {
+                        String serializedBaseModel;
 
-                                    serializedBaseModel =
-                                            reactionPanelDTO
-                                                    .objectMapper()
-                                                    .writeValueAsString(baseModel);
+                        try {
 
-                                } catch (JsonProcessingException jsonProcessingException) {
+                            serializedBaseModel = objectMapper.writeValueAsString(baseModel);
 
-                                    logger.log(
-                                            java.util.logging.Level.SEVERE,
-                                            "PLACE: ReactionPopupMenuImpl >"
-                                                    + " createReactionEmojiPanel");
-                                    logger.log(
-                                            java.util.logging.Level.SEVERE,
-                                            jsonProcessingException.getMessage(),
-                                            e);
-                                    throw new RuntimeException(jsonProcessingException);
-                                }
+                        } catch (JsonProcessingException jsonProcessingException) {
 
-                                reactionPanelDTO.websocketClient().send(serializedBaseModel);
-                            }
+                            logger.log(java.util.logging.Level.SEVERE, "PLACE: ReactionPopupMenuImpl >" + " " +
+                                                                       "createReactionEmojiPanel");
+                            logger.log(java.util.logging.Level.SEVERE, jsonProcessingException.getMessage(), e);
+                            throw new RuntimeException(jsonProcessingException);
                         }
 
-                        panel.setBackground(null);
-                        setVisible(false);
+                        ClientRegister clientRegister = ClientRegister.getWebSocketClientInstance();
+                        final CustomWebsocketClient customWebsocketClient = clientRegister.getCustomWebsocketClient();
+
+                        // TODO 1
+
+//                        customWebsocketClient.send(serializedBaseModel);
+//                        reactionPanelDTO.websocketClient().send(serializedBaseModel);
                     }
+                }
 
-                    @Override
-                    public void mouseEntered(final MouseEvent e) {
+                panel.setBackground(null);
+                setVisible(false);
+            }
 
-                        panel.setBackground(new Color(0, 136, 191));
-                    }
+            @Override
+            public void mouseEntered(final MouseEvent e) {
 
-                    @Override
-                    public void mouseExited(final MouseEvent e) {
+                panel.setBackground(new Color(0, 136, 191));
+            }
 
-                        panel.setBackground(null);
-                    }
-                });
+            @Override
+            public void mouseExited(final MouseEvent e) {
+
+                panel.setBackground(null);
+            }
+        });
 
         return panel;
     }
 
     /**
-     * Starts the animation if the component is not currently visible.
-     *
-     * <p>If the component is not visible, the method initializes the popup timer of the
-     * reactionPopupHandler.
+     Starts the animation if the component is not currently visible.
+
+     <p>If the component is not visible, the method initializes the popup timer of the
+     reactionPopupHandler.
      */
     public void startAnimation() {
 
@@ -168,10 +168,10 @@ public class ReactionPopupMenuImpl extends JPopupMenu {
     }
 
     /**
-     * Initializes the reactionPopupHandler with the given layeredPane.
-     *
-     * <p>This method creates a new instance of ReactionPopupHandler and assigns it to the
-     * reactionPopupHandler variable.
+     Initializes the reactionPopupHandler with the given layeredPane.
+
+     <p>This method creates a new instance of ReactionPopupHandler and assigns it to the
+     reactionPopupHandler variable.
      */
     public void initializePopupHandler() {
 
@@ -179,12 +179,12 @@ public class ReactionPopupMenuImpl extends JPopupMenu {
     }
 
     /**
-     * Stops the animation.
-     *
-     * <p>This method calls the stopPopupTimer() method of the reactionPopupHandler instance,
-     * effectively stopping the animation.
-     *
-     * <p>This method does not return any value.
+     Stops the animation.
+
+     <p>This method calls the stopPopupTimer() method of the reactionPopupHandler instance,
+     effectively stopping the animation.
+
+     <p>This method does not return any value.
      */
     public void stopAnimation() {
 
@@ -192,13 +192,13 @@ public class ReactionPopupMenuImpl extends JPopupMenu {
     }
 
     /**
-     * Disposes of the component.
-     *
-     * <p>This method is called when a mouse event occurs and the component is visible. It sets the
-     * visibility of the component to false and recursively calls the dispose method with the
-     * MouseEvent e.
-     *
-     * @param e the MouseEvent that triggered the disposal
+     Disposes of the component.
+
+     <p>This method is called when a mouse event occurs and the component is visible. It sets the
+     visibility of the component to false and recursively calls the dispose method with the MouseEvent e.
+
+     @param e
+     the MouseEvent that triggered the disposal
      */
     public void dispose(final MouseEvent e) {
 
@@ -210,22 +210,21 @@ public class ReactionPopupMenuImpl extends JPopupMenu {
     }
 
     /**
-     * Checks if the mouse left the container completely.
-     *
-     * <p>This method is called when a mouse event occurs and checks if the mouse coordinates are
-     * outside the boundaries of the component. It returns true if the mouse coordinates are less
-     * than or equal to 0 on the x-axis, greater than or equal to the width of the component on the
-     * x-axis, less than or equal to 0 on the y-axis, and greater than or equal to the height of the
-     * component on the y-axis.
-     *
-     * @param e the MouseEvent to check
-     * @return true if the mouse left the container completely, false otherwise
+     Checks if the mouse left the container completely.
+
+     <p>This method is called when a mouse event occurs and checks if the mouse coordinates are
+     outside the boundaries of the component. It returns true if the mouse coordinates are less than or equal to 0 on
+     the
+     x-axis, greater than or equal to the width of the component on the x-axis, less than or equal to 0 on the y-axis,
+     and greater than or equal to the height of the component on the y-axis.
+
+     @param e
+     the MouseEvent to check
+
+     @return true if the mouse left the container completely, false otherwise
      */
     public boolean mouseLeftContainerCompletely(final MouseEvent e) {
 
-        return e.getX() <= 0
-                || e.getX() >= e.getComponent().getWidth()
-                || e.getY() <= 0
-                || e.getY() >= e.getComponent().getHeight();
+        return e.getX() <= 0 || e.getX() >= e.getComponent().getWidth() || e.getY() <= 0 || e.getY() >= e.getComponent().getHeight();
     }
 }

@@ -46,6 +46,8 @@ public class ClientControllerImpl implements ClientController {
     public void connectToWebsocket() {
 
         websocketClient = new CustomWebsocketClient(serverUri, guiFunctionality);
+        ClientRegister clientRegister = ClientRegister.getWebSocketClientInstance();
+        clientRegister.setCustomWebsocketClient(websocketClient);
         websocketClient.connect();
     }
 

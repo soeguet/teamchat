@@ -7,6 +7,7 @@ import com.soeguet.cache.factory.CacheManagerFactory;
 import com.soeguet.cache.implementations.WaitingNotificationQueue;
 import com.soeguet.cache.manager.CacheManager;
 import com.soeguet.dtos.CustomUserPropertiesDTO;
+import com.soeguet.dtos.StatusTransferDTO;
 import com.soeguet.emoji.EmojiHandler;
 import com.soeguet.emoji.EmojiPopUpMenuHandler;
 import com.soeguet.emoji.interfaces.EmojiPopupInterface;
@@ -25,6 +26,9 @@ import com.soeguet.popups.interfaces.PopupInterface;
 import com.soeguet.properties.CustomProperties;
 import com.soeguet.properties.PropertiesPanelImpl;
 import com.soeguet.properties.interfaces.PropertiesInterface;
+import com.soeguet.socket_client.ClientControllerImpl;
+import com.soeguet.socket_client.ClientRegister;
+import com.soeguet.util.EnvironmentData;
 
 import javax.swing.*;
 import java.awt.*;
@@ -147,27 +151,27 @@ public class ChatMainFrameImpl extends ChatPanel {
      */
     public void setScrollPaneMargins() {
 
+        final String osName = EnvironmentData.getOSName();
+        final String desktopEnv = EnvironmentData.getDesktopEnv();
         try {
-            if (this.getOSName().isBlank()) {
+            if (osName.isBlank()) {
 
-            } else if (this.getOSName().toLowerCase().contains("windows")) {
+            } else if (osName.toLowerCase().contains("windows")) {
 
                 this.JSCROLLPANE_MARGIN_BOTTOM_BORDER = 63;
                 this.JSCROLLPANE_MARGIN_RIGHT_BORDER = 20;
 
-            } else if (this.getOSName().toLowerCase().contains("linux")) {
+            } else if (osName.toLowerCase().contains("linux")) {
 
-                String desktopEnv = this.getDesktopEnv().toLowerCase();
-
-                if (desktopEnv.contains("pop") || desktopEnv.contains("unity")) {
+                if (desktopEnv.toLowerCase().contains("pop") || desktopEnv.toLowerCase().contains("unity")) {
 
                     // PopOs!
                     this.JSCROLLPANE_MARGIN_BOTTOM_BORDER = 62;
-                } else if (desktopEnv.contains("gnome")) {
+                } else if (desktopEnv.toLowerCase().contains("gnome")) {
 
                     this.JSCROLLPANE_MARGIN_BOTTOM_BORDER = 27;
 
-                } else if (desktopEnv.contains("kde")) {
+                } else if (desktopEnv.toLowerCase().contains("kde")) {
 
                     // e.g. KDE Plasma
                     this.JSCROLLPANE_MARGIN_BOTTOM_BORDER = 56;
@@ -286,10 +290,12 @@ public class ChatMainFrameImpl extends ChatPanel {
      */
     public void initializeClientController() {
 
-        this.clientController = new ClientControllerImpl(this.guiFunctionality);
-        this.clientController.determineWebsocketURI();
-        this.clientController.connectToWebsocket();
+        clientController = new ClientControllerImpl(this.guiFunctionality);
+        clientController.determineWebsocketURI();
+        clientController.connectToWebsocket();
     }
+
+    private ClientControllerImpl clientController;
 
     /**
      Initializes the emoji handler.
@@ -732,7 +738,8 @@ public class ChatMainFrameImpl extends ChatPanel {
 
         final InterruptDialogInterface interruptDialogInterface = new InterruptDialogImpl(this);
 
-        interruptDialogInterface.populateDialogWithAllRegisteredClients(chatClientPropertiesHashMap);
+        // TODO 1
+//        interruptDialogInterface.populateDialogWithAllRegisteredClients();
         interruptDialogInterface.pack();
         interruptDialogInterface.setLocationRelativeTo(this);
         interruptDialogInterface.setVisible(true);
@@ -851,7 +858,7 @@ public class ChatMainFrameImpl extends ChatPanel {
             array.add(this.getUsername());
             final byte[] jsonTypingStatus = this.objectMapper.writeValueAsBytes(new StatusTransferDTO("typing", array));
 
-            this.clientController.getWebsocketClient().send(jsonTypingStatus);
+            ClientRegister.getWebSocketClientInstance().send(jsonTypingStatus);
 
         } catch (final JsonProcessingException e) {
 
@@ -955,7 +962,6 @@ public class ChatMainFrameImpl extends ChatPanel {
         return this.trayIcon;
     }
 
-    @Override
     public void setupSystemTrayIcon() {
 
         if (SystemTray.isSupported()) {

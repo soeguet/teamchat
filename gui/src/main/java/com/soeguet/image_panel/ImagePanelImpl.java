@@ -1,9 +1,15 @@
 package com.soeguet.image_panel;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.image_panel.generated.ImagePanel;
 import com.soeguet.image_panel.interfaces.ImageInterface;
 import com.soeguet.model.jackson.PictureModel;
+import com.soeguet.properties.PropertiesRegister;
+import com.soeguet.socket_client.ClientRegister;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -16,8 +22,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalTime;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
-import javax.swing.*;
 
 public class ImagePanelImpl extends ImagePanel implements ImageInterface {
 
@@ -312,7 +316,7 @@ public class ImagePanelImpl extends ImagePanel implements ImageInterface {
         PictureModel pictureModel = new PictureModel();
 
         pictureModel.setPicture(imageBytesArray);
-        pictureModel.setSender(mainFrame.getUsername());
+        pictureModel.setSender(PropertiesRegister.getCustomUserPropertiesInstance().getUsername());
         pictureModel.setTime(
                 LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm")));
         pictureModel.setDescription(form_pictureDescriptionTextField.getText());
@@ -330,7 +334,7 @@ public class ImagePanelImpl extends ImagePanel implements ImageInterface {
     private String convertPictureModelToJson(final PictureModel pictureModel)
             throws JsonProcessingException {
 
-        return mainFrame.getObjectMapper().writeValueAsString(pictureModel);
+        return new ObjectMapper().writeValueAsString(pictureModel);
     }
 
     /**
@@ -340,7 +344,7 @@ public class ImagePanelImpl extends ImagePanel implements ImageInterface {
      */
     private void sendPictureMessageToWebSocket(final String imageObjectJson) {
 
-        mainFrame.getWebsocketClient().send(imageObjectJson);
+        ClientRegister.getWebSocketClientInstance().send(imageObjectJson);
     }
 
     /**

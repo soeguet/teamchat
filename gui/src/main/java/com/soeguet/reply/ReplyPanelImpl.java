@@ -1,22 +1,23 @@
 package com.soeguet.reply;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.emoji.EmojiHandler;
 import com.soeguet.emoji.EmojiPopUpMenuHandler;
 import com.soeguet.emoji.interfaces.EmojiPopupInterface;
 import com.soeguet.reply.generated.ReplyPanel;
 import com.soeguet.reply.interfaces.ReplyInterface;
+import com.soeguet.socket_client.ClientRegister;
 import com.soeguet.util.WrapEditorKit;
-import com.soeguet.interfaces.MainFrameGuiInterface;
 import com.soeguet.model.MessageTypes;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
+
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import javax.swing.JLayeredPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
@@ -24,13 +25,11 @@ import javax.swing.border.LineBorder;
 public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
 
     private final Point offset = new Point();
-    private final MainFrameGuiInterface mainFrame;
     private final BaseModel baseModel;
     private final Border border = this.getBorder();
 
-    public ReplyPanelImpl(MainFrameGuiInterface mainFrame, BaseModel baseModel) {
+    public ReplyPanelImpl(BaseModel baseModel) {
 
-        this.mainFrame = mainFrame;
         this.baseModel = baseModel;
     }
 
@@ -43,9 +42,8 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
 
         if (baseModel instanceof MessageModel messageModel) {
 
-            new EmojiHandler(mainFrame)
-                    .replaceEmojiDescriptionWithActualImageIcon(
-                            getMainQuoteTextField(), messageModel.getMessage());
+            new EmojiHandler().replaceEmojiDescriptionWithActualImageIcon(getMainQuoteTextField(),
+                                                                          messageModel.getMessage());
             form_quotedSender.setText(baseModel.getSender());
             form_quotedTime.setText(baseModel.getTime());
         }
@@ -54,41 +52,42 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
     @Override
     public void setPosition() {
 
-        int textPaneWidth = mainFrame.getMainTextPanelLayeredPane().getWidth();
-        int textPaneHeight = mainFrame.getMainTextPanelLayeredPane().getHeight();
-
-        int height = (int) this.getPreferredSize().getHeight();
-
-        // make it look a little less stuffed
-        if (this.getPreferredSize().getWidth() > 500) {
-            height += 100;
-        } else {
-            height += 30;
-        }
-
-        if (height > 500) {
-            height = 500;
-        }
-
-        this.setBounds((textPaneWidth - 500) / 2, (textPaneHeight - height) / 2, 500, height);
+        // TODO 1
+        //        int textPaneWidth = mainFrame.getMainTextPanelLayeredPane().getWidth();
+        //        int textPaneHeight = mainFrame.getMainTextPanelLayeredPane().getHeight();
+        //
+        //        int height = (int) this.getPreferredSize().getHeight();
+        //
+        //        // make it look a little less stuffed
+        //        if (this.getPreferredSize().getWidth() > 500) {
+        //            height += 100;
+        //        } else {
+        //            height += 30;
+        //        }
+        //
+        //        if (height > 500) {
+        //            height = 500;
+        //        }
+        //
+        //        this.setBounds((textPaneWidth - 500) / 2, (textPaneHeight - height) / 2, 500, height);
     }
 
     @Override
     public void requestAllFocus() {
 
-        SwingUtilities.invokeLater(
-                () -> {
-                    this.setBorder(new LineBorder(Color.BLUE));
+        SwingUtilities.invokeLater(() -> {
+            this.setBorder(new LineBorder(Color.BLUE));
 
-                    this.getReplyTextPane().requestFocus();
-                    this.getReplyTextPane().grabFocus();
-                });
+            this.getReplyTextPane().requestFocus();
+            this.getReplyTextPane().grabFocus();
+        });
     }
 
     @Override
     public void addPanelToMainFrame() {
 
-        this.mainFrame.getMainTextPanelLayeredPane().add(this, JLayeredPane.MODAL_LAYER);
+        // TODO 1
+        //        this.mainFrame.getMainTextPanelLayeredPane().add(this, JLayeredPane.MODAL_LAYER);
     }
 
     @Override
@@ -123,10 +122,7 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
 
         if (!getReplyTextPane().hasFocus()) {
 
-            if (e.getX() < 0
-                    || e.getY() < 0
-                    || e.getX() > this.getWidth() - 1
-                    || e.getY() > this.getHeight() - 1) {
+            if (e.getX() < 0 || e.getY() < 0 || e.getX() > this.getWidth() - 1 || e.getY() > this.getHeight() - 1) {
 
                 this.setBorder(border);
             }
@@ -134,10 +130,14 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
     }
 
     @Override
-    protected void thisFocusLost(FocusEvent e) {}
+    protected void thisFocusLost(FocusEvent e) {
+
+    }
 
     @Override
-    protected void replyTextPaneFocusLost(FocusEvent e) {}
+    protected void replyTextPaneFocusLost(FocusEvent e) {
+
+    }
 
     @Override
     protected void replyTextPaneKeyPressed(final KeyEvent e) {
@@ -146,8 +146,7 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
 
             if (e.isShiftDown()) {
 
-                this.getReplyTextPane()
-                        .setText(this.getReplyTextPane().getText() + System.lineSeparator());
+                this.getReplyTextPane().setText(this.getReplyTextPane().getText() + System.lineSeparator());
 
             } else {
 
@@ -165,16 +164,15 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
     @Override
     protected void quotePanelEmojiButtonMouseClicked(MouseEvent e) {
 
-        EmojiPopupInterface emojiPopup =
-                new EmojiPopUpMenuHandler(
-                        mainFrame, this.getReplyTextPane(), this.form_quotePanelEmojiButton);
+        EmojiPopupInterface emojiPopup = new EmojiPopUpMenuHandler(this.getReplyTextPane(),
+                                                                   this.form_quotePanelEmojiButton);
         emojiPopup.createEmojiPopupMenu();
     }
 
     @Override
     protected void quotePanelSendButtonMouseClicked(MouseEvent e) {
 
-        new EmojiHandler(mainFrame).replaceImageIconWithEmojiDescription(this.getReplyTextPane());
+        new EmojiHandler().replaceImageIconWithEmojiDescription(this.getReplyTextPane());
 
         // FIXME is this right?
         if (isTextPaneBlank()) {
@@ -201,15 +199,14 @@ public class ReplyPanelImpl extends ReplyPanel implements ReplyInterface {
 
         sendModel.setTime(baseModel.getTime());
 
+        ObjectMapper objectMapper = new ObjectMapper();
+        ClientRegister clientRegister = ClientRegister.getWebSocketClientInstance();
         try {
 
             final String serializedMessage =
-                    mainFrame
-                            .getObjectMapper()
-                            .writerWithDefaultPrettyPrinter()
-                            .writeValueAsString(sendModel);
+                    objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(sendModel);
 
-            mainFrame.getWebsocketClient().send(serializedMessage);
+            clientRegister.send(serializedMessage);
 
         } catch (JsonProcessingException ex) {
 

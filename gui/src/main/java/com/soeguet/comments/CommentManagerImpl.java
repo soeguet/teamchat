@@ -2,6 +2,10 @@ package com.soeguet.comments;
 
 import com.soeguet.comments.interfaces.CommentManager;
 import com.soeguet.enums.CommentTypeEnum;
+import com.soeguet.generic_comment.factories.MainChatPanelFactory;
+import com.soeguet.generic_comment.gui_elements.panels.CustomCommentPanel;
+import com.soeguet.generic_comment.util.Side;
+import com.soeguet.generic_comment.util.SideHandler;
 import com.soeguet.main_frame.ChatMainFrameImpl;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.LinkModel;

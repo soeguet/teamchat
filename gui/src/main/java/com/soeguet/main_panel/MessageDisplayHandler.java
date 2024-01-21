@@ -2,36 +2,36 @@ package com.soeguet.main_panel;
 
 import com.soeguet.cache.implementations.MessageQueue;
 import com.soeguet.cache.manager.CacheManager;
+import com.soeguet.comments.interfaces.CommentManager;
 import com.soeguet.enums.CommentTypeEnum;
 import com.soeguet.interfaces.CommentInterface;
+import com.soeguet.main_frame.ChatMainFrameImpl;
 import com.soeguet.main_panel.interfaces.MessageDisplayHandlerInterface;
 import com.soeguet.model.jackson.BaseModel;
+
 import java.awt.Component;
 import java.awt.Toolkit;
 
 public class MessageDisplayHandler implements MessageDisplayHandlerInterface {
 
     // variables -- start
-    private final MainFrameGuiInterface mainFrame;
     private final CommentManager commentManager;
     private CacheManager cacheManager;
 
     // variables -- end
 
     // constructors -- start
-    public MessageDisplayHandler(
-            final MainFrameGuiInterface mainFrame, final CommentManager commentManager) {
+    public MessageDisplayHandler(final CommentManager commentManager) {
 
-        this.mainFrame = mainFrame;
         this.commentManager = commentManager;
     }
 
     // constructors -- end
 
     /**
-     * Retrieves and removes the first message from the message queue cache.
-     *
-     * @return The first message in the message queue, or null if the cache is empty.
+     Retrieves and removes the first message from the message queue cache.
+
+     @return The first message in the message queue, or null if the cache is empty.
      */
     @Override
     public String pollMessageFromCache() {
@@ -45,9 +45,10 @@ public class MessageDisplayHandler implements MessageDisplayHandlerInterface {
     }
 
     /**
-     * Processes and displays a message based on the message model, nickname, and comment type.
-     *
-     * @param baseModel The message model representing the message.
+     Processes and displays a message based on the message model, nickname, and comment type.
+
+     @param baseModel
+     The message model representing the message.
      */
     @Override
     public void processAndDisplayMessage(final BaseModel baseModel) {
@@ -64,7 +65,8 @@ public class MessageDisplayHandler implements MessageDisplayHandlerInterface {
     @Override
     public void updateExistingMessage(final BaseModel baseModel) {
 
-        final Component[] mainTextPanelComponents = mainFrame.getMainTextPanel().getComponents();
+        final ChatMainFrameImpl mainFrameInstance = ChatMainFrameImpl.getMainFrameInstance();
+        final Component[] mainTextPanelComponents = mainFrameInstance.getMainTextPanel().getComponents();
 
         for (final Component mainTextPanelComponent : mainTextPanelComponents) {
 
@@ -74,14 +76,13 @@ public class MessageDisplayHandler implements MessageDisplayHandlerInterface {
 
                     commentInterface.setBaseModel(baseModel);
 
-                    commentInterface.initializeReactionStickerHandler(
-                            baseModel.getUserInteractions());
+                    commentInterface.initializeReactionStickerHandler(baseModel.getUserInteractions());
 
                     // TODO implement notification for client
                     Toolkit.getDefaultToolkit().beep();
 
-                    mainFrame.revalidate();
-                    mainFrame.repaint();
+                    mainFrameInstance.revalidate();
+                    mainFrameInstance.repaint();
                 }
             }
         }

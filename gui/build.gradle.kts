@@ -18,6 +18,7 @@ dependencies {
     implementation(project(":misc"))
     implementation(project(":popups"))
     implementation(project(":bubble"))
+    implementation(project(":client"))
     implementation(project(":cache"))
     implementation(project(":notification"))
     implementation(project(":emoji"))

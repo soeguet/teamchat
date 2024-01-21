@@ -36,6 +36,18 @@ public class CustomWebsocketClient extends WebSocketClient {
     }
 
     @Override
+    public void send(final byte[] data) {
+
+        super.send(data);
+    }
+
+    @Override
+    public void send(final String text) {
+
+        super.send(text);
+    }
+
+    @Override
     public void onWebsocketPing(final WebSocket conn, final Framedata f) {
 
         // TODO 1

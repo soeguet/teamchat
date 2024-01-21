@@ -11,7 +11,7 @@ class InterruptHandlerTest {
     @Test
     void extractJsonNodeUsernames() {
 
-        InterruptHandler interruptHandler = new InterruptHandler(null);
+        InterruptHandler interruptHandler = new InterruptHandler();
 
         String json = "{\"usernames\":[\"user1\",\"user2\"]}";
 

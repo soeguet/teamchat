@@ -1,23 +1,21 @@
 package com.soeguet.typing_panel;
 
-import com.soeguet.interfaces.MainFrameGuiInterface;
+import com.soeguet.main_frame.ChatMainFrameImpl;
 import com.soeguet.typing_panel.interfaces.TypingPanelHandlerInterface;
 
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 public class TypingPanelHandler implements TypingPanelHandlerInterface {
 
-    private final MainFrameGuiInterface mainFrame;
+    public TypingPanelHandler() {
 
-    public TypingPanelHandler(final MainFrameGuiInterface mainFrame) {
-
-        this.mainFrame = mainFrame;
     }
 
     @Override
     public String retrieveTextOnTypingLabel() {
 
-        return mainFrame.getTypingLabel().getText();
+
+        return ChatMainFrameImpl.getMainFrameInstance().getTypingLabel().getText();
     }
 
     @Override
@@ -47,6 +45,6 @@ public class TypingPanelHandler implements TypingPanelHandlerInterface {
     public void displayUpdatedTypingLabel(final StringBuilder stringBuilder) {
 
         SwingUtilities.invokeLater(
-                () -> mainFrame.getTypingLabel().setText(stringBuilder.toString()));
+                () -> ChatMainFrameImpl.getMainFrameInstance().getTypingLabel().setText(stringBuilder.toString()));
     }
 }

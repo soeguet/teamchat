@@ -1,6 +1,6 @@
 package com.soeguet.comments.reaction_sticker;
 
-import com.soeguet.interfaces.MainFrameGuiInterface;
+import com.soeguet.emoji.EmojiRegister;
 import com.soeguet.model.UserInteraction;
 import java.awt.*;
 import java.util.List;
@@ -8,17 +8,14 @@ import javax.swing.*;
 
 public class ReactionStickerImpl {
 
-    private final MainFrameGuiInterface mainFrame;
     private final JLayeredPane container;
     private final List<UserInteraction> userInteractions;
     private JPanel stickerPanel;
 
     public ReactionStickerImpl(
-            final MainFrameGuiInterface mainFrame,
             final JLayeredPane layeredPane,
             final List<UserInteraction> userInteractions) {
 
-        this.mainFrame = mainFrame;
         this.container = layeredPane;
         this.userInteractions = userInteractions;
     }
@@ -28,10 +25,12 @@ public class ReactionStickerImpl {
         stickerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         stickerPanel.setOpaque(false);
 
+        EmojiRegister emojiRegister = EmojiRegister.getInstance();
+
         userInteractions.forEach(
                 userInteraction -> {
                     final ImageIcon imageIcon =
-                            mainFrame.getEmojiList().get(userInteraction.emoji());
+                           emojiRegister.getEmojiList().get(userInteraction.emoji());
                     imageIcon.setDescription(userInteraction.timeAndUsername());
 
                     CustomStickerContainer customStickerContainer =

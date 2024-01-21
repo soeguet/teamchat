@@ -8,7 +8,6 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.net.URL;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 
@@ -49,14 +48,14 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
         // new imageicon
 
 
+        // TODO 1
 
 //        final URL sendUrl = ChatMainFrameImpl.class.getResource("/emojis/$+1f4e8$+.png");
-
-        if (sendUrl != null) {
-
-            final ImageIcon imageIcon = new ImageIcon(sendUrl);
-            jPanel.add(new JLabel(imageIcon), BorderLayout.SOUTH);
-        }
+//        if (sendUrl != null) {
+//
+//            final ImageIcon imageIcon = new ImageIcon(sendUrl);
+//            jPanel.add(new JLabel(imageIcon), BorderLayout.SOUTH);
+//        }
     }
 
     // constructors -- end
@@ -147,7 +146,8 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
             this.reactionPopupMenu.startAnimation();
         }
 
-        SwingUtilities.invokeLater(this.mainFrame::repaint);
+        // TODO 1
+//        SwingUtilities.invokeLater(this.mainFrame::repaint);
 
         this.dispatchEvent(e);
     }
@@ -162,7 +162,8 @@ public class TransparentTopPanel extends JPanel implements MouseListener, MouseM
             this.reactionPopupMenu.stopAnimation();
         }
 
-        SwingUtilities.invokeLater(this.mainFrame::repaint);
+        // TODO 1
+//        SwingUtilities.invokeLater(this.mainFrame::repaint);
 
         this.dispatchEvent(e);
     }

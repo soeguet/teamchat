@@ -1,9 +1,12 @@
 package com.soeguet.util;
 
+import com.soeguet.image_panel.ImagePanelImpl;
+import com.soeguet.image_panel.interfaces.ImageInterface;
 import com.soeguet.links.LinkDialogHandler;
 import com.soeguet.links.LinkDialogImpl;
 import com.soeguet.links.dtos.MetadataStorageRecord;
 import com.soeguet.links.interfaces.LinkDialogInterface;
+import com.soeguet.main_frame.ChatMainFrameImpl;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +23,7 @@ public class CustomTransferHandler extends TransferHandler {
 
     public CustomTransferHandler() {
 
-        this.originalTransferHandler = this.mainFrame.getTextEditorPane().getTransferHandler();
+        this.originalTransferHandler = ChatMainFrameImpl.getMainFrameInstance().getTextEditorPane().getTransferHandler();
     }
 
     @Override

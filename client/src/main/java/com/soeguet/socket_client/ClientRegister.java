@@ -5,10 +5,56 @@ public class ClientRegister {
     private static final ClientRegister CLIENT_INSTANCE = new ClientRegister();
 
     /** The name of the client which was last posted on the main panel. */
-    private  String lastSenderName;
+    private String lastSenderName;
 
     /** The last time someone posted on the main panel. */
-    private  String lastTimeStamp;
+    private String lastTimeStamp;
+    private CustomWebsocketClient customWebsocketClient;
+
+    public void send(final String messageString) {
+
+        this.getCustomWebsocketClient().send(messageString);
+    }
+
+    public void send(final byte[] messageBytes) {
+
+        this.getCustomWebsocketClient().send(messageBytes);
+    }
+
+    public String getLastSenderName() {
+
+        return lastSenderName;
+    }
+
+    public void setLastSenderName(final String lastSenderName) {
+
+        this.lastSenderName = lastSenderName;
+    }
+
+    public String getLastTimeStamp() {
+
+        return lastTimeStamp;
+    }
+
+    public void setLastTimeStamp(final String lastTimeStamp) {
+
+        this.lastTimeStamp = lastTimeStamp;
+    }
+
+    public CustomWebsocketClient getCustomWebsocketClient() {
+
+        if (this.customWebsocketClient == null) {
+
+            throw new IllegalStateException("CustomWebsocketClient is null");
+        }
+
+        return this.customWebsocketClient;
+    }
+
+    public void setCustomWebsocketClient(final CustomWebsocketClient customWebsocketClient) {
+
+        this.customWebsocketClient = customWebsocketClient;
+    }
 
     private boolean startup = false;
 

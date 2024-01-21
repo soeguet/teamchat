@@ -123,9 +123,8 @@ public class MainChatPanelFactory {
         PropertiesRegister propertiesRegister = PropertiesRegister.getCustomUserPropertiesInstance();
         ClientRegister clientRegister = ClientRegister.getWebSocketClientInstance();
 
-        ReactionPanelDTO reactionPanelDTO = new ReactionPanelDTO(baseModel, propertiesRegister.getUsername(),
-                                                                 mainFrame.getWebsocketClient(),
-                                                                 new ObjectMapper());
+        ReactionPanelDTO reactionPanelDTO = new ReactionPanelDTO(baseModel, propertiesRegister.getUsername());
+
 
         customCommentPanel.setTopContainer(
                 new TransparentTopPanel( customCommentPanel, reactionPanelDTO));

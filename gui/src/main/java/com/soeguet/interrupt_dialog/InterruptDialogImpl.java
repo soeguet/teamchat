@@ -1,14 +1,18 @@
 package com.soeguet.interrupt_dialog;
 
+import com.soeguet.dtos.CustomUserPropertiesDTO;
 import com.soeguet.interrupt_dialog.generated.InterruptDialog;
 import com.soeguet.interrupt_dialog.interfaces.InterruptDialogInterface;
-import com.soeguet.dtos.CustomUserPropertiesDTO;
-import java.awt.Window;
+import com.soeguet.socket_client.ClientRegister;
+import com.soeguet.util.ByteArrayHandler;
+import com.soeguet.util.interfaces.ByteArrayHandlerInterface;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import javax.swing.JCheckBox;
 
 public class InterruptDialogImpl extends InterruptDialog implements InterruptDialogInterface {
 
@@ -56,7 +60,7 @@ public class InterruptDialogImpl extends InterruptDialog implements InterruptDia
         ByteArrayHandlerInterface byteArrayHandler = new ByteArrayHandler();
         byte[] clientByteArray = byteArrayHandler.convertListToByteArray(selectedClients);
 
-        mainFrame.getWebsocketClient().send(clientByteArray);
+        ClientRegister.getWebSocketClientInstance().send(clientByteArray);
 
         cancelButtonActionPerformed(e);
     }

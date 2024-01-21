@@ -9,6 +9,10 @@ import com.soeguet.model.jackson.LinkModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
 import com.soeguet.model.jackson.QuoteModel;
+import com.soeguet.properties.PropertiesRegister;
+import com.soeguet.socket_client.ClientRegister;
+import com.soeguet.socket_client.CustomWebsocketClient;
+
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.net.URL;
@@ -26,9 +30,7 @@ public class CustomReplySendButton extends JButton implements MouseListener {
     // variables -- end
 
     // constructors -- start
-    public CustomReplySendButton(
-            BaseModel baseModel,
-            CustomReplyPanel customReplyPanel) {
+    public CustomReplySendButton(BaseModel baseModel, CustomReplyPanel customReplyPanel) {
 
         this.baseModel = baseModel;
         this.customReplyPanel = customReplyPanel;
@@ -43,12 +45,13 @@ public class CustomReplySendButton extends JButton implements MouseListener {
 
     private void setCustomIcon() {
 
-        URL sendUrl = ChatMainFrameImpl.class.getResource("/emojis/$+1f4e8$+.png");
-
-        if (sendUrl != null) {
-
-            super.setIcon(new ImageIcon(sendUrl));
-        }
+        // TODO 1
+        //        URL sendUrl = ChatMainFrameImpl.class.getResource("/emojis/$+1f4e8$+.png");
+        //
+        //        if (sendUrl != null) {
+        //
+        //            super.setIcon(new ImageIcon(sendUrl));
+        //        }
     }
 
     private MessageModel createMessageModel() {
@@ -67,7 +70,7 @@ public class CustomReplySendButton extends JButton implements MouseListener {
         messageModel.setQuotedMessage(quoteModel);
         messageModel.setMessage(customReplyPanel.getTextPane().getText());
         messageModel.setTime(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
-        messageModel.setSender(mainFrame.getUsername());
+        messageModel.setSender(PropertiesRegister.getCustomUserPropertiesInstance().getUsername());
         messageModel.setMessageType(MessageTypes.REPLY);
 
         return messageModel;
@@ -89,18 +92,21 @@ public class CustomReplySendButton extends JButton implements MouseListener {
     public void mouseClicked(final MouseEvent e) {
 
         // make main textPanel editable again
-        mainFrame.getTextEditorPane().setFocusable(true);
-        mainFrame.getTextEditorPane().requestFocus();
+        // TODO 1
+        //        mainFrame.getTextEditorPane().setFocusable(true);
+        //        mainFrame.getTextEditorPane().requestFocus();
 
-        final CustomWebsocketClient websocketClient = mainFrame.getWebsocketClient();
-        final ObjectMapper objectMapper = mainFrame.getObjectMapper();
+        final CustomWebsocketClient websocketClient =
+                ClientRegister.getWebSocketClientInstance().getCustomWebsocketClient();
+        final ObjectMapper objectMapper = new ObjectMapper();
 
         final MessageModel messageModel = this.createMessageModel();
 
         try {
 
             final String serializedMessageModel = objectMapper.writeValueAsString(messageModel);
-            websocketClient.send(serializedMessageModel);
+            // TODO 1
+//            websocketClient.send(serializedMessageModel);
 
         } catch (JsonProcessingException ex) {
 
@@ -112,14 +118,22 @@ public class CustomReplySendButton extends JButton implements MouseListener {
     }
 
     @Override
-    public void mousePressed(final MouseEvent e) {}
+    public void mousePressed(final MouseEvent e) {
+
+    }
 
     @Override
-    public void mouseReleased(final MouseEvent e) {}
+    public void mouseReleased(final MouseEvent e) {
+
+    }
 
     @Override
-    public void mouseEntered(final MouseEvent e) {}
+    public void mouseEntered(final MouseEvent e) {
+
+    }
 
     @Override
-    public void mouseExited(final MouseEvent e) {}
+    public void mouseExited(final MouseEvent e) {
+
+    }
 }

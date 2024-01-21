@@ -3,23 +3,20 @@ package com.soeguet.interrupt_dialog.handler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.interrupt_dialog.interfaces.InterruptHandlerInterface;
-import com.soeguet.interfaces.MainFrameGuiInterface;
+import com.soeguet.main_frame.ChatMainFrameImpl;
+import com.soeguet.properties.PropertiesRegister;
 
-import java.io.IOException;
 import javax.swing.*;
+import java.io.IOException;
 
 public class InterruptHandler implements InterruptHandlerInterface {
 
-    private final MainFrameGuiInterface mainFrame;
 
     /**
      * Initializes an InterruptHandler object with the provided MainFrameInterface.
-     *
-     * @param mainFrame The MainFrameInterface object used for handling interrupts.
      */
-    public InterruptHandler(final MainFrameGuiInterface mainFrame) {
+    public InterruptHandler() {
 
-        this.mainFrame = mainFrame;
     }
 
     /**
@@ -31,9 +28,11 @@ public class InterruptHandler implements InterruptHandlerInterface {
     @Override
     public void forceChatGuiToFront(final String clientUserName) {
 
-        if (clientUserName.equals(mainFrame.getUsername())) {
+        if (clientUserName.equals(PropertiesRegister.getCustomUserPropertiesInstance().getUsername())) {
 
-            if (mainFrame instanceof JFrame gui) {
+            ChatMainFrameImpl chatMainFrame = ChatMainFrameImpl.getMainFrameInstance();
+
+            if (chatMainFrame instanceof JFrame gui) {
 
                 gui.setAlwaysOnTop(true);
                 gui.toFront();
@@ -67,10 +66,12 @@ public class InterruptHandler implements InterruptHandlerInterface {
     }
 
     /**
-     * Extracts the usernames from the provided JSON message.
-     *
-     * @param message the byte array containing the JSON message
-     * @return the JSON node containing the usernames
+     Extracts the usernames from the provided JSON message.
+
+     @param message
+     the byte array containing the JSON message
+
+     @return the JSON node containing the usernames
      */
     @Override
     public JsonNode extractJsonNodeUsernames(final byte[] message) {
