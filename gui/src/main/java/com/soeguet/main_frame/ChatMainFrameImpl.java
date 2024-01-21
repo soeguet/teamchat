@@ -95,11 +95,12 @@ public class ChatMainFrameImpl extends ChatPanel {
     // variables -- end
 
     // constructors -- start
-
     /** Creates a new instance of ChatMainFrameImpl. */
     private ChatMainFrameImpl() {
 
+        super();
     }
+    // constructors -- end
 
     private static final ChatMainFrameImpl chatMainFrame = new ChatMainFrameImpl();
 
@@ -107,7 +108,6 @@ public class ChatMainFrameImpl extends ChatPanel {
 
         return chatMainFrame;
     }
-    // constructors -- end
 
     /**
      This method is used to reposition the chat frame for testing purposes. It retrieves the value of the
@@ -739,7 +739,7 @@ public class ChatMainFrameImpl extends ChatPanel {
         final InterruptDialogInterface interruptDialogInterface = new InterruptDialogImpl(this);
 
         // TODO 1
-//        interruptDialogInterface.populateDialogWithAllRegisteredClients();
+        //        interruptDialogInterface.populateDialogWithAllRegisteredClients();
         interruptDialogInterface.pack();
         interruptDialogInterface.setLocationRelativeTo(this);
         interruptDialogInterface.setVisible(true);

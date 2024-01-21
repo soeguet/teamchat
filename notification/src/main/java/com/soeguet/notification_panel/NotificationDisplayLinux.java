@@ -16,15 +16,19 @@ public class NotificationDisplayLinux implements NotificationDisplayInterface {
     public void displayNotification(final String sender, final String message) {
 
         try {
+
             Runtime.getRuntime().exec(new String[] {"notify-send", sender, message});
+
         } catch (IOException e) {
 
             try {
+
                 Runtime.getRuntime()
                         .exec(
                                 new String[] {
                                     "kdialog", "--passivepopup", message, "5", "--title", sender
                                 });
+
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }

@@ -1,10 +1,10 @@
 package com.soeguet.generic_comment.gui_elements.panels;
 
 import com.soeguet.generic_comment.gui_elements.textpanes.CustomSimpleTextPane;
-
 import com.soeguet.model.jackson.MessageModel;
-import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
+
+import javax.swing.*;
 
 /**
  * This is the main panel of every chat bubble housing messages, quotes and alike.
@@ -59,6 +59,10 @@ public class CustomTextAndQuoteForBubblePanel extends JPanel {
         }
     }
 
+    /**
+
+     This method handles the text messages from all message model comments.
+     */
     public void addTextMessage() {
 
         final CustomSimpleTextPane customSimpleTextPane = new CustomSimpleTextPane();

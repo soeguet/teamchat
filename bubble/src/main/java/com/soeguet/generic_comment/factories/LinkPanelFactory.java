@@ -13,7 +13,6 @@ public class LinkPanelFactory {
     // constructors -- start
     public LinkPanelFactory(BaseModel baseModel) {
 
-
         this.baseModel = baseModel;
     }
 

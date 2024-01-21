@@ -1,19 +1,10 @@
 package com.soeguet.generic_comment.factories;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.dtos.ReactionPanelDTO;
 import com.soeguet.enums.CommentTypeEnum;
-import com.soeguet.generic_comment.gui_elements.panels.CommentSidePanel;
-import com.soeguet.generic_comment.gui_elements.panels.CustomCommentPanel;
-import com.soeguet.generic_comment.gui_elements.panels.CustomContentContainer;
-import com.soeguet.generic_comment.gui_elements.panels.CustomMainWrapperContainer;
-import com.soeguet.generic_comment.gui_elements.panels.TransparentTopPanel;
+import com.soeguet.generic_comment.gui_elements.panels.*;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.properties.PropertiesRegister;
-import com.soeguet.socket_client.ClientRegister;
-
-import java.util.Properties;
-import java.util.function.ObjDoubleConsumer;
 
 /**
  * THIS IS THE MAIN CHAT PANEL FACTORY<br>
@@ -46,7 +37,6 @@ public class MainChatPanelFactory {
      * CustomCommentPanel (1) -> CustomMainWrapperContainer (2)<br>
      * CustomMainWrapperContainer -> [CommentSidePanel (3) + CustomContentContainer (4)]<br>
      *
-     * @param mainFrame {@link MainFrameGuiInterface}
      * @param baseModel {@link BaseModel}
      */
     public MainChatPanelFactory(
@@ -92,10 +82,6 @@ public class MainChatPanelFactory {
 
     /**
      * Assembles CustomCommentPanel with the necessary components and dependencies.
-     *
-     * @param CommentSidePanel commentSidePanel {@link CommentSidePanel}
-     * @param CustomContentContainer customContentContainer {@link CustomContentContainer}
-     * @param CustomMainWrapperContainer customMainWrapperContainer {@link
      *     CustomMainWrapperContainer}
      * @return
      */
@@ -121,7 +107,8 @@ public class MainChatPanelFactory {
         customCommentPanel.setCustomMainWrapperContainer(customMainWrapperContainer);
 
         PropertiesRegister propertiesRegister = PropertiesRegister.getCustomUserPropertiesInstance();
-        ClientRegister clientRegister = ClientRegister.getWebSocketClientInstance();
+        // TODO 1
+//        final CustomWebsocketClient customWebsocketClient = ClientRegister.getWebSocketClientInstance().getCustomWebsocketClient();
 
         ReactionPanelDTO reactionPanelDTO = new ReactionPanelDTO(baseModel, propertiesRegister.getUsername());
 
@@ -136,8 +123,6 @@ public class MainChatPanelFactory {
 
     /**
      * Setup comment panel.
-     *
-     * @param CustomCommentPanel customCommentPanel {@link CustomCommentPanel}
      */
     private void generateCommentPanel(CustomCommentPanel customCommentPanel) {
 

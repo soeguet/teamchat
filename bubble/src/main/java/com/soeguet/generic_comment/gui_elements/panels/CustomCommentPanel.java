@@ -3,27 +3,24 @@ package com.soeguet.generic_comment.gui_elements.panels;
 import com.soeguet.enums.CommentTypeEnum;
 import com.soeguet.generic_comment.factories.LinkPanelFactory;
 import com.soeguet.generic_comment.factories.PicturePanelFactory;
-import com.soeguet.generic_comment.gui_elements.util.ChatBubblePaintHandler;
 import com.soeguet.generic_comment.factories.TextMessageFactory;
+import com.soeguet.generic_comment.gui_elements.util.ChatBubblePaintHandler;
 import com.soeguet.generic_comment.util.Side;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
-import java.awt.Color;
-import javax.swing.JPanel;
-import javax.swing.JTextPane;
-import javax.swing.OverlayLayout;
+
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import java.awt.*;
 
 /**
- * This panel is placed on the GUI as the main comment panel.<br>
- * It covers one row on the scrollpane and will be pushed up the more of these are added.<br>
- * One is added per row and it covers the whole width.<br>
- *
- * <p>It contains everything else related to a chat message:<br>
- * - the side panel {@link CommentSidePanel}<br>
- * - the top panel {@link TransparentTopPanel}<br>
- * - the main content panel<br>
- * - the text panel<br>
+ This panel is placed on the GUI as the main comment panel.<br> It covers one row on the scrollpane and will be
+ pushed up
+ the more of these are added.<br> One is added per row and it covers the whole width.<br>
+
+ <p>It contains everything else related to a chat message:<br>
+ - the side panel {@link CommentSidePanel}<br> - the top panel {@link TransparentTopPanel}<br> - the main content
+ panel<br> - the text panel<br>
  */
 public class CustomCommentPanel extends JPanel {
 
@@ -33,9 +30,9 @@ public class CustomCommentPanel extends JPanel {
     private Side side;
 
     /**
-     * Represents the main information Model of this app.
-     *
-     * @see BaseModel
+     Represents the main information Model of this app.
+
+     @see BaseModel
      */
     private BaseModel baseModel;
 
@@ -43,20 +40,19 @@ public class CustomCommentPanel extends JPanel {
     private CommentSidePanel sidePanel;
 
     /**
-     * The top level container will be used for MouseEvents as well as reaction emojis.
-     *
-     * @see JPanel
+     The top level container will be used for MouseEvents as well as reaction emojis.
+
+     @see JPanel
      */
     private TransparentTopPanel topContainer;
 
     /**
-     * The main container panel will be used for the side panel as well as the content container.
+     The main container panel will be used for the side panel as well as the content container.
      */
     private CustomMainWrapperContainer customMainWrapperContainer;
 
     /**
-     * The content container will be used for the text and picture content as well as the quoted
-     * comments.
+     The content container will be used for the text and picture content as well as the quoted comments.
      */
     private CustomContentContainer customContentContainer;
 
@@ -67,7 +63,9 @@ public class CustomCommentPanel extends JPanel {
     // variables -- end
 
     // constructors -- start
-    public CustomCommentPanel() {}
+    public CustomCommentPanel() {
+
+    }
 
     // constructors -- end
 
@@ -110,7 +108,8 @@ public class CustomCommentPanel extends JPanel {
         final CustomContentContainer mainContentPanel = this.getCustomContentContainer();
         topPanel.setReferenceToMainContentContainer(mainContentPanel);
 
-        // hella hacky approach, but I need that margin for the emoticons
+        // hella hacky approach, but I need that margin for the emoticons. a margin right on the maincontentpanel
+        // does not work
         JPanel marginPanel = new JPanel();
         marginPanel.setBorder(new EmptyBorder(0, 0, 12, 0));
         marginPanel.add(mainContentPanel);
@@ -134,8 +133,7 @@ public class CustomCommentPanel extends JPanel {
                 mainPanel.add(commentSidePanel, "cell 1 0 1 2, dock east");
 
                 // CONTENT
-                mainPanel.add(
-                        contentStackPanel, "cell 0 0 1 2, dock east, gapright 5, gapleft 50, grow");
+                mainPanel.add(contentStackPanel, "cell 0 0 1 2, dock east, gapright 5, gapleft 50, grow");
             }
         }
 
@@ -149,22 +147,20 @@ public class CustomCommentPanel extends JPanel {
         final Side commentSide = this.getSide();
 
         switch (this.commentType) {
-            case CommentTypeEnum.LEFT_TEXT, CommentTypeEnum.RIGHT_TEXT -> this.processIncomingTextMessage(
-                    commentSide, contentContainer);
+            case CommentTypeEnum.LEFT_TEXT, CommentTypeEnum.RIGHT_TEXT ->
+                    this.processIncomingTextMessage(commentSide, contentContainer);
 
-            case CommentTypeEnum.LEFT_PICTURE, CommentTypeEnum.RIGHT_PICTURE -> this.processIncomingPictureMessage(
-                    commentSide, contentContainer);
+            case CommentTypeEnum.LEFT_PICTURE, CommentTypeEnum.RIGHT_PICTURE ->
+                    this.processIncomingPictureMessage(commentSide, contentContainer);
 
-            case CommentTypeEnum.LEFT_LINK, CommentTypeEnum.RIGHT_LINK -> this.processIncomingLinkMessage(
-                    commentSide, contentContainer);
+            case CommentTypeEnum.LEFT_LINK, CommentTypeEnum.RIGHT_LINK ->
+                    this.processIncomingLinkMessage(commentSide, contentContainer);
         }
     }
 
-    private void processIncomingLinkMessage(
-            final Side commentSide, final CustomContentContainer contentContainer) {
+    private void processIncomingLinkMessage(final Side commentSide, final CustomContentContainer contentContainer) {
 
-        final CustomLinkPanel customLinkPanel =
-                new LinkPanelFactory(this.baseModel).create();
+        final CustomLinkPanel customLinkPanel = new LinkPanelFactory(this.baseModel).create();
 
         switch (commentSide) {
             case LEFT -> {
@@ -179,11 +175,9 @@ public class CustomCommentPanel extends JPanel {
         }
     }
 
-    private void processIncomingPictureMessage(
-            final Side commentSide, final CustomContentContainer contentContainer) {
+    private void processIncomingPictureMessage(final Side commentSide, final CustomContentContainer contentContainer) {
 
-        final CustomPictureWrapperPanel pictureLabel =
-                new PicturePanelFactory(this.baseModel).create();
+        final CustomPictureWrapperPanel pictureLabel = new PicturePanelFactory(this.baseModel).create();
 
         switch (commentSide) {
             case LEFT -> {
@@ -198,14 +192,13 @@ public class CustomCommentPanel extends JPanel {
         }
     }
 
-    private void processIncomingTextMessage(
-            final Side commentSide, final CustomContentContainer contentContainer) {
+    private void processIncomingTextMessage(final Side commentSide, final CustomContentContainer contentContainer) {
 
         // TODO factory method maybe?
         if (this.baseModel instanceof final MessageModel messageModel) {
 
             final CustomTextAndQuoteForBubblePanel customTextAndQuoteForBubblePanel =
-                    new TextMessageFactory( messageModel).create();
+                    new TextMessageFactory(messageModel).create();
 
             switch (commentSide) {
                 case LEFT -> {
@@ -226,9 +219,8 @@ public class CustomCommentPanel extends JPanel {
         final Side commentSide = this.getSide();
         // TODO: 02.11.23 border color implementation
         this.setBorderColor(new Color(23, 0, 146));
-        this.chatBubblePaintHandler =
-                new ChatBubblePaintHandler(
-                        this.getCustomContentContainer(), commentSide, this.getBorderColor());
+        this.chatBubblePaintHandler = new ChatBubblePaintHandler(this.getCustomContentContainer(), commentSide,
+                                                                 this.getBorderColor());
 
         this.chatBubblePaintHandler.setupChatBubble();
     }
@@ -241,13 +233,17 @@ public class CustomCommentPanel extends JPanel {
     public void setSide() {
 
         switch (this.getCommentType()) {
-            case CommentTypeEnum.LEFT_TEXT, CommentTypeEnum.LEFT_PICTURE, CommentTypeEnum.LEFT_LINK -> this.side = Side.LEFT;
+            case CommentTypeEnum.LEFT_TEXT, CommentTypeEnum.LEFT_PICTURE, CommentTypeEnum.LEFT_LINK ->
+                    this.side = Side.LEFT;
 
-            case CommentTypeEnum.RIGHT_TEXT, CommentTypeEnum.RIGHT_PICTURE, CommentTypeEnum.RIGHT_LINK -> this.side = Side.RIGHT;
+            case CommentTypeEnum.RIGHT_TEXT, CommentTypeEnum.RIGHT_PICTURE, CommentTypeEnum.RIGHT_LINK ->
+                    this.side = Side.RIGHT;
         }
     }
 
-    public void prepareInteractionButtons() {}
+    public void prepareInteractionButtons() {
+
+    }
 
     // getter & setter -- start
     public BaseModel getBaseModel() {
@@ -295,8 +291,7 @@ public class CustomCommentPanel extends JPanel {
         return this.customMainWrapperContainer;
     }
 
-    public void setCustomMainWrapperContainer(
-            final CustomMainWrapperContainer customMainWrapperContainer) {
+    public void setCustomMainWrapperContainer(final CustomMainWrapperContainer customMainWrapperContainer) {
 
         this.customMainWrapperContainer = customMainWrapperContainer;
     }

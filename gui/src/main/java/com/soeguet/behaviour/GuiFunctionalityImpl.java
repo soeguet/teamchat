@@ -25,9 +25,7 @@ import com.soeguet.notification_panel.enums.NotificationStatus;
 import com.soeguet.notification_panel.interfaces.DesktopNotificationHandlerInterface;
 import com.soeguet.popups.PopupPanelImpl;
 import com.soeguet.popups.interfaces.PopupInterface;
-import com.soeguet.properties.PropertiesRegister;
 import com.soeguet.socket_client.ClientRegister;
-import com.soeguet.socket_client.CustomWebsocketClient;
 import com.soeguet.typing_panel.TypingPanelHandler;
 import com.soeguet.typing_panel.interfaces.TypingPanelHandlerInterface;
 import com.soeguet.util.CustomTransferHandler;
@@ -37,7 +35,6 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Properties;
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -212,7 +209,7 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
                     messageQueue.addLast(message);
                 }
 
-                // write to pane
+                // write bubble to pane
                 spamBuffer();
 
                 // notification
@@ -351,10 +348,9 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
             return;
         }
 
+        // module:: notification
         DesktopNotificationHandlerInterface desktopNotificationHandler = new DesktopNotificationHandler();
-
         NotificationStatus notificationStatus = desktopNotificationHandler.determineDesktopNotificationStatus();
-
         desktopNotificationHandler.createDesktopNotification(message, notificationStatus);
     }
 
@@ -396,8 +392,8 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
 
         // register user from message to local cache if not present yet
         // TODO 1
-//        this.checkIfMessageSenderAlreadyRegisteredInLocalCache(mainFrame.getChatClientPropertiesHashMap(),
-//                                                               baseModel.getSender());
+        //        this.checkIfMessageSenderAlreadyRegisteredInLocalCache(mainFrame.getChatClientPropertiesHashMap(),
+        //                                                               baseModel.getSender());
 
         // handle displayed message name - nickname as well as timeAndUsername
         // TODO: 02.11.23 maybe nickname support -- removed it for now
@@ -406,10 +402,12 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
         // process and display message
         if (this.retrieveMessageType(baseModel) == MessageTypes.INTERACTED) {
 
+            // if interaction -> update existing message
             messageDisplayHandler.updateExistingMessage(baseModel);
 
         } else {
 
+            // if normal message -> process and display message
             messageDisplayHandler.processAndDisplayMessage(baseModel);
         }
 
@@ -502,15 +500,14 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
 
         return;
         // TODO 1
-//
-//        if(!clientMap.containsKey(sender))
-//
-//        {
-//
-//            addClientToLocalCacheRegister(clientMap, sender);
-//        }
+        //
+        //        if(!clientMap.containsKey(sender))
+        //
+        //        {
+        //
+        //            addClientToLocalCacheRegister(clientMap, sender);
+        //        }
     }
-
 
     /**
      Adds a client to the local cache register.

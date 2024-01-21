@@ -16,9 +16,7 @@ public class SidePanelFactory {
     // variables -- end
 
     // constructors -- start
-    public SidePanelFactory(
-            BaseModel baseModel,
-            CommentTypeEnum commentType) {
+    public SidePanelFactory(BaseModel baseModel, CommentTypeEnum commentType) {
 
         this.baseModel = baseModel;
         this.commentType = commentType;
@@ -48,8 +46,7 @@ public class SidePanelFactory {
         }
 
         // interaction menu
-        final CustomInteractionButton interactionButton =
-                new InteractionButtonFactory(baseModel).create();
+        final CustomInteractionButton interactionButton = new InteractionButtonFactory(baseModel).create();
         commentSidePanel.setInteractionButton(interactionButton);
 
         commentSidePanel.addComponents();

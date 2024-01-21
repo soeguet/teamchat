@@ -8,12 +8,12 @@ public class NotificationStatusHandler implements NotificationStatusHandlerInter
     public NotificationStatusHandler() {
 
     }
-    // TODO 1
 
     @Override
     public NotificationStatus getNotificationStatus() {
 
-        return null;
+        // TODO 1
+        return NotificationStatus.ALL_ALLOWED;
     }
 //
 //    /**

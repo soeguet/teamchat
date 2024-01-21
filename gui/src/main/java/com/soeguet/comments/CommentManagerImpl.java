@@ -16,15 +16,10 @@ import javax.swing.*;
 
 public class CommentManagerImpl implements CommentManager {
 
-    // variables -- start
-
-    // variables -- end
-
     // constructors -- start
     public CommentManagerImpl() {
 
     }
-
     // constructors -- end
 
     private void addCommentPanelToMainChatPanel(final JPanel commentPanel, final CommentTypeEnum commentType) {
@@ -57,15 +52,6 @@ public class CommentManagerImpl implements CommentManager {
         mainFrame.revalidate();
         mainFrame.repaint();
     }
-
-    // private int generateRandomRgbIntValue() {
-    //
-    //     Random rand = new Random();
-    //     int r = rand.nextInt(256);
-    //     int g = rand.nextInt(256);
-    //     int b = rand.nextInt(256);
-    //     return new Color(r, g, b).getRGB();
-    // }
 
     private boolean doesClientMatchSender(final String messageModel) {
 

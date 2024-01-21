@@ -19,7 +19,6 @@ public class CustomSimpleTextPane extends JTextPane implements MouseListener {
     // constructors -- start
     public CustomSimpleTextPane() {
 
-
         super.setEditorKit(new WrapEditorKit());
         super.setOpaque(false);
         super.setBackground(null);
@@ -35,10 +34,21 @@ public class CustomSimpleTextPane extends JTextPane implements MouseListener {
 
     // constructors -- end
 
+    /**
+     converts any kind of emoji character sequence to an image icon
+
+     @param message
+     chat message carried by model
+     */
     public void replaceEmojiDescriptionWithActualImageIcon(final String message) {
 
         EmojiRegister emojiRegister = EmojiRegister.getInstance();
         HashMap<String, ImageIcon> emojiHashMap = emojiRegister.getEmojiList();
+
+        // otherwise there will be no text in the chat bubbles
+        if (emojiHashMap == null) {
+            emojiHashMap = new HashMap<>();
+        }
 
         new EmojiSwingWorker(this, emojiHashMap, message).execute();
     }
@@ -56,14 +66,22 @@ public class CustomSimpleTextPane extends JTextPane implements MouseListener {
     }
 
     @Override
-    public void mousePressed(final MouseEvent e) {}
+    public void mousePressed(final MouseEvent e) {
+
+    }
 
     @Override
-    public void mouseReleased(final MouseEvent e) {}
+    public void mouseReleased(final MouseEvent e) {
+
+    }
 
     @Override
-    public void mouseEntered(final MouseEvent e) {}
+    public void mouseEntered(final MouseEvent e) {
+
+    }
 
     @Override
-    public void mouseExited(final MouseEvent e) {}
+    public void mouseExited(final MouseEvent e) {
+
+    }
 }
