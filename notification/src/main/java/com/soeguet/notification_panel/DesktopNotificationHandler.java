@@ -67,35 +67,40 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
      */
     private void createNotification(final BaseModel baseModel) {
 
-        switch (baseModel) {
-            case MessageModel text -> {
-                Timer timer = new Timer(500, e -> {
-                    com.soeguet.gui.notification_panel.interfaces.NotificationInterface notification =
-                            new NotificationImpl(text);
-                    notification.setNotificationText();
-                    notification.setMaximumSize(new Dimension(400, 300));
-                });
-                timer.setRepeats(false);
-                timer.start();
-            }
+        if (baseModel instanceof MessageModel messageModel) {
 
-            case PictureModel picture -> {
-                Timer timer = new Timer(500, e -> {
-                    com.soeguet.gui.notification_panel.interfaces.NotificationInterface notification =
-                            new NotificationImpl(picture);
+            Timer timer = new Timer(500, e -> {
+                com.soeguet.gui.notification_panel.interfaces.NotificationInterface notification =
+                        new NotificationImpl(messageModel);
+                notification.setNotificationText();
+                notification.setMaximumSize(new Dimension(400, 300));
+            });
+            timer.setRepeats(false);
+            timer.start();
 
-                    notification.setNotificationPicture();
-                    notification.setMaximumSize(new Dimension(400, 300));
-                });
-                timer.setRepeats(false);
-                timer.start();
-            }
+        } else if (baseModel instanceof PictureModel pictureModel) {
 
-            default -> {
-                logger.info("Unknown message type");
-                throw new IllegalArgumentException();
-            }
+            Timer timer = new Timer(500, e -> {
+                com.soeguet.gui.notification_panel.interfaces.NotificationInterface notification =
+                        new NotificationImpl(pictureModel);
+
+                notification.setNotificationPicture();
+                notification.setMaximumSize(new Dimension(400, 300));
+            });
+            timer.setRepeats(false);
+            timer.start();
+
+        } else if (baseModel instanceof LinkModel linkModel) {
+
+            // TODO 1 ?? something is missing?
+            internalNotificationHandling(linkModel.getComment(), baseModel);
+
+        } else {
+
+            logger.info("Unknown message type");
+            throw new IllegalArgumentException();
         }
+
     }
 
     /**
@@ -117,34 +122,15 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
         notify.setHideAfterDurationInMillis(3000);
 
         // let icon blink even with turned off notifications
-        switch (baseModel) {
-            case MessageModel messageModel -> {
-                notify.text(messageModel.getMessage());
-            }
-            case PictureModel pictureModel -> {
-                notify.text("[picture] " + pictureModel.getDescription());
-            }
-            case LinkModel linkModel -> {
-                notify.text("[link] " + linkModel.getComment());
-            }
+        if (baseModel instanceof MessageModel messageModel){
+            notify.text(messageModel.getMessage());
+        } else if (baseModel instanceof PictureModel pictureModel){
+            notify.text("[picture] " + pictureModel.getDescription());
+        } else if (baseModel instanceof LinkModel linkModel){
+            notify.text("[link] " + linkModel.getComment());
         }
 
         notify.show();
-
-        // if (cacheManager.getCache(
-        // "ActiveNotificationQueue") instanceof ActiveNotificationQueue activeNotificationQueue) {
-        //
-        // // only post notification if there is no active notification -> trying to fix the wonky
-        // // behavior
-        // if (activeNotificationQueue.getRemainingCapacity() < 3) {
-        //
-        // addIncomingNotificationToQueue(message);
-        //
-        // } else {
-        //
-        // displayUpToThreeNotifications(baseModel, activeNotificationQueue);
-        // }
-        // }
     }
 
     /**
@@ -182,41 +168,39 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
 
         final String osName = EnvironmentData.getOSName();
 
-        switch (baseModel) {
-            case MessageModel text -> {
-                switch (osName) {
-                    // TODO 1 -- change the way of sending notifications on Linux
-                    case "Linux" -> {
-//                        notificationDisplayInterface = new NotificationDisplayLinux();
-//                        notificationDisplayInterface.displayNotification(text.getSender(), text.getMessage());
-                    }
+        if (baseModel instanceof MessageModel messageModel) {
 
-                    case "Windows 10", "WINDOWS_NT" -> {
-                        notificationDisplayInterface = new NotificationDisplayWindows();
-                        notificationDisplayInterface.displayNotification(text.getSender(), text.getMessage());
-                    }
+            switch (osName) {
+                // TODO 1 -- change the way of sending notifications on Linux
+                case "Linux" -> {
+                    // notificationDisplayInterface = new NotificationDisplayLinux();
+                    // notificationDisplayInterface.displayNotification(text.getSender(), text.getMessage());
+                }
+
+                case "Windows 10", "WINDOWS_NT" -> {
+                    notificationDisplayInterface = new NotificationDisplayWindows();
+                    notificationDisplayInterface.displayNotification(messageModel.getSender(), messageModel.getMessage());
                 }
             }
 
-            case PictureModel picture -> {
-                switch (osName) {
-                    case "Linux" -> {
-                        notificationDisplayInterface = new NotificationDisplayLinux();
-                        notificationDisplayInterface.displayNotification(picture.getSender(),
-                                                                         "[picture]" + System.lineSeparator() + picture.getDescription());
-                    }
+        } else if (baseModel instanceof PictureModel pictureModel) {
+            switch (osName) {
+                case "Linux" -> {
+                    notificationDisplayInterface = new NotificationDisplayLinux();
+                    notificationDisplayInterface.displayNotification(pictureModel.getSender(),
+                                                                     "[picture]" + System.lineSeparator() + pictureModel.getDescription());
+                }
 
-                    case "Windows 10", "WINDOWS_NT" -> {
-                        notificationDisplayInterface = new NotificationDisplayWindows();
-                        notificationDisplayInterface.displayNotification(picture.getSender(),
-                                                                         "[picture]" + System.lineSeparator() + picture.getDescription());
-                    }
+                case "Windows 10", "WINDOWS_NT" -> {
+                    notificationDisplayInterface = new NotificationDisplayWindows();
+                    notificationDisplayInterface.displayNotification(pictureModel.getSender(),
+                                                                     "[picture]" + System.lineSeparator() + pictureModel.getDescription());
                 }
             }
 
-            case LinkModel link -> {
-                throw new RuntimeException("LinkModel not supported yet");
-            }
+        } else if (baseModel instanceof LinkModel linkModel) {
+
+            throw new RuntimeException("LinkModel not supported yet");
         }
     }
 
@@ -304,24 +288,26 @@ public class DesktopNotificationHandler implements DesktopNotificationHandlerInt
 
         // check if notifications are even wanted
         switch (notificationStatus) {
-            case NotificationStatus.INTERNAL_ONLY -> {
+            case INTERNAL_ONLY -> {
                 internalNotificationHandling(message);
                 Toolkit.getDefaultToolkit().beep();
             }
 
-            case NotificationStatus.EXTERNAL_ONLY -> {
+            case EXTERNAL_ONLY -> {
                 externalNotificationHandling(message);
                 Toolkit.getDefaultToolkit().beep();
             }
 
-            case NotificationStatus.ALL_ALLOWED -> {
+            case ALL_ALLOWED -> {
                 internalNotificationHandling(message);
                 externalNotificationHandling(message);
                 Toolkit.getDefaultToolkit().beep();
             }
 
-            case NotificationStatus.ALL_DENIED, NotificationStatus.STARTUP -> {
+            case ALL_DENIED, STARTUP -> {
             }
+
+            default -> throw new IllegalStateException("Unexpected value: " + notificationStatus);
         }
     }
 }

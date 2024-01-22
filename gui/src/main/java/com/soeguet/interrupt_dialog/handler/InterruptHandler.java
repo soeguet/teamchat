@@ -32,26 +32,25 @@ public class InterruptHandler implements InterruptHandlerInterface {
 
             ChatMainFrameImpl chatMainFrame = ChatMainFrameImpl.getMainFrameInstance();
 
-            if (chatMainFrame instanceof JFrame gui) {
 
-                gui.setAlwaysOnTop(true);
-                gui.toFront();
+                chatMainFrame.setAlwaysOnTop(true);
+                chatMainFrame.toFront();
 
                 SwingUtilities.invokeLater(
                         () -> {
                             try {
 
                                 Thread.sleep(100);
-                                gui.setLocation(gui.getLocation().x, gui.getLocation().y + 100);
+                                chatMainFrame.setLocation(chatMainFrame.getLocation().x, chatMainFrame.getLocation().y + 100);
                                 Thread.sleep(100);
-                                gui.setLocation(gui.getLocation().x + 100, gui.getLocation().y);
+                                chatMainFrame.setLocation(chatMainFrame.getLocation().x + 100, chatMainFrame.getLocation().y);
                                 Thread.sleep(100);
-                                gui.setLocation(gui.getLocation().x, gui.getLocation().y - 100);
+                                chatMainFrame.setLocation(chatMainFrame.getLocation().x, chatMainFrame.getLocation().y - 100);
                                 Thread.sleep(100);
-                                gui.setLocation(gui.getLocation().x - 100, gui.getLocation().y);
+                                chatMainFrame.setLocation(chatMainFrame.getLocation().x - 100, chatMainFrame.getLocation().y);
                                 Thread.sleep(100);
 
-                                gui.setLocationRelativeTo(null);
+                                chatMainFrame.setLocationRelativeTo(null);
 
                             } catch (InterruptedException e) {
 
@@ -59,9 +58,8 @@ public class InterruptHandler implements InterruptHandlerInterface {
                             }
                         });
 
-                gui.requestFocus();
-                gui.setAlwaysOnTop(false);
-            }
+                chatMainFrame.requestFocus();
+                chatMainFrame.setAlwaysOnTop(false);
         }
     }
 

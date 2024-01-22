@@ -2,8 +2,9 @@ package com.soeguet.generic_comment.gui_elements.panels;
 
 import com.soeguet.enums.CommentTypeEnum;
 import com.soeguet.generic_comment.util.Side;
-import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
+
+import javax.swing.*;
 
 /**
  * Wrapper for Sidepanel and Contentpanel<br>
@@ -76,8 +77,8 @@ public class CustomMainWrapperContainer extends JPanel {
     private Side determineSide(final CommentTypeEnum commentType) {
 
         return switch (commentType) {
-            case CommentTypeEnum.LEFT_LINK, CommentTypeEnum.LEFT_PICTURE, CommentTypeEnum.LEFT_TEXT -> Side.LEFT;
-            case CommentTypeEnum.RIGHT_LINK, CommentTypeEnum.RIGHT_PICTURE, CommentTypeEnum.RIGHT_TEXT -> Side.RIGHT;
+            case LEFT_LINK, LEFT_PICTURE, LEFT_TEXT -> Side.LEFT;
+            case RIGHT_LINK, RIGHT_PICTURE, RIGHT_TEXT -> Side.RIGHT;
         };
     }
 

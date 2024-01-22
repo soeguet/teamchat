@@ -1,24 +1,18 @@
 package com.soeguet.generic_comment.gui_elements.panels;
 
+import com.soeguet.generic_comment.factories.PicturePanelFactory;
 import com.soeguet.generic_comment.gui_elements.textpanes.CustomLinkTextPane;
 import com.soeguet.generic_comment.gui_elements.textpanes.CustomReplyPreviewTopInformationTextPane;
 import com.soeguet.generic_comment.gui_elements.textpanes.CustomSimpleTextPane;
-import com.soeguet.generic_comment.factories.PicturePanelFactory;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.LinkModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.SwingUtilities;
-
 import com.soeguet.util.WrapEditorKit;
 import net.miginfocom.swing.MigLayout;
+
+import javax.swing.*;
+import java.awt.*;
 
 public class CustomReferencePanel extends JPanel {
 
@@ -28,8 +22,7 @@ public class CustomReferencePanel extends JPanel {
     // variables -- end
 
     // constructors -- start
-    public CustomReferencePanel( final BaseModel baseModel) {
-
+    public CustomReferencePanel(final BaseModel baseModel) {
 
         this.baseModel = baseModel;
 
@@ -50,36 +43,30 @@ public class CustomReferencePanel extends JPanel {
 
         */
 
-        switch (baseModel) {
-            case MessageModel messageModel -> {
-                super.setLayout(
-                        new MigLayout(
-                                "wrap",
-                                // columns
-                                "[fill,grow]",
-                                // rows
-                                "[fill][fill,grow,:150:200]"));
-            }
+        if (baseModel instanceof MessageModel messageModel) {
 
-            case PictureModel pictureModel -> {
-                super.setLayout(
-                        new MigLayout(
-                                "wrap",
-                                // columns
-                                "[fill,grow]",
-                                // rows
-                                "[fill][fill,grow,:300:350]"));
-            }
+            super.setLayout(new MigLayout("wrap",
+                                          // columns
+                                          "[fill,grow]",
+                                          // rows
+                                          "[fill][fill,grow,:150:200]"));
+        } else if (baseModel instanceof PictureModel pictureModel) {
 
-            case LinkModel linkModel -> {
-                super.setLayout(
-                        new MigLayout(
-                                "wrap",
-                                // columns
-                                "[fill,grow]",
-                                // rows
-                                "[fill][fill,grow,:150:200]"));
-            }
+            super.setLayout(new MigLayout("wrap",
+                                          // columns
+                                          "[fill,grow]",
+                                          // rows
+                                          "[fill][fill,grow,:300:350]"));
+        } else if (baseModel instanceof LinkModel linkModel) {
+
+            super.setLayout(new MigLayout("wrap",
+                                          // columns
+                                          "[fill,grow]",
+                                          // rows
+                                          "[fill][fill,grow,:150:200]"));
+        } else {
+
+                throw new IllegalArgumentException("The baseModel is null!");
         }
     }
 
@@ -107,53 +94,46 @@ public class CustomReferencePanel extends JPanel {
 
     public void populateReferencePanel() {
 
-        switch (baseModel) {
-            case MessageModel messageModel -> {
-                JScrollPane jScrollPane = new JScrollPane();
-                final CustomSimpleTextPane referenceMessageTextPane =
-                        createReferenceMessageTextPane(messageModel);
+        if (baseModel instanceof MessageModel messageModel) {
+            JScrollPane jScrollPane = new JScrollPane();
+            final CustomSimpleTextPane referenceMessageTextPane = createReferenceMessageTextPane(messageModel);
 
-                jScrollPane.setViewportView(referenceMessageTextPane);
-                jScrollPane.setOpaque(false);
-                jScrollPane.getViewport().setOpaque(false);
-                jScrollPane.setBorder(null);
+            jScrollPane.setViewportView(referenceMessageTextPane);
+            jScrollPane.setOpaque(false);
+            jScrollPane.getViewport().setOpaque(false);
+            jScrollPane.setBorder(null);
 
-                super.add(jScrollPane, "cell 0 1, grow, width ::500, h ::800");
-            }
+            super.add(jScrollPane, "cell 0 1, grow, width ::500, h ::800");
 
-            case PictureModel pictureModel -> {
-                JScrollPane jScrollPane = new JScrollPane();
-                jScrollPane.setSize(500, 600);
+        } else if (baseModel instanceof PictureModel pictureModel) {
 
-                PicturePanelFactory picturePanelFactory =
-                        new PicturePanelFactory(pictureModel);
-                CustomPictureWrapperPanel customPictureWrapperPanel = picturePanelFactory.create();
+            JScrollPane jScrollPane = new JScrollPane();
+            jScrollPane.setSize(500, 600);
 
-                super.add(jScrollPane, "cell 0 1, grow, width 500!, h 600!, center");
-                revalidate();
-                repaint();
+            PicturePanelFactory picturePanelFactory = new PicturePanelFactory(pictureModel);
+            CustomPictureWrapperPanel customPictureWrapperPanel = picturePanelFactory.create();
 
-                SwingUtilities.invokeLater(
-                        () -> jScrollPane.setViewportView(customPictureWrapperPanel));
-            }
+            super.add(jScrollPane, "cell 0 1, grow, width 500!, h 600!, center");
+            revalidate();
+            repaint();
 
-            case LinkModel linkModel -> {
+            SwingUtilities.invokeLater(() -> jScrollPane.setViewportView(customPictureWrapperPanel));
 
-                // LINK
-                final CustomLinkTextPane customLinkTextPane =
-                        createCustomLinkTextPaneWithComment(linkModel);
+        } else if (baseModel instanceof LinkModel linkModel) {
 
-                final JScrollPane jScrollPane = createScrollPane();
+            // LINK
+            final CustomLinkTextPane customLinkTextPane = createCustomLinkTextPaneWithComment(linkModel);
 
-                // TODO 1
+            final JScrollPane jScrollPane = createScrollPane();
 
-//                this.mainFrame.revalidate();
-//                this.mainFrame.repaint();
+            // TODO 1
 
-                SwingUtilities.invokeLater(() -> jScrollPane.setViewportView(customLinkTextPane));
+            //                this.mainFrame.revalidate();
+            //                this.mainFrame.repaint();
 
-                super.add(jScrollPane, "cell 0 1, width ::500, h ::800");
-            }
+            SwingUtilities.invokeLater(() -> jScrollPane.setViewportView(customLinkTextPane));
+
+            super.add(jScrollPane, "cell 0 1, width ::500, h ::800");
         }
     }
 
@@ -177,8 +157,7 @@ public class CustomReferencePanel extends JPanel {
     private CustomSimpleTextPane createReferenceMessageTextPane(final MessageModel messageModel) {
 
         CustomSimpleTextPane referenceMessageTextPane = new CustomSimpleTextPane();
-        referenceMessageTextPane.replaceEmojiDescriptionWithActualImageIcon(
-                messageModel.getMessage());
+        referenceMessageTextPane.replaceEmojiDescriptionWithActualImageIcon(messageModel.getMessage());
 
         return referenceMessageTextPane;
     }
@@ -192,10 +171,8 @@ public class CustomReferencePanel extends JPanel {
 
         CustomSimpleTextPane nameAndTimeTextPane = new CustomSimpleTextPane();
 
-        nameAndTimeTextPane.setText(
-                "%s - %s".formatted(baseModel.getSender(), baseModel.getTime()));
-        nameAndTimeTextPane.setFont(
-                new Font(nameAndTimeTextPane.getFont().getName(), Font.ITALIC, 11));
+        nameAndTimeTextPane.setText("%s - %s".formatted(baseModel.getSender(), baseModel.getTime()));
+        nameAndTimeTextPane.setFont(new Font(nameAndTimeTextPane.getFont().getName(), Font.ITALIC, 11));
 
         return nameAndTimeTextPane;
     }

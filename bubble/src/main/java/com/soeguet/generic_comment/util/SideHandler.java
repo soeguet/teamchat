@@ -21,10 +21,10 @@ public class SideHandler {
     public Side determineSide(final CommentTypeEnum commentType) {
 
         switch (commentType) {
-            case CommentTypeEnum.LEFT_TEXT, CommentTypeEnum.LEFT_LINK, CommentTypeEnum.LEFT_PICTURE -> {
+            case LEFT_TEXT, LEFT_LINK, LEFT_PICTURE -> {
                 return Side.LEFT;
             }
-            case CommentTypeEnum.RIGHT_TEXT, CommentTypeEnum.RIGHT_LINK, CommentTypeEnum.RIGHT_PICTURE -> {
+            case RIGHT_TEXT, RIGHT_LINK, RIGHT_PICTURE -> {
                 return Side.RIGHT;
             }
             default -> throw new IllegalArgumentException("Unknown comment type: " + commentType);

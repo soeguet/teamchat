@@ -199,8 +199,6 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
                 popup.initiatePopupTimer(2_000);
             }
 
-            case null -> throw new IllegalStateException();
-
             default -> {
 
                 // add to queue
@@ -473,11 +471,8 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
      */
     private void repaintMainFrame() {
 
-        if (mainFrame instanceof JFrame jFrame) {
-
-            jFrame.revalidate();
-            jFrame.repaint();
-        }
+            mainFrame.revalidate();
+            mainFrame.repaint();
     }
 
     /**

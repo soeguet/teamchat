@@ -4,22 +4,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soeguet.generic_comment.gui_elements.panels.CustomReplyPanel;
 import com.soeguet.model.MessageTypes;
-import com.soeguet.model.jackson.BaseModel;
-import com.soeguet.model.jackson.LinkModel;
-import com.soeguet.model.jackson.MessageModel;
-import com.soeguet.model.jackson.PictureModel;
-import com.soeguet.model.jackson.QuoteModel;
+import com.soeguet.model.jackson.*;
 import com.soeguet.properties.PropertiesRegister;
 import com.soeguet.socket_client.ClientRegister;
 import com.soeguet.socket_client.CustomWebsocketClient;
 
+import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.net.URL;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 
 public class CustomReplySendButton extends JButton implements MouseListener {
 
@@ -78,13 +72,19 @@ public class CustomReplySendButton extends JButton implements MouseListener {
 
     private QuoteModel<BaseModel> createQuoteModel() {
 
-        QuoteModel<BaseModel> quoteModel;
+        QuoteModel<BaseModel> quoteModel = null;
 
-        switch (baseModel) {
-            case MessageModel messageModel -> quoteModel = new QuoteModel<>(messageModel);
-            case PictureModel pictureModel -> quoteModel = new QuoteModel<>(pictureModel);
-            case LinkModel linkModel -> quoteModel = new QuoteModel<>(linkModel);
+        if (baseModel instanceof MessageModel messageModel) {
+
+            quoteModel = new QuoteModel<>(messageModel);
+        } else if (baseModel instanceof PictureModel pictureModel) {
+
+            quoteModel = new QuoteModel<>(pictureModel);
+        } else if (baseModel instanceof LinkModel linkModel) {
+
+            quoteModel = new QuoteModel<>(linkModel);
         }
+
         return quoteModel;
     }
 

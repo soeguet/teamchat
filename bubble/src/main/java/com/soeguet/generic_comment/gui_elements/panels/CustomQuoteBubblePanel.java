@@ -59,27 +59,26 @@ public class CustomQuoteBubblePanel extends JPanel {
 
         final BaseModel baseModel = quoteModel.t();
 
-        switch (baseModel) {
-            case MessageModel messageModel -> {
-                CustomSimpleTextPane customSimpleTextPane = new CustomSimpleTextPane();
-                customSimpleTextPane.replaceEmojiDescriptionWithActualImageIcon(messageModel.getMessage());
+        if (baseModel instanceof MessageModel messageModel) {
 
-                super.add(customSimpleTextPane, "cell 0 1");
-            }
+            CustomSimpleTextPane customSimpleTextPane = new CustomSimpleTextPane();
+            customSimpleTextPane.replaceEmojiDescriptionWithActualImageIcon(messageModel.getMessage());
 
-            case PictureModel pictureModel -> {
-                CustomSimpleTextPane customSimpleTextPane = new CustomSimpleTextPane();
-                customSimpleTextPane.replaceEmojiDescriptionWithActualImageIcon(pictureModel.getDescription());
+            super.add(customSimpleTextPane, "cell 0 1");
 
-                super.add(customSimpleTextPane, "cell 0 1");
-            }
+        } else if (baseModel instanceof PictureModel pictureModel) {
 
-            case LinkModel linkModel -> {
-                CustomLinkTextPane customLinkTextPane = new CustomLinkTextPane(linkModel);
-                customLinkTextPane.create();
+            CustomSimpleTextPane customSimpleTextPane = new CustomSimpleTextPane();
+            customSimpleTextPane.replaceEmojiDescriptionWithActualImageIcon(pictureModel.getDescription());
 
-                super.add(customLinkTextPane, "cell 0 1");
-            }
+            super.add(customSimpleTextPane, "cell 0 1");
+
+        } else if (baseModel instanceof LinkModel linkModel) {
+
+            CustomLinkTextPane customLinkTextPane = new CustomLinkTextPane(linkModel);
+            customLinkTextPane.create();
+
+            super.add(customLinkTextPane, "cell 0 1");
         }
     }
 

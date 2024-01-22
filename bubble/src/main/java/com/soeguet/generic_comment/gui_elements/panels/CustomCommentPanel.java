@@ -147,13 +147,13 @@ public class CustomCommentPanel extends JPanel {
         final Side commentSide = this.getSide();
 
         switch (this.commentType) {
-            case CommentTypeEnum.LEFT_TEXT, CommentTypeEnum.RIGHT_TEXT ->
+            case LEFT_TEXT, RIGHT_TEXT ->
                     this.processIncomingTextMessage(commentSide, contentContainer);
 
-            case CommentTypeEnum.LEFT_PICTURE, CommentTypeEnum.RIGHT_PICTURE ->
+            case LEFT_PICTURE, RIGHT_PICTURE ->
                     this.processIncomingPictureMessage(commentSide, contentContainer);
 
-            case CommentTypeEnum.LEFT_LINK, CommentTypeEnum.RIGHT_LINK ->
+            case LEFT_LINK, RIGHT_LINK ->
                     this.processIncomingLinkMessage(commentSide, contentContainer);
         }
     }
@@ -233,10 +233,10 @@ public class CustomCommentPanel extends JPanel {
     public void setSide() {
 
         switch (this.getCommentType()) {
-            case CommentTypeEnum.LEFT_TEXT, CommentTypeEnum.LEFT_PICTURE, CommentTypeEnum.LEFT_LINK ->
+            case LEFT_TEXT, LEFT_PICTURE, LEFT_LINK ->
                     this.side = Side.LEFT;
 
-            case CommentTypeEnum.RIGHT_TEXT, CommentTypeEnum.RIGHT_PICTURE, CommentTypeEnum.RIGHT_LINK ->
+            case RIGHT_TEXT, RIGHT_PICTURE, RIGHT_LINK ->
                     this.side = Side.RIGHT;
         }
     }

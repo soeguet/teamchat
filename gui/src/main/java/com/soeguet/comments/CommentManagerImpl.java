@@ -72,39 +72,42 @@ public class CommentManagerImpl implements CommentManager {
     public CommentTypeEnum categorizeMessageFromSocket(final BaseModel baseModel) {
 
         // TEST this
-        switch (baseModel) {
-            case final MessageModel messageModel -> {
-                if (doesClientMatchSender(messageModel.getSender())) {
+        if (baseModel instanceof MessageModel messageModel) {
 
-                    return CommentTypeEnum.RIGHT_TEXT;
+            if (doesClientMatchSender(messageModel.getSender())) {
 
-                } else {
+                return CommentTypeEnum.RIGHT_TEXT;
 
-                    return CommentTypeEnum.LEFT_TEXT;
-                }
+            } else {
+
+                return CommentTypeEnum.LEFT_TEXT;
             }
 
-            case final PictureModel pictureModel -> {
-                if (doesClientMatchSender(pictureModel.getSender())) {
+        } else if (baseModel instanceof PictureModel pictureModel) {
 
-                    return CommentTypeEnum.RIGHT_PICTURE;
+            if (doesClientMatchSender(pictureModel.getSender())) {
 
-                } else {
+                return CommentTypeEnum.RIGHT_PICTURE;
 
-                    return CommentTypeEnum.LEFT_PICTURE;
-                }
+            } else {
+
+                return CommentTypeEnum.LEFT_PICTURE;
             }
 
-            case final LinkModel linkModel -> {
-                if (doesClientMatchSender(linkModel.getSender())) {
+        } else if (baseModel instanceof LinkModel linkModel) {
 
-                    return CommentTypeEnum.RIGHT_LINK;
+            if (doesClientMatchSender(linkModel.getSender())) {
 
-                } else {
+                return CommentTypeEnum.RIGHT_LINK;
 
-                    return CommentTypeEnum.LEFT_LINK;
-                }
+            } else {
+
+                return CommentTypeEnum.LEFT_LINK;
             }
+
+        } else {
+
+            throw new IllegalArgumentException("The baseModel is null!");
         }
     }
 

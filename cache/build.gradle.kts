@@ -1,5 +1,5 @@
 plugins {
-    id("java")
+    id("com.soeguet.java-application-conventions")
 }
 
 group = "com.soeguet"
@@ -11,8 +11,6 @@ repositories {
 
 dependencies {
     implementation(project(":misc"))
-    testImplementation(platform("org.junit:junit-bom:5.9.1"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
 tasks.test {

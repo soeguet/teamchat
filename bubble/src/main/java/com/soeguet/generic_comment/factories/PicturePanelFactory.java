@@ -73,15 +73,23 @@ public class PicturePanelFactory {
 
         final BaseModel baseModel = quotedMessageModel.t();
 
-        return switch (baseModel) {
-            case MessageModel messageModel -> messageModel.getMessage();
+        if (baseModel instanceof MessageModel messageModel) {
 
-            case PictureModel pictureMod -> pictureMod.getDescription();
+            return messageModel.getMessage();
 
-            case LinkModel linkModel -> linkModel.getLink()
+        } else if (baseModel instanceof PictureModel pictureModel) {
+
+            return pictureModel.getDescription();
+
+        } else if (baseModel instanceof LinkModel linkModel) {
+
+            return linkModel.getLink()
                     + System.lineSeparator()
                     + linkModel.getComment();
-        };
+        } else {
+
+            throw new IllegalArgumentException("The baseModel is null!");
+        }
     }
 
     /**
