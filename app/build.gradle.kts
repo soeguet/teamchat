@@ -1,4 +1,5 @@
 plugins {
+    id("com.github.johnrengelman.shadow") version "8.1.1"
     id("com.soeguet.java-application-conventions")
 }
 
@@ -12,13 +13,13 @@ dependencies {
     implementation(project(":gui"))
 }
 
-//tasks.jar {
-//    manifest {
-//        attributes["Main-Class"] = "com.soeguet.Main"
-//    }
-//}
-////
-//application {
-//    // Define the main class for the application.
-//    mainClass.set("com.soeguet.app.App")
-//}
+application {
+    mainClass.set("com.soeguet.Main")
+}
+
+tasks.shadowJar {
+    archiveClassifier.set("")
+    manifest {
+        attributes("Main-Class" to "com.soeguet.Main")
+    }
+}

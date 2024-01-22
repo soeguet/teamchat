@@ -193,10 +193,12 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
             case "__startup__end__" -> ClientRegister.getWebSocketClientInstance().setStartup(false);
 
             case "welcome to the server" -> {
+
                 PopupInterface popup = new PopupPanelImpl();
                 popup.getMessageTextField().setText("Welcome to the server!");
                 popup.configurePopupPanelPlacement();
                 popup.initiatePopupTimer(2_000);
+
             }
 
             default -> {

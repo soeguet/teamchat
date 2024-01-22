@@ -12,8 +12,8 @@ facilitate communication within a local network via WebSocket.
 
 ## Requirements
 
-- Java 21
-- Gradle 8.4
+- Java 17
+- Gradle 8.5
 - [Websocket Backend](https://github.com/soeguet/teamsocket)
 
 ## Foundation
