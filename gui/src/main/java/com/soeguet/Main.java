@@ -10,6 +10,7 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Random;
 
+// this file is only for development purposes and is not part of the actual application
 public class Main {
 
     public static void main(String[] args) {

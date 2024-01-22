@@ -1,1 +1,0 @@
-{"clientsList":[{"localIpAddress":"localhost","clientName":"name3"},{"localIpAddress":"127.0.0.1","clientName":"333"}]}
