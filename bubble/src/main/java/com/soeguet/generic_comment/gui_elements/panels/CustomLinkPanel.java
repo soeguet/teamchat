@@ -9,53 +9,53 @@ import net.miginfocom.swing.MigLayout;
 
 public class CustomLinkPanel extends JPanel {
 
-    // variables -- start
-    private final LinkModel linkModel;
+  // variables -- start
+  private final LinkModel linkModel;
 
-    // variables -- end
+  // variables -- end
 
-    // constructors -- start
-    public CustomLinkPanel(final BaseModel baseModel) {
+  // constructors -- start
+  public CustomLinkPanel(final BaseModel baseModel) {
 
-        this.linkModel = (LinkModel) baseModel;
-        super.setOpaque(false);
+    this.linkModel = (LinkModel) baseModel;
+    super.setOpaque(false);
+  }
+
+  // constructors -- end
+
+  /** Sets the layout manager of the current instance. */
+  public void setLayoutManager() {
+
+    super.setLayout(
+        new MigLayout(
+            "",
+            // columns
+            "[fill,grow]",
+            // rows
+            "[fill,grow][fill,grow]"));
+  }
+
+  public void addLinkToPanel() {
+
+    CustomLinkTextPane customLinkTextPane = new CustomLinkTextPane(linkModel);
+    customLinkTextPane.create();
+    this.add(customLinkTextPane, "cell 0 1, growy");
+  }
+
+  public void addQuoteToLinkPanel() {
+
+    // FIXME: 02.11.23
+    final QuoteModel<? extends BaseModel> quotedMessage = linkModel.getQuotedMessage();
+
+    if (quotedMessage == null) {
+      return;
     }
 
-    // constructors -- end
+    CustomReferencePanel customQuotePanel = new CustomReferencePanel(linkModel);
 
-    /** Sets the layout manager of the current instance. */
-    public void setLayoutManager() {
+    customQuotePanel.setLayoutManager();
+    customQuotePanel.createQuotedTextPane();
 
-        super.setLayout(
-                new MigLayout(
-                        "",
-                        // columns
-                        "[fill,grow]",
-                        // rows
-                        "[fill,grow][fill,grow]"));
-    }
-
-    public void addLinkToPanel() {
-
-        CustomLinkTextPane customLinkTextPane = new CustomLinkTextPane(linkModel);
-        customLinkTextPane.create();
-        this.add(customLinkTextPane, "cell 0 1, growy");
-    }
-
-    public void addQuoteToLinkPanel() {
-
-        // FIXME: 02.11.23
-        final QuoteModel<? extends BaseModel> quotedMessage = linkModel.getQuotedMessage();
-
-        if (quotedMessage == null) {
-            return;
-        }
-
-        CustomReferencePanel customQuotePanel = new CustomReferencePanel(linkModel);
-
-        customQuotePanel.setLayoutManager();
-        customQuotePanel.createQuotedTextPane();
-
-        this.add(customQuotePanel, "cell 0 0, growy");
-    }
+    this.add(customQuotePanel, "cell 0 0, growy");
+  }
 }

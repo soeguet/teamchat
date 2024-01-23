@@ -5,26 +5,26 @@ import com.soeguet.model.jackson.BaseModel;
 
 public class LinkPanelFactory {
 
-    // variables -- start
-    private final BaseModel baseModel;
+  // variables -- start
+  private final BaseModel baseModel;
 
-    // variables -- end
+  // variables -- end
 
-    // constructors -- start
-    public LinkPanelFactory(BaseModel baseModel) {
+  // constructors -- start
+  public LinkPanelFactory(BaseModel baseModel) {
 
-        this.baseModel = baseModel;
-    }
+    this.baseModel = baseModel;
+  }
 
-    // constructors -- end
+  // constructors -- end
 
-    public CustomLinkPanel create() {
+  public CustomLinkPanel create() {
 
-        CustomLinkPanel customLinkPane = new CustomLinkPanel(baseModel);
-        customLinkPane.setLayoutManager();
-        customLinkPane.addQuoteToLinkPanel();
-        customLinkPane.addLinkToPanel();
+    CustomLinkPanel customLinkPane = new CustomLinkPanel(baseModel);
+    customLinkPane.setLayoutManager();
+    customLinkPane.addQuoteToLinkPanel();
+    customLinkPane.addLinkToPanel();
 
-        return customLinkPane;
-    }
+    return customLinkPane;
+  }
 }

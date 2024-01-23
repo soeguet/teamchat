@@ -5,38 +5,40 @@ import com.soeguet.model.jackson.BaseModel;
 
 public class ReplyPanelFactory {
 
-    // variables -- start
-    private final BaseModel baseModel;
-    private CustomReplyPanel customReplyPanel;
+  // variables -- start
+  private final BaseModel baseModel;
+  private CustomReplyPanel customReplyPanel;
 
-    // variables -- end
+  // variables -- end
 
-    // constructors -- start
-    public ReplyPanelFactory(BaseModel baseModel) {
+  // constructors -- start
+  public ReplyPanelFactory(BaseModel baseModel) {
 
-        this.baseModel = baseModel;
-    }
+    this.baseModel = baseModel;
+  }
 
-    // constructors -- end
+  // constructors -- end
 
-    public void create() {
+  public void create() {
 
-        customReplyPanel = new CustomReplyPanel(baseModel);
+    customReplyPanel = new CustomReplyPanel(baseModel);
 
-        customReplyPanel.setCustomReplyPanelLayoutManger();
-        customReplyPanel.populateCustomReplyPanel();
-        customReplyPanel.setMaximumSizeWithingMainFrame();
+    customReplyPanel.setCustomReplyPanelLayoutManger();
+    customReplyPanel.populateCustomReplyPanel();
+    customReplyPanel.setMaximumSizeWithingMainFrame();
 
-        // TOOO 1
-//        ChatMainFrameImpl.getMainFrameInstance().getMainTextPanelLayeredPane().add(customReplyPanel,
-//                                                                                   JLayeredPane.MODAL_LAYER);
+    // TOOO 1
+    //
+    // ChatMainFrameImpl.getMainFrameInstance().getMainTextPanelLayeredPane().add(customReplyPanel,
+    //
+    // JLayeredPane.MODAL_LAYER);
 
-        customReplyPanel.moveReplyPanelToCenter();
-        customReplyPanel.setVisible(true);
-    }
+    customReplyPanel.moveReplyPanelToCenter();
+    customReplyPanel.setVisible(true);
+  }
 
-    public void setFocusOnTextPane() {
+  public void setFocusOnTextPane() {
 
-        customReplyPanel.setFocusOnTextPane();
-    }
+    customReplyPanel.setFocusOnTextPane();
+  }
 }

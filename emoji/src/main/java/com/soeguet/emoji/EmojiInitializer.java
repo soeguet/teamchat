@@ -1,8 +1,6 @@
 package com.soeguet.emoji;
 
 import com.soeguet.emoji.interfaces.EmojiInitializerInterface;
-
-import javax.swing.*;
 import java.io.IOException;
 import java.net.URL;
 import java.security.CodeSource;
@@ -11,87 +9,88 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import javax.swing.*;
 
 public class EmojiInitializer implements EmojiInitializerInterface {
 
-    private final Logger logger = Logger.getLogger(EmojiInitializer.class.getName());
+  private final Logger logger = Logger.getLogger(EmojiInitializer.class.getName());
 
-    public EmojiInitializer() {}
+  public EmojiInitializer() {}
 
-    /**
-     * Creates a list of ImageIcons for emojis.
-     *
-     * @return an ArrayList of ImageIcons representing emojis
-     */
-    @Override
-    public HashMap<String, ImageIcon> createEmojiList() {
+  /**
+   * Creates a list of ImageIcons for emojis.
+   *
+   * @return an ArrayList of ImageIcons representing emojis
+   */
+  @Override
+  public HashMap<String, ImageIcon> createEmojiList() {
 
-        HashMap<String, ImageIcon> imageIcons = new HashMap<>();
-        CodeSource src = EmojiRegister.class.getProtectionDomain().getCodeSource();
+    HashMap<String, ImageIcon> imageIcons = new HashMap<>();
+    CodeSource src = EmojiRegister.class.getProtectionDomain().getCodeSource();
 
-        if (src != null) {
+    if (src != null) {
 
-            try (ZipInputStream zip = new ZipInputStream(src.getLocation().openStream())) {
+      try (ZipInputStream zip = new ZipInputStream(src.getLocation().openStream())) {
 
-                processZipEntries(imageIcons, zip);
+        processZipEntries(imageIcons, zip);
 
-            } catch (IOException e) {
+      } catch (IOException e) {
 
-                logger.log(Level.WARNING, e.getMessage(), e);
-                throw new RuntimeException();
-            }
-        }
-
-        return imageIcons;
+        logger.log(Level.WARNING, e.getMessage(), e);
+        throw new RuntimeException();
+      }
     }
 
-    /**
-     * Processes the entries in a zip file and adds the emoji images to the provided ArrayList.
-     *
-     * @param imageIcons the ArrayList to store the emoji images
-     * @param zip the ZipInputStream representing the zip file to process
-     * @throws IOException if an I/O error occurs while reading the zip file
-     */
-    private void processZipEntries(HashMap<String, ImageIcon> imageIcons, ZipInputStream zip)
-            throws IOException {
+    return imageIcons;
+  }
 
-        ZipEntry ze;
+  /**
+   * Processes the entries in a zip file and adds the emoji images to the provided ArrayList.
+   *
+   * @param imageIcons the ArrayList to store the emoji images
+   * @param zip the ZipInputStream representing the zip file to process
+   * @throws IOException if an I/O error occurs while reading the zip file
+   */
+  private void processZipEntries(HashMap<String, ImageIcon> imageIcons, ZipInputStream zip)
+      throws IOException {
 
-        while ((ze = zip.getNextEntry()) != null) {
+    ZipEntry ze;
 
-            String entryName = ze.getName();
+    while ((ze = zip.getNextEntry()) != null) {
 
-            if (isEmojiEntry(entryName)) {
+      String entryName = ze.getName();
 
-                createAndAddImageIcon(imageIcons, entryName);
-            }
-        }
+      if (isEmojiEntry(entryName)) {
+
+        createAndAddImageIcon(imageIcons, entryName);
+      }
     }
+  }
 
-    /**
-     * Checks if the given entry name is an emoji entry.
-     *
-     * @param entryName the name of the entry to check
-     * @return true if the entry name starts with "emojis/" and is not equal to "emojis/", false
-     *     otherwise
-     */
-    private boolean isEmojiEntry(String entryName) {
+  /**
+   * Checks if the given entry name is an emoji entry.
+   *
+   * @param entryName the name of the entry to check
+   * @return true if the entry name starts with "emojis/" and is not equal to "emojis/", false
+   *     otherwise
+   */
+  private boolean isEmojiEntry(String entryName) {
 
-        return entryName.startsWith("emojis/") && !entryName.equals("emojis/");
-    }
+    return entryName.startsWith("emojis/") && !entryName.equals("emojis/");
+  }
 
-    /**
-     * Creates an ImageIcon from a given entry name and adds it to the given list of ImageIcons.
-     *
-     * @param imageIcons the list of ImageIcons to add the created ImageIcon to
-     * @param entryName the name of the entry to createQuoteTopTextPane the ImageIcon from
-     */
-    private void createAndAddImageIcon(HashMap<String, ImageIcon> imageIcons, String entryName) {
+  /**
+   * Creates an ImageIcon from a given entry name and adds it to the given list of ImageIcons.
+   *
+   * @param imageIcons the list of ImageIcons to add the created ImageIcon to
+   * @param entryName the name of the entry to createQuoteTopTextPane the ImageIcon from
+   */
+  private void createAndAddImageIcon(HashMap<String, ImageIcon> imageIcons, String entryName) {
 
-        URL emojiUrl = getClass().getResource("/" + entryName);
-        assert emojiUrl != null;
-        ImageIcon imageIcon = new ImageIcon(emojiUrl);
-        imageIcon.setDescription(entryName.replace("emojis/", "").replace(".png", ""));
-        imageIcons.put(imageIcon.getDescription(), imageIcon);
-    }
+    URL emojiUrl = getClass().getResource("/" + entryName);
+    assert emojiUrl != null;
+    ImageIcon imageIcon = new ImageIcon(emojiUrl);
+    imageIcon.setDescription(entryName.replace("emojis/", "").replace(".png", ""));
+    imageIcons.put(imageIcon.getDescription(), imageIcon);
+  }
 }

@@ -5,17 +5,17 @@ import javax.swing.*;
 
 public class CustomSimpleJPanel extends JPanel {
 
-    // constructors -- start
-    public CustomSimpleJPanel() {
+  // constructors -- start
+  public CustomSimpleJPanel() {
 
-        this(null);
-    }
+    this(null);
+  }
 
-    public CustomSimpleJPanel(final LayoutManager layout) {
+  public CustomSimpleJPanel(final LayoutManager layout) {
 
-        super(layout);
-        super.setOpaque(false);
-        super.setBackground(null);
-    }
-    // constructors -- end
+    super(layout);
+    super.setOpaque(false);
+    super.setBackground(null);
+  }
+  // constructors -- end
 }

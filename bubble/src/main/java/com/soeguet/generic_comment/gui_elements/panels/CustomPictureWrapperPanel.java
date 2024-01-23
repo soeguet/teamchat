@@ -5,24 +5,24 @@ import net.miginfocom.swing.MigLayout;
 
 public class CustomPictureWrapperPanel extends JPanel {
 
-    public CustomPictureWrapperPanel() {}
+  public CustomPictureWrapperPanel() {}
 
-    public void setPictureWrapperPanelLayoutManager() {
+  public void setPictureWrapperPanelLayoutManager() {
 
-        /*
-        SCHEMA: Picture Panel consists of:
+    /*
+    SCHEMA: Picture Panel consists of:
 
-        [QUOTE]
-        [PICTURE]
-        [DESCRIPTION/TEXT]
-         */
+    [QUOTE]
+    [PICTURE]
+    [DESCRIPTION/TEXT]
+     */
 
-        super.setLayout(
-                new MigLayout(
-                        "",
-                        // columns
-                        "[fill,grow]",
-                        // rows
-                        "[fill,grow][fill,grow][fill,grow]"));
-    }
+    super.setLayout(
+        new MigLayout(
+            "",
+            // columns
+            "[fill,grow]",
+            // rows
+            "[fill,grow][fill,grow][fill,grow]"));
+  }
 }

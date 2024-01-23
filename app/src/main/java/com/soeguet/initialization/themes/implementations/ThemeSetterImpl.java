@@ -12,31 +12,31 @@ import com.soeguet.initialization.themes.interfaces.ThemeSetter;
  */
 public class ThemeSetterImpl implements ThemeSetter {
 
-    /** Sets the light theme for the application using FlatLightLaf. */
-    @Override
-    public void setLight() {
+  /** Sets the light theme for the application using FlatLightLaf. */
+  @Override
+  public void setLight() {
 
-        FlatLightLaf.setup();
-    }
+    FlatLightLaf.setup();
+  }
 
-    /** Sets the dark theme for the application using FlatDarkLaf. */
-    @Override
-    public void setDark() {
+  /** Sets the dark theme for the application using FlatDarkLaf. */
+  @Override
+  public void setDark() {
 
-        FlatDarkLaf.setup();
-    }
+    FlatDarkLaf.setup();
+  }
 
-    /** Sets the Darcula theme for the application using FlatDarculaLaf. */
-    @Override
-    public void setDarcula() {
+  /** Sets the Darcula theme for the application using FlatDarculaLaf. */
+  @Override
+  public void setDarcula() {
 
-        FlatDarculaLaf.setup();
-    }
+    FlatDarculaLaf.setup();
+  }
 
-    /** Sets the IntelliJ theme for the application using FlatIntelliJLaf. */
-    @Override
-    public void setIntelliJ() {
+  /** Sets the IntelliJ theme for the application using FlatIntelliJLaf. */
+  @Override
+  public void setIntelliJ() {
 
-        FlatIntelliJLaf.setup();
-    }
+    FlatIntelliJLaf.setup();
+  }
 }

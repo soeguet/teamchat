@@ -5,26 +5,26 @@ import com.soeguet.model.jackson.BaseModel;
 
 public class ReferencePanelFactory {
 
-    // variables -- start
-    private final BaseModel baseModel;
+  // variables -- start
+  private final BaseModel baseModel;
 
-    // variables -- end
+  // variables -- end
 
-    // constructors -- start
-    public ReferencePanelFactory(final BaseModel baseModel) {
+  // constructors -- start
+  public ReferencePanelFactory(final BaseModel baseModel) {
 
-        this.baseModel = baseModel;
-    }
+    this.baseModel = baseModel;
+  }
 
-    // constructors -- end
+  // constructors -- end
 
-    public CustomReferencePanel createReferencePanel() {
+  public CustomReferencePanel createReferencePanel() {
 
-        CustomReferencePanel customReferencePanel = new CustomReferencePanel( baseModel);
-        customReferencePanel.setLayoutManager();
-        customReferencePanel.setupNameAndTimeTopPanel();
-        customReferencePanel.populateReferencePanel();
+    CustomReferencePanel customReferencePanel = new CustomReferencePanel(baseModel);
+    customReferencePanel.setLayoutManager();
+    customReferencePanel.setupNameAndTimeTopPanel();
+    customReferencePanel.populateReferencePanel();
 
-        return customReferencePanel;
-    }
+    return customReferencePanel;
+  }
 }

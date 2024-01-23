@@ -2,19 +2,19 @@ package com.soeguet.generic_comment.reaction_panel.interfaces;
 
 public interface ReactionPanelInterface {
 
-    void setVisible(boolean b);
+  void setVisible(boolean b);
 
-    void initializeReactionHandler();
+  void initializeReactionHandler();
 
-    void startAnimation();
+  void startAnimation();
 
-    void stopAnimation();
+  void stopAnimation();
 
-    float getOpacity();
+  float getOpacity();
 
-    void addOpacity(float v);
+  void addOpacity(float v);
 
-    void setReactionPanelUp();
+  void setReactionPanelUp();
 
-    void setBounds(int x, int y, int width, int height);
+  void setBounds(int x, int y, int width, int height);
 }

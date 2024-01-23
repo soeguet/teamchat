@@ -4,5 +4,5 @@ import javax.swing.*;
 
 public interface ReactionHandlerInterface {
 
-    Timer increaseOpacity();
+  Timer increaseOpacity();
 }

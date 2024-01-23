@@ -8,26 +8,26 @@ import com.soeguet.enums.CommentTypeEnum;
  */
 public class SideHandler {
 
-    /** Creates a new instance of the SideHandler class. */
-    public SideHandler() {}
+  /** Creates a new instance of the SideHandler class. */
+  public SideHandler() {}
 
-    /**
-     * Determines the side of a comment based on the given comment type.
-     *
-     * @param commentType the type of the comment
-     * @return the side of the comment (LEFT or RIGHT)
-     * @throws IllegalArgumentException if the comment type is unknown
-     */
-    public Side determineSide(final CommentTypeEnum commentType) {
+  /**
+   * Determines the side of a comment based on the given comment type.
+   *
+   * @param commentType the type of the comment
+   * @return the side of the comment (LEFT or RIGHT)
+   * @throws IllegalArgumentException if the comment type is unknown
+   */
+  public Side determineSide(final CommentTypeEnum commentType) {
 
-        switch (commentType) {
-            case LEFT_TEXT, LEFT_LINK, LEFT_PICTURE -> {
-                return Side.LEFT;
-            }
-            case RIGHT_TEXT, RIGHT_LINK, RIGHT_PICTURE -> {
-                return Side.RIGHT;
-            }
-            default -> throw new IllegalArgumentException("Unknown comment type: " + commentType);
-        }
+    switch (commentType) {
+      case LEFT_TEXT, LEFT_LINK, LEFT_PICTURE -> {
+        return Side.LEFT;
+      }
+      case RIGHT_TEXT, RIGHT_LINK, RIGHT_PICTURE -> {
+        return Side.RIGHT;
+      }
+      default -> throw new IllegalArgumentException("Unknown comment type: " + commentType);
     }
+  }
 }

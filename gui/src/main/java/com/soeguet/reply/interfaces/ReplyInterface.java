@@ -2,11 +2,11 @@ package com.soeguet.reply.interfaces;
 
 public interface ReplyInterface {
 
-    void populatePanel();
+  void populatePanel();
 
-    void setPosition();
+  void setPosition();
 
-    void requestAllFocus();
+  void requestAllFocus();
 
-    void addPanelToMainFrame();
+  void addPanelToMainFrame();
 }

@@ -2,11 +2,11 @@ package com.soeguet.image_panel.interfaces;
 
 public interface ImageInterface {
 
-    void setPosition();
+  void setPosition();
 
-    void setLayeredPaneLayerPositions();
+  void setLayeredPaneLayerPositions();
 
-    void setupPictureScrollPaneScrollSpeed();
+  void setupPictureScrollPaneScrollSpeed();
 
-    void populateImagePanelFromClipboard();
+  void populateImagePanelFromClipboard();
 }

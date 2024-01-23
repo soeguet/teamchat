@@ -5,40 +5,40 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 public class WaitingNotificationQueue implements CustomCache<String> {
 
-    private final LinkedBlockingDeque<String> notificationWaitingQueue;
+  private final LinkedBlockingDeque<String> notificationWaitingQueue;
 
-    public WaitingNotificationQueue() {
+  public WaitingNotificationQueue() {
 
-        notificationWaitingQueue = new LinkedBlockingDeque<>();
-    }
+    notificationWaitingQueue = new LinkedBlockingDeque<>();
+  }
 
-    @Override
-    public void invalidateCache() {
+  @Override
+  public void invalidateCache() {
 
-        notificationWaitingQueue.clear();
-    }
+    notificationWaitingQueue.clear();
+  }
 
-    @Override
-    public void addLast(final String message) {
+  @Override
+  public void addLast(final String message) {
 
-        notificationWaitingQueue.addLast(message);
-    }
+    notificationWaitingQueue.addLast(message);
+  }
 
-    @Override
-    public String pollFirst() {
+  @Override
+  public String pollFirst() {
 
-        return notificationWaitingQueue.pollFirst();
-    }
+    return notificationWaitingQueue.pollFirst();
+  }
 
-    @Override
-    public void removeAll() {
+  @Override
+  public void removeAll() {
 
-        notificationWaitingQueue.clear();
-    }
+    notificationWaitingQueue.clear();
+  }
 
-    @Override
-    public boolean isEmpty() {
+  @Override
+  public boolean isEmpty() {
 
-        return notificationWaitingQueue.isEmpty();
-    }
+    return notificationWaitingQueue.isEmpty();
+  }
 }

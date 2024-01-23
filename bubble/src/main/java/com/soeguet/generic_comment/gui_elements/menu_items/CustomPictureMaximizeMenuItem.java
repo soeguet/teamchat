@@ -14,82 +14,81 @@ import javax.swing.JOptionPane;
 
 public class CustomPictureMaximizeMenuItem extends JMenuItem implements MouseListener {
 
-    // variables -- start
-    private final PictureModel pictureModel;
+  // variables -- start
+  private final PictureModel pictureModel;
 
-    // variables -- end
+  // variables -- end
 
-    // constructors -- start
-    public CustomPictureMaximizeMenuItem(String title, PictureModel pictureModel) {
+  // constructors -- start
+  public CustomPictureMaximizeMenuItem(String title, PictureModel pictureModel) {
 
-        super(title);
+    super(title);
 
-        this.pictureModel = pictureModel;
+    this.pictureModel = pictureModel;
 
-        addMouseListener(this);
+    addMouseListener(this);
+  }
+
+  // constructors -- end
+
+  /**
+   * Opens the image stored in the picture model in an external image viewer.
+   *
+   * <p>This method reads the picture data from the picture model and saves it as a temporary PNG
+   * file. The temporary file is then opened using the default external image viewer associated with
+   * the system.
+   *
+   * <p>If an error occurs while opening the image in the external viewer, an error message dialog
+   * is displayed.
+   *
+   * @throws IOException if an I/O error occurs while reading the picture data or creating the
+   *     temporary file
+   */
+  private void openImageInExternalImageViewer() {
+
+    try {
+
+      BufferedImage bufferedImage =
+          ImageIO.read(new ByteArrayInputStream(pictureModel.getPicture()));
+
+      File tempFile = File.createTempFile("tempImage", ".png");
+      tempFile.deleteOnExit();
+
+      ImageIO.write(bufferedImage, "png", tempFile);
+
+      Desktop.getDesktop().open(tempFile);
+
+    } catch (IOException ex) {
+
+      JOptionPane.showMessageDialog(
+          null, "Error while opening image in external viewer: %s".formatted(ex.getMessage()));
     }
+  }
 
-    // constructors -- end
+  @Override
+  public void mouseClicked(final MouseEvent e) {}
 
-    /**
-     * Opens the image stored in the picture model in an external image viewer.
-     *
-     * <p>This method reads the picture data from the picture model and saves it as a temporary PNG
-     * file. The temporary file is then opened using the default external image viewer associated
-     * with the system.
-     *
-     * <p>If an error occurs while opening the image in the external viewer, an error message dialog
-     * is displayed.
-     *
-     * @throws IOException if an I/O error occurs while reading the picture data or creating the
-     *     temporary file
-     */
-    private void openImageInExternalImageViewer() {
+  /**
+   * Invoked when a mouse button is pressed on a component.
+   *
+   * <p>This method starts a new virtual thread that calls the {@link
+   * #openImageInExternalImageViewer()} method. The method runs asynchronously, allowing the main
+   * thread to continue processing other events.
+   *
+   * @param e the MouseEvent that triggered this event
+   */
+  @Override
+  public void mousePressed(final MouseEvent e) {
 
-        try {
+    new Thread(this::openImageInExternalImageViewer).start();
+  }
 
-            BufferedImage bufferedImage =
-                    ImageIO.read(new ByteArrayInputStream(pictureModel.getPicture()));
+  @Override
+  public void mouseReleased(final MouseEvent e) {}
 
-            File tempFile = File.createTempFile("tempImage", ".png");
-            tempFile.deleteOnExit();
+  @Override
+  public void mouseEntered(final MouseEvent e) {}
 
-            ImageIO.write(bufferedImage, "png", tempFile);
-
-            Desktop.getDesktop().open(tempFile);
-
-        } catch (IOException ex) {
-
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Error while opening image in external viewer: %s".formatted(ex.getMessage()));
-        }
-    }
-
-    @Override
-    public void mouseClicked(final MouseEvent e) {}
-
-    /**
-     * Invoked when a mouse button is pressed on a component.
-     *
-     * <p>This method starts a new virtual thread that calls the {@link
-     * #openImageInExternalImageViewer()} method. The method runs asynchronously, allowing the main
-     * thread to continue processing other events.
-     *
-     * @param e the MouseEvent that triggered this event
-     */
-    @Override
-    public void mousePressed(final MouseEvent e) {
-
-        new Thread(this::openImageInExternalImageViewer).start();
-    }
-
-    @Override
-    public void mouseReleased(final MouseEvent e) {}
-
-    @Override
-    public void mouseEntered(final MouseEvent e) {}
-
-    @Override
-    public void mouseExited(final MouseEvent e) {}
+  @Override
+  public void mouseExited(final MouseEvent e) {}
 }

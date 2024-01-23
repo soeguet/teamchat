@@ -10,135 +10,135 @@ import net.miginfocom.swing.MigLayout;
 
 public class CommentSidePanel extends JPanel {
 
-    // variables -- start
-    private final Side side;
-    private JLabel nameLabel;
-    private JLabel timeLabel;
-    private CustomInteractionButton interactionButton;
+  // variables -- start
+  private final Side side;
+  private JLabel nameLabel;
+  private JLabel timeLabel;
+  private CustomInteractionButton interactionButton;
 
-    // variables -- end
+  // variables -- end
 
-    // constructors -- start
-    public CommentSidePanel(final CommentTypeEnum commentType) {
+  // constructors -- start
+  public CommentSidePanel(final CommentTypeEnum commentType) {
 
-        side = new SideHandler().determineSide(commentType);
-        nameLabel = new JLabel();
-        timeLabel = new JLabel();
+    side = new SideHandler().determineSide(commentType);
+    nameLabel = new JLabel();
+    timeLabel = new JLabel();
 
-        this.componentConfig();
+    this.componentConfig();
+  }
+
+  // constructors -- end
+
+  public void setSidePanelLayoutManager() {
+
+    /*
+
+    SCHEMA: SIDE PANEL
+
+    left
+    [[name][name]]
+    [button][time]
+
+    right
+    [[name][name]]
+    [time][button]
+
+    ___
+    [ ">>"SIDEPANEL"<<" [MAIN CONTENT PANEL] ]
+
+     */
+
+    if (side == Side.LEFT) {
+      super.setLayout(
+          new MigLayout(
+              "insets 0",
+              // columns
+              "[][]10",
+              // rows - push is needed -> text will float
+              "push[shrink][shrink]"));
+    } else {
+      super.setLayout(
+          new MigLayout(
+              "insets 0",
+              // columns
+              "10[][]",
+              // rows - push is needed -> text will float
+              "push[shrink][shrink]"));
     }
+  }
 
-    // constructors -- end
+  private void componentConfig() {
 
-    public void setSidePanelLayoutManager() {
+    // timestamp
+    final JLabel timeStampLabel = this.getTimeLabel();
+    final Font timeStampLabelFont = timeStampLabel.getFont();
+    timeStampLabel.setEnabled(false);
+    timeStampLabel.setFont(
+        new Font(timeStampLabelFont.getName(), Font.ITALIC, timeStampLabelFont.getSize()));
 
-        /*
+    // name
+    final JLabel nameLabel = this.getNameLabel();
+    final Font nameLabelFont = nameLabel.getFont();
+    nameLabel.setEnabled(false);
+    nameLabel.setFont(new Font(nameLabelFont.getName(), Font.BOLD, nameLabelFont.getSize()));
+  }
 
-        SCHEMA: SIDE PANEL
+  public void addComponents() {
 
-        left
-        [[name][name]]
-        [button][time]
-
-        right
-        [[name][name]]
-        [time][button]
-
-        ___
-        [ ">>"SIDEPANEL"<<" [MAIN CONTENT PANEL] ]
-
-         */
-
-        if (side == Side.LEFT) {
-            super.setLayout(
-                    new MigLayout(
-                            "insets 0",
-                            // columns
-                            "[][]10",
-                            // rows - push is needed -> text will float
-                            "push[shrink][shrink]"));
-        } else {
-            super.setLayout(
-                    new MigLayout(
-                            "insets 0",
-                            // columns
-                            "10[][]",
-                            // rows - push is needed -> text will float
-                            "push[shrink][shrink]"));
-        }
+    switch (this.getSide()) {
+      case LEFT -> {
+        add(this.getNameLabel(), "cell 0 0 2 1");
+        add(this.getTimeLabel(), "cell 1 1 1 1");
+        add(this.getInteractionButton(), "cell 0 1 1 1");
+      }
+      case RIGHT -> {
+        this.getNameLabel().setHorizontalAlignment(SwingConstants.TRAILING);
+        this.getNameLabel().setHorizontalTextPosition(SwingConstants.TRAILING);
+        this.getTimeLabel().setHorizontalAlignment(SwingConstants.TRAILING);
+        this.getTimeLabel().setHorizontalTextPosition(SwingConstants.TRAILING);
+        add(this.getNameLabel(), "cell 0 0 2 1");
+        add(this.getTimeLabel(), "cell 0 1 1 1");
+        add(this.getInteractionButton(), "cell 1 1 1 1");
+      }
     }
+  }
 
-    private void componentConfig() {
+  // getter & setter -- start
 
-        // timestamp
-        final JLabel timeStampLabel = this.getTimeLabel();
-        final Font timeStampLabelFont = timeStampLabel.getFont();
-        timeStampLabel.setEnabled(false);
-        timeStampLabel.setFont(
-                new Font(timeStampLabelFont.getName(), Font.ITALIC, timeStampLabelFont.getSize()));
+  public CustomInteractionButton getInteractionButton() {
 
-        // name
-        final JLabel nameLabel = this.getNameLabel();
-        final Font nameLabelFont = nameLabel.getFont();
-        nameLabel.setEnabled(false);
-        nameLabel.setFont(new Font(nameLabelFont.getName(), Font.BOLD, nameLabelFont.getSize()));
-    }
+    return interactionButton;
+  }
 
-    public void addComponents() {
+  public void setInteractionButton(final CustomInteractionButton interactionButton) {
 
-        switch (this.getSide()) {
-            case LEFT -> {
-                add(this.getNameLabel(), "cell 0 0 2 1");
-                add(this.getTimeLabel(), "cell 1 1 1 1");
-                add(this.getInteractionButton(), "cell 0 1 1 1");
-            }
-            case RIGHT -> {
-                this.getNameLabel().setHorizontalAlignment(SwingConstants.TRAILING);
-                this.getNameLabel().setHorizontalTextPosition(SwingConstants.TRAILING);
-                this.getTimeLabel().setHorizontalAlignment(SwingConstants.TRAILING);
-                this.getTimeLabel().setHorizontalTextPosition(SwingConstants.TRAILING);
-                add(this.getNameLabel(), "cell 0 0 2 1");
-                add(this.getTimeLabel(), "cell 0 1 1 1");
-                add(this.getInteractionButton(), "cell 1 1 1 1");
-            }
-        }
-    }
+    this.interactionButton = interactionButton;
+  }
 
-    // getter & setter -- start
+  public JLabel getNameLabel() {
 
-    public CustomInteractionButton getInteractionButton() {
+    return nameLabel;
+  }
 
-        return interactionButton;
-    }
+  public void setNameLabel(final JLabel nameLabel) {
 
-    public void setInteractionButton(final CustomInteractionButton interactionButton) {
+    this.nameLabel = nameLabel;
+  }
 
-        this.interactionButton = interactionButton;
-    }
+  public Side getSide() {
 
-    public JLabel getNameLabel() {
+    return side;
+  }
 
-        return nameLabel;
-    }
+  public JLabel getTimeLabel() {
 
-    public void setNameLabel(final JLabel nameLabel) {
+    return timeLabel;
+  }
 
-        this.nameLabel = nameLabel;
-    }
+  public void setTimeLabel(final JLabel timeLabel) {
 
-    public Side getSide() {
-
-        return side;
-    }
-
-    public JLabel getTimeLabel() {
-
-        return timeLabel;
-    }
-
-    public void setTimeLabel(final JLabel timeLabel) {
-
-        this.timeLabel = timeLabel;
-    }
-    // getter & setter -- end
+    this.timeLabel = timeLabel;
+  }
+  // getter & setter -- end
 }

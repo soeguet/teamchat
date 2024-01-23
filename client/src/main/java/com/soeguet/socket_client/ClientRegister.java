@@ -2,98 +2,97 @@ package com.soeguet.socket_client;
 
 public class ClientRegister {
 
-    private static final ClientRegister CLIENT_INSTANCE = new ClientRegister();
+  private static final ClientRegister CLIENT_INSTANCE = new ClientRegister();
 
-    /** The name of the client which was last posted on the main panel. */
-    private String lastSenderName;
+  /** The name of the client which was last posted on the main panel. */
+  private String lastSenderName;
 
-    /** The last time someone posted on the main panel. */
-    private String lastTimeStamp;
-    private CustomWebsocketClient customWebsocketClient;
+  /** The last time someone posted on the main panel. */
+  private String lastTimeStamp;
 
-    public void send(final String messageString) {
+  private CustomWebsocketClient customWebsocketClient;
 
-        this.getCustomWebsocketClient().send(messageString);
+  public void send(final String messageString) {
+
+    this.getCustomWebsocketClient().send(messageString);
+  }
+
+  public void send(final byte[] messageBytes) {
+
+    this.getCustomWebsocketClient().send(messageBytes);
+  }
+
+  public String getLastSenderName() {
+
+    return lastSenderName;
+  }
+
+  public void setLastSenderName(final String lastSenderName) {
+
+    this.lastSenderName = lastSenderName;
+  }
+
+  public String getLastTimeStamp() {
+
+    return lastTimeStamp;
+  }
+
+  public void setLastTimeStamp(final String lastTimeStamp) {
+
+    this.lastTimeStamp = lastTimeStamp;
+  }
+
+  public CustomWebsocketClient getCustomWebsocketClient() {
+
+    if (this.customWebsocketClient == null) {
+
+      throw new IllegalStateException("CustomWebsocketClient is null");
     }
 
-    public void send(final byte[] messageBytes) {
+    return this.customWebsocketClient;
+  }
 
-        this.getCustomWebsocketClient().send(messageBytes);
-    }
+  public void setCustomWebsocketClient(final CustomWebsocketClient customWebsocketClient) {
 
-    public String getLastSenderName() {
+    this.customWebsocketClient = customWebsocketClient;
+  }
 
-        return lastSenderName;
-    }
+  private boolean startup = false;
 
-    public void setLastSenderName(final String lastSenderName) {
+  private ClientRegister() {}
 
-        this.lastSenderName = lastSenderName;
-    }
+  public static ClientRegister getWebSocketClientInstance() {
 
-    public String getLastTimeStamp() {
+    return CLIENT_INSTANCE;
+  }
 
-        return lastTimeStamp;
-    }
+  public String getLastMessageSenderName() {
 
-    public void setLastTimeStamp(final String lastTimeStamp) {
+    return lastSenderName;
+  }
 
-        this.lastTimeStamp = lastTimeStamp;
-    }
+  public void setLastMessageSenderName(final String lastMessageSenderName) {
 
-    public CustomWebsocketClient getCustomWebsocketClient() {
+    lastSenderName = lastMessageSenderName;
+  }
 
-        if (this.customWebsocketClient == null) {
+  public String getLastMessageTimeStamp() {
 
-            throw new IllegalStateException("CustomWebsocketClient is null");
-        }
+    return lastTimeStamp;
+  }
 
-        return this.customWebsocketClient;
-    }
+  public void setLastMessageTimeStamp(final String lastMessageTimeStamp) {
 
-    public void setCustomWebsocketClient(final CustomWebsocketClient customWebsocketClient) {
+    lastTimeStamp = lastMessageTimeStamp;
+  }
 
-        this.customWebsocketClient = customWebsocketClient;
-    }
+  public boolean isStartup() {
 
-    private boolean startup = false;
+    return startup;
+  }
 
-    private ClientRegister() {
+  public void setStartup(final boolean startup) {
 
-    }
-
-    public static ClientRegister getWebSocketClientInstance() {
-
-        return CLIENT_INSTANCE;
-    }
-
-    public String getLastMessageSenderName() {
-
-        return lastSenderName;
-    }
-
-    public void setLastMessageSenderName(final String lastMessageSenderName) {
-
-        lastSenderName = lastMessageSenderName;
-    }
-
-    public String getLastMessageTimeStamp() {
-
-        return lastTimeStamp;
-    }
-
-    public void setLastMessageTimeStamp(final String lastMessageTimeStamp) {
-
-        lastTimeStamp = lastMessageTimeStamp;
-    }
-
-    public boolean isStartup() {
-
-        return startup;
-    }
-
-    public void setStartup(final boolean startup) {
-
-        this.startup = startup;
-    }
+    this.startup = startup;
+  }
 }

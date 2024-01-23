@@ -2,29 +2,27 @@ package com.soeguet.generic_comment.factories;
 
 import com.soeguet.generic_comment.gui_elements.buttons.CustomInteractionButton;
 import com.soeguet.model.jackson.BaseModel;
-
 import javax.swing.*;
 
 public class InteractionButtonFactory extends JButton {
 
-    // variables -- start
-    private final BaseModel baseModel;
+  // variables -- start
+  private final BaseModel baseModel;
 
-    // variables -- end
+  // variables -- end
 
-    // constructors -- start
-    public InteractionButtonFactory( final BaseModel baseModel) {
-        this.baseModel = baseModel;
-    }
+  // constructors -- start
+  public InteractionButtonFactory(final BaseModel baseModel) {
+    this.baseModel = baseModel;
+  }
 
-    // constructors -- end
+  // constructors -- end
 
-    public CustomInteractionButton create() {
+  public CustomInteractionButton create() {
 
-        CustomInteractionButton customInteractionButton =
-                new CustomInteractionButton(baseModel);
-        customInteractionButton.setText("...");
+    CustomInteractionButton customInteractionButton = new CustomInteractionButton(baseModel);
+    customInteractionButton.setText("...");
 
-        return customInteractionButton;
-    }
+    return customInteractionButton;
+  }
 }

@@ -9,25 +9,25 @@ import javax.swing.*;
  */
 public class UserInteractionImpl implements UserInteractionInterface {
 
-    /**
-     * Asks the user to enter their timeAndUsername.
-     *
-     * @return The timeAndUsername entered by the user.
-     */
-    @Override
-    public String askForUsername() {
+  /**
+   * Asks the user to enter their timeAndUsername.
+   *
+   * @return The timeAndUsername entered by the user.
+   */
+  @Override
+  public String askForUsername() {
 
-        return JOptionPane.showInputDialog(null, "Please enter your timeAndUsername", "");
-    }
+    return JOptionPane.showInputDialog(null, "Please enter your timeAndUsername", "");
+  }
 
-    /**
-     * Displays an error message dialog box with the specified message.
-     *
-     * @param message the error message to be displayed
-     */
-    @Override
-    public void showError(final String message) {
+  /**
+   * Displays an error message dialog box with the specified message.
+   *
+   * @param message the error message to be displayed
+   */
+  @Override
+  public void showError(final String message) {
 
-        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
-    }
+    JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+  }
 }

@@ -7,51 +7,51 @@ import net.miginfocom.swing.MigLayout;
 
 public class CustomContentContainer extends JPanel {
 
-    // variables -- start
-    private Consumer<Graphics> customPaint;
+  // variables -- start
+  private Consumer<Graphics> customPaint;
 
-    // variables -- end
+  // variables -- end
 
-    // constructors -- start
-    public CustomContentContainer() {}
+  // constructors -- start
+  public CustomContentContainer() {}
 
-    // constructors -- end
+  // constructors -- end
 
-    public void setContentContainerLayoutManager() {
+  public void setContentContainerLayoutManager() {
 
-        /*
+    /*
 
-        SCHEMA: MAIN CONTENT PANEL -- text, picture, link as well as quoted messages
+    SCHEMA: MAIN CONTENT PANEL -- text, picture, link as well as quoted messages
 
-        [top: quoted message]
-        [main: text, picture, link]
-        [reactions: emojis]
+    [top: quoted message]
+    [main: text, picture, link]
+    [reactions: emojis]
 
-        ___
-        [ [SIDEPANEL] >>"MAIN CONTENT PANEL"<< ]
+    ___
+    [ [SIDEPANEL] >>"MAIN CONTENT PANEL"<< ]
 
-         */
+     */
 
-        super.setLayout(
-                new MigLayout(
-                        "",
-                        // columns
-                        "[grow,fill]",
-                        // rows
-                        "[fill]"));
+    super.setLayout(
+        new MigLayout(
+            "",
+            // columns
+            "[grow,fill]",
+            // rows
+            "[fill]"));
+  }
+
+  public void overrideCustomPaint(final Consumer<Graphics> customPaint) {
+
+    this.customPaint = customPaint;
+    repaint();
+  }
+
+  @Override
+  protected void paintComponent(Graphics graphics) {
+
+    if (customPaint != null) {
+      customPaint.accept(graphics);
     }
-
-    public void overrideCustomPaint(final Consumer<Graphics> customPaint) {
-
-        this.customPaint = customPaint;
-        repaint();
-    }
-
-    @Override
-    protected void paintComponent(Graphics graphics) {
-
-        if (customPaint != null) {
-            customPaint.accept(graphics);
-        }
-    }
+  }
 }

@@ -4,7 +4,7 @@ import com.soeguet.notification_panel.enums.NotificationStatus;
 
 public interface DesktopNotificationHandlerInterface {
 
-    NotificationStatus determineDesktopNotificationStatus();
+  NotificationStatus determineDesktopNotificationStatus();
 
-    void createDesktopNotification(String message, NotificationStatus notificationStatus);
+  void createDesktopNotification(String message, NotificationStatus notificationStatus);
 }

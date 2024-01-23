@@ -5,5 +5,5 @@ import javax.swing.*;
 
 public interface EmojiInitializerInterface {
 
-    HashMap<String, ImageIcon> createEmojiList();
+  HashMap<String, ImageIcon> createEmojiList();
 }

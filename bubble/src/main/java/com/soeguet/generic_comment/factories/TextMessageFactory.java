@@ -4,49 +4,51 @@ import com.soeguet.generic_comment.gui_elements.panels.CustomTextAndQuoteForBubb
 import com.soeguet.model.jackson.MessageModel;
 
 /**
- Produces a CustomTextAndQuoteForBubblePanel which contains the text panel as well as the quote panel.
-
- <p>SCHEMA: <br>
- CustomTextAndQuoteForBubblePanel:<br> __________________<br> | [quoted stuff] | <- this is what we produce<br> | [text
- message] |<br> ------------------
-
- @param MainFrameGuiInterface
- {@link MainFrameGuiInterface}
- @param MessageModel
- {@link MessageModel}
+ * Produces a CustomTextAndQuoteForBubblePanel which contains the text panel as well as the quote
+ * panel.
+ *
+ * <p>SCHEMA: <br>
+ * CustomTextAndQuoteForBubblePanel:<br>
+ * __________________<br>
+ * | [quoted stuff] | <- this is what we produce<br>
+ * | [text message] |<br>
+ * ------------------
+ *
+ * @param MainFrameGuiInterface {@link MainFrameGuiInterface}
+ * @param MessageModel {@link MessageModel}
  */
 public class TextMessageFactory {
 
-    private final MessageModel messageModel;
+  private final MessageModel messageModel;
 
-    /**
-     Produces a CustomTextAndQuoteForBubblePanel which contains the text panel as well as the quote panel.
+  /**
+   * Produces a CustomTextAndQuoteForBubblePanel which contains the text panel as well as the quote
+   * panel.
+   *
+   * @param MainFrameGuiInterface mainFrame {@link MainFrameGuiInterface}
+   * @param MessageModel messageModel {@link MessageModel}
+   */
+  public TextMessageFactory(final MessageModel messageModel) {
 
-     @param MainFrameGuiInterface
-     mainFrame {@link MainFrameGuiInterface}
-     @param MessageModel
-     messageModel {@link MessageModel}
-     */
-    public TextMessageFactory(final MessageModel messageModel) {
+    this.messageModel = messageModel;
+  }
 
-        this.messageModel = messageModel;
-    }
+  /**
+   * Creates a CustomTextAndQuoteForBubblePanel which contains the text panel as well as the quote
+   * panel.
+   *
+   * @return CustomTextAndQuoteForBubblePanel {@link CustomTextAndQuoteForBubblePanel}
+   */
+  public CustomTextAndQuoteForBubblePanel create() {
 
-    /**
-     Creates a CustomTextAndQuoteForBubblePanel which contains the text panel as well as the quote panel.
+    CustomTextAndQuoteForBubblePanel customTextAndQuoteForBubblePanel =
+        new CustomTextAndQuoteForBubblePanel(messageModel);
 
-     @return CustomTextAndQuoteForBubblePanel {@link CustomTextAndQuoteForBubblePanel}
-     */
-    public CustomTextAndQuoteForBubblePanel create() {
+    customTextAndQuoteForBubblePanel.setTextAndQuoteBubbleLayoutManager();
 
-        CustomTextAndQuoteForBubblePanel customTextAndQuoteForBubblePanel =
-                new CustomTextAndQuoteForBubblePanel(messageModel);
+    customTextAndQuoteForBubblePanel.addQuote();
+    customTextAndQuoteForBubblePanel.addTextMessage();
 
-        customTextAndQuoteForBubblePanel.setTextAndQuoteBubbleLayoutManager();
-
-        customTextAndQuoteForBubblePanel.addQuote();
-        customTextAndQuoteForBubblePanel.addTextMessage();
-
-        return customTextAndQuoteForBubblePanel;
-    }
+    return customTextAndQuoteForBubblePanel;
+  }
 }

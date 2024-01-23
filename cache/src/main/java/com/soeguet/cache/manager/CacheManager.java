@@ -8,43 +8,46 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class CacheManager {
 
-    private final ConcurrentHashMap<String, CustomCache> cacheList;
+  // variables -- start
+  private final ConcurrentHashMap<String, CustomCache> cacheList;
+  // variables -- end
 
-    public CacheManager() {
+  // constructors -- start
+  public CacheManager() {
 
-        cacheList = new ConcurrentHashMap<>();
-    }
+    cacheList = new ConcurrentHashMap<>();
+  }
+  // constructors -- end
 
-    @SuppressWarnings("rawtypes")
-    public synchronized CustomCache getCache(String cacheName) {
+  public synchronized CustomCache getCache(String cacheName) {
 
-        final String lowercaseCacheName = cacheName.toLowerCase();
+    final String lowercaseCacheName = cacheName.toLowerCase();
 
-        if (!cacheList.containsKey(lowercaseCacheName)) {
+    if (!cacheList.containsKey(lowercaseCacheName)) {
 
-            switch (lowercaseCacheName) {
-                case "waitingnotificationqueue" -> cacheList.put(
-                        lowercaseCacheName, new WaitingNotificationQueue());
+      switch (lowercaseCacheName) {
+        case "waitingnotificationqueue" -> cacheList.put(
+            lowercaseCacheName, new WaitingNotificationQueue());
 
-                case "activenotificationqueue" -> cacheList.put(
-                        lowercaseCacheName, new ActiveNotificationQueue());
-
-                case "messagequeue" -> cacheList.put(lowercaseCacheName, new MessageQueue());
-
-                case "propertiescache" -> cacheList.put(lowercaseCacheName, new MessageQueue());
-
-                default -> throw new IllegalArgumentException("Cache not found");
-            }
+        case "activenotificationqueue" -> {
+          cacheList.put(lowercaseCacheName, new ActiveNotificationQueue());
         }
 
-        return cacheList.get(lowercaseCacheName);
+        case "messagequeue", "propertiescache" -> cacheList.put(
+            lowercaseCacheName, new MessageQueue());
+
+        default -> throw new IllegalArgumentException("Cache not found");
+      }
     }
 
-    public synchronized void invalidateCache() {
+    return cacheList.get(lowercaseCacheName);
+  }
 
-        cacheList.forEach(
-                (key, value) -> {
-                    value.invalidateCache();
-                });
-    }
+  public synchronized void invalidateCache() {
+
+    cacheList.forEach(
+        (key, value) -> {
+          value.invalidateCache();
+        });
+  }
 }

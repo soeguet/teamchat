@@ -5,32 +5,31 @@ import com.soeguet.util.LinkWrapEditorKit;
 
 public class CustomLinkCommentTextPane extends CustomTextPane {
 
-    // variables -- start
-    private final LinkModel linkModel;
+  // variables -- start
+  private final LinkModel linkModel;
 
-    // variables -- end
+  // variables -- end
 
-    // constructors -- start
-    public CustomLinkCommentTextPane(
-            final boolean lineWrap, final LinkModel linkModel) {
+  // constructors -- start
+  public CustomLinkCommentTextPane(final boolean lineWrap, final LinkModel linkModel) {
 
-        // FIXME: 02.11.23 -> this is a hack
-        super( lineWrap, linkModel.getComment());
-        super.setContentType("text/html");
-        super.setEditorKit(new LinkWrapEditorKit());
-        this.linkModel = linkModel;
-    }
+    // FIXME: 02.11.23 -> this is a hack
+    super(lineWrap, linkModel.getComment());
+    super.setContentType("text/html");
+    super.setEditorKit(new LinkWrapEditorKit());
+    this.linkModel = linkModel;
+  }
 
-    // constructors -- end
+  // constructors -- end
 
-    public boolean setUp() {
+  public boolean setUp() {
 
-        return linkModel.getComment().isEmpty();
-    }
+    return linkModel.getComment().isEmpty();
+  }
 
-    @Override
-    public void create() {
+  @Override
+  public void create() {
 
-        super.setText(linkModel.getComment());
-    }
+    super.setText(linkModel.getComment());
+  }
 }

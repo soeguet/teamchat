@@ -6,12 +6,12 @@ import java.util.HashMap;
 
 public interface InterruptDialogInterface {
 
-    void populateDialogWithAllRegisteredClients(
-            HashMap<String, CustomUserPropertiesDTO> clientPropertiesMap);
+  void populateDialogWithAllRegisteredClients(
+      HashMap<String, CustomUserPropertiesDTO> clientPropertiesMap);
 
-    void pack();
+  void pack();
 
-    void setVisible(boolean b);
+  void setVisible(boolean b);
 
-    void setLocationRelativeTo(Component component);
+  void setLocationRelativeTo(Component component);
 }

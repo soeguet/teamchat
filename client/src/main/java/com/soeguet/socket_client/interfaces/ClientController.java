@@ -4,15 +4,15 @@ import com.soeguet.socket_client.CustomWebsocketClient;
 
 public interface ClientController {
 
-    void determineWebsocketURI();
+  void determineWebsocketURI();
 
-    void connectToWebsocket();
+  void connectToWebsocket();
 
-    void serverInformationOptionPane();
+  void serverInformationOptionPane();
 
-    void closeConnection();
+  void closeConnection();
 
-    void prepareReconnection();
+  void prepareReconnection();
 
-    CustomWebsocketClient getWebsocketClient();
+  CustomWebsocketClient getWebsocketClient();
 }

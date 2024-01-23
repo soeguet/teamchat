@@ -11,95 +11,95 @@ import java.util.List;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "subclass")
 @JsonSubTypes({
-    @JsonSubTypes.Type(value = MessageModel.class, name = "text"),
-    @JsonSubTypes.Type(value = PictureModel.class, name = "image"),
-    @JsonSubTypes.Type(value = LinkModel.class, name = "link")
+  @JsonSubTypes.Type(value = MessageModel.class, name = "text"),
+  @JsonSubTypes.Type(value = PictureModel.class, name = "image"),
+  @JsonSubTypes.Type(value = LinkModel.class, name = "link")
 })
 public abstract sealed class BaseModel permits LinkModel, MessageModel, PictureModel {
 
-    // variables -- start
-    protected Long id;
-    protected String subclass;
-    protected byte messageType;
-    protected List<UserInteraction> userInteractions;
-    protected String sender;
-    protected String time;
-    protected QuoteModel<? extends BaseModel> quotedMessage;
+  // variables -- start
+  protected Long id;
+  protected String subclass;
+  protected byte messageType;
+  protected List<UserInteraction> userInteractions;
+  protected String sender;
+  protected String time;
+  protected QuoteModel<? extends BaseModel> quotedMessage;
 
-    // variables -- end
+  // variables -- end
 
-    public Long getId() {
+  public Long getId() {
 
-        return id;
+    return id;
+  }
+
+  public void setId(final Long id) {
+
+    this.id = id;
+  }
+
+  public String getSubclass() {
+
+    return subclass;
+  }
+
+  public void setSubclass(final String subclass) {
+
+    this.subclass = subclass;
+  }
+
+  public byte getMessageType() {
+
+    return messageType;
+  }
+
+  public void setMessageType(final byte messageType) {
+
+    this.messageType = messageType;
+  }
+
+  public List<UserInteraction> getUserInteractions() {
+
+    if (userInteractions == null) {
+
+      userInteractions = new ArrayList<>();
     }
 
-    public void setId(final Long id) {
+    return userInteractions;
+  }
 
-        this.id = id;
-    }
+  public void setUserInteractions(final List<UserInteraction> userInteractions) {
 
-    public String getSubclass() {
+    this.userInteractions = userInteractions;
+  }
 
-        return subclass;
-    }
+  public String getSender() {
 
-    public void setSubclass(final String subclass) {
+    return sender;
+  }
 
-        this.subclass = subclass;
-    }
+  public void setSender(final String sender) {
 
-    public byte getMessageType() {
+    this.sender = sender;
+  }
 
-        return messageType;
-    }
+  public String getTime() {
 
-    public void setMessageType(final byte messageType) {
+    return time;
+  }
 
-        this.messageType = messageType;
-    }
+  public void setTime(final String time) {
 
-    public List<UserInteraction> getUserInteractions() {
+    this.time = time;
+  }
 
-        if (userInteractions == null) {
+  public QuoteModel<? extends BaseModel> getQuotedMessage() {
 
-            userInteractions = new ArrayList<>();
-        }
+    return quotedMessage;
+  }
 
-        return userInteractions;
-    }
+  public void setQuotedMessage(final QuoteModel<? extends BaseModel> quotedMessage) {
 
-    public void setUserInteractions(final List<UserInteraction> userInteractions) {
-
-        this.userInteractions = userInteractions;
-    }
-
-    public String getSender() {
-
-        return sender;
-    }
-
-    public void setSender(final String sender) {
-
-        this.sender = sender;
-    }
-
-    public String getTime() {
-
-        return time;
-    }
-
-    public void setTime(final String time) {
-
-        this.time = time;
-    }
-
-    public QuoteModel<? extends BaseModel> getQuotedMessage() {
-
-        return quotedMessage;
-    }
-
-    public void setQuotedMessage(final QuoteModel<? extends BaseModel> quotedMessage) {
-
-        this.quotedMessage = quotedMessage;
-    }
+    this.quotedMessage = quotedMessage;
+  }
 }

@@ -2,31 +2,31 @@ package com.soeguet.model.jackson;
 
 public non-sealed class LinkModel extends BaseModel {
 
-    // variables -- start
-    protected String link;
-    protected String comment;
+  // variables -- start
+  protected String link;
+  protected String comment;
 
-    // variables -- end
+  // variables -- end
 
-    // getter & setter -- start
-    public String getComment() {
+  // getter & setter -- start
+  public String getComment() {
 
-        return comment;
-    }
+    return comment;
+  }
 
-    public void setComment(final String comment) {
+  public void setComment(final String comment) {
 
-        this.comment = comment;
-    }
+    this.comment = comment;
+  }
 
-    public String getLink() {
+  public String getLink() {
 
-        return link;
-    }
+    return link;
+  }
 
-    public void setLink(final String link) {
+  public void setLink(final String link) {
 
-        this.link = link;
-    }
-    // getter & setter -- end
+    this.link = link;
+  }
+  // getter & setter -- end
 }

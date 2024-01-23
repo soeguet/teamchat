@@ -6,15 +6,15 @@ package com.soeguet.initialization.themes.interfaces;
  */
 public interface ThemeSetter {
 
-    /** Sets the dark to the "Light" theme. */
-    void setLight();
+  /** Sets the dark to the "Light" theme. */
+  void setLight();
 
-    /** Sets the dark to the "Dark" theme. */
-    void setDark();
+  /** Sets the dark to the "Dark" theme. */
+  void setDark();
 
-    /** Sets the dark to the "Darcula" theme. */
-    void setDarcula();
+  /** Sets the dark to the "Darcula" theme. */
+  void setDarcula();
 
-    /** Sets the theme to the default "IntelliJ" theme. */
-    void setIntelliJ();
+  /** Sets the theme to the default "IntelliJ" theme. */
+  void setIntelliJ();
 }

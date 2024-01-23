@@ -4,17 +4,17 @@ import com.soeguet.model.jackson.MessageModel;
 
 public interface GuiFunctionalityInterface {
 
-    void overrideTransferHandlerOfTextPane();
+  void overrideTransferHandlerOfTextPane();
 
-    void internalNotificationHandling(String message);
+  void internalNotificationHandling(String message);
 
-    String getTextFromInput();
+  String getTextFromInput();
 
-    String convertUserTextToJSON(MessageModel messageModel);
+  String convertUserTextToJSON(MessageModel messageModel);
 
-    void sendMessageToSocket(String serializedTextFromInput);
+  void sendMessageToSocket(String serializedTextFromInput);
 
-    void notifyClientsSendStatus();
+  void notifyClientsSendStatus();
 
-    void clearTextPane();
+  void clearTextPane();
 }

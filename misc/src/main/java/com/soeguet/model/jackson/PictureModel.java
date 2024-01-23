@@ -2,36 +2,36 @@ package com.soeguet.model.jackson;
 
 public non-sealed class PictureModel extends BaseModel {
 
-    // variables -- start
-    protected byte[] picture;
-    protected String description;
+  // variables -- start
+  protected byte[] picture;
+  protected String description;
 
-    // variables -- end
+  // variables -- end
 
-    // constructors -- start
-    public PictureModel() {}
+  // constructors -- start
+  public PictureModel() {}
 
-    // constructors -- end
+  // constructors -- end
 
-    // getter & setter -- start
-    public String getDescription() {
+  // getter & setter -- start
+  public String getDescription() {
 
-        return description;
-    }
+    return description;
+  }
 
-    public void setDescription(final String description) {
+  public void setDescription(final String description) {
 
-        this.description = description;
-    }
+    this.description = description;
+  }
 
-    public byte[] getPicture() {
+  public byte[] getPicture() {
 
-        return picture;
-    }
+    return picture;
+  }
 
-    public void setPicture(byte[] picture) {
+  public void setPicture(byte[] picture) {
 
-        this.picture = picture;
-    }
-    // getter & setter -- end
+    this.picture = picture;
+  }
+  // getter & setter -- end
 }

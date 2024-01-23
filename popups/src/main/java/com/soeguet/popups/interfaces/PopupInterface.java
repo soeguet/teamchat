@@ -4,9 +4,9 @@ import javax.swing.*;
 
 public interface PopupInterface {
 
-    void configurePopupPanelPlacement();
+  void configurePopupPanelPlacement();
 
-    void initiatePopupTimer(int delayMilliseconds);
+  void initiatePopupTimer(int delayMilliseconds);
 
-    JTextField getMessageTextField();
+  JTextField getMessageTextField();
 }

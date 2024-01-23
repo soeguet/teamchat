@@ -11,49 +11,48 @@ import javax.swing.*;
  */
 public class CustomCloseButton extends JButton implements MouseListener {
 
-    private final JComponent component;
+  private final JComponent component;
 
-    /**
-     * Creates a custom close button.
-     *
-     * @param mainFrame The reference to the MainFrameGuiInterface.
-     * @param component The reference to the JComponent.
-     * @param text The text to set for the button.
-     */
-    public CustomCloseButton(
-            JComponent component, String text) {
+  /**
+   * Creates a custom close button.
+   *
+   * @param mainFrame The reference to the MainFrameGuiInterface.
+   * @param component The reference to the JComponent.
+   * @param text The text to set for the button.
+   */
+  public CustomCloseButton(JComponent component, String text) {
 
-        this.component = component;
-        this.addMouseListener(this);
-        super.setText(text);
-    }
+    this.component = component;
+    this.addMouseListener(this);
+    super.setText(text);
+  }
 
-    /**
-     * Invoked when the mouse button has been clicked (pressed and released) on this component.
-     *
-     * @param e The MouseEvent representing the mouse click event.
-     */
-    @Override
-    public void mouseClicked(final MouseEvent e) {
+  /**
+   * Invoked when the mouse button has been clicked (pressed and released) on this component.
+   *
+   * @param e The MouseEvent representing the mouse click event.
+   */
+  @Override
+  public void mouseClicked(final MouseEvent e) {
 
-        component.removeAll();
-        component.setVisible(false);
+    component.removeAll();
+    component.setVisible(false);
 
-        // re-request focus
-        // TODO 1
-//        mainFrame.getTextEditorPane().setFocusable(true);
-//        mainFrame.getTextEditorPane().requestFocus();
-    }
+    // re-request focus
+    // TODO 1
+    //        mainFrame.getTextEditorPane().setFocusable(true);
+    //        mainFrame.getTextEditorPane().requestFocus();
+  }
 
-    @Override
-    public void mousePressed(final MouseEvent e) {}
+  @Override
+  public void mousePressed(final MouseEvent e) {}
 
-    @Override
-    public void mouseReleased(final MouseEvent e) {}
+  @Override
+  public void mouseReleased(final MouseEvent e) {}
 
-    @Override
-    public void mouseEntered(final MouseEvent e) {}
+  @Override
+  public void mouseEntered(final MouseEvent e) {}
 
-    @Override
-    public void mouseExited(final MouseEvent e) {}
+  @Override
+  public void mouseExited(final MouseEvent e) {}
 }

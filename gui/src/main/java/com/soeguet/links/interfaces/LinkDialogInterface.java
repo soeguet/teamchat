@@ -6,17 +6,17 @@ import javax.swing.*;
 
 public interface LinkDialogInterface {
 
-    MetadataStorageRecord checkForMetaData(final String link);
+  MetadataStorageRecord checkForMetaData(final String link);
 
-    JPanel createMetadataPanel(MetadataStorageRecord metadataStorageRecord);
+  JPanel createMetadataPanel(MetadataStorageRecord metadataStorageRecord);
 
-    void add(Component comp, Object constraints);
+  void add(Component comp, Object constraints);
 
-    void generate();
+  void generate();
 
-    JPanel getContentPanel();
+  JPanel getContentPanel();
 
-    JTextPane getLinkTextPane();
+  JTextPane getLinkTextPane();
 
-    JTextPane getCommentTextPane();
+  JTextPane getCommentTextPane();
 }

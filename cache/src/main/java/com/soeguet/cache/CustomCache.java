@@ -2,13 +2,13 @@ package com.soeguet.cache;
 
 public interface CustomCache<T> {
 
-    void invalidateCache();
+  void invalidateCache();
 
-    void addLast(T data);
+  void addLast(T data);
 
-    String pollFirst();
+  String pollFirst();
 
-    void removeAll();
+  void removeAll();
 
-    boolean isEmpty();
+  boolean isEmpty();
 }

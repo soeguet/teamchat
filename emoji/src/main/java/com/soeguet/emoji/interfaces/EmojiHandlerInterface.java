@@ -4,5 +4,5 @@ import javax.swing.*;
 
 public interface EmojiHandlerInterface {
 
-    void replaceEmojiDescriptionWithActualImageIcon(JTextPane actualTextPane, String text);
+  void replaceEmojiDescriptionWithActualImageIcon(JTextPane actualTextPane, String text);
 }

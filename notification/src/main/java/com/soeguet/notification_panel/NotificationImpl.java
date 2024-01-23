@@ -11,205 +11,213 @@ import com.soeguet.gui.notification_panel.interfaces.NotificationInterface;
 import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
-
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
+import javax.swing.*;
 
 public class NotificationImpl extends Notification implements NotificationInterface {
 
-    private final int MARGIN_TOP = 10;
-    private final BaseModel baseModel;
-    private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
-    private Timer timer;
+  private final int MARGIN_TOP = 10;
+  private final BaseModel baseModel;
+  private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
+  private Timer timer;
 
-    public NotificationImpl(final BaseModel baseModel) {
+  public NotificationImpl(final BaseModel baseModel) {
 
-        super(null);
-        this.baseModel = baseModel;
-    }
+    super(null);
+    this.baseModel = baseModel;
+  }
 
-    @Override
-    protected void notificationAllPanelMouseClicked(final MouseEvent e) {
+  @Override
+  protected void notificationAllPanelMouseClicked(final MouseEvent e) {
 
-        SwingUtilities.invokeLater(this::bringChatGuiToFront);
-    }
+    SwingUtilities.invokeLater(this::bringChatGuiToFront);
+  }
 
-    private void bringChatGuiToFront() {
+  private void bringChatGuiToFront() {
 
-        // TODO 1
+    // TODO 1
 
-        //        if (mainFrame instanceof JFrame gui) {
-        //
-        //            gui.setAlwaysOnTop(true);
-        //            gui.toFront();
-        //            gui.repaint();
-        //            gui.setAlwaysOnTop(false);
-        //            Toolkit.getDefaultToolkit().beep();
-        //        }
-    }
+    //        if (mainFrame instanceof JFrame gui) {
+    //
+    //            gui.setAlwaysOnTop(true);
+    //            gui.toFront();
+    //            gui.repaint();
+    //            gui.setAlwaysOnTop(false);
+    //            Toolkit.getDefaultToolkit().beep();
+    //        }
+  }
 
-    @Override
-    protected void notificationReplySendActionPerformed(final ActionEvent e) {
-        // TODO 1
+  @Override
+  protected void notificationReplySendActionPerformed(final ActionEvent e) {
+    // TODO 1
 
-        //        SwingUtilities.invokeLater(
-        //                () -> {
-        //                    ReplyInterface replyPanel = new ReplyPanelImpl(this.mainFrame, this.baseModel);
-        //                    replyPanel.populatePanel();
-        //                    replyPanel.setPosition();
-        //                    replyPanel.requestAllFocus();
-        //                    replyPanel.addPanelToMainFrame();
-        //                });
+    //        SwingUtilities.invokeLater(
+    //                () -> {
+    //                    ReplyInterface replyPanel = new ReplyPanelImpl(this.mainFrame,
+    // this.baseModel);
+    //                    replyPanel.populatePanel();
+    //                    replyPanel.setPosition();
+    //                    replyPanel.requestAllFocus();
+    //                    replyPanel.addPanelToMainFrame();
+    //                });
 
-        bringChatGuiToFront();
-    }
+    bringChatGuiToFront();
+  }
 
-    @Override
-    protected void closeAllNotificationsActionPerformed(final ActionEvent e) {
+  @Override
+  protected void closeAllNotificationsActionPerformed(final ActionEvent e) {
 
-        NotificationRegister notificationRegister = NotificationRegister.getInstance();
-        final java.util.List<NotificationImpl> notificationList = notificationRegister.getNotificationList();
+    NotificationRegister notificationRegister = NotificationRegister.getInstance();
+    final java.util.List<NotificationImpl> notificationList =
+        notificationRegister.getNotificationList();
 
-        notificationList.forEach(notification -> {
-            if (notification.getTimer() != null && notification.getTimer().isRunning()) {
+    notificationList.forEach(
+        notification -> {
+          if (notification.getTimer() != null && notification.getTimer().isRunning()) {
 
-                notification.getTimer().stop();
-            }
+            notification.getTimer().stop();
+          }
 
-            notification.setVisible(false);
-            notification.dispose();
+          notification.setVisible(false);
+          notification.dispose();
         });
-    }
+  }
 
-    public Timer getTimer() {
+  public Timer getTimer() {
 
-        return this.timer;
-    }
+    return this.timer;
+  }
 
-    @Override
-    public void setNotificationText() {
+  @Override
+  public void setNotificationText() {
 
-        addMessageToNotificationPanel();
+    addMessageToNotificationPanel();
 
-        final int notificationPositionY = NotificationRegister.getInstance().getNotificationPositionY();
+    final int notificationPositionY = NotificationRegister.getInstance().getNotificationPositionY();
 
-        final int screenResolutionWidth = determineScreenWidth();
+    final int screenResolutionWidth = determineScreenWidth();
 
-        int newYPosition = notificationPositionY + 25;
+    int newYPosition = notificationPositionY + 25;
 
-        modifyNotificationPanel(screenResolutionWidth, newYPosition);
+    modifyNotificationPanel(screenResolutionWidth, newYPosition);
 
-        retainInformationAboutThisNotification(newYPosition);
+    retainInformationAboutThisNotification(newYPosition);
 
-        addNotificationTimer();
-    }
+    addNotificationTimer();
+  }
 
-    private void addMessageToNotificationPanel() {
+  private void addMessageToNotificationPanel() {
 
-        MessageModel messageModel = (MessageModel) this.baseModel;
+    MessageModel messageModel = (MessageModel) this.baseModel;
 
-        this.form_nameLabel.setText(messageModel.getSender() + " sent a message");
+    this.form_nameLabel.setText(messageModel.getSender() + " sent a message");
 
-        form_notificationMainMessage.setText("");
+    form_notificationMainMessage.setText("");
 
-        replaceEmojiTextToIconOnTextPane(messageModel.getMessage());
-    }
+    replaceEmojiTextToIconOnTextPane(messageModel.getMessage());
+  }
 
-    private int determineScreenWidth() {
+  private int determineScreenWidth() {
 
-        final Dimension primaryScreenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    final Dimension primaryScreenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-        return (int) primaryScreenSize.getWidth();
-    }
+    return (int) primaryScreenSize.getWidth();
+  }
 
-    private void modifyNotificationPanel(final int screenResolutionWidth, final int newYPosition) {
+  private void modifyNotificationPanel(final int screenResolutionWidth, final int newYPosition) {
 
-        int MARGIN_RIGHT = 10;
+    int MARGIN_RIGHT = 10;
 
-        SwingUtilities.invokeLater(() -> {
-            setBounds(screenResolutionWidth - getWidth() - MARGIN_RIGHT, newYPosition + MARGIN_TOP, getWidth(),
-                      getHeight());
-            setAlwaysOnTop(true);
-            getScrollPane1().getVerticalScrollBar().setValue(0);
-            setVisible(true);
+    SwingUtilities.invokeLater(
+        () -> {
+          setBounds(
+              screenResolutionWidth - getWidth() - MARGIN_RIGHT,
+              newYPosition + MARGIN_TOP,
+              getWidth(),
+              getHeight());
+          setAlwaysOnTop(true);
+          getScrollPane1().getVerticalScrollBar().setValue(0);
+          setVisible(true);
         });
+  }
+
+  private void retainInformationAboutThisNotification(final int newYPosition) {
+
+    NotificationRegister.getInstance()
+        .setNotificationPositionY(newYPosition + getHeight() - MARGIN_TOP);
+    NotificationRegister.getInstance().getNotificationList().add(this);
+  }
+
+  private void addNotificationTimer() {
+
+    this.timer = new Timer(5000, e -> processNotificationQueue());
+    this.timer.setRepeats(false);
+    this.timer.start();
+  }
+
+  private void replaceEmojiTextToIconOnTextPane(final String message) {
+
+    EmojiHandlerInterface emojiHandler = new EmojiHandler();
+    emojiHandler.replaceEmojiDescriptionWithActualImageIcon(
+        this.form_notificationMainMessage, message);
+  }
+
+  private void processNotificationQueue() {
+
+    setVisible(false);
+    dispose();
+
+    ActiveNotificationQueue activeNotificationsCache =
+        (ActiveNotificationQueue) cacheManager.getCache("ActiveNotificationQueue");
+    WaitingNotificationQueue waitingNotificationsCache =
+        (WaitingNotificationQueue) cacheManager.getCache("WaitingNotificationQueue");
+
+    final boolean remove = activeNotificationsCache.remove(this.baseModel);
+
+    if (remove && activeNotificationsCache.isEmpty() && !waitingNotificationsCache.isEmpty()) {
+      NotificationRegister.getInstance().setNotificationPositionY(0);
+      final String queuedNotification = waitingNotificationsCache.pollFirst();
+
+      NotificationRegister.getInstance().internalNotificationHandling(queuedNotification);
     }
 
-    private void retainInformationAboutThisNotification(final int newYPosition) {
+    if (activeNotificationsCache.isEmpty()) {
 
-        NotificationRegister.getInstance().setNotificationPositionY(newYPosition + getHeight() - MARGIN_TOP);
-        NotificationRegister.getInstance().getNotificationList().add(this);
+      NotificationRegister.getInstance().setNotificationPositionY(0);
     }
 
-    private void addNotificationTimer() {
+    if (waitingNotificationsCache.isEmpty()) {
 
-        this.timer = new Timer(5000, e -> processNotificationQueue());
-        this.timer.setRepeats(false);
-        this.timer.start();
+      NotificationRegister.getInstance().setNotificationPositionY(0);
     }
+  }
 
-    private void replaceEmojiTextToIconOnTextPane(final String message) {
+  @Override
+  public void setNotificationPicture() {
 
-        EmojiHandlerInterface emojiHandler = new EmojiHandler();
-        emojiHandler.replaceEmojiDescriptionWithActualImageIcon(this.form_notificationMainMessage, message);
-    }
+    addPictureToNotificationPanel();
+    final int screenResolutionWidth = determineScreenWidth();
 
-    private void processNotificationQueue() {
+    final int notificationPositionY = NotificationRegister.getInstance().getNotificationPositionY();
+    int newYPosition = notificationPositionY + 25;
 
-        setVisible(false);
-        dispose();
+    modifyNotificationPanel(screenResolutionWidth, newYPosition);
 
-        ActiveNotificationQueue activeNotificationsCache = (ActiveNotificationQueue) cacheManager.getCache(
-                "ActiveNotificationQueue");
-        WaitingNotificationQueue waitingNotificationsCache = (WaitingNotificationQueue) cacheManager.getCache(
-                "WaitingNotificationQueue");
+    retainInformationAboutThisNotification(newYPosition);
 
-        final boolean remove = activeNotificationsCache.remove(this.baseModel);
+    addNotificationTimer();
+  }
 
-        if (remove && activeNotificationsCache.isEmpty() && !waitingNotificationsCache.isEmpty()) {
-            NotificationRegister.getInstance().setNotificationPositionY(0);
-            final String queuedNotification = waitingNotificationsCache.pollFirst();
+  private void addPictureToNotificationPanel() {
 
-            NotificationRegister.getInstance().internalNotificationHandling(queuedNotification);
-        }
+    PictureModel messageModel = (PictureModel) this.baseModel;
 
-        if (activeNotificationsCache.isEmpty()) {
+    this.form_nameLabel.setText(messageModel.getSender() + " sent a message");
 
-            NotificationRegister.getInstance().setNotificationPositionY(0);
-        }
+    form_notificationMainMessage.setText("[picture]\n");
 
-        if (waitingNotificationsCache.isEmpty()) {
-
-            NotificationRegister.getInstance().setNotificationPositionY(0);
-        }
-    }
-
-    @Override
-    public void setNotificationPicture() {
-
-        addPictureToNotificationPanel();
-        final int screenResolutionWidth = determineScreenWidth();
-
-        final int notificationPositionY = NotificationRegister.getInstance().getNotificationPositionY();
-        int newYPosition = notificationPositionY + 25;
-
-        modifyNotificationPanel(screenResolutionWidth, newYPosition);
-
-        retainInformationAboutThisNotification(newYPosition);
-
-        addNotificationTimer();
-    }
-
-    private void addPictureToNotificationPanel() {
-
-        PictureModel messageModel = (PictureModel) this.baseModel;
-
-        this.form_nameLabel.setText(messageModel.getSender() + " sent a message");
-
-        form_notificationMainMessage.setText("[picture]\n");
-
-        replaceEmojiTextToIconOnTextPane(messageModel.getDescription());
-    }
+    replaceEmojiTextToIconOnTextPane(messageModel.getDescription());
+  }
 }

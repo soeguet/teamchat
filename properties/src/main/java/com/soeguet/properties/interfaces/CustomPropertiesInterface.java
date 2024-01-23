@@ -4,15 +4,15 @@ import com.soeguet.dtos.CustomUserPropertiesDTO;
 
 public interface CustomPropertiesInterface {
 
-    boolean checkIfConfigFileExists();
+  boolean checkIfConfigFileExists();
 
-    void loadProperties();
+  void loadProperties();
 
-    void populateHashMapWithNewValues();
+  void populateHashMapWithNewValues();
 
-    void saveProperties();
+  void saveProperties();
 
-    void addCustomerToHashSet(final CustomUserPropertiesDTO customUserProperties);
+  void addCustomerToHashSet(final CustomUserPropertiesDTO customUserProperties);
 
-    CustomUserPropertiesDTO getCustomUserProperties(final String username);
+  CustomUserPropertiesDTO getCustomUserProperties(final String username);
 }

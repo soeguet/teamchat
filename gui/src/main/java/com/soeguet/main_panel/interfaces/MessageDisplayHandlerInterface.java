@@ -5,11 +5,11 @@ import com.soeguet.model.jackson.BaseModel;
 
 public interface MessageDisplayHandlerInterface {
 
-    String pollMessageFromCache();
+  String pollMessageFromCache();
 
-    void processAndDisplayMessage(BaseModel baseModel);
+  void processAndDisplayMessage(BaseModel baseModel);
 
-    void setCacheManager(CacheManager cacheManager);
+  void setCacheManager(CacheManager cacheManager);
 
-    void updateExistingMessage(BaseModel baseModel);
+  void updateExistingMessage(BaseModel baseModel);
 }

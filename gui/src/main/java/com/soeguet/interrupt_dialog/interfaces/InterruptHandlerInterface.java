@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public interface InterruptHandlerInterface {
 
-    void forceChatGuiToFront(String text);
+  void forceChatGuiToFront(String text);
 
-    JsonNode extractJsonNodeUsernames(byte[] message);
+  JsonNode extractJsonNodeUsernames(byte[] message);
 }

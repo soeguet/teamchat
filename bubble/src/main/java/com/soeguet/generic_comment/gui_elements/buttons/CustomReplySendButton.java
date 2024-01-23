@@ -8,132 +8,123 @@ import com.soeguet.model.jackson.*;
 import com.soeguet.properties.PropertiesRegister;
 import com.soeguet.socket_client.ClientRegister;
 import com.soeguet.socket_client.CustomWebsocketClient;
-
-import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import javax.swing.*;
 
 public class CustomReplySendButton extends JButton implements MouseListener {
 
-    // variables -- start
-    private final BaseModel baseModel;
-    private final CustomReplyPanel customReplyPanel;
+  // variables -- start
+  private final BaseModel baseModel;
+  private final CustomReplyPanel customReplyPanel;
 
-    // variables -- end
+  // variables -- end
 
-    // constructors -- start
-    public CustomReplySendButton(BaseModel baseModel, CustomReplyPanel customReplyPanel) {
+  // constructors -- start
+  public CustomReplySendButton(BaseModel baseModel, CustomReplyPanel customReplyPanel) {
 
-        this.baseModel = baseModel;
-        this.customReplyPanel = customReplyPanel;
+    this.baseModel = baseModel;
+    this.customReplyPanel = customReplyPanel;
 
-        super.setFocusable(false);
-        this.setCustomIcon();
+    super.setFocusable(false);
+    this.setCustomIcon();
 
-        super.addMouseListener(this);
+    super.addMouseListener(this);
+  }
+
+  // constructors -- end
+
+  private void setCustomIcon() {
+
+    // TODO 1
+    //        URL sendUrl = ChatMainFrameImpl.class.getResource("/emojis/$+1f4e8$+.png");
+    //
+    //        if (sendUrl != null) {
+    //
+    //            super.setIcon(new ImageIcon(sendUrl));
+    //        }
+  }
+
+  private MessageModel createMessageModel() {
+
+    final QuoteModel<BaseModel> quoteModel = this.createQuoteModel();
+
+    MessageModel messageModel = new MessageModel();
+
+    // FEATURE -> can't quote pictures -> they clutter the database this way -> need to find a
+    // way to reference them
+    if (quoteModel.t() instanceof PictureModel pictureModel) {
+
+      pictureModel.setPicture(null);
     }
 
-    // constructors -- end
+    messageModel.setQuotedMessage(quoteModel);
+    messageModel.setMessage(customReplyPanel.getTextPane().getText());
+    messageModel.setTime(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
+    messageModel.setSender(PropertiesRegister.getPropertiesInstance().getUsername());
+    messageModel.setMessageType(MessageTypes.REPLY);
 
-    private void setCustomIcon() {
+    return messageModel;
+  }
 
-        // TODO 1
-        //        URL sendUrl = ChatMainFrameImpl.class.getResource("/emojis/$+1f4e8$+.png");
-        //
-        //        if (sendUrl != null) {
-        //
-        //            super.setIcon(new ImageIcon(sendUrl));
-        //        }
+  private QuoteModel<BaseModel> createQuoteModel() {
+
+    QuoteModel<BaseModel> quoteModel = null;
+
+    if (baseModel instanceof MessageModel messageModel) {
+
+      quoteModel = new QuoteModel<>(messageModel);
+    } else if (baseModel instanceof PictureModel pictureModel) {
+
+      quoteModel = new QuoteModel<>(pictureModel);
+    } else if (baseModel instanceof LinkModel linkModel) {
+
+      quoteModel = new QuoteModel<>(linkModel);
     }
 
-    private MessageModel createMessageModel() {
+    return quoteModel;
+  }
 
-        final QuoteModel<BaseModel> quoteModel = this.createQuoteModel();
+  @Override
+  public void mouseClicked(final MouseEvent e) {
 
-        MessageModel messageModel = new MessageModel();
+    // make main textPanel editable again
+    // TODO 1
+    //        mainFrame.getTextEditorPane().setFocusable(true);
+    //        mainFrame.getTextEditorPane().requestFocus();
 
-        // FEATURE -> can't quote pictures -> they clutter the database this way -> need to find a
-        // way to reference them
-        if (quoteModel.t() instanceof PictureModel pictureModel) {
+    final CustomWebsocketClient websocketClient =
+        ClientRegister.getWebSocketClientInstance().getCustomWebsocketClient();
+    final ObjectMapper objectMapper = new ObjectMapper();
 
-            pictureModel.setPicture(null);
-        }
+    final MessageModel messageModel = this.createMessageModel();
 
-        messageModel.setQuotedMessage(quoteModel);
-        messageModel.setMessage(customReplyPanel.getTextPane().getText());
-        messageModel.setTime(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
-        messageModel.setSender(PropertiesRegister.getPropertiesInstance().getUsername());
-        messageModel.setMessageType(MessageTypes.REPLY);
+    try {
 
-        return messageModel;
+      final String serializedMessageModel = objectMapper.writeValueAsString(messageModel);
+      // TODO 1
+      //            websocketClient.send(serializedMessageModel);
+
+    } catch (JsonProcessingException ex) {
+
+      throw new RuntimeException(ex);
     }
 
-    private QuoteModel<BaseModel> createQuoteModel() {
+    customReplyPanel.removeAll();
+    customReplyPanel.setVisible(false);
+  }
 
-        QuoteModel<BaseModel> quoteModel = null;
+  @Override
+  public void mousePressed(final MouseEvent e) {}
 
-        if (baseModel instanceof MessageModel messageModel) {
+  @Override
+  public void mouseReleased(final MouseEvent e) {}
 
-            quoteModel = new QuoteModel<>(messageModel);
-        } else if (baseModel instanceof PictureModel pictureModel) {
+  @Override
+  public void mouseEntered(final MouseEvent e) {}
 
-            quoteModel = new QuoteModel<>(pictureModel);
-        } else if (baseModel instanceof LinkModel linkModel) {
-
-            quoteModel = new QuoteModel<>(linkModel);
-        }
-
-        return quoteModel;
-    }
-
-    @Override
-    public void mouseClicked(final MouseEvent e) {
-
-        // make main textPanel editable again
-        // TODO 1
-        //        mainFrame.getTextEditorPane().setFocusable(true);
-        //        mainFrame.getTextEditorPane().requestFocus();
-
-        final CustomWebsocketClient websocketClient =
-                ClientRegister.getWebSocketClientInstance().getCustomWebsocketClient();
-        final ObjectMapper objectMapper = new ObjectMapper();
-
-        final MessageModel messageModel = this.createMessageModel();
-
-        try {
-
-            final String serializedMessageModel = objectMapper.writeValueAsString(messageModel);
-            // TODO 1
-//            websocketClient.send(serializedMessageModel);
-
-        } catch (JsonProcessingException ex) {
-
-            throw new RuntimeException(ex);
-        }
-
-        customReplyPanel.removeAll();
-        customReplyPanel.setVisible(false);
-    }
-
-    @Override
-    public void mousePressed(final MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseReleased(final MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseEntered(final MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseExited(final MouseEvent e) {
-
-    }
+  @Override
+  public void mouseExited(final MouseEvent e) {}
 }

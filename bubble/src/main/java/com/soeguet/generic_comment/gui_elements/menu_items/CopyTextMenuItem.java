@@ -12,107 +12,105 @@ import javax.swing.text.html.HTMLEditorKit;
 
 public class CopyTextMenuItem extends JMenuItem implements MouseListener {
 
-    // variables -- start
-    private final JTextPane textPane;
+  // variables -- start
+  private final JTextPane textPane;
 
-    // variables -- end
+  // variables -- end
 
-    // constructors -- start
-    public CopyTextMenuItem(final JTextPane textPane, final String menuItemName) {
+  // constructors -- start
+  public CopyTextMenuItem(final JTextPane textPane, final String menuItemName) {
 
-        super(menuItemName);
+    super(menuItemName);
 
-        this.textPane = textPane;
+    this.textPane = textPane;
 
-        super.addMouseListener(this);
+    super.addMouseListener(this);
+  }
+
+  // constructors -- end
+
+  private String extractTextForClipboard() {
+
+    if (textPane.getSelectedText() != null && !textPane.getSelectedText().isBlank()) {
+
+      return textPane.getSelectedText();
+
+    } else if (textPane.getText() != null && !textPane.getText().isBlank()) {
+
+      return extractOnlyPlainTextFromTextPane();
+
+    } else {
+
+      JOptionPane.showMessageDialog(
+          SwingUtilities.getRootPane(textPane),
+          "Nothing to copy!",
+          ("No text " + "selected"),
+          JOptionPane.INFORMATION_MESSAGE);
+      return null;
     }
+  }
 
-    // constructors -- end
+  private String extractOnlyPlainTextFromTextPane() {
 
-    private String extractTextForClipboard() {
+    try {
+      // if the document is an html document
+      HTMLDocument document = (HTMLDocument) textPane.getDocument();
+      HTMLEditorKit editorKit = new HTMLEditorKit();
+      StringWriter writer = new StringWriter();
 
-        if (textPane.getSelectedText() != null && !textPane.getSelectedText().isBlank()) {
+      try {
 
-            return textPane.getSelectedText();
+        editorKit.write(
+            writer, document, document.getStartPosition().getOffset(), document.getLength());
+        String textOnly = writer.toString();
 
-        } else if (textPane.getText() != null && !textPane.getText().isBlank()) {
+        return textOnly.replaceAll("<[^>]+>", "").trim();
 
-            return extractOnlyPlainTextFromTextPane();
+      } catch (Exception e) {
 
-        } else {
+        throw new RuntimeException(e);
+      }
 
-            JOptionPane.showMessageDialog(
-                    SwingUtilities.getRootPane(textPane),
-                    "Nothing to copy!", ("No text " + "selected"),
-                    JOptionPane.INFORMATION_MESSAGE);
-            return null;
-        }
+    } catch (ClassCastException e) {
+
+      // if the document is not a html document
+      return textPane.getText();
     }
+  }
 
-    private String extractOnlyPlainTextFromTextPane() {
+  @Override
+  public void mouseClicked(final MouseEvent e) {}
 
-        try {
-            // if the document is an html document
-            HTMLDocument document = (HTMLDocument) textPane.getDocument();
-            HTMLEditorKit editorKit = new HTMLEditorKit();
-            StringWriter writer = new StringWriter();
+  @Override
+  public void mousePressed(final MouseEvent e) {
 
-            try {
+    String selectedText = extractTextForClipboard();
 
-                editorKit.write(
-                        writer,
-                        document,
-                        document.getStartPosition().getOffset(),
-                        document.getLength());
-                String textOnly = writer.toString();
+    if (selectedText != null) {
 
-                return textOnly.replaceAll("<[^>]+>", "").trim();
+      final StringSelection stringSelection = new StringSelection(selectedText);
+      final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+      clipboard.setContents(stringSelection, null);
 
-            } catch (Exception e) {
+      if (selectedText.length() > 50) {
 
-                throw new RuntimeException(e);
-            }
+        selectedText = "%s [...]".formatted(selectedText.substring(0, 50));
+      }
 
-        } catch (ClassCastException e) {
-
-            // if the document is not a html document
-            return textPane.getText();
-        }
+      JOptionPane.showMessageDialog(
+          SwingUtilities.getRootPane(textPane),
+          "\"%s\" %s copied to clipboard".formatted(selectedText, System.lineSeparator()),
+          "Copied " + "to clipboard",
+          JOptionPane.INFORMATION_MESSAGE);
     }
+  }
 
-    @Override
-    public void mouseClicked(final MouseEvent e) {}
+  @Override
+  public void mouseReleased(final MouseEvent e) {}
 
-    @Override
-    public void mousePressed(final MouseEvent e) {
+  @Override
+  public void mouseEntered(final MouseEvent e) {}
 
-        String selectedText = extractTextForClipboard();
-
-        if (selectedText != null) {
-
-            final StringSelection stringSelection = new StringSelection(selectedText);
-            final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            clipboard.setContents(stringSelection, null);
-
-            if (selectedText.length() > 50) {
-
-                selectedText = "%s [...]".formatted(selectedText.substring(0, 50));
-            }
-
-            JOptionPane.showMessageDialog(
-                    SwingUtilities.getRootPane(textPane),
-                    "\"%s\" %s copied to clipboard".formatted(selectedText, System.lineSeparator()),
-                    "Copied " + "to clipboard",
-                    JOptionPane.INFORMATION_MESSAGE);
-        }
-    }
-
-    @Override
-    public void mouseReleased(final MouseEvent e) {}
-
-    @Override
-    public void mouseEntered(final MouseEvent e) {}
-
-    @Override
-    public void mouseExited(final MouseEvent e) {}
+  @Override
+  public void mouseExited(final MouseEvent e) {}
 }

@@ -11,31 +11,31 @@ import javax.swing.border.Border;
 
 public interface CommentInterface {
 
-    JLabel getNameLabel();
+  JLabel getNameLabel();
 
-    void setupTextPanelWrapper();
+  void setupTextPanelWrapper();
 
-    void setupPicturePanelWrapper();
+  void setupPicturePanelWrapper();
 
-    void initializeBorderHandler(final Color borderColor);
+  void initializeBorderHandler(final Color borderColor);
 
-    void initializeReactionStickerHandler(List<UserInteraction> userInteractions);
+  void initializeReactionStickerHandler(List<UserInteraction> userInteractions);
 
-    BaseModel getBaseModel();
+  BaseModel getBaseModel();
 
-    void setBaseModel(BaseModel baseModel);
+  void setBaseModel(BaseModel baseModel);
 
-    void setCustomPaint(final Consumer<Graphics> customPaint);
+  void setCustomPaint(final Consumer<Graphics> customPaint);
 
-    int getWidth();
+  int getWidth();
 
-    int getHeight();
+  int getHeight();
 
-    Color getBorderColor();
+  Color getBorderColor();
 
-    void setBorderColor(Color borderColor);
+  void setBorderColor(Color borderColor);
 
-    void setCommentType(final CommentTypeEnum commentType);
+  void setCommentType(final CommentTypeEnum commentType);
 
-    void setBorder(Border border);
+  void setBorder(Border border);
 }

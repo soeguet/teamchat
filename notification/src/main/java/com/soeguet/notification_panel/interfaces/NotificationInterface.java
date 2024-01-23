@@ -4,9 +4,9 @@ import java.awt.*;
 
 public interface NotificationInterface {
 
-    void setNotificationText();
+  void setNotificationText();
 
-    void setMaximumSize(Dimension dimension);
+  void setMaximumSize(Dimension dimension);
 
-    void setNotificationPicture();
+  void setNotificationPicture();
 }

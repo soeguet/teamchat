@@ -16,25 +16,25 @@ import com.soeguet.model.EnvVariables;
 
 public class Main {
 
-    public static void main(String... args) {
+  public static void main(String... args) {
 
-        // set up dependencies
-        final ThemeSetter themeSetter = new ThemeSetterImpl();
-        final ThemeManager themeManager = new ThemeManagerImpl(themeSetter);
-        // FEATURE make themes configurable
-        themeManager.applyTheme(Themes.INTELLIJ);
+    // set up dependencies
+    final ThemeSetter themeSetter = new ThemeSetterImpl();
+    final ThemeManager themeManager = new ThemeManagerImpl(themeSetter);
+    // FEATURE make themes configurable
+    themeManager.applyTheme(Themes.INTELLIJ);
 
-        final UserInteractionInterface userInteraction = new UserInteractionImpl();
-        final EnvDataProviderInterface envDataProvider = new EnvDataProviderImpl();
-        final EnvVarHandlerInterface envVarHandler =
-                new EnvVarHandler(envDataProvider, userInteraction);
+    final UserInteractionInterface userInteraction = new UserInteractionImpl();
+    final EnvDataProviderInterface envDataProvider = new EnvDataProviderImpl();
+    final EnvVarHandlerInterface envVarHandler =
+        new EnvVarHandler(envDataProvider, userInteraction);
 
-        // collect environment variables from system or user input
-        final EnvVariables environmentVariables = envVarHandler.collectEnvVariables();
+    // collect environment variables from system or user input
+    final EnvVariables environmentVariables = envVarHandler.collectEnvVariables();
 
-        // initialize program and pass dependencies
-        final ProgramInit programInit = new ProgramInit();
+    // initialize program and pass dependencies
+    final ProgramInit programInit = new ProgramInit();
 
-        programInit.initializeGUI(environmentVariables);
-    }
+    programInit.initializeGui(environmentVariables);
+  }
 }

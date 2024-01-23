@@ -8,9 +8,9 @@ import com.soeguet.model.jackson.BaseModel;
 import javax.swing.*;
 
 public record CommentGuiDTO(
-        CommentTypeEnum commentType,
-        BaseModel baseModel,
-        CommentSidePanel sidePanel,
-        TransparentTopPanel topContainer,
-        CustomContentContainer customContentContainer,
-        JPanel mainContainer) {}
+    CommentTypeEnum commentType,
+    BaseModel baseModel,
+    CommentSidePanel sidePanel,
+    TransparentTopPanel topContainer,
+    CustomContentContainer customContentContainer,
+    JPanel mainContainer) {}

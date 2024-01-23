@@ -2,93 +2,89 @@ package com.soeguet.properties;
 
 public class PropertiesRegister {
 
-    // variables -- start
-    private static final PropertiesRegister CUSTOM_USER_PROPERTIES_INSTANCE = new PropertiesRegister();
-    private String username;
-    private String nickname;
-    private String borderColor;
-    // variables -- end
+  // variables -- start
+  private static final PropertiesRegister CUSTOM_USER_PROPERTIES_INSTANCE =
+      new PropertiesRegister();
+  private String username;
+  private String nickname;
+  private String borderColor;
+  // variables -- end
 
-    // constructors -- start
+  // constructors -- start
 
-    /** Creates a new instance of the CustomUserProperties class. */
-    private PropertiesRegister() {
+  /** Creates a new instance of the CustomUserProperties class. */
+  private PropertiesRegister() {}
 
-    }
+  public boolean checkIfUsernameMatches(String username) {
 
-    public boolean checkIfUsernameMatches(String username) {
+    return this.username.equals(username);
+  }
 
-        return this.username.equals(username);
-    }
+  /**
+   * Constructs an instance of the CustomUserProperties class with the specified timeAndUsername.
+   *
+   * @param username the timeAndUsername of the user
+   */
+  public PropertiesRegister(String username) {
 
-    /**
-     Constructs an instance of the CustomUserProperties class with the specified timeAndUsername.
+    this.username = username;
+  }
+  // constructors -- end
 
-     @param username
-     the timeAndUsername of the user
-     */
-    public PropertiesRegister(String username) {
+  // getter & setter -- start
+  public String getBorderColor() {
 
-        this.username = username;
-    }
-    // constructors -- end
+    return borderColor;
+  }
 
-    // getter & setter -- start
-    public String getBorderColor() {
+  public void setBorderColor(String borderColor) {
 
-        return borderColor;
-    }
+    this.borderColor = borderColor;
+  }
 
-    public void setBorderColor(String borderColor) {
+  /**
+   * Returns the nickname of the user.
+   *
+   * @return the nickname of the user.
+   */
+  public String getNickname() {
 
-        this.borderColor = borderColor;
-    }
+    return nickname;
+  }
 
-    /**
-     Returns the nickname of the user.
+  /**
+   * Sets the nickname of the user.
+   *
+   * @param nickname the nickname to be set.
+   */
+  public void setNickname(String nickname) {
 
-     @return the nickname of the user.
-     */
-    public String getNickname() {
+    this.nickname = nickname;
+  }
 
-        return nickname;
-    }
+  public static PropertiesRegister getPropertiesInstance() {
 
-    /**
-     Sets the nickname of the user.
+    return CUSTOM_USER_PROPERTIES_INSTANCE;
+  }
 
-     @param nickname
-     the nickname to be set.
-     */
-    public void setNickname(String nickname) {
+  /**
+   * Gets the timeAndUsername of the user.
+   *
+   * @return the timeAndUsername of the user as a string.
+   */
+  public String getUsername() {
 
-        this.nickname = nickname;
-    }
+    return username;
+  }
 
-    public static PropertiesRegister getPropertiesInstance() {
+  /**
+   * Sets the timeAndUsername of the user.
+   *
+   * @param username the new timeAndUsername to be set for the user.
+   */
+  public void setUsername(String username) {
 
-        return CUSTOM_USER_PROPERTIES_INSTANCE;
-    }
-
-    /**
-     Gets the timeAndUsername of the user.
-
-     @return the timeAndUsername of the user as a string.
-     */
-    public String getUsername() {
-
-        return username;
-    }
-
-    /**
-     Sets the timeAndUsername of the user.
-
-     @param username
-     the new timeAndUsername to be set for the user.
-     */
-    public void setUsername(String username) {
-
-        this.username = username;
-    }
-    // getter & setter -- end
+    this.username = username;
+  }
+  // getter & setter -- end
 }

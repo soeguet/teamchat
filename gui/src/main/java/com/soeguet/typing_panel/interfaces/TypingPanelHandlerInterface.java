@@ -2,9 +2,9 @@ package com.soeguet.typing_panel.interfaces;
 
 public interface TypingPanelHandlerInterface {
 
-    String retrieveTextOnTypingLabel();
+  String retrieveTextOnTypingLabel();
 
-    StringBuilder generateTypingLabel(String textOnTypingLabel, String typingUsername);
+  StringBuilder generateTypingLabel(String textOnTypingLabel, String typingUsername);
 
-    void displayUpdatedTypingLabel(StringBuilder stringBuilder);
+  void displayUpdatedTypingLabel(StringBuilder stringBuilder);
 }

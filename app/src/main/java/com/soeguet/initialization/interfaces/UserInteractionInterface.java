@@ -6,17 +6,17 @@ package com.soeguet.initialization.interfaces;
  */
 public interface UserInteractionInterface {
 
-    /**
-     * Prompts the user to enter a timeAndUsername.
-     *
-     * @return The timeAndUsername entered by the user as a String.
-     */
-    String askForUsername();
+  /**
+   * Prompts the user to enter a timeAndUsername.
+   *
+   * @return The timeAndUsername entered by the user as a String.
+   */
+  String askForUsername();
 
-    /**
-     * Displays an error message to the user.
-     *
-     * @param message the error message to be displayed
-     */
-    void showError(String message);
+  /**
+   * Displays an error message to the user.
+   *
+   * @param message the error message to be displayed
+   */
+  void showError(String message);
 }

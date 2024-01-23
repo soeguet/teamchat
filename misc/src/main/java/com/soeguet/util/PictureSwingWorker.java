@@ -1,96 +1,92 @@
 package com.soeguet.util;
 
 import com.soeguet.model.jackson.PictureModel;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import javax.imageio.ImageIO;
+import javax.swing.*;
 
 public class PictureSwingWorker extends SwingWorker<Void, Object> {
 
-    // variables -- start
-    private final PictureModel pictureModel;
-    private final JLabel pictureLabel;
+  // variables -- start
+  private final PictureModel pictureModel;
+  private final JLabel pictureLabel;
 
-    // variables -- end
+  // variables -- end
 
-    // constructors -- start
-    public PictureSwingWorker(
-    PictureModel pictureModel, JLabel pictureLabel) {
+  // constructors -- start
+  public PictureSwingWorker(PictureModel pictureModel, JLabel pictureLabel) {
 
-        this.pictureModel = pictureModel;
-        this.pictureLabel = pictureLabel;
+    this.pictureModel = pictureModel;
+    this.pictureLabel = pictureLabel;
+  }
+
+  // constructors -- end
+
+  private ImageIcon scaleImageIfTooBig() {
+
+    ImageIcon icon = new ImageIcon(pictureModel.getPicture());
+
+    final ImageIcon resizedIcon = resizeImage(icon);
+    if (resizedIcon != null) {
+
+      return resizedIcon;
     }
 
-    // constructors -- end
+    return icon;
+  }
 
-    private ImageIcon scaleImageIfTooBig() {
+  private ImageIcon resizeImage(final ImageIcon icon) {
 
-        ImageIcon icon = new ImageIcon(pictureModel.getPicture());
+    if (icon.getIconWidth() > 500 || icon.getIconHeight() > 350) {
 
-        final ImageIcon resizedIcon = resizeImage(icon);
-        if (resizedIcon != null) {
+      BufferedImage bufferedImage;
 
-            return resizedIcon;
+      try {
+
+        bufferedImage = ImageIO.read(new ByteArrayInputStream(pictureModel.getPicture()));
+
+        if (icon.getIconWidth() > 500) {
+
+          return new ImageIcon(bufferedImage.getScaledInstance(500, -1, Image.SCALE_SMOOTH));
+
+        } else {
+
+          return new ImageIcon(bufferedImage.getScaledInstance(-1, 350, Image.SCALE_SMOOTH));
         }
 
-        return icon;
+      } catch (Exception ex) {
+
+        throw new RuntimeException(ex);
+      }
     }
+    return null;
+  }
 
-    private ImageIcon resizeImage(final ImageIcon icon) {
+  @Override
+  protected Void doInBackground() {
 
-        if (icon.getIconWidth() > 500 || icon.getIconHeight() > 350) {
+    ImageIcon icon = scaleImageIfTooBig();
+    pictureLabel.setIcon(icon);
 
-            BufferedImage bufferedImage;
+    return null;
+  }
 
-            try {
+  @Override
+  protected void done() {
 
-                bufferedImage = ImageIO.read(new ByteArrayInputStream(pictureModel.getPicture()));
+    // TODO 1
 
-                if (icon.getIconWidth() > 500) {
+    //        this.mainFrame.revalidate();
+    //        this.mainFrame.repaint();
+    //
+    //        // scroll to end after finishing the loading
+    //        final JScrollBar verticalScrollBar =
+    //                mainFrame.getMainTextBackgroundScrollPane().getVerticalScrollBar();
+    //        SwingUtilities.invokeLater(
+    //                () -> verticalScrollBar.setValue(verticalScrollBar.getMaximum()));
 
-                    return new ImageIcon(
-                            bufferedImage.getScaledInstance(500, -1, Image.SCALE_SMOOTH));
-
-                } else {
-
-                    return new ImageIcon(
-                            bufferedImage.getScaledInstance(-1, 350, Image.SCALE_SMOOTH));
-                }
-
-            } catch (Exception ex) {
-
-                throw new RuntimeException(ex);
-            }
-        }
-        return null;
-    }
-
-    @Override
-    protected Void doInBackground() {
-
-        ImageIcon icon = scaleImageIfTooBig();
-        pictureLabel.setIcon(icon);
-
-        return null;
-    }
-
-    @Override
-    protected void done() {
-
-        // TODO 1
-
-//        this.mainFrame.revalidate();
-//        this.mainFrame.repaint();
-//
-//        // scroll to end after finishing the loading
-//        final JScrollBar verticalScrollBar =
-//                mainFrame.getMainTextBackgroundScrollPane().getVerticalScrollBar();
-//        SwingUtilities.invokeLater(
-//                () -> verticalScrollBar.setValue(verticalScrollBar.getMaximum()));
-
-        super.done();
-    }
+    super.done();
+  }
 }

@@ -6,62 +6,62 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 public class ActiveNotificationQueue implements CustomCache<BaseModel> {
 
-    private final LinkedBlockingDeque<BaseModel> activeNotificationQueue;
+  private final LinkedBlockingDeque<BaseModel> activeNotificationQueue;
 
-    public ActiveNotificationQueue() {
+  public ActiveNotificationQueue() {
 
-        activeNotificationQueue = new LinkedBlockingDeque<>(3);
+    activeNotificationQueue = new LinkedBlockingDeque<>(3);
+  }
+
+  @Override
+  public void invalidateCache() {
+
+    activeNotificationQueue.clear();
+  }
+
+  @Override
+  public void addLast(BaseModel baseModel) {
+
+    try {
+
+      activeNotificationQueue.addLast(baseModel);
+
+    } catch (Exception e) {
+
+      throw new RuntimeException(e);
     }
+  }
 
-    @Override
-    public void invalidateCache() {
+  @Override
+  public String pollFirst() {
 
-        activeNotificationQueue.clear();
-    }
+    return null;
+  }
 
-    @Override
-    public void addLast(BaseModel baseModel) {
+  @Override
+  public void removeAll() {
 
-        try {
+    activeNotificationQueue.clear();
+  }
 
-            activeNotificationQueue.addLast(baseModel);
+  @Override
+  public boolean isEmpty() {
 
-        } catch (Exception e) {
+    return activeNotificationQueue.isEmpty();
+  }
 
-            throw new RuntimeException(e);
-        }
-    }
+  public int getRemainingCapacity() {
 
-    @Override
-    public String pollFirst() {
+    return activeNotificationQueue.remainingCapacity();
+  }
 
-        return null;
-    }
+  public BaseModel popFirst() {
 
-    @Override
-    public void removeAll() {
+    return activeNotificationQueue.pollFirst();
+  }
 
-        activeNotificationQueue.clear();
-    }
+  public boolean remove(final BaseModel baseModel) {
 
-    @Override
-    public boolean isEmpty() {
-
-        return activeNotificationQueue.isEmpty();
-    }
-
-    public int getRemainingCapacity() {
-
-        return activeNotificationQueue.remainingCapacity();
-    }
-
-    public BaseModel popFirst() {
-
-        return activeNotificationQueue.pollFirst();
-    }
-
-    public boolean remove(final BaseModel baseModel) {
-
-        return activeNotificationQueue.remove(baseModel);
-    }
+    return activeNotificationQueue.remove(baseModel);
+  }
 }

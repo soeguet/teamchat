@@ -5,33 +5,30 @@ import java.io.IOException;
 
 public class NotificationDisplayLinux implements NotificationDisplayInterface {
 
-    /**
-     * Displays a notification with the given sender and message using the `notify-send` command.
-     *
-     * @param sender The sender of the notification.
-     * @param message The message of the notification.
-     * @throws RuntimeException If an IO error occurs while executing the `notify-send` command.
-     */
-    @Override
-    public void displayNotification(final String sender, final String message) {
+  /**
+   * Displays a notification with the given sender and message using the `notify-send` command.
+   *
+   * @param sender The sender of the notification.
+   * @param message The message of the notification.
+   * @throws RuntimeException If an IO error occurs while executing the `notify-send` command.
+   */
+  @Override
+  public void displayNotification(final String sender, final String message) {
 
-        try {
+    try {
 
-            Runtime.getRuntime().exec(new String[] {"notify-send", sender, message});
+      Runtime.getRuntime().exec(new String[] {"notify-send", sender, message});
 
-        } catch (IOException e) {
+    } catch (IOException e) {
 
-            try {
+      try {
 
-                Runtime.getRuntime()
-                        .exec(
-                                new String[] {
-                                    "kdialog", "--passivepopup", message, "5", "--title", sender
-                                });
+        Runtime.getRuntime()
+            .exec(new String[] {"kdialog", "--passivepopup", message, "5", "--title", sender});
 
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        }
+      } catch (IOException ex) {
+        throw new RuntimeException(ex);
+      }
     }
+  }
 }

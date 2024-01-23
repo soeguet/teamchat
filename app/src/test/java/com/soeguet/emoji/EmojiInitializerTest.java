@@ -9,14 +9,14 @@ import org.junit.jupiter.api.Test;
 
 class EmojiInitializerTest {
 
-    @Test
-    void emojiListShouldBeSizeZeroSinceItsNotTheJarVersion() {
+  @Test
+  void emojiListShouldBeSizeZeroSinceItsNotTheJarVersion() {
 
-        EmojiInitializerInterface emojiInitializer = new EmojiInitializer();
+    EmojiInitializerInterface emojiInitializer = new EmojiInitializer();
 
-        final HashMap<String, ImageIcon> emojiList = emojiInitializer.createEmojiList();
+    final HashMap<String, ImageIcon> emojiList = emojiInitializer.createEmojiList();
 
-        assertEquals(
-                emojiList.size(), 0, "Should be zero since the test is not run from the jar file.");
-    }
+    assertEquals(
+        emojiList.size(), 0, "Should be zero since the test is not run from the jar file.");
+  }
 }

@@ -2,150 +2,127 @@ package com.soeguet.generic_comment.gui_elements.util;
 
 import com.soeguet.generic_comment.gui_elements.panels.CustomContentContainer;
 import com.soeguet.generic_comment.util.Side;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 
 public class ChatBubblePaintHandler {
 
-    // variables -- start
-    private final CustomContentContainer customContentContainer;
-    private final Side side;
-    private Color borderColor;
+  // variables -- start
+  private final CustomContentContainer customContentContainer;
+  private final Side side;
+  private Color borderColor;
 
-    // variables -- end
+  // variables -- end
 
-    // constructors -- start
-    public ChatBubblePaintHandler(
-            final CustomContentContainer customContentContainer,
-            final Side side,
-            final Color borderColor) {
+  // constructors -- start
+  public ChatBubblePaintHandler(
+      final CustomContentContainer customContentContainer,
+      final Side side,
+      final Color borderColor) {
 
-        this.customContentContainer = customContentContainer;
-        this.side = side;
-        this.borderColor = borderColor;
+    this.customContentContainer = customContentContainer;
+    this.side = side;
+    this.borderColor = borderColor;
+  }
+
+  // constructors -- end
+
+  public void setupChatBubble() {
+
+    final CustomContentContainer container = this.getCustomContentContainer();
+
+    switch (this.getSide()) {
+      case LEFT -> setupLeftChatBubble(container);
+      case RIGHT -> setupRightChatBubble(container);
     }
+  }
 
-    // constructors -- end
+  private void setupLeftChatBubble(final CustomContentContainer container) {
 
-    public void setupChatBubble() {
+    container.overrideCustomPaint(
+        grphcs -> {
+          final int containerWidth = container.getWidth();
+          final int containerHeight = container.getHeight();
 
-        final CustomContentContainer container = this.getCustomContentContainer();
+          int rounding = 20;
+          Graphics2D g2d = (Graphics2D) grphcs;
 
-        switch (this.getSide()) {
-            case LEFT -> setupLeftChatBubble(container);
-            case RIGHT -> setupRightChatBubble(container);
-        }
-    }
+          final Color backgroundColor = Color.WHITE;
 
-    private void setupLeftChatBubble(final CustomContentContainer container) {
+          g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+          g2d.setColor(backgroundColor);
+          g2d.fillRoundRect(
+              13, 0, containerWidth - 13 - 1, containerHeight - 1, rounding, rounding);
 
-        container.overrideCustomPaint(
-                grphcs -> {
-                    final int containerWidth = container.getWidth();
-                    final int containerHeight = container.getHeight();
+          g2d.setColor(borderColor);
+          g2d.drawRoundRect(
+              13, 0, containerWidth - 13 - 1, containerHeight - 1, rounding, rounding);
 
-                    int rounding = 20;
-                    Graphics2D g2d = (Graphics2D) grphcs;
+          g2d.setColor(backgroundColor);
+          g2d.fillPolygon(
+              new int[] {0, 13, 25},
+              new int[] {containerHeight, containerHeight - 13, containerHeight},
+              3);
 
-                    final Color backgroundColor = Color.WHITE;
+          g2d.setColor(borderColor);
+          g2d.drawLine(0, containerHeight - 1, 25, containerHeight - 1);
+          g2d.drawLine(0, containerHeight - 1, 13, containerHeight - 13);
+        });
+  }
 
-                    g2d.setRenderingHint(
-                            RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(backgroundColor);
-                    g2d.fillRoundRect(
-                            13,
-                            0,
-                            containerWidth - 13 - 1,
-                            containerHeight - 1,
-                            rounding,
-                            rounding);
+  private void setupRightChatBubble(final CustomContentContainer container) {
 
-                    g2d.setColor(borderColor);
-                    g2d.drawRoundRect(
-                            13,
-                            0,
-                            containerWidth - 13 - 1,
-                            containerHeight - 1,
-                            rounding,
-                            rounding);
+    container.overrideCustomPaint(
+        grphcs -> {
+          final int containerWidth = container.getWidth();
+          final int containerHeight = container.getHeight();
 
-                    g2d.setColor(backgroundColor);
-                    g2d.fillPolygon(
-                            new int[] {0, 13, 25},
-                            new int[] {containerHeight, containerHeight - 13, containerHeight},
-                            3);
+          int rounding = 20;
+          Graphics2D g2d = (Graphics2D) grphcs;
 
-                    g2d.setColor(borderColor);
-                    g2d.drawLine(0, containerHeight - 1, 25, containerHeight - 1);
-                    g2d.drawLine(0, containerHeight - 1, 13, containerHeight - 13);
-                });
-    }
+          final Color backgroundColor = Color.WHITE;
 
-    private void setupRightChatBubble(final CustomContentContainer container) {
+          g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+          g2d.setColor(backgroundColor);
+          g2d.fillRoundRect(0, 0, containerWidth - 13, containerHeight - 1, rounding, rounding);
 
-        container.overrideCustomPaint(
-                grphcs -> {
-                    final int containerWidth = container.getWidth();
-                    final int containerHeight = container.getHeight();
+          g2d.setColor(getBorderColor());
+          g2d.drawRoundRect(0, 0, containerWidth - 13, containerHeight - 1, rounding, rounding);
 
-                    int rounding = 20;
-                    Graphics2D g2d = (Graphics2D) grphcs;
+          g2d.setColor(backgroundColor);
+          g2d.fillPolygon(
+              new int[] {containerWidth - 1, containerWidth - 28, containerWidth - 13},
+              new int[] {containerHeight - 1, containerHeight - 1, containerHeight - 13},
+              3);
 
-                    final Color backgroundColor = Color.WHITE;
+          g2d.setColor(getBorderColor());
+          g2d.drawLine(
+              containerWidth - 30, containerHeight - 1, containerWidth, containerHeight - 1);
+          g2d.drawLine(containerWidth - 13, containerHeight - 13, containerWidth, containerHeight);
+        });
+  }
 
-                    g2d.setRenderingHint(
-                            RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(backgroundColor);
-                    g2d.fillRoundRect(
-                            0, 0, containerWidth - 13, containerHeight - 1, rounding, rounding);
+  // getter & setter -- start
+  public Color getBorderColor() {
 
-                    g2d.setColor(getBorderColor());
-                    g2d.drawRoundRect(
-                            0, 0, containerWidth - 13, containerHeight - 1, rounding, rounding);
+    return borderColor;
+  }
 
-                    g2d.setColor(backgroundColor);
-                    g2d.fillPolygon(
-                            new int[] {
-                                containerWidth - 1, containerWidth - 28, containerWidth - 13
-                            },
-                            new int[] {
-                                containerHeight - 1, containerHeight - 1, containerHeight - 13
-                            },
-                            3);
+  public void setBorderColor(final Color borderColor) {
 
-                    g2d.setColor(getBorderColor());
-                    g2d.drawLine(
-                            containerWidth - 30,
-                            containerHeight - 1,
-                            containerWidth,
-                            containerHeight - 1);
-                    g2d.drawLine(
-                            containerWidth - 13,
-                            containerHeight - 13,
-                            containerWidth,
-                            containerHeight);
-                });
-    }
+    this.borderColor = borderColor;
+    customContentContainer.repaint();
+  }
 
-    // getter & setter -- start
-    public Color getBorderColor() {
+  public CustomContentContainer getCustomContentContainer() {
 
-        return borderColor;
-    }
+    return customContentContainer;
+  }
 
-    public void setBorderColor(final Color borderColor) {
+  public Side getSide() {
 
-        this.borderColor = borderColor;
-        customContentContainer.repaint();
-    }
-
-    public CustomContentContainer getCustomContentContainer() {
-
-        return customContentContainer;
-    }
-
-    public Side getSide() {
-
-        return side;
-    }
-    // getter & setter -- end
+    return side;
+  }
+  // getter & setter -- end
 }
