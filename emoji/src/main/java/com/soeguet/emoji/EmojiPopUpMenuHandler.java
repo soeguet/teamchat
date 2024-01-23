@@ -39,7 +39,7 @@ public class EmojiPopUpMenuHandler implements EmojiPopupInterface {
         JPopupMenu emojiPopupMenu = new JPopupMenu();
         JPanel emojiPanelWrapper = createEmojiPanel();
 
-        final EmojiRegister emojiRegister = EmojiRegister.getInstance();
+        final EmojiRegister emojiRegister = EmojiRegister.getEmojiRegisterInstance();
         final HashMap<String, ImageIcon> emojiList = emojiRegister.getEmojiList();
 
         emojiList

@@ -17,7 +17,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.imageio.ImageIO;
 
@@ -178,7 +177,7 @@ public class LinkDialogHandler {
     public void sendLinkToWebsocket(
             final LinkTransferDTO linkTransferDTO) {
 
-        PropertiesRegister propertiesRegister = PropertiesRegister.getCustomUserPropertiesInstance();
+        PropertiesRegister propertiesRegister = PropertiesRegister.getPropertiesInstance();
 
         LinkModel linkModel = new LinkModel();
         linkModel.setMessageType(MessageTypes.LINK);

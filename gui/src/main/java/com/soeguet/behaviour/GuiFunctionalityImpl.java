@@ -25,6 +25,7 @@ import com.soeguet.notification_panel.enums.NotificationStatus;
 import com.soeguet.notification_panel.interfaces.DesktopNotificationHandlerInterface;
 import com.soeguet.popups.PopupPanelImpl;
 import com.soeguet.popups.interfaces.PopupInterface;
+import com.soeguet.properties.PropertiesRegister;
 import com.soeguet.socket_client.ClientRegister;
 import com.soeguet.typing_panel.TypingPanelHandler;
 import com.soeguet.typing_panel.interfaces.TypingPanelHandlerInterface;
@@ -45,12 +46,17 @@ import java.util.logging.Logger;
  */
 public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketToGuiInterface {
 
+    // variables -- start
     private final ChatMainFrameImpl mainFrame;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Logger logger = Logger.getLogger(GuiFunctionalityImpl.class.getName());
     private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
+    private final PropertiesRegister propertiesRegister = PropertiesRegister.getPropertiesInstance();
     private CommentManager commentManager;
     private MessageDisplayHandlerInterface messageDisplayHandler;
+    // variables -- end
+
+    // constructors -- start
 
     /**
      Constructor for the GuiFunctionalityImpl class.
@@ -59,23 +65,359 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
 
         this.mainFrame = ChatMainFrameImpl.getMainFrameInstance();
     }
+    // constructors -- end
 
     /**
-     Generates a random RGB integer value.
+     Parses a JSON node from a byte array.
 
-     <p>This method creates a new instance of the Random class to generate random values for the
-     red, green, and blue components of the RGB color. It then creates a new Color object using the generated values and
-     retrieves the RGB integer value using the getRGB() method.
+     @param message
+     The message as a byte array.
 
-     @return the random RGB integer value
+     @return The parsed JSON node.
      */
-    private int getRandomRgbIntValue() {
+    private JsonNode parseJsonNode(final byte[] message) {
 
-        Random rand = new Random();
-        int r = rand.nextInt(256);
-        int g = rand.nextInt(256);
-        int b = rand.nextInt(256);
-        return new Color(r, g, b).getRGB();
+        try {
+
+            return mainFrame.getObjectMapper().readTree(message);
+
+        } catch (IOException e) {
+
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     Handles the typing panel based on the typing status received.
+
+     @param typingStatus
+     The typing status information.
+     */
+    private void handleTypingPanel(StatusTransferDTO typingStatus) {
+
+        TypingPanelHandlerInterface typingPanelHandler = new TypingPanelHandler();
+
+        String textOnTypingLabel = typingPanelHandler.retrieveTextOnTypingLabel();
+
+        // if typing client is already present on label -> return!
+        // typingStatus.statusArray()[0] array with only one value, always!
+        if (typingStatus.array().get(0) == null) {
+            return;
+        }
+        final String typingUsername = typingStatus.array().get(0);
+
+        if (textOnTypingLabel.contains(typingUsername)) {
+
+            return;
+        }
+
+        final StringBuilder stringBuilder = typingPanelHandler.generateTypingLabel(textOnTypingLabel, typingUsername);
+
+        typingPanelHandler.displayUpdatedTypingLabel(stringBuilder);
+    }
+
+    /**
+     Handles the interruption based on the client interruption status received.
+
+     @param clientInterruptDTO
+     The interruption status information.
+     */
+    private void handleInterruption(StatusTransferDTO clientInterruptDTO) {
+
+        InterruptHandlerInterface interruptHandler = new InterruptHandler();
+
+        clientInterruptDTO.array().forEach(interruptHandler::forceChatGuiToFront);
+    }
+
+    /**
+     Spams the buffer with a message to be displayed in the GUI chat panel.
+
+     <p>This method writes a message to the chat panel and then adds a brief delay before
+     proceeding. It is recommended to replace this method with a more efficient buffering or caching system in the
+     future.
+
+     @throws RuntimeException
+     if there is an InterruptedException during the delay.
+     */
+    private void spamBuffer() {
+
+        writeGuiMessageToChatPanel();
+
+        // TODO replace this with a buffer or caching system
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     Creates a desktop notification based on the provided message.
+
+     @param message
+     The message to be displayed in the notification.
+
+     @throws RuntimeException
+     if there is an error while handling the notification.
+     */
+    private void createDesktopNotification(final String message) {
+
+        // convert the message to a java object and return if the message came from this client
+        final BaseModel baseModel = parseMessageToJsonModel(message);
+
+        // return if the message was sent by this client (no notification for own messages)
+        if (propertiesRegister.checkIfUsernameMatches(baseModel.getSender())) {
+
+            return;
+        }
+
+        // module:: notification
+        DesktopNotificationHandlerInterface desktopNotificationHandler = new DesktopNotificationHandler();
+        NotificationStatus notificationStatus = desktopNotificationHandler.determineDesktopNotificationStatus();
+        desktopNotificationHandler.createDesktopNotification(message, notificationStatus);
+    }
+
+    /** This method writes a GUI message to the chat panel and handles all the setup. */
+    private synchronized void writeGuiMessageToChatPanel() {
+
+        if (commentManager == null) {
+
+            commentManager = new CommentManagerImpl();
+        }
+
+        if (messageDisplayHandler == null) {
+
+            messageDisplayHandler = new MessageDisplayHandler(commentManager);
+            messageDisplayHandler.setCacheManager(cacheManager);
+        }
+
+        // retrieve the message from cache
+        final String message = messageDisplayHandler.pollMessageFromCache();
+        if (message == null) {
+            return;
+        }
+
+        // convert message to java object
+        final BaseModel baseModel = this.parseMessageToJsonModel(message);
+
+        // register user from message to local cache if not present yet
+        // TODO 1
+        //        this.checkIfMessageSenderAlreadyRegisteredInLocalCache(mainFrame.getChatClientPropertiesHashMap(),
+        //                                                               baseModel.getSender());
+
+        // handle displayed message name - nickname as well as timeAndUsername
+        // TODO: 02.11.23 maybe nickname support -- removed it for now
+        // String nickname = checkForNickname(baseModel.getSender());
+
+        // process and display message
+        if (this.retrieveMessageType(baseModel) == MessageTypes.INTERACTED) {
+
+            // if interaction -> update existing message
+            messageDisplayHandler.updateExistingMessage(baseModel);
+
+        } else {
+
+            // if normal message -> process and display message
+            messageDisplayHandler.processAndDisplayMessage(baseModel);
+        }
+
+        // check for remaining messages in the local cache
+        checkIfDequeIsEmptyOrStartOver();
+    }
+
+    private byte retrieveMessageType(final BaseModel baseModel) {
+
+        if (ClientRegister.getWebSocketClientInstance().isStartup()) {
+
+            return MessageTypes.NORMAL;
+        }
+
+        return baseModel.getMessageType();
+    }
+
+    private BaseModel parseMessageToJsonModel(final String message) {
+
+        try {
+
+            return objectMapper.readValue(message, BaseModel.class);
+
+        } catch (JsonProcessingException e) {
+
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     Checks if the message queue is empty or if the chat needs to start over. If the message queue is not empty, it sets
+     a timer for displaying new messages.
+     */
+    private void checkIfDequeIsEmptyOrStartOver() {
+
+        if (cacheManager.getCache("messageQueue") instanceof MessageQueue messageQueue) {
+
+            repaintMainFrame();
+
+            SwingUtilities.invokeLater(() -> scrollMainPanelDownToLastMessage(this.mainFrame.getMainTextBackgroundScrollPane()));
+
+            if (!messageQueue.isEmpty()) {
+
+                timerForNewMessageToChatPanel();
+            }
+        }
+    }
+
+    /** This method sets a timer to periodically update the chat panel with new messages. */
+    private void timerForNewMessageToChatPanel() {
+
+        Timer timer = new Timer(300, e -> {
+            writeGuiMessageToChatPanel();
+            scrollMainPanelDownToLastMessage(this.mainFrame.getMainTextBackgroundScrollPane());
+        });
+        timer.setRepeats(false);
+        timer.start();
+    }
+
+    /**
+     This method triggers the repainting of the main frame, refreshing the graphical user interface. It revalidates and
+     repaints the main frame to apply any changes made to its components.
+     */
+    private void repaintMainFrame() {
+
+        mainFrame.revalidate();
+        mainFrame.repaint();
+    }
+
+    /**
+     Checks if the message sender is already registered in the local cache. If not, it adds the sender to the cache with
+     default properties.
+
+     @param clientMap
+     the map representing the local cache of message senders
+     @param sender
+     the sender to be checked and possibly added to the cache
+     */
+    private void checkIfMessageSenderAlreadyRegisteredInLocalCache(HashMap<String, CustomUserPropertiesDTO> clientMap
+            , String sender) {
+
+   /*     if (sender.equals(fetchUsernameFromCache())) {
+            if (!checkIfSenderIsThisClient("own")) {
+                addClientToLocalCacheRegister(clientMap, "own");
+            }
+        }
+
+        return;
+        // TODO 1
+
+                if(!clientMap.containsKey(sender))
+
+                {
+
+                    addClientToLocalCacheRegister(clientMap, sender);
+                }*/
+    }
+
+    /**
+     Adds a client to the local cache register.
+
+     @param clientMap
+     the map representing the local cache of clients
+     @param sender
+     the client to be added to the cache
+     */
+    private void addClientToLocalCacheRegister(final HashMap<String, CustomUserPropertiesDTO> clientMap,
+                                               final String sender) {
+
+        String username;
+        String nickname;
+
+        if (clientMap.containsKey(sender)) {
+
+            final CustomUserPropertiesDTO userPropertiesDTO = clientMap.get(sender);
+            username = userPropertiesDTO.username();
+            nickname = retrieveNicknameFromUserPropertiesDTO(userPropertiesDTO);
+
+        } else {
+
+            username = sender;
+            nickname = null;
+        }
+
+        // 1) statusArray
+
+        final boolean senderIsThisClient = checkIfSenderIsThisClient(username);
+
+        if (senderIsThisClient) {
+
+            // TODO 1
+
+            //            username = fetchUsernameFromCache();
+        }
+//            username = fetchUsernameFromCache();
+
+        // 2) nickname and 3) border color
+        final String borderColor = String.valueOf(getRandomRgbIntValue());
+
+        clientMap.put(sender, new CustomUserPropertiesDTO(username, nickname, borderColor));
+    }
+
+    /**
+     Retrieves the nickname from the given CustomUserPropertiesDTO object.
+
+     @param userPropertiesDTO
+     the CustomUserPropertiesDTO object from which to retrieve the nickname
+
+     @return the nickname retrieved from the CustomUserPropertiesDTO object, or null if the object is null
+     */
+    private String retrieveNicknameFromUserPropertiesDTO(final CustomUserPropertiesDTO userPropertiesDTO) {
+
+        if (userPropertiesDTO == null) {
+
+            return null;
+        }
+        if (userPropertiesDTO.nickname() != null && !userPropertiesDTO.nickname().isEmpty()) {
+
+            return userPropertiesDTO.nickname();
+        }
+        return null;
+    }
+
+    /**
+     Checks whether the given username belongs to the current client.
+
+     @param username
+     the username to be checked
+
+     @return true if the username belongs to the current client, false otherwise
+     */
+    private boolean checkIfSenderIsThisClient(final String username) {
+
+        return username.equals("own");
+    }
+
+    /**
+     Scrolls the main panel down to the last message in the scroll pane.
+
+     <p>This method updates the main frame, repaints it, and scrolls the vertical scroll bar to
+     its maximum position to display the last message.
+
+     <p>Implements MainFrame Revalidate and Repaint as well.
+
+     @param scrollPane
+     the scroll pane containing the main panel
+     */
+    private void scrollMainPanelDownToLastMessage(JScrollPane scrollPane) {
+
+        repaintMainFrame();
+
+        SwingUtilities.invokeLater(() -> {
+            final int scrollBarMaxValue = getMaximumVerticalScrollbarValue(scrollPane);
+            scrollPane.getVerticalScrollBar().setValue(scrollBarMaxValue);
+        });
+    }
+
+    private int getMaximumVerticalScrollbarValue(final JScrollPane scrollPane) {
+
+        return scrollPane.getVerticalScrollBar().getMaximum();
     }
 
     /**
@@ -244,394 +586,7 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
         }
     }
 
-    /**
-     Parses a JSON node from a byte array.
-
-     @param message
-     The message as a byte array.
-
-     @return The parsed JSON node.
-     */
-    private JsonNode parseJsonNode(final byte[] message) {
-
-        try {
-
-            return mainFrame.getObjectMapper().readTree(message);
-
-        } catch (IOException e) {
-
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     Handles the typing panel based on the typing status received.
-
-     @param typingStatus
-     The typing status information.
-     */
-    private void handleTypingPanel(StatusTransferDTO typingStatus) {
-
-        TypingPanelHandlerInterface typingPanelHandler = new TypingPanelHandler();
-
-        String textOnTypingLabel = typingPanelHandler.retrieveTextOnTypingLabel();
-
-        // if typing client is already present on label -> return!
-        // typingStatus.statusArray()[0] array with only one value, always!
-        if (typingStatus.array().get(0) == null) {
-            return;
-        }
-        final String typingUsername = typingStatus.array().get(0);
-
-        if (textOnTypingLabel.contains(typingUsername)) {
-
-            return;
-        }
-
-        final StringBuilder stringBuilder = typingPanelHandler.generateTypingLabel(textOnTypingLabel, typingUsername);
-
-        typingPanelHandler.displayUpdatedTypingLabel(stringBuilder);
-    }
-
-    /**
-     Handles the interruption based on the client interruption status received.
-
-     @param clientInterruptDTO
-     The interruption status information.
-     */
-    private void handleInterruption(StatusTransferDTO clientInterruptDTO) {
-
-        InterruptHandlerInterface interruptHandler = new InterruptHandler();
-
-        clientInterruptDTO.array().forEach(interruptHandler::forceChatGuiToFront);
-    }
-
-    /**
-     Spams the buffer with a message to be displayed in the GUI chat panel.
-
-     <p>This method writes a message to the chat panel and then adds a brief delay before
-     proceeding. It is recommended to replace this method with a more efficient buffering or caching system in the
-     future.
-
-     @throws RuntimeException
-     if there is an InterruptedException during the delay.
-     */
-    private void spamBuffer() {
-
-        writeGuiMessageToChatPanel();
-
-        // TODO replace this with a buffer or caching system
-        try {
-            Thread.sleep(50);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     Creates a desktop notification based on the provided message.
-
-     @param message
-     The message to be displayed in the notification.
-
-     @throws RuntimeException
-     if there is an error while handling the notification.
-     */
-    private void createDesktopNotification(final String message) {
-
-        // convert the message to a java object and return if the message came from this client
-        final BaseModel baseModel = parseMessageToJsonModel(message);
-
-        // return if the message was sent by this client (no notification for own messages)
-        if (compareSenderToUsername(baseModel)) {
-
-            return;
-        }
-
-        // module:: notification
-        DesktopNotificationHandlerInterface desktopNotificationHandler = new DesktopNotificationHandler();
-        NotificationStatus notificationStatus = desktopNotificationHandler.determineDesktopNotificationStatus();
-        desktopNotificationHandler.createDesktopNotification(message, notificationStatus);
-    }
-
-    /**
-     Compares the sender of a BaseModel object to the timeAndUsername of mainFrame.
-
-     @param baseModel
-     The BaseModel object to compare the sender to.
-
-     @return true if the sender of the baseModel object is equal to the timeAndUsername of mainFrame; false otherwise.
-     */
-    private boolean compareSenderToUsername(final BaseModel baseModel) {
-
-        return baseModel.getSender().equals(fetchUsernameFromCache());
-    }
-
-    /** This method writes a GUI message to the chat panel and handles all the setup. */
-    private synchronized void writeGuiMessageToChatPanel() {
-
-        if (commentManager == null) {
-
-            commentManager = new CommentManagerImpl();
-        }
-
-        if (messageDisplayHandler == null) {
-
-            messageDisplayHandler = new MessageDisplayHandler(commentManager);
-            messageDisplayHandler.setCacheManager(cacheManager);
-        }
-
-        // retrieve the message from cache
-        final String message = messageDisplayHandler.pollMessageFromCache();
-        if (message == null) {
-            return;
-        }
-
-        // convert message to java object
-        final BaseModel baseModel = this.parseMessageToJsonModel(message);
-
-        // register user from message to local cache if not present yet
-        // TODO 1
-        //        this.checkIfMessageSenderAlreadyRegisteredInLocalCache(mainFrame.getChatClientPropertiesHashMap(),
-        //                                                               baseModel.getSender());
-
-        // handle displayed message name - nickname as well as timeAndUsername
-        // TODO: 02.11.23 maybe nickname support -- removed it for now
-        // String nickname = checkForNickname(baseModel.getSender());
-
-        // process and display message
-        if (this.retrieveMessageType(baseModel) == MessageTypes.INTERACTED) {
-
-            // if interaction -> update existing message
-            messageDisplayHandler.updateExistingMessage(baseModel);
-
-        } else {
-
-            // if normal message -> process and display message
-            messageDisplayHandler.processAndDisplayMessage(baseModel);
-        }
-
-        // check for remaining messages in the local cache
-        checkIfDequeIsEmptyOrStartOver();
-    }
-
-    private byte retrieveMessageType(final BaseModel baseModel) {
-
-        if (ClientRegister.getWebSocketClientInstance().isStartup()) {
-
-            return MessageTypes.NORMAL;
-        }
-
-        return baseModel.getMessageType();
-    }
-
-    private BaseModel parseMessageToJsonModel(final String message) {
-
-        try {
-
-            return objectMapper.readValue(message, BaseModel.class);
-
-        } catch (JsonProcessingException e) {
-
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     Checks if the message queue is empty or if the chat needs to start over. If the message queue is not empty, it sets
-     a timer for displaying new messages.
-     */
-    private void checkIfDequeIsEmptyOrStartOver() {
-
-        if (cacheManager.getCache("messageQueue") instanceof MessageQueue messageQueue) {
-
-            repaintMainFrame();
-
-            SwingUtilities.invokeLater(() -> scrollMainPanelDownToLastMessage(this.mainFrame.getMainTextBackgroundScrollPane()));
-
-            if (!messageQueue.isEmpty()) {
-
-                timerForNewMessageToChatPanel();
-            }
-        }
-    }
-
-    /** This method sets a timer to periodically update the chat panel with new messages. */
-    private void timerForNewMessageToChatPanel() {
-
-        Timer timer = new Timer(300, e -> {
-            writeGuiMessageToChatPanel();
-            scrollMainPanelDownToLastMessage(this.mainFrame.getMainTextBackgroundScrollPane());
-        });
-        timer.setRepeats(false);
-        timer.start();
-    }
-
-    /**
-     This method triggers the repainting of the main frame, refreshing the graphical user interface. It revalidates and
-     repaints the main frame to apply any changes made to its components.
-     */
-    private void repaintMainFrame() {
-
-            mainFrame.revalidate();
-            mainFrame.repaint();
-    }
-
-    /**
-     Checks if the message sender is already registered in the local cache. If not, it adds the sender to the cache with
-     default properties.
-
-     @param clientMap
-     the map representing the local cache of message senders
-     @param sender
-     the sender to be checked and possibly added to the cache
-     */
-    private void checkIfMessageSenderAlreadyRegisteredInLocalCache(HashMap<String, CustomUserPropertiesDTO> clientMap
-            , String sender) {
-
-        if (sender.equals(fetchUsernameFromCache())) {
-            if (!checkIfSenderIsThisClient("own")) {
-                addClientToLocalCacheRegister(clientMap, "own");
-            }
-        }
-
-        return;
-        // TODO 1
-        //
-        //        if(!clientMap.containsKey(sender))
-        //
-        //        {
-        //
-        //            addClientToLocalCacheRegister(clientMap, sender);
-        //        }
-    }
-
-    /**
-     Adds a client to the local cache register.
-
-     @param clientMap
-     the map representing the local cache of clients
-     @param sender
-     the client to be added to the cache
-     */
-    private void addClientToLocalCacheRegister(final HashMap<String, CustomUserPropertiesDTO> clientMap,
-                                               final String sender) {
-
-        String username;
-        String nickname;
-
-        if (clientMap.containsKey(sender)) {
-
-            final CustomUserPropertiesDTO userPropertiesDTO = clientMap.get(sender);
-            username = userPropertiesDTO.username();
-            nickname = retrieveNicknameFromUserPropertiesDTO(userPropertiesDTO);
-
-        } else {
-
-            username = sender;
-            nickname = null;
-        }
-
-        // 1) statusArray
-
-        final boolean senderIsThisClient = checkIfSenderIsThisClient(username);
-
-        if (senderIsThisClient) {
-
-            username = fetchUsernameFromCache();
-        }
-
-        // 2) nickname and 3) border color
-        final String borderColor = String.valueOf(getRandomRgbIntValue());
-
-        clientMap.put(sender, new CustomUserPropertiesDTO(username, nickname, borderColor));
-    }
-
-    /**
-     Retrieves the nickname from the given CustomUserPropertiesDTO object.
-
-     @param userPropertiesDTO
-     the CustomUserPropertiesDTO object from which to retrieve the nickname
-
-     @return the nickname retrieved from the CustomUserPropertiesDTO object, or null if the object is null
-     */
-    private String retrieveNicknameFromUserPropertiesDTO(final CustomUserPropertiesDTO userPropertiesDTO) {
-
-        if (userPropertiesDTO == null) {
-
-            return null;
-        }
-        if (userPropertiesDTO.nickname() != null && !userPropertiesDTO.nickname().isEmpty()) {
-
-            return userPropertiesDTO.nickname();
-        }
-        return null;
-    }
-
-    /**
-     Retrieves the username from the cache.
-
-     @return the username retrieved from the cache, or null if it does not exist
-     */
-    private String fetchUsernameFromCache() {
-
-        return this.mainFrame.getUsername();
-    }
-
-    /**
-     Checks whether the given username belongs to the current client.
-
-     @param username
-     the username to be checked
-
-     @return true if the username belongs to the current client, false otherwise
-     */
-    private boolean checkIfSenderIsThisClient(final String username) {
-
-        return username.equals("own");
-    }
-
-    /**
-     Scrolls the main panel down to the last message in the scroll pane.
-
-     <p>This method updates the main frame, repaints it, and scrolls the vertical scroll bar to
-     its maximum position to display the last message.
-
-     <p>Implements MainFrame Revalidate and Repaint as well.
-
-     @param scrollPane
-     the scroll pane containing the main panel
-     */
-    private void scrollMainPanelDownToLastMessage(JScrollPane scrollPane) {
-
-        repaintMainFrame();
-
-        SwingUtilities.invokeLater(() -> {
-            final int scrollBarMaxValue = getMaximumVerticalScrollbarValue(scrollPane);
-            scrollPane.getVerticalScrollBar().setValue(scrollBarMaxValue);
-        });
-    }
-
-    private int getMaximumVerticalScrollbarValue(final JScrollPane scrollPane) {
-
-        return scrollPane.getVerticalScrollBar().getMaximum();
-    }
-
-    /**
-     @return the objectMapper
-     */
-    public ObjectMapper getObjectMapper() {
-
-        return objectMapper;
-    }
-
-    /**
-     @return the logger
-     */
-    public Logger getLogger() {
-
-        return logger;
-    }
+    // getter & setter -- start
 
     /**
      @return the cacheManager
@@ -659,6 +614,14 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
     }
 
     /**
+     @return the logger
+     */
+    public Logger getLogger() {
+
+        return logger;
+    }
+
+    /**
      @return the messageDisplayHandler
      */
     public MessageDisplayHandlerInterface getMessageDisplayHandler() {
@@ -674,4 +637,31 @@ public class GuiFunctionalityImpl implements GuiFunctionalityInterface, SocketTo
 
         this.messageDisplayHandler = messageDisplayHandler;
     }
+
+    /**
+     @return the objectMapper
+     */
+    public ObjectMapper getObjectMapper() {
+
+        return objectMapper;
+    }
+
+    /**
+     Generates a random RGB integer value.
+
+     <p>This method creates a new instance of the Random class to generate random values for the
+     red, green, and blue components of the RGB color. It then creates a new Color object using the generated values and
+     retrieves the RGB integer value using the getRGB() method.
+
+     @return the random RGB integer value
+     */
+    private int getRandomRgbIntValue() {
+
+        Random rand = new Random();
+        int r = rand.nextInt(256);
+        int g = rand.nextInt(256);
+        int b = rand.nextInt(256);
+        return new Color(r, g, b).getRGB();
+    }
+    // getter & setter -- end
 }

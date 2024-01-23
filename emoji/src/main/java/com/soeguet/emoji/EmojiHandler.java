@@ -70,7 +70,7 @@ public class EmojiHandler implements EmojiHandlerInterface {
 
         StyledDocument doc = actualTextPane.getStyledDocument();
 
-        EmojiRegister emojiRegister = EmojiRegister.getInstance();
+        EmojiRegister emojiRegister = EmojiRegister.getEmojiRegisterInstance();
         final HashMap<String, ImageIcon> emojiList = emojiRegister.getEmojiList();
 
         try {
@@ -122,7 +122,7 @@ public class EmojiHandler implements EmojiHandlerInterface {
         Style style = actualTextPane.addStyle("Image", null);
 
         ImageIcon emojiImage =
-                EmojiRegister.getInstance().getEmojiList().get(word);
+                EmojiRegister.getEmojiRegisterInstance().getEmojiList().get(word);
         ImageIcon imageIcon = new ImageIcon(emojiImage.getImage());
         imageIcon.setDescription(emojiImage.getDescription());
         StyleConstants.setIcon(style, imageIcon);

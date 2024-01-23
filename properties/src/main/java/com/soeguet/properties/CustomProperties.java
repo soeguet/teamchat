@@ -11,29 +11,117 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Logger;
 
 public class CustomProperties extends Properties implements CustomPropertiesInterface {
 
+    // variables -- start
     private static CustomProperties properties;
     private final Logger logger = Logger.getLogger(CustomProperties.class.getName());
     private final Set<CustomUserPropertiesDTO> userPropertiesHashSet;
     private String configFilePath;
+    // variables -- end
 
+    // constructors -- start
     private CustomProperties() {
-
+        // SINGLETON
         userPropertiesHashSet = new HashSet<>();
     }
+    // constructors -- end
 
-    public static CustomProperties getProperties() {
+    private void createFolderIfNotPresent(final File appDir) {
 
-        if (properties == null) {
+        if (!appDir.exists()) {
 
-            properties = new CustomProperties();
+            final boolean mkdir = appDir.mkdir();
+
+            if (!mkdir) {
+
+                logger.log(java.util.logging.Level.SEVERE, "ERROR! Could not createQuoteTopTextPane app dir!");
+                throw new RuntimeException();
+            }
+        }
+    }
+
+    private void createPropertiesFile(String configFilePath) {
+
+        try (FileOutputStream output = new FileOutputStream(configFilePath)) {
+
+            store(output, null);
+
+        } catch (IOException e) {
+
+            logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not createQuoteTopTextPane config file!", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void save() {
+
+        // TODO 1
+
+        //
+        //        ObjectMapper mapper = new ObjectMapper();
+        //
+        //        PropertiesRegister propertiesRegister = PropertiesRegister.getPropertiesRegisterInstance();
+        //        final HashMap<String, CustomUserPropertiesDTO> chatClientPropertiesHashMap =
+        //                propertiesRegister.getChatClientPropertiesHashMap();
+        //
+        //        chatClientPropertiesHashMap.forEach((key, value) -> {
+        //            String json = null;
+        //
+        //            try {
+        //
+        //                json = mapper.writeValueAsString(value);
+        //
+        //            } catch (IOException e) {
+        //
+        //                logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not save user " + key, e);
+        //                throw new RuntimeException();
+        //            }
+        //
+        //            setProperty(key, json);
+        //        });
+        //
+        //        PopupInterface popup = new PopupPanelImpl();
+        //        popup.getMessageTextField().setText("properties saved");
+        //        popup.configurePopupPanelPlacement();
+        //        popup.initiatePopupTimer(2_000);
+        //
+        //        createPropertiesFile(configFilePath);
+    }
+
+    public CustomUserPropertiesDTO loadThisClientProperties() {
+
+        final String clientProperties = getProperty("own");
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        PropertiesRegister propertiesRegister = PropertiesRegister.getPropertiesInstance();
+        if (propertiesRegister.getUsername() != null) {
+
+            return new CustomUserPropertiesDTO(propertiesRegister.getUsername(), null, null);
         }
 
-        return properties;
+        if (clientProperties == null || clientProperties.isEmpty()) {
+
+            return null;
+        }
+
+        try {
+
+            return objectMapper.readValue(clientProperties, CustomUserPropertiesDTO.class);
+
+        } catch (JsonProcessingException e) {
+
+            logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not load own properties!", e);
+            logger.log(java.util.logging.Level.SEVERE, "CustomProperties > loadThisClientProperties()", e);
+        }
+
+        return null;
     }
 
     @Override
@@ -142,96 +230,15 @@ public class CustomProperties extends Properties implements CustomPropertiesInte
         return userProperty.orElseThrow();
     }
 
-    private void createFolderIfNotPresent(final File appDir) {
+    // getter & setter -- start
+    public static CustomProperties getPropertiesInstance() {
 
-        if (!appDir.exists()) {
+        if (properties == null) {
 
-            final boolean mkdir = appDir.mkdir();
-
-            if (!mkdir) {
-
-                logger.log(java.util.logging.Level.SEVERE, "ERROR! Could not createQuoteTopTextPane app dir!");
-                throw new RuntimeException();
-            }
+            properties = new CustomProperties();
         }
+
+        return properties;
     }
-
-    private void createPropertiesFile(String configFilePath) {
-
-        try (FileOutputStream output = new FileOutputStream(configFilePath)) {
-
-            store(output, null);
-
-        } catch (IOException e) {
-
-            logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not createQuoteTopTextPane config file!", e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void save() {
-
-        // TODO 1
-
-//
-//        ObjectMapper mapper = new ObjectMapper();
-//
-//        PropertiesRegister propertiesRegister = PropertiesRegister.getPropertiesRegisterInstance();
-//        final HashMap<String, CustomUserPropertiesDTO> chatClientPropertiesHashMap =
-//                propertiesRegister.getChatClientPropertiesHashMap();
-//
-//        chatClientPropertiesHashMap.forEach((key, value) -> {
-//            String json = null;
-//
-//            try {
-//
-//                json = mapper.writeValueAsString(value);
-//
-//            } catch (IOException e) {
-//
-//                logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not save user " + key, e);
-//                throw new RuntimeException();
-//            }
-//
-//            setProperty(key, json);
-//        });
-//
-//        PopupInterface popup = new PopupPanelImpl();
-//        popup.getMessageTextField().setText("properties saved");
-//        popup.configurePopupPanelPlacement();
-//        popup.initiatePopupTimer(2_000);
-//
-//        createPropertiesFile(configFilePath);
-    }
-
-    public CustomUserPropertiesDTO loaderThisClientProperties() {
-
-        final String clientProperties = getProperty("own");
-    ObjectMapper objectMapper = new ObjectMapper();
-
-        // replace "own" preset timeAndUsername
-
-        PropertiesRegister propertiesRegister = PropertiesRegister.getCustomUserPropertiesInstance();
-        if (propertiesRegister.getUsername() != null) {
-
-            return new CustomUserPropertiesDTO(propertiesRegister.getUsername(), null, null);
-        }
-
-        if (clientProperties == null || clientProperties.isEmpty()) {
-
-            return null;
-        }
-
-        try {
-
-            return objectMapper.readValue(clientProperties, CustomUserPropertiesDTO.class);
-
-        } catch (JsonProcessingException e) {
-
-            logger.log(java.util.logging.Level.SEVERE, "ERROR: Could not load own properties!", e);
-            logger.log(java.util.logging.Level.SEVERE, "CustomProperties > loaderThisClientProperties()", e);
-        }
-
-        return null;
-    }
+    // getter & setter -- end
 }

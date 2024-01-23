@@ -42,7 +42,7 @@ public class CustomSimpleTextPane extends JTextPane implements MouseListener {
      */
     public void replaceEmojiDescriptionWithActualImageIcon(final String message) {
 
-        EmojiRegister emojiRegister = EmojiRegister.getInstance();
+        EmojiRegister emojiRegister = EmojiRegister.getEmojiRegisterInstance();
         HashMap<String, ImageIcon> emojiHashMap = emojiRegister.getEmojiList();
 
         // otherwise there will be no text in the chat bubbles

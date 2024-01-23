@@ -106,7 +106,7 @@ public class MainChatPanelFactory {
         customCommentPanel.setCustomContentContainer(customContentContainer);
         customCommentPanel.setCustomMainWrapperContainer(customMainWrapperContainer);
 
-        PropertiesRegister propertiesRegister = PropertiesRegister.getCustomUserPropertiesInstance();
+        PropertiesRegister propertiesRegister = PropertiesRegister.getPropertiesInstance();
         // TODO 1
 //        final CustomWebsocketClient customWebsocketClient = ClientRegister.getWebSocketClientInstance().getCustomWebsocketClient();
 

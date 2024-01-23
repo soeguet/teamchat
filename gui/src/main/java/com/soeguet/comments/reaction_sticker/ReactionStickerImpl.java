@@ -25,7 +25,7 @@ public class ReactionStickerImpl {
         stickerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         stickerPanel.setOpaque(false);
 
-        EmojiRegister emojiRegister = EmojiRegister.getInstance();
+        EmojiRegister emojiRegister = EmojiRegister.getEmojiRegisterInstance();
 
         userInteractions.forEach(
                 userInteraction -> {

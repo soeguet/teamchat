@@ -64,7 +64,7 @@ public class CustomReplySendButton extends JButton implements MouseListener {
         messageModel.setQuotedMessage(quoteModel);
         messageModel.setMessage(customReplyPanel.getTextPane().getText());
         messageModel.setTime(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
-        messageModel.setSender(PropertiesRegister.getCustomUserPropertiesInstance().getUsername());
+        messageModel.setSender(PropertiesRegister.getPropertiesInstance().getUsername());
         messageModel.setMessageType(MessageTypes.REPLY);
 
         return messageModel;

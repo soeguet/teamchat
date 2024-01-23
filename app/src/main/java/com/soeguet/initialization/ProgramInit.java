@@ -36,11 +36,13 @@ public class ProgramInit {
                 () -> {
 
                     // REMOVE remove later on
+                    // module ::gui
                     this.mainFrame.repositionChatFrameForTestingPurposes();
 
                     // setup emojis
+                    // module ::emoji
                     final EmojiInitializerInterface emojiInitializer = new EmojiInitializer();
-                    EmojiRegister emojiRegister = EmojiRegister.getInstance();
+                    EmojiRegister emojiRegister = EmojiRegister.getEmojiRegisterInstance();
                     emojiRegister.initEmojiList(emojiInitializer);
 
                     // setup functionality
@@ -67,11 +69,8 @@ public class ProgramInit {
 
     private void initializeProperties(final EnvVariables envVariables) {
 
-        final CustomProperties customProperties = CustomProperties.getProperties();
-
-        // TODO 1
-
-//        customProperties.setMainFrame();
+        // module ::properties
+        final CustomProperties customProperties = CustomProperties.getPropertiesInstance();
 
         if (customProperties.checkIfConfigFileExists()) {
 
@@ -87,9 +86,9 @@ public class ProgramInit {
 
     private void initializeMainFrame() {
 
+        // module ::gui
         this.mainFrame.loadCustomProperties();
         this.mainFrame.initGuiFunctionality();
         this.mainFrame.initializeClientController();
-        this.mainFrame.initEmojiHandler();
     }
 }

@@ -25,6 +25,7 @@ import com.soeguet.popups.PopupPanelImpl;
 import com.soeguet.popups.interfaces.PopupInterface;
 import com.soeguet.properties.CustomProperties;
 import com.soeguet.properties.PropertiesPanelImpl;
+import com.soeguet.properties.PropertiesRegister;
 import com.soeguet.properties.interfaces.PropertiesInterface;
 import com.soeguet.socket_client.ClientControllerImpl;
 import com.soeguet.socket_client.ClientRegister;
@@ -51,63 +52,41 @@ public class ChatMainFrameImpl extends ChatPanel {
     // structure ready,
     // implementation missing
     // -> add to cache
+    private static final ChatMainFrameImpl chatMainFrame = new ChatMainFrameImpl();
     private final LinkedHashMap<Long, CommentInterface> commentsHashMap = new LinkedHashMap<>();
-
     /////////////////////////
     private final Logger logger = Logger.getLogger(ChatMainFrameImpl.class.getName());
-
     /** Instance of the object mapper used to convert objects to json and vice versa. */
     private final ObjectMapper objectMapper = new ObjectMapper();
-
     /**
      Instance of cache manager primarily storing data structures of the collections api to help cache some data.
      */
     private final CacheManager cacheManager = CacheManagerFactory.getCacheManager();
-
+    private final PropertiesRegister propertiesRegister = PropertiesRegister.getPropertiesInstance();
     /** Instance of class, holding a few environment variables */
     private EnvVariables envVariables;
-
     /** Instance of the gui functionality handler. */
     private GuiFunctionalityInterface guiFunctionality;
-
     /** The margin east border for the JScrollPane. */
     private int JSCROLLPANE_MARGIN_RIGHT_BORDER;
-
     /** The margin bottom border for the JScrollPane. */
     private int JSCROLLPANE_MARGIN_BOTTOM_BORDER;
-
     /** Instance of the emoji handler, which switches emojis with strings and vice versa. */
     private EmojiHandler emojiHandler;
-
-    /**
-     Variable representing the timeAndUsername of this pc's client. The timeAndUsername on the right side
-     */
-    private String username;
-
-    /** Indicates whether the start-up process has already been completed. */
-    private boolean startUp = true;
-
     /** Timer for blocking all messages. */
     private Timer blockTimer;
-
     private TrayIcon trayIcon;
-
+    private ClientControllerImpl clientController;
     // variables -- end
 
     // constructors -- start
+
     /** Creates a new instance of ChatMainFrameImpl. */
     private ChatMainFrameImpl() {
 
         super();
     }
     // constructors -- end
-
-    private static final ChatMainFrameImpl chatMainFrame = new ChatMainFrameImpl();
-
-    public static ChatMainFrameImpl getMainFrameInstance() {
-
-        return chatMainFrame;
-    }
 
     /**
      This method is used to reposition the chat frame for testing purposes. It retrieves the value of the
@@ -139,7 +118,7 @@ public class ChatMainFrameImpl extends ChatPanel {
         // override statusArray if saved in GUI by user
         if (!this.envVariables.getChatUsername().isEmpty()) {
 
-            this.setUsername(this.envVariables.getChatUsername());
+            propertiesRegister.setUsername(this.envVariables.getChatUsername());
         }
     }
 
@@ -155,7 +134,7 @@ public class ChatMainFrameImpl extends ChatPanel {
         final String desktopEnv = EnvironmentData.getDesktopEnv();
         try {
             if (osName.isBlank()) {
-
+                // do nothing
             } else if (osName.toLowerCase().contains("windows")) {
 
                 this.JSCROLLPANE_MARGIN_BOTTOM_BORDER = 63;
@@ -165,7 +144,7 @@ public class ChatMainFrameImpl extends ChatPanel {
 
                 if (desktopEnv.toLowerCase().contains("pop") || desktopEnv.toLowerCase().contains("unity")) {
 
-                    // PopOs!
+                    // Pop_Os!
                     this.JSCROLLPANE_MARGIN_BOTTOM_BORDER = 62;
                 } else if (desktopEnv.toLowerCase().contains("gnome")) {
 
@@ -192,7 +171,8 @@ public class ChatMainFrameImpl extends ChatPanel {
 
     public void setMainFrameTitle() {
 
-        final String title = "teamchat" + " - " + this.chatVersion() + "client name: " + this.getUsername();
+        final String title =
+                "teamchat" + " - " + this.chatVersion() + "client name: " + propertiesRegister.getUsername();
 
         this.setTitle(title);
     }
@@ -242,29 +222,24 @@ public class ChatMainFrameImpl extends ChatPanel {
         }
     }
 
-    public void setEnvVariables(final EnvVariables envVariables) {
-
-        this.envVariables = envVariables;
-    }
-
     /**
      This method is used to load custom properties for a specific client. It initializes the customProperties object
      with
      a new instance of CustomProperties, passing the current instance as a parameter. It then calls the
-     loaderThisClientProperties() method of the customProperties object to load the properties for the current client .
-     If the client properties are successfully loaded, the method sets the statusArray property to the statusArray
-     obtained from the CustomUserProperties object.
+     loadThisClientProperties() method of the customProperties object to load the properties for the current client . If
+     the client properties are successfully loaded, the method sets the statusArray property to the statusArray obtained
+     from the CustomUserProperties object.
      */
     public void loadCustomProperties() {
 
-        final CustomProperties customProperties = CustomProperties.getProperties();
-
-        final CustomUserPropertiesDTO client = customProperties.loaderThisClientProperties();
+        final CustomProperties customProperties = CustomProperties.getPropertiesInstance();
+        final CustomUserPropertiesDTO client = customProperties.loadThisClientProperties();
+        final PropertiesRegister propertiesRegister = PropertiesRegister.getPropertiesInstance();
 
         // only override statusArray if nothing is set on startup
-        if (client != null && this.username == null) {
+        if (client != null && propertiesRegister.getUsername() == null) {
 
-            this.username = client.username();
+            propertiesRegister.setUsername(client.username());
         }
     }
 
@@ -295,8 +270,6 @@ public class ChatMainFrameImpl extends ChatPanel {
         clientController.connectToWebsocket();
     }
 
-    private ClientControllerImpl clientController;
-
     /**
      Initializes the emoji handler.
 
@@ -310,198 +283,217 @@ public class ChatMainFrameImpl extends ChatPanel {
         this.emojiHandler = new EmojiHandler();
     }
 
-    public void setFixedScrollSpeed(final int i) {
+    /**
+     Method used to retrieve the version of the JAR file.
 
-        this.getMainTextBackgroundScrollPane().getVerticalScrollBar().setUnitIncrement(i);
+     <p>This method uses reflection to get the implementation version of the JAR file containing
+     the class. It is assumed that the JAR file has its version specified in its manifest file.
+
+     @return The version of the JAR file as a string, or null if the version cannot be determined.
+     */
+    String retrieveJarVersion() {
+
+        return this.getClass().getPackage().getImplementationVersion();
     }
 
     /**
-     Resets the connection when the reset connection menu item is pressed.
-
-     @param e
-     The mouse event that triggered the method.
+     @return
      */
-    @Override
-    public void resetConnectionMenuItemMousePressed(final MouseEvent e) {
+    private String chatVersion() {
 
-        // clear the main text panel first
-        this.removeAllMessagesOnChatPanel();
+        final Properties properties = new Properties();
+        final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("version.properties");
 
-        // close the websocket client
-        this.clientController.closeConnection();
+        if (inputStream != null) {
 
-        // set null to be sure + preparation for reconnect
-        this.clientController.prepareReconnection();
+            try {
 
-        // invalidate all caches
-        this.cacheManager.invalidateCache();
+                properties.load(inputStream);
+                return properties.getProperty("version") + " - ";
 
-        // reconnect to socket
-        this.clientController.connectToWebsocket();
-        this.logger.info("Reconnecting websocket client");
+            } catch (final IOException e) {
+
+                throw new RuntimeException(e);
+            }
+
+        } else {
+
+            return "";
+        }
     }
 
     /**
-     Gets the ObjectMapper instance used for converting JSON to Java objects and vice versa.
+     Method used to repaint the main frame.
 
-     @return the ObjectMapper instance
+     <p>This method revalidates and repaints the main frame component, ensuring that any changes
+     to its layout or appearance are correctly displayed on the screen.
      */
-    public ObjectMapper getObjectMapper() {
+    private void repaintMainFrame() {
 
-        return this.objectMapper;
+        this.revalidate();
+        this.repaint();
     }
 
     /**
-     Retrieves the GuiFunctionality.
+     Removes all messages from the chat panel.
 
-     @return the GuiFunctionality object.
+     <p>The method uses `SwingUtilities.invokeLater()` to ensure that the removal of messages is
+     performed on the event dispatch thread, as it involves modifications to the GUI.
+
+     <p>Within the method, the `form_mainTextPanel.removeAll()` is called to remove all components
+     from the chat panel. Additionally, the `repaintMainFrame()` method is called to repaint the main frame, ensuring
+     that the changes are immediately visible to the user.
      */
-    public GuiFunctionalityInterface getGuiFunctionality() {
+    private void removeAllMessagesOnChatPanel() {
 
-        return this.guiFunctionality;
+        SwingUtilities.invokeLater(() -> {
+            this.form_mainTextPanel.removeAll();
+            this.repaintMainFrame();
+        });
     }
 
     /**
-     Retrieves the timeAndUsername.
+     Sends a typing status message to the websocket server. The method forms a JSON object representing the typing
+     status
+     and sends it to the websocket client. If an error occurs while processing the JSON, a RuntimeException is thrown.
 
-     @return the timeAndUsername as a String.
+     @throws RuntimeException
+     if an error occurs while processing the JSON.
      */
-    public String getUsername() {
+    private void sendIsTypingStatusToWebsocket() {
 
-        return this.username;
+        try {
+
+            final ArrayList<String> array = new ArrayList<>();
+            array.add(this.propertiesRegister.getUsername());
+            final byte[] jsonTypingStatus = this.objectMapper.writeValueAsBytes(new StatusTransferDTO("typing", array));
+
+            ClientRegister.getWebSocketClientInstance().send(jsonTypingStatus);
+
+        } catch (final JsonProcessingException e) {
+
+            throw new RuntimeException(e);
+        }
     }
 
     /**
-     Sets the timeAndUsername.
+     Appends a new line to the text editor pane.
 
-     @param username
-     the timeAndUsername to set.
+     <p>Retrieves the current text in the text editor pane and appends a new line character at the
+     end of it.
      */
-    public void setUsername(final String username) {
+    private void appendNewLineToTextEditorPane() {
 
-        this.username = username;
+        final int caretPosition = this.form_textEditorPane.getCaretPosition();
+        this.form_textEditorPane.setSelectionStart(0);
+        this.form_textEditorPane.setSelectionEnd(caretPosition);
+        this.form_textEditorPane.replaceSelection(this.form_textEditorPane.getSelectedText() + "\n");
+
+        final int endPosition = this.form_textEditorPane.getCaretPosition();
+        this.form_textEditorPane.setSelectionStart(endPosition);
+        this.form_textEditorPane.setSelectionEnd(endPosition);
     }
 
     /**
-     Retrieves the comment hash map.
+     Handles a key press event when the enter key is pressed without pressing the shift key.
 
-     @return the comments hash map
+     <p>Retrieves the content of the text editor pane, trims any leading or trailing space, and
+     checks if it is empty. If the content is empty, it clears the text editor pane. Otherwise, it calls the
+     `sendMessageToSocket` method to clear the text pane and send the current content to a socket.
      */
-    public LinkedHashMap<Long, CommentInterface> getCommentsHashMap() {
+    private void handleNonShiftEnterKeyPress() {
 
-        return this.commentsHashMap;
+        // emoji to text -> text extraction
+        this.emojiHandler.replaceImageIconWithEmojiDescription(this.form_textEditorPane);
+        final String textPaneContent = this.form_textEditorPane.getText().trim();
+
+        if (textPaneContent.isEmpty()) {
+
+            // empty -> reset
+            this.form_textEditorPane.setText("");
+
+        } else {
+
+            this.sendMessageToSocket();
+        }
     }
 
-    /**
-     Returns the emoji handler.
+    private void sendMessageToSocket() {
 
-     <p>This method returns the emoji handler associated with the current object.
+        final String textFromInput = this.guiFunctionality.getTextFromInput();
 
-     @return the emoji handler.
-     */
-    public EmojiHandler getEmojiHandler() {
+        final MessageModel messageModel = new MessageModel();
+        messageModel.setMessage(textFromInput);
+        messageModel.setTime(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
+        messageModel.setSender(this.propertiesRegister.getUsername());
+        messageModel.setMessageType(MessageTypes.NORMAL);
 
-        return this.emojiHandler;
+        final String serializedTextFromInput = this.guiFunctionality.convertUserTextToJSON(messageModel);
+        if (serializedTextFromInput != null) {
+            this.guiFunctionality.sendMessageToSocket(serializedTextFromInput);
+            this.guiFunctionality.notifyClientsSendStatus();
+        }
+        this.guiFunctionality.clearTextPane();
     }
 
-    /**
-     Retrieves the value of the JSCROLLPANE_MARGIN_BOTTOM_BORDER constant.
+    private void initializePopupMessage(final String x, final String x1) {
 
-     @return The value of the JSCROLLPANE_MARGIN_BOTTOM_BORDER constant.
-     */
-    public int getJSCROLLPANE_MARGIN_BOTTOM_BORDER() {
-
-        return this.JSCROLLPANE_MARGIN_BOTTOM_BORDER;
+        final PopupInterface popup = new PopupPanelImpl();
+        popup.getMessageTextField().setText(x + System.lineSeparator() + x1);
+        popup.configurePopupPanelPlacement();
+        popup.initiatePopupTimer(3_000);
     }
 
-    /**
-     Retrieves the value of the JSCROLLPANE_MARGIN_RIGHT_BORDER constant.
+    private void initializeNewMessageBlockTimer() {
 
-     @return The value of the JSCROLLPANE_MARGIN_RIGHT_BORDER constant.
-     */
-    public int getJSCROLLPANE_MARGIN_RIGHT_BORDER() {
+        // blocking for 5 Minutes
+        this.blockTimer = new Timer(1_000 * 60 * 5, e1 -> {
+            this.form_allNotificationsMenuItem.setSelected(false);
 
-        return this.JSCROLLPANE_MARGIN_RIGHT_BORDER;
+            // show popup
+            this.initializePopupMessage("Notifications status", "reverted");
+        });
+
+        this.blockTimer.setRepeats(false);
+        this.blockTimer.start();
+    }
+
+    private void resetMessageBlockTimer() {
+
+        if (this.blockTimer != null) {
+
+            this.blockTimer.stop();
+            this.blockTimer = null;
+        }
+    }
+
+    public void setupSystemTrayIcon() {
+
+        if (SystemTray.isSupported()) {
+
+            final URL iconURL = ChatMainFrameImpl.class.getResource("/icon.png");
+            assert iconURL != null;
+            final ImageIcon icon = new ImageIcon(iconURL);
+
+            try {
+
+                final SystemTray tray = SystemTray.getSystemTray();
+                this.trayIcon = new TrayIcon(icon.getImage(), "teamchat");
+                this.trayIcon.setImageAutoSize(true);
+                tray.add(this.trayIcon);
+
+            } catch (final AWTException e) {
+
+                System.err.println("TrayIcon could not be added.");
+            }
+
+        } else {
+
+            System.err.println("System tray is not supported.");
+        }
     }
 
     // getter & setter -- end
-
-    /**
-     @return the logger
-     */
-    public Logger getLogger() {
-
-        return this.logger;
-    }
-
-    /**
-     @return the cacheManager
-     */
-    public CacheManager getCacheManager() {
-
-        return this.cacheManager;
-    }
-
-    /**
-     @return the envVariables
-     */
-    public EnvVariables getEnvVariables() {
-
-        return this.envVariables;
-    }
-
-    /**
-     @param guiFunctionality
-     the guiFunctionality to set
-     */
-    public void setGuiFunctionality(final GuiFunctionalityInterface guiFunctionality) {
-
-        this.guiFunctionality = guiFunctionality;
-    }
-
-    /**
-     @param jSCROLLPANE_MARGIN_RIGHT_BORDER
-     the jSCROLLPANE_MARGIN_RIGHT_BORDER to set
-     */
-    public void setJSCROLLPANE_MARGIN_RIGHT_BORDER(final int jSCROLLPANE_MARGIN_RIGHT_BORDER) {
-
-        this.JSCROLLPANE_MARGIN_RIGHT_BORDER = jSCROLLPANE_MARGIN_RIGHT_BORDER;
-    }
-
-    /**
-     @param jSCROLLPANE_MARGIN_BOTTOM_BORDER
-     the jSCROLLPANE_MARGIN_BOTTOM_BORDER to set
-     */
-    public void setJSCROLLPANE_MARGIN_BOTTOM_BORDER(final int jSCROLLPANE_MARGIN_BOTTOM_BORDER) {
-
-        this.JSCROLLPANE_MARGIN_BOTTOM_BORDER = jSCROLLPANE_MARGIN_BOTTOM_BORDER;
-    }
-
-    /**
-     @param emojiHandler
-     the emojiHandler to set
-     */
-    public void setEmojiHandler(final EmojiHandler emojiHandler) {
-
-        this.emojiHandler = emojiHandler;
-    }
-
-    /**
-     @return the blockTimer
-     */
-    public Timer getBlockTimer() {
-
-        return this.blockTimer;
-    }
-
-    /**
-     @param blockTimer
-     the blockTimer to set
-     */
-    public void setBlockTimer(final Timer blockTimer) {
-
-        this.blockTimer = blockTimer;
-    }
 
     /**
      Method called when the component is resized.
@@ -581,6 +573,32 @@ public class ChatMainFrameImpl extends ChatPanel {
     protected void connectionDetailsButtonMousePressed(final MouseEvent e) {
 
         this.clientController.serverInformationOptionPane();
+    }
+
+    /**
+     Resets the connection when the reset connection menu item is pressed.
+
+     @param e
+     The mouse event that triggered the method.
+     */
+    @Override
+    public void resetConnectionMenuItemMousePressed(final MouseEvent e) {
+
+        // clear the main text panel first
+        this.removeAllMessagesOnChatPanel();
+
+        // close the websocket client
+        this.clientController.closeConnection();
+
+        // set null to be sure + preparation for reconnect
+        this.clientController.prepareReconnection();
+
+        // invalidate all caches
+        this.cacheManager.invalidateCache();
+
+        // reconnect to socket
+        this.clientController.connectToWebsocket();
+        this.logger.info("Reconnecting websocket client");
     }
 
     /**
@@ -773,188 +791,155 @@ public class ChatMainFrameImpl extends ChatPanel {
         }
     }
 
+    // getter & setter -- start
+
     /**
-     Method used to retrieve the version of the JAR file.
-
-     <p>This method uses reflection to get the implementation version of the JAR file containing
-     the class. It is assumed that the JAR file has its version specified in its manifest file.
-
-     @return The version of the JAR file as a string, or null if the version cannot be determined.
+     @return the blockTimer
      */
-    String retrieveJarVersion() {
+    public Timer getBlockTimer() {
 
-        return this.getClass().getPackage().getImplementationVersion();
+        return this.blockTimer;
     }
 
     /**
-     @return
+     @param blockTimer
+     the blockTimer to set
      */
-    private String chatVersion() {
+    public void setBlockTimer(final Timer blockTimer) {
 
-        final Properties properties = new Properties();
-        final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("version.properties");
-
-        if (inputStream != null) {
-
-            try {
-
-                properties.load(inputStream);
-                return properties.getProperty("version") + " - ";
-
-            } catch (final IOException e) {
-
-                throw new RuntimeException(e);
-            }
-
-        } else {
-
-            return "";
-        }
+        this.blockTimer = blockTimer;
     }
 
     /**
-     Method used to repaint the main frame.
-
-     <p>This method revalidates and repaints the main frame component, ensuring that any changes
-     to its layout or appearance are correctly displayed on the screen.
+     @return the cacheManager
      */
-    private void repaintMainFrame() {
+    public CacheManager getCacheManager() {
 
-        this.revalidate();
-        this.repaint();
+        return this.cacheManager;
     }
 
     /**
-     Removes all messages from the chat panel.
+     Retrieves the comment hash map.
 
-     <p>The method uses `SwingUtilities.invokeLater()` to ensure that the removal of messages is
-     performed on the event dispatch thread, as it involves modifications to the GUI.
-
-     <p>Within the method, the `form_mainTextPanel.removeAll()` is called to remove all components
-     from the chat panel. Additionally, the `repaintMainFrame()` method is called to repaint the main frame, ensuring
-     that the changes are immediately visible to the user.
+     @return the comments hash map
      */
-    private void removeAllMessagesOnChatPanel() {
+    public LinkedHashMap<Long, CommentInterface> getCommentsHashMap() {
 
-        SwingUtilities.invokeLater(() -> {
-            this.form_mainTextPanel.removeAll();
-            this.repaintMainFrame();
-        });
+        return this.commentsHashMap;
     }
 
     /**
-     Sends a typing status message to the websocket server. The method forms a JSON object representing the typing
-     status
-     and sends it to the websocket client. If an error occurs while processing the JSON, a RuntimeException is thrown.
+     Returns the emoji handler.
 
-     @throws RuntimeException
-     if an error occurs while processing the JSON.
+     <p>This method returns the emoji handler associated with the current object.
+
+     @return the emoji handler.
      */
-    private void sendIsTypingStatusToWebsocket() {
+    public EmojiHandler getEmojiHandler() {
 
-        try {
-
-            final ArrayList<String> array = new ArrayList<>();
-            array.add(this.getUsername());
-            final byte[] jsonTypingStatus = this.objectMapper.writeValueAsBytes(new StatusTransferDTO("typing", array));
-
-            ClientRegister.getWebSocketClientInstance().send(jsonTypingStatus);
-
-        } catch (final JsonProcessingException e) {
-
-            throw new RuntimeException(e);
-        }
+        return this.emojiHandler;
     }
 
     /**
-     Appends a new line to the text editor pane.
-
-     <p>Retrieves the current text in the text editor pane and appends a new line character at the
-     end of it.
+     @param emojiHandler
+     the emojiHandler to set
      */
-    private void appendNewLineToTextEditorPane() {
+    public void setEmojiHandler(final EmojiHandler emojiHandler) {
 
-        final int caretPosition = this.form_textEditorPane.getCaretPosition();
-        this.form_textEditorPane.setSelectionStart(0);
-        this.form_textEditorPane.setSelectionEnd(caretPosition);
-        this.form_textEditorPane.replaceSelection(this.form_textEditorPane.getSelectedText() + "\n");
-
-        final int endPosition = this.form_textEditorPane.getCaretPosition();
-        this.form_textEditorPane.setSelectionStart(endPosition);
-        this.form_textEditorPane.setSelectionEnd(endPosition);
+        this.emojiHandler = emojiHandler;
     }
 
     /**
-     Handles a key press event when the enter key is pressed without pressing the shift key.
-
-     <p>Retrieves the content of the text editor pane, trims any leading or trailing space, and
-     checks if it is empty. If the content is empty, it clears the text editor pane. Otherwise, it calls the
-     `sendMessageToSocket` method to clear the text pane and send the current content to a socket.
+     @return the envVariables
      */
-    private void handleNonShiftEnterKeyPress() {
+    public EnvVariables getEnvVariables() {
 
-        // emoji to text -> text extraction
-        this.emojiHandler.replaceImageIconWithEmojiDescription(this.form_textEditorPane);
-        final String textPaneContent = this.form_textEditorPane.getText().trim();
-
-        if (textPaneContent.isEmpty()) {
-
-            // empty -> reset
-            this.form_textEditorPane.setText("");
-
-        } else {
-
-            this.sendMessageToSocket();
-        }
+        return this.envVariables;
     }
 
-    private void sendMessageToSocket() {
+    public void setEnvVariables(final EnvVariables envVariables) {
 
-        final String textFromInput = this.guiFunctionality.getTextFromInput();
-
-        final MessageModel messageModel = new MessageModel();
-        messageModel.setMessage(textFromInput);
-        messageModel.setTime(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
-        messageModel.setSender(this.getUsername());
-        messageModel.setMessageType(MessageTypes.NORMAL);
-
-        final String serializedTextFromInput = this.guiFunctionality.convertUserTextToJSON(messageModel);
-        if (serializedTextFromInput != null) {
-            this.guiFunctionality.sendMessageToSocket(serializedTextFromInput);
-            this.guiFunctionality.notifyClientsSendStatus();
-        }
-        this.guiFunctionality.clearTextPane();
+        this.envVariables = envVariables;
     }
 
-    private void initializePopupMessage(final String x, final String x1) {
+    /**
+     Retrieves the GuiFunctionality.
 
-        final PopupInterface popup = new PopupPanelImpl();
-        popup.getMessageTextField().setText(x + System.lineSeparator() + x1);
-        popup.configurePopupPanelPlacement();
-        popup.initiatePopupTimer(3_000);
+     @return the GuiFunctionality object.
+     */
+    public GuiFunctionalityInterface getGuiFunctionality() {
+
+        return this.guiFunctionality;
     }
 
-    private void initializeNewMessageBlockTimer() {
+    /**
+     @param guiFunctionality
+     the guiFunctionality to set
+     */
+    public void setGuiFunctionality(final GuiFunctionalityInterface guiFunctionality) {
 
-        // blocking for 5 Minutes
-        this.blockTimer = new Timer(1_000 * 60 * 5, e1 -> {
-            this.form_allNotificationsMenuItem.setSelected(false);
-
-            // show popup
-            this.initializePopupMessage("Notifications status", "reverted");
-        });
-
-        this.blockTimer.setRepeats(false);
-        this.blockTimer.start();
+        this.guiFunctionality = guiFunctionality;
     }
 
-    private void resetMessageBlockTimer() {
+    /**
+     Retrieves the value of the JSCROLLPANE_MARGIN_BOTTOM_BORDER constant.
 
-        if (this.blockTimer != null) {
+     @return The value of the JSCROLLPANE_MARGIN_BOTTOM_BORDER constant.
+     */
+    public int getJSCROLLPANE_MARGIN_BOTTOM_BORDER() {
 
-            this.blockTimer.stop();
-            this.blockTimer = null;
-        }
+        return this.JSCROLLPANE_MARGIN_BOTTOM_BORDER;
+    }
+
+    /**
+     @param jSCROLLPANE_MARGIN_BOTTOM_BORDER
+     the jSCROLLPANE_MARGIN_BOTTOM_BORDER to set
+     */
+    public void setJSCROLLPANE_MARGIN_BOTTOM_BORDER(final int jSCROLLPANE_MARGIN_BOTTOM_BORDER) {
+
+        this.JSCROLLPANE_MARGIN_BOTTOM_BORDER = jSCROLLPANE_MARGIN_BOTTOM_BORDER;
+    }
+
+    /**
+     Retrieves the value of the JSCROLLPANE_MARGIN_RIGHT_BORDER constant.
+
+     @return The value of the JSCROLLPANE_MARGIN_RIGHT_BORDER constant.
+     */
+    public int getJSCROLLPANE_MARGIN_RIGHT_BORDER() {
+
+        return this.JSCROLLPANE_MARGIN_RIGHT_BORDER;
+    }
+
+    /**
+     @param jSCROLLPANE_MARGIN_RIGHT_BORDER
+     the jSCROLLPANE_MARGIN_RIGHT_BORDER to set
+     */
+    public void setJSCROLLPANE_MARGIN_RIGHT_BORDER(final int jSCROLLPANE_MARGIN_RIGHT_BORDER) {
+
+        this.JSCROLLPANE_MARGIN_RIGHT_BORDER = jSCROLLPANE_MARGIN_RIGHT_BORDER;
+    }
+
+    /**
+     @return the logger
+     */
+    public Logger getLogger() {
+
+        return this.logger;
+    }
+
+    public static ChatMainFrameImpl getMainFrameInstance() {
+
+        return chatMainFrame;
+    }
+
+    /**
+     Gets the ObjectMapper instance used for converting JSON to Java objects and vice versa.
+
+     @return the ObjectMapper instance
+     */
+    public ObjectMapper getObjectMapper() {
+
+        return this.objectMapper;
     }
 
     public TrayIcon getTrayIcon() {
@@ -962,29 +947,9 @@ public class ChatMainFrameImpl extends ChatPanel {
         return this.trayIcon;
     }
 
-    public void setupSystemTrayIcon() {
+    public void setFixedScrollSpeed(final int i) {
 
-        if (SystemTray.isSupported()) {
-
-            final URL iconURL = ChatMainFrameImpl.class.getResource("/icon.png");
-            assert iconURL != null;
-            final ImageIcon icon = new ImageIcon(iconURL);
-
-            try {
-
-                final SystemTray tray = SystemTray.getSystemTray();
-                this.trayIcon = new TrayIcon(icon.getImage(), "teamchat");
-                this.trayIcon.setImageAutoSize(true);
-                tray.add(this.trayIcon);
-
-            } catch (final AWTException e) {
-
-                System.err.println("TrayIcon could not be added.");
-            }
-
-        } else {
-
-            System.err.println("System tray is not supported.");
-        }
+        this.getMainTextBackgroundScrollPane().getVerticalScrollBar().setUnitIncrement(i);
     }
+    // getter & setter -- end
 }

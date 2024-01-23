@@ -35,7 +35,7 @@ public class QuotePanelImpl extends QuotePanel {
 
     private void processText(JTextPane actualTextPane, StyledDocument styledDocument, String text) {
 
-        EmojiRegister emojiRegister = EmojiRegister.getInstance();
+        EmojiRegister emojiRegister = EmojiRegister.getEmojiRegisterInstance();
 
         final HashMap<String, ImageIcon> emojiList = emojiRegister.getEmojiList();
 
@@ -89,7 +89,7 @@ public class QuotePanelImpl extends QuotePanel {
      */
     private Style createImageStyle(JTextPane actualTextPane, String word) {
 
-        EmojiRegister emojiRegister = EmojiRegister.getInstance();
+        EmojiRegister emojiRegister = EmojiRegister.getEmojiRegisterInstance();
 
         final HashMap<String, ImageIcon> emojiList = emojiRegister.getEmojiList();
 

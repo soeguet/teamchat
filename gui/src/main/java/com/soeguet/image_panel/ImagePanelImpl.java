@@ -316,7 +316,7 @@ public class ImagePanelImpl extends ImagePanel implements ImageInterface {
         PictureModel pictureModel = new PictureModel();
 
         pictureModel.setPicture(imageBytesArray);
-        pictureModel.setSender(PropertiesRegister.getCustomUserPropertiesInstance().getUsername());
+        pictureModel.setSender(PropertiesRegister.getPropertiesInstance().getUsername());
         pictureModel.setTime(
                 LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm")));
         pictureModel.setDescription(form_pictureDescriptionTextField.getText());

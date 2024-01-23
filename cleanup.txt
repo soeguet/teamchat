@@ -1,0 +1,7 @@
+cleanup tasks
+
+- properties
+    # ProgramInit > initializeProperties
+
+- questions to former me
+    # why do I have CustomProperties and PropertiesRegister? PropertiesRegister should contain CustomProperties

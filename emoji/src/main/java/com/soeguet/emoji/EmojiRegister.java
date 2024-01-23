@@ -15,7 +15,7 @@ public class EmojiRegister {
     }
     private static final EmojiRegister emojiRegister = new EmojiRegister();
 
-    public static EmojiRegister getInstance() {
+    public static EmojiRegister getEmojiRegisterInstance() {
 
         return emojiRegister;
     }

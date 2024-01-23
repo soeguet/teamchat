@@ -11,11 +11,16 @@ import com.soeguet.model.jackson.BaseModel;
 import com.soeguet.model.jackson.LinkModel;
 import com.soeguet.model.jackson.MessageModel;
 import com.soeguet.model.jackson.PictureModel;
+import com.soeguet.properties.PropertiesRegister;
 
 import javax.swing.*;
 
 public class CommentManagerImpl implements CommentManager {
 
+    // variables -- start
+    private final PropertiesRegister propertiesRegister = PropertiesRegister.getPropertiesInstance();
+
+    // variables -- end
     // constructors -- start
     public CommentManagerImpl() {
 
@@ -53,11 +58,9 @@ public class CommentManagerImpl implements CommentManager {
         mainFrame.repaint();
     }
 
-    private boolean doesClientMatchSender(final String messageModel) {
+    private boolean doesClientMatchSender(final String sender) {
 
-        final ChatMainFrameImpl mainFrame = ChatMainFrameImpl.getMainFrameInstance();
-
-        return mainFrame.getUsername().equals(messageModel);
+        return this.propertiesRegister.checkIfUsernameMatches(sender);
     }
 
     /**

@@ -59,7 +59,7 @@ public class PropertiesPanelImpl extends PropertiesPanel implements PropertiesIn
 //        if (ownClient.username() == null) {
 //
 //            PropertiesRegister customUserProperties =
-//                    PropertiesRegister.getCustomUserPropertiesInstance();
+//                    PropertiesRegister.getPropertiesInstance();
 //            getOwnUserNameTextField().setText(customUserProperties.getUsername());
 //            ownClient = ownClient.withUsername(customUserProperties.getUsername());
 //
@@ -240,7 +240,7 @@ public class PropertiesPanelImpl extends PropertiesPanel implements PropertiesIn
 
 //
 //        // TODO clean up this part
-//        PropertiesRegister propertiesRegister = PropertiesRegister.getCustomUserPropertiesInstance();
+//        PropertiesRegister propertiesRegister = PropertiesRegister.getPropertiesInstance();
 //        final HashMap<String, CustomUserPropertiesDTO> chatClientPropertiesHashMap =
 //                propertiesRegister.getChatClientPropertiesHashMap();
 //
@@ -249,7 +249,7 @@ public class PropertiesPanelImpl extends PropertiesPanel implements PropertiesIn
 //        final CustomUserPropertiesDTO ownPropertiesDTO = chatClientPropertiesHashMap.get("own");
 //        final CustomUserPropertiesDTO updatedPropertiesDTO = ownPropertiesDTO.withUsername(ownName);
 //        chatClientPropertiesHashMap.replace("own", updatedPropertiesDTO);
-//        PropertiesRegister.getCustomUserPropertiesInstance().setUsername(ownName);
+//        PropertiesRegister.getPropertiesInstance().setUsername(ownName);
 //
 //        ///
 //        if (form_clientSelectorComboBox.getItemCount() > 0) {
@@ -275,7 +275,7 @@ public class PropertiesPanelImpl extends PropertiesPanel implements PropertiesIn
 //
 //        ///
 //
-//        CustomProperties customProperties = CustomProperties.getProperties();
+//        CustomProperties customProperties = CustomProperties.getPropertiesInstance();
 //        customProperties.save();
 //
 //        PopupInterface popup = new PopupPanelImpl(mainFrame);

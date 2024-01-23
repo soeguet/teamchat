@@ -28,7 +28,7 @@ public class InterruptHandler implements InterruptHandlerInterface {
     @Override
     public void forceChatGuiToFront(final String clientUserName) {
 
-        if (clientUserName.equals(PropertiesRegister.getCustomUserPropertiesInstance().getUsername())) {
+        if (clientUserName.equals(PropertiesRegister.getPropertiesInstance().getUsername())) {
 
             ChatMainFrameImpl chatMainFrame = ChatMainFrameImpl.getMainFrameInstance();
 
